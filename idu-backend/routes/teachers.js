@@ -10,7 +10,7 @@ const { authenticate, authorize } = require('../middleware/auth');
 const router = express.Router();
 router.use(authenticate);
 
-// ── GET /api/teachers ─────────────────────────────────────────────────────────
+// ?? GET /api/teachers ?????????????????????????????????????????????????????????
 router.get('/', async (req, res) => {
   const { rows } = await db.query(
     `SELECT u.id, u.full_name, u.email, u.phone, u.avatar_url,
@@ -26,65 +26,37 @@ router.get('/', async (req, res) => {
   res.json(rows);
 });
 
-// ── GET /api/teachers/:id/courses ─────────────────────────────────────────────
-router.get(
-  '/:id/courses',
-  [param('id').isInt({ min: 1 }).toInt()],
-  validate,
-  async (req, res) => {
-    const { rows } = await db.query(
-      `SELECT c.id, c.name, c.code, c.credits, c.description
-       FROM courses c
-       WHERE c.teacher_id = $1 AND c.is_active = TRUE
-       ORDER BY c.name`,
-      [req.params.id]
-    );
-    res.json(rows);
-  }
-);
+router.get('/:id/courses', [param('id').isInt({ min: 1 }).toInt()], validate, async (req, res) => {
+  const { rows } = await db.query(
+    'SELECT c.id,c.name,c.code,c.credits,c.description FROM courses c WHERE c.teacher_id=$1 AND c.is_active=TRUE ORDER BY name',
+    [req.params.id]);
+  res.json(rows);
+});
 
-// ── POST /api/teachers ────────────────────────────────────────────────────────
-// Admin/dekanat: register a new teacher
-router.post(
-  '/',
-  authorize('dekanat', 'admin'),
-  [
-    body('fullName').isLength({ min: 2, max: 100 }).trim(),
-    body('email').isEmail().normalizeEmail(),
-    body('password').isLength({ min: 8 }),
-    body('department').isLength({ min: 2, max: 100 }).trim(),
-    body('title').optional().isLength({ max: 100 }).trim(),
-  ],
-  validate,
-  async (req, res) => {
-    const bcrypt = require('bcryptjs');
-    const { fullName, email, password, department, title } = req.body;
-
-    const hash = await bcrypt.hash(password, 12);
-    const client = await db.getClient();
-
-    try {
-      await client.query('BEGIN');
-      const { rows } = await client.query(
-        `INSERT INTO users (full_name, email, password_hash, role)
-         VALUES ($1, $2, $3, 'teacher')
-         RETURNING id`,
-        [fullName, email, hash]
-      );
-      const userId = rows[0].id;
-      await client.query(
-        `INSERT INTO teachers (user_id, department, title) VALUES ($1, $2, $3)`,
-        [userId, department, title || null]
-      );
-      await client.query('COMMIT');
-      res.status(201).json({ id: userId, fullName, email, department });
-    } catch (err) {
-      await client.query('ROLLBACK');
-      throw err;
-    } finally {
-      client.release();
-    }
-  }
-);
+router.post('/', authorize('dekanat', 'admin'), [
+  body('fullName').isLength({ min: 2, max: 100 }).trim(),
+  body('email').isEmail().normalizeEmail(),
+  body('password').isLength({ min: 8 }),
+  body('department').isLength({ min: 2, max: 100 }).trim(),
+  body('title').optional().isLength({ max: 100 }).trim(),
+], validate, async (req, res) => {
+  const bcrypt = require('bcryptjs');
+  const { fullName, email, password, department, title } = req.body;
+  const hash = await bcrypt.hash(password, 12);
+  const client = await db.getClient();
+  try {
+    await client.query('BEGIN');
+    const { rows } = await client.query(
+      `INSERT INTO users(full_name,email,password_hash,role) VALUES($1,$2,$3,'teacher') RETURNING id`,
+      [fullName, email, hash]);
+    await client.query(
+      'INSERT INTO teachers(user_id,department,title) VALUES($1,$2,$3)',
+      [rows[0].id, department, title || null]);
+    await client.query('COMMIT');
+    res.status(201).json({ id: rows[0].id, fullName, email, department });
+  } catch (err) {
+    await client.query('ROLLBACK'); throw err;
+  } finally { client.release(); }
+});
 
 module.exports = router;
