@@ -1,0 +1,111 @@
+'use strict';
+
+// ── Load env vars first ───────────────────────────────────────────────────────
+require('dotenv').config();
+
+// ── Express async error forwarding ───────────────────────────────────────────
+require('express-async-errors');
+
+const express = require('express');
+const helmet  = require('helmet');
+const cors    = require('cors');
+const path    = require('path');
+
+const { generalLimiter } = require('./middleware/rateLimiter');
+const errorHandler       = require('./middleware/errorHandler');
+
+// ── Route imports ─────────────────────────────────────────────────────────────
+const authRoutes         = require('./routes/auth');
+const studentsRoutes     = require('./routes/students');
+const gradesRoutes       = require('./routes/grades');
+const teachersRoutes     = require('./routes/teachers');
+const scheduleRoutes     = require('./routes/schedule');
+const applicationsRoutes = require('./routes/applications');
+const questionsRoutes    = require('./routes/questions');
+const examsRoutes        = require('./routes/exams');
+
+// ── App ───────────────────────────────────────────────────────────────────────
+const app = express();
+
+// ── Security headers ──────────────────────────────────────────────────────────
+app.use(helmet({
+  // Allow serving the frontend from the same origin
+  contentSecurityPolicy: {
+    directives: {
+      defaultSrc: ["'self'"],
+      scriptSrc:  ["'self'", "'unsafe-inline'", 'cdnjs.cloudflare.com'],
+      styleSrc:   ["'self'", "'unsafe-inline'", 'fonts.googleapis.com'],
+      fontSrc:    ["'self'", 'fonts.gstatic.com'],
+      imgSrc:     ["'self'", 'data:', 'blob:'],
+      connectSrc: ["'self'"],
+    },
+  },
+}));
+
+// ── CORS ──────────────────────────────────────────────────────────────────────
+const allowedOrigins = (process.env.CORS_ORIGIN || 'http://localhost:5500')
+  .split(',')
+  .map(o => o.trim());
+
+app.use(cors({
+  origin: (origin, callback) => {
+    // Allow no-origin requests (e.g. same-origin file:// for dev, Postman)
+    if (!origin || allowedOrigins.includes(origin)) return callback(null, true);
+    callback(new Error(`CORS: origin ${origin} not allowed`));
+  },
+  credentials: true,
+  methods: ['GET', 'POST', 'PUT', 'PATCH', 'DELETE', 'OPTIONS'],
+  allowedHeaders: ['Content-Type', 'Authorization'],
+}));
+
+// ── Body parsing ──────────────────────────────────────────────────────────────
+app.use(express.json({ limit: '1mb' }));
+app.use(express.urlencoded({ extended: false, limit: '1mb' }));
+
+// ── Static files (uploaded avatars, documents) ────────────────────────────────
+app.use('/uploads', express.static(path.resolve(process.env.UPLOAD_DIR || './uploads')));
+
+// ── Health check ──────────────────────────────────────────────────────────────
+app.get('/health', (req, res) => {
+  res.json({
+    status: 'ok',
+    timestamp: new Date().toISOString(),
+    env: process.env.NODE_ENV,
+  });
+});
+
+// ── Rate limiter (all API routes) ─────────────────────────────────────────────
+app.use('/api', generalLimiter);
+
+// ── Routes ────────────────────────────────────────────────────────────────────
+app.use('/api/auth',         authRoutes);
+app.use('/api/students',     studentsRoutes);
+app.use('/api/grades',       gradesRoutes);
+app.use('/api/teachers',     teachersRoutes);
+app.use('/api/schedule',     scheduleRoutes);
+app.use('/api/applications', applicationsRoutes);
+app.use('/api/questions',    questionsRoutes);
+app.use('/api/exams',        examsRoutes);
+
+// ── 404 handler ───────────────────────────────────────────────────────────────
+app.use((req, res) => {
+  res.status(404).json({ error: `Route ${req.method} ${req.path} not found` });
+});
+
+// ── Central error handler (must be last) ─────────────────────────────────────
+app.use(errorHandler);
+
+// ── Start server ──────────────────────────────────────────────────────────────
+const PORT = parseInt(process.env.PORT || '3000', 10);
+
+app.listen(PORT, () => {
+  console.log(`
+╔══════════════════════════════════════════════════════╗
+║   IDU Platform API — listening on port ${PORT}          ║
+║   Environment : ${(process.env.NODE_ENV || 'development').padEnd(36)}║
+║   Docs        : http://localhost:${PORT}/health          ║
+╚══════════════════════════════════════════════════════╝
+  `);
+});
+
+module.exports = app; // for testing
