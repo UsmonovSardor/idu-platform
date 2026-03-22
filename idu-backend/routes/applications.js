@@ -11,9 +11,9 @@ const router = express.Router();
 router.use(authenticate);
 
 const VALID_TYPES    = ['cert', 'job', 'etiraz', 'other'];
-const VALID_STATULES = ['pending', 'reviewing', 'approved', 'rejected'];
+const VALID_STATUSES = ['pending', 'reviewing', 'approved', 'rejected'];
 
-// ── GET /api/applications ─────────────────────────────────────────────────────
+// ?? GET /api/applications ?????????????????????????????????????????????????????
 router.get(
   '/',
   [
@@ -67,21 +67,26 @@ router.get(
   }
 );
 
-// ── POST /api/applications ────────────────────────────────────────────────────�router.post(
+// ?? POST /api/applications ????????????????????????????????????????????????????
+router.post(
   '/',
   [
     body('type').isIn(VALID_TYPES).withMessage('Invalid application type'),
     body('detail').isLength({ min: 5, max: 1000 }).trim().withMessage('Detail required (5-1000 chars)'),
     body('company').optional().isLength({ max: 200 }).trim(),
     body('note').optional().isLength({ max: 2000 }).trim(),
+    // For etiraz: allow optional question reference fields
+    body('questionIndex').optional().isInt({ min: 0 }),
+    body('examType').optional().isIn(['test', 'sesiya']),
+    body('subject').optional().isString().trim(),
   ],
   validate,
   async (req, res) => {
-    const { type, detail, company, note } = req.body;
+    const { type, detail, company, note, questionIndex, examType, subject } = req.body;
 
     const { rows } = await db.query(
-      `INSERT INTO applications (student_id, type, detail, company, note)
-       VALUES ($1, $2, $3, $4, $5)
+      `INSERT INTO applications (student_id, type, detail, company, note, question_index, exam_type, subject)
+       VALUES ($1, $2, $3, $4, $5, $6, $7, $8)
        RETURNING *`,
       [
         req.user.id,
@@ -89,6 +94,9 @@ router.get(
         detail,
         company || null,
         note || null,
+        questionIndex !== undefined ? questionIndex : null,
+        examType || null,
+        subject || null,
       ]
     );
 
@@ -96,13 +104,15 @@ router.get(
   }
 );
 
-// ── PATCH /api/applications/:id/status ───────────────────────────────────────
+// ?? PATCH /api/applications/:id/status ???????????????????????????????????????
+// Dekanat only: update status + optional comment
 router.patch(
   '/:id/status',
   authorize('dekanat', 'admin'),
   [
     param('id').isInt({ min: 1 }).toInt(),
-    body('status').isIn(VALID_STATUSEL��X��BdekanatComment').optional().isLength({ max: 1000 }).trim(),
+    body('status').isIn(VALID_STATUSES).withMessage('Invalid status'),
+    body('dekanatComment').optional().isLength({ max: 1000 }).trim(),
   ],
   validate,
   async (req, res) => {
@@ -119,6 +129,32 @@ router.patch(
 
     if (!rowCount) return res.status(404).json({ error: 'Application not found' });
     res.json(rows[0]);
+  }
+);
+
+// ?? DELETE /api/applications/:id ??????????????????????????????????????????????
+// Student can delete their own pending application; dekanat can delete any
+router.delete(
+  '/:id',
+  [param('id').isInt({ min: 1 }).toInt()],
+  validate,
+  async (req, res) => {
+    let query;
+    let params;
+
+    if (req.user.role === 'student') {
+      query  = "DELETE FROM applications WHERE id = $1 AND student_id = $2 AND status = 'pending'";
+      params = [req.params.id, req.user.id];
+    } else {
+      query  = 'DELETE FROM applications WHERE id = $1';
+      params = [req.params.id];
+    }
+
+    const { rowCount } = await db.query(query, params);
+    if (!rowCount) {
+      return res.status(404).json({ error: 'Application not found or cannot be deleted' });
+    }
+    res.json({ message: 'Application deleted' });
   }
 );
 
