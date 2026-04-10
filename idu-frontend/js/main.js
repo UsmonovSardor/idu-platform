@@ -3083,19 +3083,23 @@ const AI_RESPONSES = {
   'fizika':['Fizikaning asosiy qonunlari:\n\n⚛️ **Nyuton qonunlari:**\n- 1-qonun: Tana harakatini o\'zgartirish uchun kuch kerak\n- 2-qonun: F = ma (kuch = massa × tezlanish)\n- 3-qonun: Har bir ta\'sirga teng qarama-qarshi ta\'sir bor'],
   'default':['Savolingizni tushundim! Keling, batafsil ko\'rib chiqaylik. Qaysi fandan yordam kerak — Matematika, Dasturlash, Fizika yoki Ingliz tili? Men har birida sizga yordam bera olaman! 📚','Bu mavzu juda qiziqarli. Avval asosiy tushunchalardan boshlaylik, keyin murakkab misollarga o\'tamiz. Tayyor bo\'lsangiz, "davom et" deb yozing! 💡']
 };
-function sendAIMsg(){
+async function sendAIMsg(){
   const inp=document.getElementById('aiInput');
   const txt=inp?.value.trim();if(!txt)return;
   inp.value='';
   appendMsg('user',txt);
   document.getElementById('aiSendBtn').disabled=true;
-  setTimeout(()=>{
-    const key=Object.keys(AI_RESPONSES).find(k=>txt.toLowerCase().includes(k))||'default';
-    const res=AI_RESPONSES[key];
-    const reply=res[Math.floor(Math.random()*res.length)];
-    appendMsg('ai',reply);
-    document.getElementById('aiSendBtn').disabled=false;
-  },800);
+  appendMsg('ai','...');
+  try {
+    const data = await api('POST', '/ai/chat', { message: txt });
+    const lastMsg = document.querySelector('#aiMessages .msg-ai:last-child');
+    if(lastMsg) lastMsg.querySelector('.msg-text') ? lastMsg.querySelector('.msg-text').textContent = data.reply : lastMsg.textContent = data.reply;
+    else appendMsg('ai', data.reply || 'Javob kelmadi');
+  } catch(e) {
+    const lastMsg = document.querySelector('#aiMessages .msg-ai:last-child');
+    if(lastMsg) lastMsg.textContent = 'Xatolik yuz berdi. Qayta urinib ko'ring.';
+  }
+  document.getElementById('aiSendBtn').disabled=false;
 }
 function askAI(q){document.getElementById('aiInput').value=q;sendAIMsg();}
 function appendMsg(role,text){
