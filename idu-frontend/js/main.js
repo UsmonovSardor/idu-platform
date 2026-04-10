@@ -3,7 +3,7 @@
 // ══════════════════════════════════════════════════════════════════
 
 // Backend base URL — change to your deployed server URL in production
-var API_BASE = 'https://idu-platform.onrender.com/api';
+var API_BASE = 'https://idu-platform-production.up.railway.app/api';
 
 // JWT token storage (memory-first, localStorage fallback for "remember me")
 var _apiToken = null;
