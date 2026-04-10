@@ -3097,7 +3097,8 @@ async function sendAIMsg(){
     else appendMsg('ai', data.reply || 'Javob kelmadi');
   } catch(e) {
     const lastMsg = document.querySelector('#aiMessages .msg-ai:last-child');
-    if(lastMsg) lastMsg.textContent = 'Xatolik yuz berdi. Qayta urinib ko'ring.';
+  
+   if(lastMsg) lastMsg.textContent = "Xatolik yuz berdi. Qayta urinib ko'ring.";
   }
   document.getElementById('aiSendBtn').disabled=false;
 }
