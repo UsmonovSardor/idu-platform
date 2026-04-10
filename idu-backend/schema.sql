@@ -301,6 +301,33 @@ SELECT id, 'Kompyuter fanlari', 'Dotsent'
 FROM users WHERE email = 'teacher@idu.uz'
 ON CONFLICT (user_id) DO NOTHING;
 
+
+-- ASSIGNMENTS (vazifalar)
+CREATE TABLE IF NOT EXISTS assignments (
+  id SERIAL PRIMARY KEY,
+  title VARCHAR(200) NOT NULL,
+  description TEXT NOT NULL,
+  subject VARCHAR(100),
+  deadline TIMESTAMPTZ NOT NULL,
+  group_name VARCHAR(50) DEFAULT 'ALL',
+  max_score INT DEFAULT 100,
+  teacher_id INT REFERENCES users(id) ON DELETE CASCADE,
+  created_at TIMESTAMPTZ DEFAULT NOW()
+);
+
+-- SUBMISSIONS (talaba javoblari + AI ball)
+CREATE TABLE IF NOT EXISTS submissions (
+  id SERIAL PRIMARY KEY,
+  assignment_id INT REFERENCES assignments(id) ON DELETE CASCADE,
+  student_id INT REFERENCES users(id) ON DELETE CASCADE,
+  content TEXT NOT NULL,
+  ai_ball INT DEFAULT 0,
+  ai_xatolar TEXT,
+  ai_ijobiy TEXT,
+  ai_tavsiyalar TEXT,
+  submitted_at TIMESTAMPTZ DEFAULT NOW()
+);
+
 -- =============================================================================
 -- End of schema
 -- =============================================================================
