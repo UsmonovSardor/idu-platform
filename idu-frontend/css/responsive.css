@@ -1,62 +1,148 @@
-/* IDU Platform — Responsive CSS */
+/* ================================================
+   IDU Platform — Professional Responsive Design
+   Mobile First Approach
+   ================================================ */
 
-/* ===== TABLET 1024px ===== */
+/* ===== TABLET (768px - 1024px) ===== */
 @media (max-width: 1024px) {
-  .sidebar { width: 180px; }
-  .hemis-nav { padding: 0 20px; }
-  .stats-grid { grid-template-columns: repeat(2,1fr); }
+  .sidebar { width: 200px; }
+  .hemis-nav { padding: 0 24px; }
+  .stats-grid { grid-template-columns: repeat(2, 1fr); }
+  .grade-grid { grid-template-columns: repeat(2, 1fr); }
 }
 
-/* ===== MOBILE 600px ===== */
-@media (max-width: 600px) {
+/* ===== MOBILE (max 768px) ===== */
+@media (max-width: 768px) {
 
-  /* Topnav */
+  /* === LOGIN MODAL === */
+  .login-modal-bg {
+    align-items: flex-end !important;
+    padding: 0 !important;
+  }
+  .login-modal {
+    flex-direction: column !important;
+    width: 100vw !important;
+    max-width: 100vw !important;
+    border-radius: 24px 24px 0 0 !important;
+    position: fixed !important;
+    bottom: 0 !important;
+    left: 0 !important;
+    right: 0 !important;
+    max-height: 92vh !important;
+    overflow-y: auto !important;
+  }
+  .login-modal-left { display: none !important; }
+  .login-modal-right {
+    width: 100% !important;
+    padding: 28px 20px 32px !important;
+    border-radius: 24px 24px 0 0 !important;
+  }
+
+  /* === LANDING BOSH SAHIFA === */
+  .hemis-nav { padding: 0 16px; height: 56px; }
+  .hemis-nav-links { display: none; }
+  .hn-kirish { font-size: 13px; padding: 8px 16px; }
+  .hemis-hero { padding: 40px 16px 20px; text-align: center; }
+  .hero-title { font-size: 26px; }
+  .hero-sub { font-size: 14px; }
+  .hero-btns { flex-direction: column; width: 100%; gap: 10px; }
+  .hb-primary, .hb-secondary { width: 100%; justify-content: center; }
+  .hemis-stats {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    border-radius: 12px;
+  }
+
+  /* === APP ICHKI SAHIFALAR === */
   .topnav { padding: 0 12px; height: 54px; }
   .topnav-tabs { display: none; }
+  .topnav-logo-text { font-size: 15px; }
 
-  /* Page */
-  .page { padding: 12px; padding-top: 68px; }
-  .page-header { flex-direction: column; align-items: flex-start; gap: 8px; }
-  .page-header-right { width: 100%; display: flex; flex-wrap: wrap; gap: 6px; }
-  .page-header-right .btn { flex: 1; min-width: 120px; justify-content: center; }
+  /* === SIDEBAR === */
+  .sidebar {
+    position: fixed !important;
+    left: 0; top: 0; bottom: 0;
+    z-index: 300;
+    width: 260px !important;
+    transform: translateX(-100%);
+    transition: transform 0.28s cubic-bezier(0.4,0,0.2,1);
+    box-shadow: 4px 0 24px rgba(0,0,0,0.13);
+  }
+  .sidebar.mobile-open { transform: translateX(0) !important; }
+  .sidebar-backdrop { display: none; }
+  .sidebar-backdrop.active { display: block; }
+  .mobile-menu-btn { display: flex !important; }
 
-  /* Cards */
-  .stats-grid { grid-template-columns: 1fr 1fr; gap: 8px; }
-  .grade-grid { grid-template-columns: 1fr; gap: 8px; }
-  .partners-grid { grid-template-columns: 1fr; }
-  .idea-list { grid-template-columns: 1fr; }
+  /* === ASOSIY KONTENT === */
+  .page { padding: 14px; padding-top: 70px; }
+  .page-header {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 10px;
+  }
+  .page-header-right {
+    width: 100%;
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+  }
+  .page-header-right .btn {
+    flex: 1;
+    min-width: 130px;
+    justify-content: center;
+    font-size: 13px;
+  }
 
-  /* Jadvallar scroll */
-  .table-wrap { overflow-x: auto; -webkit-overflow-scrolling: touch; border-radius: 10px; }
-  table { min-width: 480px; font-size: 13px; }
+  /* === KARTALAR === */
+  .stats-grid { grid-template-columns: 1fr 1fr !important; gap: 10px; }
+  .grade-grid { grid-template-columns: 1fr !important; gap: 10px; }
+  .partners-grid { grid-template-columns: 1fr !important; }
+  .idea-list { grid-template-columns: 1fr !important; }
 
-  /* Modal */
-  .modal-box { width: 96vw !important; max-height: 88vh; overflow-y: auto; margin: 0 auto; border-radius: 16px; }
-  .modal-backdrop { align-items: flex-end; padding-bottom: 0; }
+  /* === JADVALLAR === */
+  .table-wrap {
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+    border-radius: 12px;
+  }
+  table { min-width: 520px; font-size: 13px; }
 
-  /* AI Chat */
+  /* === MODAL === */
+  .modal-box {
+    width: 96vw !important;
+    max-width: 96vw !important;
+    max-height: 88vh !important;
+    overflow-y: auto;
+    margin: 0 auto;
+    border-radius: 18px;
+  }
+
+  /* === AI CHAT === */
   .ai-chat-wrap { height: calc(100vh - 140px); }
+  .chat-bubble-wrap { padding: 10px; }
 
-  /* Report */
-  .report-panel { flex-direction: column; }
-  .rpt-bar-wrap, .rpt-donut-wrap { width: 100%; }
+  /* === JADVAL (DARS JADVALI) === */
+  .timetable-wrap { overflow-x: auto; -webkit-overflow-scrolling: touch; }
 
-  /* Schedule */
-  .timetable-wrap { overflow-x: auto; }
+  /* === REPORT === */
+  .report-panel { flex-direction: column !important; }
+  .rpt-bar-wrap, .rpt-donut-wrap { width: 100% !important; }
 
-  /* Topnav right — faqat 2 ta icon */
-  .topnav-right .nav-icon-btn:nth-child(n+3) { display: none; }
-
-  /* XP bar */
+  /* === XP BAR === */
   .xp-bar-wrap { flex-direction: column; gap: 6px; }
+
+  /* === GAME, POMO === */
+  .game-header { flex-direction: column; gap: 8px; }
+  .pomo-wrap { padding: 16px; }
 }
 
-/* ===== KICHIK TELEFON 375px ===== */
-@media (max-width: 375px) {
-  .stats-grid { grid-template-columns: 1fr; }
+/* ===== KICHIK TELEFON (max 390px) ===== */
+@media (max-width: 390px) {
+  .stats-grid { grid-template-columns: 1fr !important; }
   .topnav-logo-text { display: none; }
-  .page { padding: 8px; padding-top: 62px; }
-  table { font-size: 12px; }
+  .page { padding: 10px; padding-top: 64px; }
+  table { font-size: 12px; min-width: 420px; }
   .page-header-right .btn { font-size: 12px; padding: 6px 10px; }
+  .hero-title { font-size: 22px; }
+  .hemis-stats { grid-template-columns: 1fr !important; }
 }
-
