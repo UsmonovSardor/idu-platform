@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>IDU — International Digital University</title>
+<title>IDU â International Digital University</title>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/dompurify/3.0.8/purify.min.js" integrity="sha512-M72KfQy4kZmNcqm6W/1W1PiOhS0DkFTmvHvAHgJfM5l9B1H9MmE10KLURDXIbz5SN7RjFBHMgq2QKP+eTKHQ==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800&family=DM+Mono:wght@400;500;600&display=swap" rel="stylesheet">
@@ -13,7 +13,7 @@
 
 <body>
 <div class="toast-container" id="toastContainer"></div>
-<!-- ════════ AUTH SCREEN ════════ -->
+<!-- ââââââââ AUTH SCREEN ââââââââ -->
 <div id="authScreen">
   <nav class="hemis-nav">
     <div class="hemis-nav-logo"><div class="hn-dot">IDU</div><span class="hn-name">IDU</span></div>
@@ -25,26 +25,26 @@
 
       <!-- Yo'riqnomalar dropdown -->
       <div class="hn-drop">
-        <a class="hn-link" id="nav-guides">Yo'riqnomalar <span class="hn-drop-arrow">▼</span></a>
+        <a class="hn-link" id="nav-guides">Yo'riqnomalar <span class="hn-drop-arrow">â¼</span></a>
         <div class="hn-drop-menu" id="navGuidesMenu">
           <div class="hn-drop-item" onclick="openGuideModal('student')">
-            <div class="hn-drop-item-icon" style="background:#EEF3FF">👨‍🎓</div>
+            <div class="hn-drop-item-icon" style="background:#EEF3FF">ð¨âð</div>
             <div><div class="hn-drop-item-text" id="ng-student">Talabalarga</div><div class="hn-drop-item-sub">Kirish, baholar, jadval</div></div>
           </div>
           <div class="hn-drop-item" onclick="openGuideModal('teacher')">
-            <div class="hn-drop-item-icon" style="background:#F0FDF4">👨‍🏫</div>
+            <div class="hn-drop-item-icon" style="background:#F0FDF4">ð¨âð«</div>
             <div><div class="hn-drop-item-text" id="ng-teacher">O'qituvchilarga</div><div class="hn-drop-item-sub">Baholash, davomat, jadval</div></div>
           </div>
           <div class="hn-drop-item" onclick="openGuideModal('dekanat')">
-            <div class="hn-drop-item-icon" style="background:#FDF4FF">🏛️</div>
+            <div class="hn-drop-item-icon" style="background:#FDF4FF">ðï¸</div>
             <div><div class="hn-drop-item-text" id="ng-dekanat">Dekanlarga</div><div class="hn-drop-item-sub">Talabalar, hisobotlar, arizalar</div></div>
           </div>
           <div class="hn-drop-item" onclick="openGuideModal('admin')">
-            <div class="hn-drop-item-icon" style="background:#FFF7ED">⚙️</div>
+            <div class="hn-drop-item-icon" style="background:#FFF7ED">âï¸</div>
             <div><div class="hn-drop-item-text" id="ng-admin">Administratorlarga</div><div class="hn-drop-item-sub">Tizim sozlamalari, foydalanuvchilar</div></div>
           </div>
           <div class="hn-drop-item" onclick="openGuideModal('kafedra')">
-            <div class="hn-drop-item-icon" style="background:#F0FDF4">📚</div>
+            <div class="hn-drop-item-icon" style="background:#F0FDF4">ð</div>
             <div><div class="hn-drop-item-text" id="ng-kafedra">Kafedra mudirlariga</div><div class="hn-drop-item-sub">Fan dasturlari, o'qituvchilar</div></div>
           </div>
         </div>
@@ -56,16 +56,16 @@
     <div class="hn-right">
       <div class="lang-drop" id="langDrop">
         <div class="lang-current" onclick="toggleLangDrop()">
-          <span class="lc-flag" id="lcFlag">🇺🇿</span>
+          <span class="lc-flag" id="lcFlag">ðºð¿</span>
           <span id="lcText">UZ</span>
-          <span class="lc-arrow">▼</span>
+          <span class="lc-arrow">â¼</span>
         </div>
         <div class="lang-options" id="langOptions">
           <div class="lang-option active" id="lopt-uz" onclick="setLang('uz')">
-            <span class="lo-flag">🇺🇿</span> O'zbek
+            <span class="lo-flag">ðºð¿</span> O'zbek
           </div>
           <div class="lang-option" id="lopt-ru" onclick="setLang('ru')">
-            <span class="lo-flag">🇷🇺</span> Русский
+            <span class="lo-flag">ð·ðº</span> Ð ÑÑÑÐºÐ¸Ð¹
           </div>
         </div>
       </div>
@@ -74,9 +74,9 @@
   </nav>
   <div class="hemis-hero">
     <h1 class="hero-title">
-      <span class="ht-brand">IDU</span> — <span id="hero-title-text">International Digital University</span>
+      <span class="ht-brand">IDU</span> â <span id="hero-title-text">International Digital University</span>
     </h1>
-    <p class="hero-sub" id="hero-sub">Zamonaviy ta'lim platformasi — talabalar, o'qituvchilar, dekanat va investorlar uchun yagona raqamli muhit.</p>
+    <p class="hero-sub" id="hero-sub">Zamonaviy ta'lim platformasi â talabalar, o'qituvchilar, dekanat va investorlar uchun yagona raqamli muhit.</p>
     <div class="hemis-stats">
       <div class="h-stat"><div class="h-stat-val">4.2K+</div><div class="h-stat-key" id="hstat1">Talabalar</div></div>
       <div class="h-stat"><div class="h-stat-val">180+</div><div class="h-stat-key" id="hstat2">O'qituvchilar</div></div>
@@ -89,7 +89,7 @@
 </div>
 
 
-<!-- ══ GUIDE MODAL ══ -->
+<!-- ââ GUIDE MODAL ââ -->
 <div id="guideModal" style="display:none;position:fixed;inset:0;z-index:9800;background:rgba(15,23,42,0.5);backdrop-filter:blur(6px);align-items:center;justify-content:center;padding:16px" onclick="if(event.target===this)closeGuideModal()">
   <div style="background:#fff;border-radius:20px;width:100%;max-width:600px;max-height:88vh;overflow-y:auto;box-shadow:0 24px 80px rgba(0,0,0,0.18)">
     <div style="padding:24px 28px 0">
@@ -98,36 +98,36 @@
           <span id="guideModalIcon" style="font-size:26px"></span>
           <span style="font-size:20px;font-weight:800;color:#0F172A" id="guideModalTitle">Yo'riqnoma</span>
         </div>
-        <button onclick="closeGuideModal()" style="background:none;border:none;font-size:22px;cursor:pointer;color:#64748B">✕</button>
+        <button onclick="closeGuideModal()" style="background:none;border:none;font-size:22px;cursor:pointer;color:#64748B">â</button>
       </div>
     </div>
     <div id="guideModalBody" style="padding:0 28px 28px"></div>
   </div>
 </div>
 
-<!-- ══ FAQ MODAL ══ -->
+<!-- ââ FAQ MODAL ââ -->
 <div id="faqModal" style="display:none;position:fixed;inset:0;z-index:9800;background:rgba(15,23,42,0.5);backdrop-filter:blur(6px);align-items:center;justify-content:center;padding:16px" onclick="if(event.target===this)closeFaqModal()">
   <div style="background:#fff;border-radius:20px;width:100%;max-width:620px;max-height:88vh;overflow-y:auto;box-shadow:0 24px 80px rgba(0,0,0,0.18)">
     <div style="padding:24px 28px">
       <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:22px">
-        <div style="font-size:20px;font-weight:800;color:#0F172A">❓ Tez-tez so'raladigan savollar</div>
-        <button onclick="closeFaqModal()" style="background:none;border:none;font-size:22px;cursor:pointer;color:#64748B">✕</button>
+        <div style="font-size:20px;font-weight:800;color:#0F172A">â Tez-tez so'raladigan savollar</div>
+        <button onclick="closeFaqModal()" style="background:none;border:none;font-size:22px;cursor:pointer;color:#64748B">â</button>
       </div>
       <div id="faqModalBody"></div>
     </div>
   </div>
 </div>
 
-<!-- ══ ABOUT MODAL ══ -->
+<!-- ââ ABOUT MODAL ââ -->
 <div id="aboutModal" style="display:none;position:fixed;inset:0;z-index:9800;background:rgba(15,23,42,0.5);backdrop-filter:blur(6px);align-items:center;justify-content:center;padding:16px" onclick="if(event.target===this)closeAboutModal()">
   <div style="background:#fff;border-radius:20px;width:100%;max-width:640px;max-height:88vh;overflow-y:auto;box-shadow:0 24px 80px rgba(0,0,0,0.18)">
     <div style="padding:28px">
       <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:22px">
-        <div style="font-size:20px;font-weight:800;color:#0F172A">🏛️ IDU tizimi haqida</div>
-        <button onclick="closeAboutModal()" style="background:none;border:none;font-size:22px;cursor:pointer;color:#64748B">✕</button>
+        <div style="font-size:20px;font-weight:800;color:#0F172A">ðï¸ IDU tizimi haqida</div>
+        <button onclick="closeAboutModal()" style="background:none;border:none;font-size:22px;cursor:pointer;color:#64748B">â</button>
       </div>
       <div style="font-size:14.5px;color:#475569;line-height:1.8;margin-bottom:18px">
-        <b style="color:#0F172A">IDU — International Digital University</b> platformasi O'zbekistondagi oliy ta'lim muassasalari uchun mo'ljallangan zamonaviy raqamli boshqaruv tizimi.
+        <b style="color:#0F172A">IDU â International Digital University</b> platformasi O'zbekistondagi oliy ta'lim muassasalari uchun mo'ljallangan zamonaviy raqamli boshqaruv tizimi.
       </div>
       <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:20px">
         <div style="background:#EEF3FF;border-radius:12px;padding:16px">
@@ -150,62 +150,62 @@
       <div style="background:#F8FAFC;border-radius:12px;padding:16px">
         <div style="font-size:13px;font-weight:700;color:#0F172A;margin-bottom:10px">Asosiy modullar:</div>
         <div style="display:flex;flex-wrap:wrap;gap:8px">
-          <span style="padding:5px 12px;background:#EEF3FF;color:#1B4FD8;border-radius:8px;font-size:12px;font-weight:600">📅 Dars jadvali</span>
-          <span style="padding:5px 12px;background:#F0FDF4;color:#16A34A;border-radius:8px;font-size:12px;font-weight:600">📊 Baholar</span>
-          <span style="padding:5px 12px;background:#FFF7ED;color:#EA580C;border-radius:8px;font-size:12px;font-weight:600">📝 Vazifalar</span>
-          <span style="padding:5px 12px;background:#F5F3FF;color:#7C3AED;border-radius:8px;font-size:12px;font-weight:600">🤖 AI Tutor</span>
-          <span style="padding:5px 12px;background:#ECFDF5;color:#0D9488;border-radius:8px;font-size:12px;font-weight:600">🚀 Startup</span>
-          <span style="padding:5px 12px;background:#FDF4FF;color:#A21CAF;border-radius:8px;font-size:12px;font-weight:600">🤝 Hamkorlar</span>
-          <span style="padding:5px 12px;background:#FEF3C7;color:#D97706;border-radius:8px;font-size:12px;font-weight:600">⏰ Vaqt boshqaruvi</span>
-          <span style="padding:5px 12px;background:#FEE2E2;color:#DC2626;border-radius:8px;font-size:12px;font-weight:600">🔒 SMS 2FA</span>
+          <span style="padding:5px 12px;background:#EEF3FF;color:#1B4FD8;border-radius:8px;font-size:12px;font-weight:600">ð Dars jadvali</span>
+          <span style="padding:5px 12px;background:#F0FDF4;color:#16A34A;border-radius:8px;font-size:12px;font-weight:600">ð Baholar</span>
+          <span style="padding:5px 12px;background:#FFF7ED;color:#EA580C;border-radius:8px;font-size:12px;font-weight:600">ð Vazifalar</span>
+          <span style="padding:5px 12px;background:#F5F3FF;color:#7C3AED;border-radius:8px;font-size:12px;font-weight:600">ð¤ AI Tutor</span>
+          <span style="padding:5px 12px;background:#ECFDF5;color:#0D9488;border-radius:8px;font-size:12px;font-weight:600">ð Startup</span>
+          <span style="padding:5px 12px;background:#FDF4FF;color:#A21CAF;border-radius:8px;font-size:12px;font-weight:600">ð¤ Hamkorlar</span>
+          <span style="padding:5px 12px;background:#FEF3C7;color:#D97706;border-radius:8px;font-size:12px;font-weight:600">â° Vaqt boshqaruvi</span>
+          <span style="padding:5px 12px;background:#FEE2E2;color:#DC2626;border-radius:8px;font-size:12px;font-weight:600">ð SMS 2FA</span>
         </div>
       </div>
-      <button onclick="closeAboutModal();openLoginModal()" style="width:100%;margin-top:18px;padding:12px;background:linear-gradient(135deg,#1B4FD8,#3B82F6);color:#fff;border:none;border-radius:10px;font-family:'Outfit',sans-serif;font-size:14.5px;font-weight:700;cursor:pointer">Tizimga kirish →</button>
+      <button onclick="closeAboutModal();openLoginModal()" style="width:100%;margin-top:18px;padding:12px;background:linear-gradient(135deg,#1B4FD8,#3B82F6);color:#fff;border:none;border-radius:10px;font-family:'Outfit',sans-serif;font-size:14.5px;font-weight:700;cursor:pointer">Tizimga kirish â</button>
     </div>
   </div>
 </div>
 
-<!-- ══ FEATURES MODAL ══ -->
+<!-- ââ FEATURES MODAL ââ -->
 <div id="featModal" style="display:none;position:fixed;inset:0;z-index:9800;background:rgba(15,23,42,0.5);backdrop-filter:blur(6px);align-items:center;justify-content:center;padding:16px" onclick="if(event.target===this)closeFeatModal()">
   <div style="background:#fff;border-radius:20px;width:100%;max-width:660px;max-height:88vh;overflow-y:auto;box-shadow:0 24px 80px rgba(0,0,0,0.18)">
     <div style="padding:28px">
       <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:22px">
-        <div style="font-size:20px;font-weight:800;color:#0F172A">⚡ Tizim imkoniyatlari</div>
-        <button onclick="closeFeatModal()" style="background:none;border:none;font-size:22px;cursor:pointer;color:#64748B">✕</button>
+        <div style="font-size:20px;font-weight:800;color:#0F172A">â¡ Tizim imkoniyatlari</div>
+        <button onclick="closeFeatModal()" style="background:none;border:none;font-size:22px;cursor:pointer;color:#64748B">â</button>
       </div>
       <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px">
         <div style="border:1.5px solid #E2E8F0;border-radius:12px;padding:16px">
-          <div style="font-size:22px;margin-bottom:8px">📱</div>
+          <div style="font-size:22px;margin-bottom:8px">ð±</div>
           <div style="font-size:14px;font-weight:700;color:#0F172A;margin-bottom:4px">SMS 2FA xavfsizlik</div>
-          <div style="font-size:12.5px;color:#64748B;line-height:1.6">Ikki faktorli autentifikatsiya — paroldan keyin telefonga tasdiqlash kodi</div>
+          <div style="font-size:12.5px;color:#64748B;line-height:1.6">Ikki faktorli autentifikatsiya â paroldan keyin telefonga tasdiqlash kodi</div>
         </div>
         <div style="border:1.5px solid #E2E8F0;border-radius:12px;padding:16px">
-          <div style="font-size:22px;margin-bottom:8px">🤖</div>
+          <div style="font-size:22px;margin-bottom:8px">ð¤</div>
           <div style="font-size:14px;font-weight:700;color:#0F172A;margin-bottom:4px">AI Tutor</div>
-          <div style="font-size:12.5px;color:#64748B;line-height:1.6">Sun'iy intellekt yordamchi — savollaringizga javob beradi va tushuntiradi</div>
+          <div style="font-size:12.5px;color:#64748B;line-height:1.6">Sun'iy intellekt yordamchi â savollaringizga javob beradi va tushuntiradi</div>
         </div>
         <div style="border:1.5px solid #E2E8F0;border-radius:12px;padding:16px">
-          <div style="font-size:22px;margin-bottom:8px">⏰</div>
+          <div style="font-size:22px;margin-bottom:8px">â°</div>
           <div style="font-size:14px;font-weight:700;color:#0F172A;margin-bottom:4px">Vaqt boshqaruvi</div>
           <div style="font-size:12.5px;color:#64748B;line-height:1.6">Pomodoro taymeri, haftalik maqsadlar va o'qish streakini kuzatish</div>
         </div>
         <div style="border:1.5px solid #E2E8F0;border-radius:12px;padding:16px">
-          <div style="font-size:22px;margin-bottom:8px">🤝</div>
+          <div style="font-size:22px;margin-bottom:8px">ð¤</div>
           <div style="font-size:14px;font-weight:700;color:#0F172A;margin-bottom:4px">Hamkorlar va vakansiyalar</div>
-          <div style="font-size:12.5px;color:#64748B;line-height:1.6">23+ vakansiya, 6 kompaniya — to'g'ridan to'g'ri ariza yuborish</div>
+          <div style="font-size:12.5px;color:#64748B;line-height:1.6">23+ vakansiya, 6 kompaniya â to'g'ridan to'g'ri ariza yuborish</div>
         </div>
         <div style="border:1.5px solid #E2E8F0;border-radius:12px;padding:16px">
-          <div style="font-size:22px;margin-bottom:8px">🚀</div>
+          <div style="font-size:22px;margin-bottom:8px">ð</div>
           <div style="font-size:14px;font-weight:700;color:#0F172A;margin-bottom:4px">Startup platformasi</div>
           <div style="font-size:12.5px;color:#64748B;line-height:1.6">G'oyalar, jamoalar, investorlar bilan bog'lanish imkoniyati</div>
         </div>
         <div style="border:1.5px solid #E2E8F0;border-radius:12px;padding:16px">
-          <div style="font-size:22px;margin-bottom:8px">🎓</div>
+          <div style="font-size:22px;margin-bottom:8px">ð</div>
           <div style="font-size:14px;font-weight:700;color:#0F172A;margin-bottom:4px">Rasmiy sertifikatlar</div>
           <div style="font-size:12.5px;color:#64748B;line-height:1.6">Kurslarni tugatgandan so'ng hamkor kompaniyalar tan oladigan sertifikatlar</div>
         </div>
       </div>
-      <button onclick="closeFeatModal();openLoginModal()" style="width:100%;margin-top:18px;padding:12px;background:linear-gradient(135deg,#1B4FD8,#3B82F6);color:#fff;border:none;border-radius:10px;font-family:'Outfit',sans-serif;font-size:14.5px;font-weight:700;cursor:pointer">Tizimga kirish →</button>
+      <button onclick="closeFeatModal();openLoginModal()" style="width:100%;margin-top:18px;padding:12px;background:linear-gradient(135deg,#1B4FD8,#3B82F6);color:#fff;border:none;border-radius:10px;font-family:'Outfit',sans-serif;font-size:14.5px;font-weight:700;cursor:pointer">Tizimga kirish â</button>
     </div>
   </div>
 </div>
@@ -261,22 +261,22 @@
             <div class="demo-card" onclick="fillMainLogin('alisher','1234')">
               <div class="demo-card-role dc-s">&#x1F393; Talaba</div>
               <div class="demo-card-login">alisher</div>
-              <div class="demo-card-pass">••••</div>
+              <div class="demo-card-pass">â¢â¢â¢â¢</div>
             </div>
             <div class="demo-card" onclick="fillMainLogin('karimov','admin')">
               <div class="demo-card-role dc-t">&#x1F468;&#x200D;&#x1F3EB; Professor</div>
               <div class="demo-card-login">karimov</div>
-              <div class="demo-card-pass">••••••</div>
+              <div class="demo-card-pass">â¢â¢â¢â¢â¢â¢</div>
             </div>
             <div class="demo-card" onclick="fillMainLogin('dekanat','admin123')">
               <div class="demo-card-role dc-d">&#x1F3DB; Dekanat</div>
               <div class="demo-card-login">dekanat</div>
-              <div class="demo-card-pass">••••••••</div>
+              <div class="demo-card-pass">â¢â¢â¢â¢â¢â¢â¢â¢</div>
             </div>
             <div class="demo-card" onclick="fillMainLogin('invest1','inv123')">
               <div class="demo-card-role dc-i">&#x1F4BC; Investor</div>
               <div class="demo-card-login">invest1</div>
-              <div class="demo-card-pass">••••••</div>
+              <div class="demo-card-pass">â¢â¢â¢â¢â¢â¢</div>
             </div>
           </div>
           <div style="font-size:10.5px;color:#94A3B8;margin-top:8px;text-align:center">Kirish uchun kartochkaga bosing</div>
@@ -310,46 +310,46 @@
 <div id="dekanatError" style="display:none"><span></span></div>
 <div id="investorError" style="display:none"><span></span></div>
 
-<!-- ════════ PAROLNI UNUTDIM MODAL ════════ -->
+<!-- ââââââââ PAROLNI UNUTDIM MODAL ââââââââ -->
 <div id="forgotModal" style="display:none;position:fixed;inset:0;z-index:9999;background:rgba(15,23,42,0.55);backdrop-filter:blur(8px);align-items:center;justify-content:center">
   <div style="background:#fff;border-radius:20px;width:100%;max-width:420px;padding:28px 28px 24px;box-shadow:0 24px 80px rgba(0,0,0,0.20);position:relative;animation:modalIn 0.28s cubic-bezier(0.16,1,0.3,1)">
-    <button onclick="closeForgotModal()" style="position:absolute;top:14px;right:14px;width:32px;height:32px;border-radius:50%;background:#F1F5F9;border:none;cursor:pointer;font-size:16px;display:flex;align-items:center;justify-content:center;color:#64748B">✕</button>
+    <button onclick="closeForgotModal()" style="position:absolute;top:14px;right:14px;width:32px;height:32px;border-radius:50%;background:#F1F5F9;border:none;cursor:pointer;font-size:16px;display:flex;align-items:center;justify-content:center;color:#64748B">â</button>
 
     <!-- Step 1: Telefon raqam kiriting -->
     <div id="fp-step1">
-      <div style="font-size:22px;margin-bottom:6px">🔐</div>
+      <div style="font-size:22px;margin-bottom:6px">ð</div>
       <div style="font-size:18px;font-weight:800;color:#0F172A;margin-bottom:6px">Parolni tiklash</div>
       <div style="font-size:13.5px;color:#64748B;margin-bottom:20px;line-height:1.6">Ro'yxatdan o'tgan telefon raqamingizni kiriting. Yangi parol SMS orqali yuboriladi.</div>
-      <div class="form-error" id="fpError" style="display:none;background:#FFF5F5;border:1px solid #FCA5A5;color:#DC2626;border-radius:8px;padding:9px 13px;font-size:13px;font-weight:500;margin-bottom:14px">⚠️ Bu telefon raqam topilmadi</div>
+      <div class="form-error" id="fpError" style="display:none;background:#FFF5F5;border:1px solid #FCA5A5;color:#DC2626;border-radius:8px;padding:9px 13px;font-size:13px;font-weight:500;margin-bottom:14px">â ï¸ Bu telefon raqam topilmadi</div>
       <div class="form-group">
-        <label class="form-label">📱 Telefon raqam</label>
+        <label class="form-label">ð± Telefon raqam</label>
         <div style="display:flex;align-items:center;gap:8px">
           <span style="padding:11px 13px;background:#F8FAFC;border:1.5px solid #E8EDF5;border-radius:9px;font-size:14px;font-weight:600;color:#475569;white-space:nowrap">+998</span>
           <input class="form-input" id="fpPhone" type="tel" placeholder="90 123 45 67" maxlength="9" style="flex:1" onkeydown="if(event.key==='Enter')sendForgotOTP()">
         </div>
       </div>
-      <button onclick="sendForgotOTP()" style="width:100%;padding:12px;background:linear-gradient(135deg,#1B4FD8,#3B82F6);color:white;border:none;border-radius:9px;font-family:'Outfit',sans-serif;font-size:14.5px;font-weight:700;cursor:pointer;margin-top:6px;box-shadow:0 4px 14px rgba(27,79,216,0.26)">SMS yuborish 📨</button>
+      <button onclick="sendForgotOTP()" style="width:100%;padding:12px;background:linear-gradient(135deg,#1B4FD8,#3B82F6);color:white;border:none;border-radius:9px;font-family:'Outfit',sans-serif;font-size:14.5px;font-weight:700;cursor:pointer;margin-top:6px;box-shadow:0 4px 14px rgba(27,79,216,0.26)">SMS yuborish ð¨</button>
     </div>
 
     <!-- Step 2: OTP tasdiqlash -->
     <div id="fp-step2" style="display:none">
-      <div style="font-size:22px;margin-bottom:6px">📩</div>
+      <div style="font-size:22px;margin-bottom:6px">ð©</div>
       <div style="font-size:18px;font-weight:800;color:#0F172A;margin-bottom:6px">SMS kod</div>
       <div style="font-size:13.5px;color:#64748B;margin-bottom:6px;line-height:1.6">SMS yuborildi: <span id="fpPhoneDisplay" style="font-weight:700;color:#1B4FD8"></span></div>
       <div style="background:#F0FDF4;border:1.5px solid #86EFAC;border-radius:10px;padding:12px 14px;margin-bottom:18px;font-size:13px;color:#166534;display:flex;align-items:center;gap:9px">
-        <span style="font-size:18px">📱</span>
+        <span style="font-size:18px">ð±</span>
         <div>
           <div style="font-weight:700;margin-bottom:2px">Tasdiqlash kodi yuborildi</div>
           <div style="font-size:12px;color:#16A34A">Sinov rejimi: <span id="fpOtpDemo" style="font-family:monospace;font-weight:800;letter-spacing:3px;color:#0F172A"></span></div>
         </div>
       </div>
-      <div class="form-error" id="fpOtpError" style="display:none;background:#FFF5F5;border:1px solid #FCA5A5;color:#DC2626;border-radius:8px;padding:9px 13px;font-size:13px;font-weight:500;margin-bottom:14px">⚠️ Kod noto'g'ri. Qayta urinib ko'ring.</div>
+      <div class="form-error" id="fpOtpError" style="display:none;background:#FFF5F5;border:1px solid #FCA5A5;color:#DC2626;border-radius:8px;padding:9px 13px;font-size:13px;font-weight:500;margin-bottom:14px">â ï¸ Kod noto'g'ri. Qayta urinib ko'ring.</div>
       <div class="form-group">
-        <label class="form-label">🔢 Tasdiqlash kodi (6 raqam)</label>
-        <input class="form-input" id="fpOtpInput" type="text" placeholder="• • • • • •" maxlength="6" style="font-size:20px;font-weight:700;letter-spacing:8px;text-align:center" onkeydown="if(event.key==='Enter')verifyOTP()">
+        <label class="form-label">ð¢ Tasdiqlash kodi (6 raqam)</label>
+        <input class="form-input" id="fpOtpInput" type="text" placeholder="â¢ â¢ â¢ â¢ â¢ â¢" maxlength="6" style="font-size:20px;font-weight:700;letter-spacing:8px;text-align:center" onkeydown="if(event.key==='Enter')verifyOTP()">
       </div>
-      <button onclick="verifyOTP()" style="width:100%;padding:12px;background:linear-gradient(135deg,#16A34A,#4ADE80);color:white;border:none;border-radius:9px;font-family:'Outfit',sans-serif;font-size:14.5px;font-weight:700;cursor:pointer;margin-top:6px">✅ Tasdiqlash</button>
-      <div style="text-align:center;margin-top:12px;font-size:13px;color:#94A3B8"><a onclick="showFpStep1()" style="color:#1B4FD8;cursor:pointer;font-weight:600">← Orqaga</a></div>
+      <button onclick="verifyOTP()" style="width:100%;padding:12px;background:linear-gradient(135deg,#16A34A,#4ADE80);color:white;border:none;border-radius:9px;font-family:'Outfit',sans-serif;font-size:14.5px;font-weight:700;cursor:pointer;margin-top:6px">â Tasdiqlash</button>
+      <div style="text-align:center;margin-top:12px;font-size:13px;color:#94A3B8"><a onclick="showFpStep1()" style="color:#1B4FD8;cursor:pointer;font-weight:600">â Orqaga</a></div>
     </div>
 
     <!-- Step 3: (unused - auto-skip to step 4) -->
@@ -357,54 +357,54 @@
 
     <!-- Step 4: Yangi login+parol SMS ko'rinishida -->
     <div id="fp-step4" style="display:none;text-align:center;padding:10px 0">
-      <div style="font-size:48px;margin-bottom:12px">📲</div>
+      <div style="font-size:48px;margin-bottom:12px">ð²</div>
       <div style="font-size:20px;font-weight:800;color:#0F172A;margin-bottom:6px">Yangi ma'lumotlar tayyor!</div>
       <div style="font-size:13.5px;color:#64748B;margin-bottom:16px;line-height:1.6">Quyidagi yangi kirish ma'lumotlarini eslab qoling.</div>
       <!-- SMS-style box -->
       <div style="background:linear-gradient(135deg,#EEF3FF,#DBEAFE);border:1.5px solid #BFDBFE;border-radius:14px;padding:16px 18px;text-align:left;margin-bottom:18px">
-        <div style="font-size:11px;font-weight:700;color:#1B4FD8;text-transform:uppercase;letter-spacing:0.5px;margin-bottom:10px">📱 Demo SMS xabari</div>
+        <div style="font-size:11px;font-weight:700;color:#1B4FD8;text-transform:uppercase;letter-spacing:0.5px;margin-bottom:10px">ð± Demo SMS xabari</div>
         <div style="font-size:13.5px;color:#1E3A8A;line-height:2">
           IDU tizimiga kirish ma'lumotlari:<br>
-          🔐 Login: <strong id="fpNewLogin" style="font-size:15px;letter-spacing:1px;color:#1B4FD8;font-family:monospace"></strong><br>
-          🔑 Parol: <strong id="fpCredPass" style="font-size:15px;letter-spacing:2px;color:#16A34A;font-family:monospace"></strong>
+          ð Login: <strong id="fpNewLogin" style="font-size:15px;letter-spacing:1px;color:#1B4FD8;font-family:monospace"></strong><br>
+          ð Parol: <strong id="fpCredPass" style="font-size:15px;letter-spacing:2px;color:#16A34A;font-family:monospace"></strong>
         </div>
-        <div style="font-size:11px;color:#64748B;margin-top:10px;border-top:1px solid #BFDBFE;padding-top:8px">⚠️ Xavfsizlik uchun tizimga kirgach parolni o'zgartiring.</div>
+        <div style="font-size:11px;color:#64748B;margin-top:10px;border-top:1px solid #BFDBFE;padding-top:8px">â ï¸ Xavfsizlik uchun tizimga kirgach parolni o'zgartiring.</div>
       </div>
-      <button onclick="closeForgotModal();openLoginModal()" style="padding:12px 32px;background:linear-gradient(135deg,#1B4FD8,#3B82F6);color:white;border:none;border-radius:9px;font-family:'Outfit',sans-serif;font-size:14.5px;font-weight:700;cursor:pointer;box-shadow:0 4px 14px rgba(27,79,216,0.26)">Tizimga kirish →</button>
+      <button onclick="closeForgotModal();openLoginModal()" style="padding:12px 32px;background:linear-gradient(135deg,#1B4FD8,#3B82F6);color:white;border:none;border-radius:9px;font-family:'Outfit',sans-serif;font-size:14.5px;font-weight:700;cursor:pointer;box-shadow:0 4px 14px rgba(27,79,216,0.26)">Tizimga kirish â</button>
     </div>
   </div>
 </div>
 
-<!-- ════════ TELEFON QO'SHISH MODAL (birinchi kirish) ════════ -->
+<!-- ââââââââ TELEFON QO'SHISH MODAL (birinchi kirish) ââââââââ -->
 <div id="phoneSetupModal" style="display:none;position:fixed;inset:0;z-index:9999;background:rgba(15,23,42,0.55);backdrop-filter:blur(8px);align-items:center;justify-content:center">
   <div style="background:#fff;border-radius:20px;width:100%;max-width:420px;padding:28px 28px 24px;box-shadow:0 24px 80px rgba(0,0,0,0.20);position:relative;animation:modalIn 0.28s cubic-bezier(0.16,1,0.3,1)">
-    <div style="text-align:center;margin-bottom:6px;font-size:36px">📱</div>
+    <div style="text-align:center;margin-bottom:6px;font-size:36px">ð±</div>
     <div style="font-size:19px;font-weight:800;color:#0F172A;margin-bottom:6px;text-align:center">Telefon raqamni kiriting</div>
     <div style="font-size:13.5px;color:#64748B;margin-bottom:20px;line-height:1.6;text-align:center">Parolni tiklash uchun raqamingiz kerak bo'ladi. Bu faqat bir marta so'raladi.</div>
     <div class="form-group">
-      <label class="form-label">📱 Telefon raqam</label>
+      <label class="form-label">ð± Telefon raqam</label>
       <div style="display:flex;align-items:center;gap:8px">
         <span style="padding:11px 13px;background:#F8FAFC;border:1.5px solid #E8EDF5;border-radius:9px;font-size:14px;font-weight:600;color:#475569;white-space:nowrap">+998</span>
         <input class="form-input" id="setupPhone" type="tel" placeholder="90 123 45 67" maxlength="9" onkeydown="if(event.key==='Enter')savePhoneSetup()">
       </div>
     </div>
-    <div class="form-error" id="setupPhoneError" style="display:none;background:#FFF5F5;border:1px solid #FCA5A5;color:#DC2626;border-radius:8px;padding:9px 13px;font-size:13px;margin-bottom:10px">⚠️ Telefon raqamni to'g'ri kiriting</div>
-    <button onclick="savePhoneSetup()" style="width:100%;padding:12px;background:linear-gradient(135deg,#1B4FD8,#3B82F6);color:white;border:none;border-radius:9px;font-family:'Outfit',sans-serif;font-size:14.5px;font-weight:700;cursor:pointer;margin-top:6px;box-shadow:0 4px 14px rgba(27,79,216,0.26)">Saqlash va davom etish ✓</button>
+    <div class="form-error" id="setupPhoneError" style="display:none;background:#FFF5F5;border:1px solid #FCA5A5;color:#DC2626;border-radius:8px;padding:9px 13px;font-size:13px;margin-bottom:10px">â ï¸ Telefon raqamni to'g'ri kiriting</div>
+    <button onclick="savePhoneSetup()" style="width:100%;padding:12px;background:linear-gradient(135deg,#1B4FD8,#3B82F6);color:white;border:none;border-radius:9px;font-family:'Outfit',sans-serif;font-size:14.5px;font-weight:700;cursor:pointer;margin-top:6px;box-shadow:0 4px 14px rgba(27,79,216,0.26)">Saqlash va davom etish â</button>
     <div style="text-align:center;margin-top:10px"><a onclick="skipPhoneSetup()" style="font-size:12.5px;color:#94A3B8;cursor:pointer">Keyinroq kiriting</a></div>
   </div>
 </div>
 
-<!-- ════════ APP SCREEN ════════ -->
+<!-- ââââââââ APP SCREEN ââââââââ -->
 
 <div id="appScreen">
   <!-- DATE TIME BAR -->
   <div class="datetime-bar" id="datetimeBar">
     <div class="dtb-left">
-      <span class="dtb-day" id="dtbDay">—</span>
-      <span class="dtb-date" id="dtbDate">—</span>
+      <span class="dtb-day" id="dtbDay">â</span>
+      <span class="dtb-date" id="dtbDate">â</span>
     </div>
     <div class="dtb-right">
-      <span class="dtb-sem">📚 2025–2026 · II semestr</span>
+      <span class="dtb-sem">ð 2025â2026 Â· II semestr</span>
       <span class="dtb-clock" id="dtbClock">00:00:00</span>
     </div>
   </div>
@@ -414,7 +414,7 @@
   <nav class="topnav">
     <!-- Mobile menu toggle (only visible on small screens via CSS) -->
     <button class="mobile-menu-btn" id="mobileMenuBtn" onclick="toggleMobileSidebar()" aria-label="Menu">
-      ☰
+      â°
     </button>
     <div class="topnav-logo">
       <div class="topnav-logo-icon">IDU</div>
@@ -422,9 +422,9 @@
     </div>
     <div class="topnav-tabs" id="topnavTabs"></div>
     <div class="topnav-right">
-      <div class="nav-icon-btn" title="Yangilash" onclick="syncData()">↻</div>
+      <div class="nav-icon-btn" title="Yangilash" onclick="syncData()">â»</div>
       <div class="nav-icon-btn" id="notifBtn" onclick="showPage('notifications')">
-        🔔<div class="notif-badge" id="notifCount">3</div>
+        ð<div class="notif-badge" id="notifCount">3</div>
       </div>
       <div class="user-chip" id="userChip">
         <div class="uc-avatar" id="chipAvatar"></div>
@@ -439,7 +439,7 @@
   <div class="app-body">
     <aside class="sidebar" id="appSidebar"></aside>
     <main class="main-content" id="mainContent">
-<!-- ═══ STUDENT: DASHBOARD ═══ -->
+<!-- âââ STUDENT: DASHBOARD âââ -->
 <div class="page" id="page-dashboard">
   <div class="page-header">
     <div class="page-header-left">
@@ -447,16 +447,16 @@
       <div class="ph-sub" id="dashDate"></div>
     </div>
     <div class="page-header-right">
-      <button class="btn btn-secondary" onclick="showPage('timetable')" id="dash-btn-jadval">📅 Jadval</button>
-      <button class="btn btn-primary" onclick="openQuiz()" id="dash-btn-quiz">🧠 Quiz boshlash</button>
+      <button class="btn btn-secondary" onclick="showPage('timetable')" id="dash-btn-jadval">ð Jadval</button>
+      <button class="btn btn-primary" onclick="openQuiz()" id="dash-btn-quiz">ð§  Quiz boshlash</button>
     </div>
   </div>
   <div class="hemis-banner">
     <div style="display:flex;align-items:center;gap:14px">
       <div class="hb-dot"></div>
       <div>
-        <div style="font-weight:700;font-size:14px" id="dash-banner-title">IDU Platform — HEMIS o'rnini bosuvchi tizim</div>
-        <div style="font-size:12px;opacity:0.8" id="dash-banner-sub">Oxirgi yangilanish: bugun 08:42 · Barcha ma'lumotlar joriy</div>
+        <div style="font-weight:700;font-size:14px" id="dash-banner-title">IDU Platform â HEMIS o'rnini bosuvchi tizim</div>
+        <div style="font-size:12px;opacity:0.8" id="dash-banner-sub">Oxirgi yangilanish: bugun 08:42 Â· Barcha ma'lumotlar joriy</div>
       </div>
     </div>
     <div class="hb-stats">
@@ -469,28 +469,28 @@
   <div class="stats-grid">
     <div class="stat-card">
       <div class="stat-card-top"><div class="stat-card-label">GPA</div>
-        <div class="stat-card-icon" style="background:var(--primary-light)">📈</div></div>
+        <div class="stat-card-icon" style="background:var(--primary-light)">ð</div></div>
       <div class="stat-card-val" style="color:var(--primary)">3.7</div>
-      <div class="stat-card-change sc-up" id="dash-gpa-change">↑ +0.2 o'tgan semestr</div>
+      <div class="stat-card-change sc-up" id="dash-gpa-change">â +0.2 o'tgan semestr</div>
       <div class="stat-card-bar scb-blue"></div>
     </div>
     <div class="stat-card">
       <div class="stat-card-top"><div class="stat-card-label" id="dash-stat-total">Umumiy ball</div>
-        <div class="stat-card-icon" style="background:var(--green-light)">⭐</div></div>
+        <div class="stat-card-icon" style="background:var(--green-light)">â­</div></div>
       <div class="stat-card-val" style="color:var(--green)">847</div>
-      <div class="stat-card-change sc-up" id="dash-total-change">↑ +23 bu hafta</div>
+      <div class="stat-card-change sc-up" id="dash-total-change">â +23 bu hafta</div>
       <div class="stat-card-bar scb-green"></div>
     </div>
     <div class="stat-card">
       <div class="stat-card-top"><div class="stat-card-label" id="dash-stat-rating">Reyting o'rni</div>
-        <div class="stat-card-icon" style="background:var(--orange-light)">🏅</div></div>
+        <div class="stat-card-icon" style="background:var(--orange-light)">ð</div></div>
       <div class="stat-card-val" style="color:var(--orange)">#12</div>
-      <div class="stat-card-change sc-up" id="dash-rating-change">↑ 156 ichida</div>
+      <div class="stat-card-change sc-up" id="dash-rating-change">â 156 ichida</div>
       <div class="stat-card-bar scb-orange"></div>
     </div>
     <div class="stat-card">
       <div class="stat-card-top"><div class="stat-card-label" id="dash-stat-davomat">Davomat</div>
-        <div class="stat-card-icon" style="background:var(--primary-light)">📅</div></div>
+        <div class="stat-card-icon" style="background:var(--primary-light)">ð</div></div>
       <div class="stat-card-val" style="color:var(--primary)">94%</div>
       <div class="stat-card-change sc-flat" id="dash-stat-semester">Joriy semestr</div>
       <div class="stat-card-bar scb-blue"></div>
@@ -516,7 +516,7 @@
     <div class="card">
       <div class="card-header">
         <div class="card-title" id="dash-grades-title">So'nggi baholar</div>
-        <button class="btn btn-secondary btn-sm" onclick="showPage('grades')" id="dash-grades-all">Barchasi →</button>
+        <button class="btn btn-secondary btn-sm" onclick="showPage('grades')" id="dash-grades-all">Barchasi â</button>
       </div>
       <table class="grade-table">
         <thead><tr>
@@ -526,16 +526,16 @@
       </table>
     </div>
     <div class="card">
-      <div class="card-header"><div class="card-title" id="dash-achieve-title">Yutuqlar 🏆</div></div>
-      <div class="badge-row"><div class="badge-icon">🌟</div>
+      <div class="card-header"><div class="card-title" id="dash-achieve-title">Yutuqlar ð</div></div>
+      <div class="badge-row"><div class="badge-icon">ð</div>
         <div><div class="badge-name" id="dash-ach1-name">A'lochi talaba</div>
           <div class="badge-desc" id="dash-ach1-desc">GPA 3.5+ saqlash</div></div>
         <div class="badge-reward">+100</div></div>
-      <div class="badge-row"><div class="badge-icon">📅</div>
+      <div class="badge-row"><div class="badge-icon">ð</div>
         <div><div class="badge-name" id="dash-ach2-name">Devomli talaba</div>
           <div class="badge-desc" id="dash-ach2-desc">95%+ davomat</div></div>
         <div class="badge-reward">+50</div></div>
-      <div class="badge-row"><div class="badge-icon">💡</div>
+      <div class="badge-row"><div class="badge-icon">ð¡</div>
         <div><div class="badge-name" id="dash-ach3-name">Innovator</div>
           <div class="badge-desc" id="dash-ach3-desc">Startup g'oya kiritish</div></div>
         <div class="badge-reward">+75</div></div>
@@ -543,17 +543,17 @@
   </div>
 </div>
 
-<!-- ═══ STUDENT: TIMETABLE ═══ -->
+<!-- âââ STUDENT: TIMETABLE âââ -->
 <div class="page" id="page-timetable">
   <div class="page-header">
     <div class="page-header-left">
-      <div class="ph-title" id="tt-page-title">📅 Dars jadvali</div>
+      <div class="ph-title" id="tt-page-title">ð Dars jadvali</div>
       <div class="ph-sub" id="ttWeekLabel">Haftalik dars va xonalar jadvali</div>
     </div>
     <div class="page-header-right">
-      <button class="btn btn-secondary" onclick="changeWeek(-1)" style="padding:8px 14px;font-size:13px" id="tt-btn-prev">← Oldingi hafta</button>
+      <button class="btn btn-secondary" onclick="changeWeek(-1)" style="padding:8px 14px;font-size:13px" id="tt-btn-prev">â Oldingi hafta</button>
       <button class="btn btn-secondary" onclick="changeWeek(0)" style="padding:8px 14px;font-size:13px;background:var(--primary-light);color:var(--primary)" id="tt-btn-cur">Joriy hafta</button>
-      <button class="btn btn-secondary" onclick="changeWeek(1)" style="padding:8px 14px;font-size:13px" id="tt-btn-next">Keyingi hafta →</button>
+      <button class="btn btn-secondary" onclick="changeWeek(1)" style="padding:8px 14px;font-size:13px" id="tt-btn-next">Keyingi hafta â</button>
       <div class="filter-row" style="margin:0">
         <button class="filter-chip active" onclick="setTTView('week',this)" id="tt-btn-weekly">Haftalik</button>
         <button class="filter-chip" onclick="setTTView('day',this)" id="tt-btn-daily">Kunlik</button>
@@ -572,12 +572,12 @@
   <div style="margin-top:14px;display:flex;gap:10px;flex-wrap:wrap" id="ttLegend"></div>
 </div>
 
-<!-- ═══ STUDENT: GRADES (100-ball) ═══ -->
+<!-- âââ STUDENT: GRADES (100-ball) âââ -->
 <div class="page" id="page-grades">
   <div class="page-header">
     <div class="page-header-left">
-      <div class="ph-title">📊 Baholar (100-ballik tizim)</div>
-      <div class="ph-sub">JN=30 · ON=20 · YN=30 · MI=20</div>
+      <div class="ph-title">ð Baholar (100-ballik tizim)</div>
+      <div class="ph-sub">JN=30 Â· ON=20 Â· YN=30 Â· MI=20</div>
     </div>
     <div class="page-header-right">
       <select class="form-select" style="width:auto" id="semesterSelect" onchange="renderGrades()">
@@ -589,21 +589,21 @@
   <div class="stats-grid-3" style="margin-bottom:18px">
     <div class="stat-card">
       <div class="stat-card-top"><div class="stat-card-label">O'rtacha ball</div>
-        <div class="stat-card-icon" style="background:var(--primary-light)">📊</div></div>
+        <div class="stat-card-icon" style="background:var(--primary-light)">ð</div></div>
       <div class="stat-card-val" style="color:var(--primary)" id="avgScore">82.4</div>
       <div class="stat-card-change sc-flat">Joriy semestr</div>
       <div class="stat-card-bar scb-blue"></div>
     </div>
     <div class="stat-card">
       <div class="stat-card-top"><div class="stat-card-label">A'lo baholar</div>
-        <div class="stat-card-icon" style="background:var(--green-light)">🏆</div></div>
+        <div class="stat-card-icon" style="background:var(--green-light)">ð</div></div>
       <div class="stat-card-val" style="color:var(--green)" id="excellentCount">3</div>
       <div class="stat-card-change sc-up">86+ ball</div>
       <div class="stat-card-bar scb-green"></div>
     </div>
     <div class="stat-card">
       <div class="stat-card-top"><div class="stat-card-label">Qoniqarsiz</div>
-        <div class="stat-card-icon" style="background:var(--red-light)">⚠️</div></div>
+        <div class="stat-card-icon" style="background:var(--red-light)">â ï¸</div></div>
       <div class="stat-card-val" style="color:var(--red)" id="failCount">0</div>
       <div class="stat-card-change sc-flat">55 ball dan past</div>
       <div class="stat-card-bar scb-red"></div>
@@ -611,23 +611,23 @@
   </div>
   <!-- Legend -->
   <div class="xl-legend">
-    <span class="xl-legend-item"><span class="xl-legend-dot" style="background:#EDE9FE;border:1px solid #C4B5FD"></span>JN — Joriy nazorat (30)</span>
-    <span class="xl-legend-item"><span class="xl-legend-dot" style="background:#DBEAFE;border:1px solid #93C5FD"></span>ON — Oraliq (20)</span>
-    <span class="xl-legend-item"><span class="xl-legend-dot" style="background:#DCFCE7;border:1px solid #86EFAC"></span>YN — Yakuniy (30)</span>
-    <span class="xl-legend-item"><span class="xl-legend-dot" style="background:#FEF3C7;border:1px solid #FCD34D"></span>MI — Mustaqil ish (20)</span>
+    <span class="xl-legend-item"><span class="xl-legend-dot" style="background:#EDE9FE;border:1px solid #C4B5FD"></span>JN â Joriy nazorat (30)</span>
+    <span class="xl-legend-item"><span class="xl-legend-dot" style="background:#DBEAFE;border:1px solid #93C5FD"></span>ON â Oraliq (20)</span>
+    <span class="xl-legend-item"><span class="xl-legend-dot" style="background:#DCFCE7;border:1px solid #86EFAC"></span>YN â Yakuniy (30)</span>
+    <span class="xl-legend-item"><span class="xl-legend-dot" style="background:#FEF3C7;border:1px solid #FCD34D"></span>MI â Mustaqil ish (20)</span>
   </div>
   <!-- Excel table -->
   <div class="xl-wrap">
     <div class="xl-toolbar">
-      <span class="xl-toolbar-title">📊 Fanlar bo'yicha baholar jadvali</span>
-      <button class="xl-btn xl-export" onclick="exportStudentGrades()">📥 Excel yuklab olish</button>
+      <span class="xl-toolbar-title">ð Fanlar bo'yicha baholar jadvali</span>
+      <button class="xl-btn xl-export" onclick="exportStudentGrades()">ð¥ Excel yuklab olish</button>
     </div>
     <div class="xl-search-row">
-      <input class="xl-search" id="gradesSearch" placeholder="🔍 Fan nomi..." oninput="renderGrades()">
+      <input class="xl-search" id="gradesSearch" placeholder="ð Fan nomi..." oninput="renderGrades()">
       <button class="xl-filter-chip active" onclick="filterGradesSt('all',this)">Barchasi</button>
-      <button class="xl-filter-chip" onclick="filterGradesSt('alo',this)">⭐ A'lo (86+)</button>
-      <button class="xl-filter-chip" onclick="filterGradesSt('yaxshi',this)">👍 Yaxshi (71-85)</button>
-      <button class="xl-filter-chip" onclick="filterGradesSt('qoniq',this)">⚠️ Qoniqarsiz (&lt;71)</button>
+      <button class="xl-filter-chip" onclick="filterGradesSt('alo',this)">â­ A'lo (86+)</button>
+      <button class="xl-filter-chip" onclick="filterGradesSt('yaxshi',this)">ð Yaxshi (71-85)</button>
+      <button class="xl-filter-chip" onclick="filterGradesSt('qoniq',this)">â ï¸ Qoniqarsiz (&lt;71)</button>
     </div>
     <table class="xl-table">
       <thead>
@@ -648,20 +648,20 @@
       <tbody id="gradesBody"></tbody>
     </table>
     <div class="xl-footer">
-      <span>O'rtacha: <b id="avgScore">—</b></span>
+      <span>O'rtacha: <b id="avgScore">â</b></span>
       <span>A'lo: <b id="excellentCount" class="xl-total-green">0</b></span>
       <span>Yaxshi: <b id="goodCountSt" class="xl-total-blue">0</b></span>
       <span>Qoniqarsiz: <b id="failCount" class="xl-total-red">0</b></span>
-      <span style="margin-left:auto;font-size:11px;opacity:0.7">🔒 Faqat professor o'zgartira oladi</span>
+      <span style="margin-left:auto;font-size:11px;opacity:0.7">ð Faqat professor o'zgartira oladi</span>
     </div>
   </div>
 </div>
 
-<!-- ═══ STUDENT: TASKS ═══ -->
+<!-- âââ STUDENT: TASKS âââ -->
 <div class="page" id="page-tasks">
   <div class="page-header">
     <div class="page-header-left">
-      <div class="ph-title">📝 Vazifalar</div>
+      <div class="ph-title">ð Vazifalar</div>
       <div class="ph-sub">Topshiriqlar, testlar va laboratoriya ishlari</div>
     </div>
   </div>
@@ -675,11 +675,11 @@
   <div id="tasksList"></div>
 </div>
 
-<!-- ═══ STUDENT: MATERIALS (LMS) ═══ -->
+<!-- âââ STUDENT: MATERIALS (LMS) âââ -->
 <div class="page" id="page-materials">
   <div class="page-header">
     <div class="page-header-left">
-      <div class="ph-title">📚 Kurs materiallari</div>
+      <div class="ph-title">ð Kurs materiallari</div>
       <div class="ph-sub">Ma'ruzalar, taqdimotlar, video darslar</div>
     </div>
   </div>
@@ -692,11 +692,11 @@
   <div id="materialsList"></div>
 </div>
 
-<!-- ═══ STUDENT: RATING ═══ -->
+<!-- âââ STUDENT: RATING âââ -->
 <div class="page" id="page-rating">
   <div class="page-header">
     <div class="page-header-left">
-      <div class="ph-title">🏆 Reyting</div>
+      <div class="ph-title">ð Reyting</div>
       <div class="ph-sub">Guruh va kurs reytingi</div>
     </div>
     <div class="page-header-right">
@@ -729,11 +729,11 @@
   </div>
 </div>
 
-<!-- ═══ STUDENT: AI TUTOR ═══ -->
+<!-- âââ STUDENT: AI TUTOR âââ -->
 <div class="page" id="page-aitutor">
   <div class="page-header">
     <div class="page-header-left">
-      <div class="ph-title">🤖 AI Tutor</div>
+      <div class="ph-title">ð¤ AI Tutor</div>
       <div class="ph-sub">Sun'iy intellekt yordamida o'rganing</div>
     </div>
   </div>
@@ -741,36 +741,36 @@
     <div class="ai-chat-wrap">
       <div class="ai-chat-messages" id="aiMessages">
         <div class="chat-bubble-wrap ai">
-          <div class="bubble-avatar ba-ai">🤖</div>
+          <div class="bubble-avatar ba-ai">ð¤</div>
           <div class="bubble-body">
-            <div class="bubble">Salom! Men IDU AI Tutor — o'qishingizda yordam beraman. Qaysi fan bo'yicha savol bor? 📚</div>
+            <div class="bubble">Salom! Men IDU AI Tutor â o'qishingizda yordam beraman. Qaysi fan bo'yicha savol bor? ð</div>
             <div class="bubble-time">Hozir</div>
           </div>
         </div>
       </div>
       <div class="ai-input-area">
         <div class="ai-quick-btns">
-          <button class="ai-qbtn" onclick="askAI('Algebra formulalarini tushuntir')">📐 Algebra</button>
-          <button class="ai-qbtn" onclick="askAI('Python dasturlashni o\'rgat')">💻 Python</button>
-          <button class="ai-qbtn" onclick="askAI('Ingliz tilida essay yozishga yordam ber')">📝 Essay</button>
-          <button class="ai-qbtn" onclick="askAI('Imtihonga tayyorlanishga yordam ber')">🎯 Imtihon</button>
-          <button class="ai-qbtn" onclick="askAI('Fizika masalasini yech')">⚛️ Fizika</button>
+          <button class="ai-qbtn" onclick="askAI('Algebra formulalarini tushuntir')">ð Algebra</button>
+          <button class="ai-qbtn" onclick="askAI('Python dasturlashni o\'rgat')">ð» Python</button>
+          <button class="ai-qbtn" onclick="askAI('Ingliz tilida essay yozishga yordam ber')">ð Essay</button>
+          <button class="ai-qbtn" onclick="askAI('Imtihonga tayyorlanishga yordam ber')">ð¯ Imtihon</button>
+          <button class="ai-qbtn" onclick="askAI('Fizika masalasini yech')">âï¸ Fizika</button>
         </div>
         <div class="ai-input-row">
           <textarea class="ai-textarea" id="aiInput" rows="1" placeholder="Savolingizni yozing..."
             onkeydown="if(event.key==='Enter'&&!event.shiftKey){event.preventDefault();sendAIMsg()}"></textarea>
-          <button class="ai-send" id="aiSendBtn" onclick="sendAIMsg()">➤</button>
+          <button class="ai-send" id="aiSendBtn" onclick="sendAIMsg()">â¤</button>
         </div>
       </div>
     </div>
   </div>
 </div>
 
-<!-- ═══ NOTIFICATIONS ═══ -->
+<!-- âââ NOTIFICATIONS âââ -->
 <div class="page" id="page-notifications">
   <div class="page-header">
     <div class="page-header-left">
-      <div class="ph-title">🔔 Bildirishnomalar</div>
+      <div class="ph-title">ð Bildirishnomalar</div>
       <div class="ph-sub">Barcha yangiliklar va xabarlar</div>
     </div>
     <div class="page-header-right">
@@ -782,7 +782,7 @@
   </div>
 </div>
 
-<!-- ═══ TEACHER: DASHBOARD ═══ -->
+<!-- âââ TEACHER: DASHBOARD âââ -->
 <div class="page" id="page-teacher-dashboard">
   <div class="page-header">
     <div class="page-header-left">
@@ -790,34 +790,34 @@
       <div class="ph-sub" id="teacherDashDate"></div>
     </div>
     <div class="page-header-right">
-      <button class="btn btn-primary" onclick="showPage('teacher-grade')">✏️ Baho kiritish</button>
+      <button class="btn btn-primary" onclick="showPage('teacher-grade')">âï¸ Baho kiritish</button>
     </div>
   </div>
   <div class="stats-grid">
     <div class="stat-card">
       <div class="stat-card-top"><div class="stat-card-label">Jami talabalar</div>
-        <div class="stat-card-icon" style="background:var(--primary-light)">👥</div></div>
+        <div class="stat-card-icon" style="background:var(--primary-light)">ð¥</div></div>
       <div class="stat-card-val" style="color:var(--primary)">87</div>
       <div class="stat-card-change sc-flat">3 guruh</div>
       <div class="stat-card-bar scb-blue"></div>
     </div>
     <div class="stat-card">
       <div class="stat-card-top"><div class="stat-card-label">O'rtacha ball</div>
-        <div class="stat-card-icon" style="background:var(--green-light)">📊</div></div>
+        <div class="stat-card-icon" style="background:var(--green-light)">ð</div></div>
       <div class="stat-card-val" style="color:var(--green)">74.2</div>
-      <div class="stat-card-change sc-up">↑ +2.1 o'tgan oyga nisbatan</div>
+      <div class="stat-card-change sc-up">â +2.1 o'tgan oyga nisbatan</div>
       <div class="stat-card-bar scb-green"></div>
     </div>
     <div class="stat-card">
       <div class="stat-card-top"><div class="stat-card-label">Bugungi darslar</div>
-        <div class="stat-card-icon" style="background:var(--orange-light)">📅</div></div>
+        <div class="stat-card-icon" style="background:var(--orange-light)">ð</div></div>
       <div class="stat-card-val" style="color:var(--orange)">4</div>
       <div class="stat-card-change sc-flat">Jadvalda</div>
       <div class="stat-card-bar scb-orange"></div>
     </div>
     <div class="stat-card">
       <div class="stat-card-top"><div class="stat-card-label">Xavfli talabalar</div>
-        <div class="stat-card-icon" style="background:var(--red-light)">⚠️</div></div>
+        <div class="stat-card-icon" style="background:var(--red-light)">â ï¸</div></div>
       <div class="stat-card-val" style="color:var(--red)">5</div>
       <div class="stat-card-change sc-down">Davomat yoki ball past</div>
       <div class="stat-card-bar scb-red"></div>
@@ -837,11 +837,11 @@
   </div>
 </div>
 
-<!-- ═══ TEACHER: TIMETABLE ═══ -->
+<!-- âââ TEACHER: TIMETABLE âââ -->
 <div class="page" id="page-teacher-timetable">
   <div class="page-header">
     <div class="page-header-left">
-      <div class="ph-title">📅 Mening jadvalim</div>
+      <div class="ph-title">ð Mening jadvalim</div>
       <div class="ph-sub">Qaysi fan, qaysi guruh, qaysi xona</div>
     </div>
   </div>
@@ -860,12 +860,12 @@
   </div>
 </div>
 
-<!-- ═══ TEACHER: GRADE ENTRY ═══ -->
+<!-- âââ TEACHER: GRADE ENTRY âââ -->
 <div class="page" id="page-teacher-grade">
   <div class="page-header">
     <div class="page-header-left">
-      <div class="ph-title">✏️ Baho kiritish</div>
-      <div class="ph-sub">100-ballik tizim — faqat professor o'zgartira oladi</div>
+      <div class="ph-title">âï¸ Baho kiritish</div>
+      <div class="ph-sub">100-ballik tizim â faqat professor o'zgartira oladi</div>
     </div>
     <div class="page-header-right">
       <select class="form-select" style="width:auto" id="gradeSubjectSelect" onchange="loadGradeGroup()">
@@ -888,13 +888,13 @@
   </div>
   <div class="xl-wrap">
     <div class="xl-toolbar">
-      <span class="xl-toolbar-title" id="gradeEntryTitle">✏️ Baho kiritish jadvali</span>
-      <span style="font-size:11px;background:#DCFCE7;color:#166534;border:1px solid #86EFAC;padding:2px 10px;border-radius:20px">🔒 Faqat professor tahrirlaydi</span>
-      <button class="xl-btn xl-save" onclick="saveAllGrades()" style="margin-left:auto">💾 Barchani saqlash</button>
-      <button class="xl-btn xl-export" onclick="exportGrades()">📥 Excel</button>
+      <span class="xl-toolbar-title" id="gradeEntryTitle">âï¸ Baho kiritish jadvali</span>
+      <span style="font-size:11px;background:#DCFCE7;color:#166534;border:1px solid #86EFAC;padding:2px 10px;border-radius:20px">ð Faqat professor tahrirlaydi</span>
+      <button class="xl-btn xl-save" onclick="saveAllGrades()" style="margin-left:auto">ð¾ Barchani saqlash</button>
+      <button class="xl-btn xl-export" onclick="exportGrades()">ð¥ Excel</button>
     </div>
     <div class="xl-warn-banner">
-      ⚠️ <span>Ball limitdan oshsa qizil rang ko'rsatiladi. JN≤30 · ON≤20 · YN≤30 · MI≤20</span>
+      â ï¸ <span>Ball limitdan oshsa qizil rang ko'rsatiladi. JNâ¤30 Â· ONâ¤20 Â· YNâ¤30 Â· MIâ¤20</span>
     </div>
     <table class="xl-table">
       <thead>
@@ -916,18 +916,18 @@
     </table>
     <div class="xl-footer">
       <span>Talabalar: <b id="gradeEntryCount">0</b></span>
-      <span>O'rtacha: <b id="gradeEntryAvg">—</b></span>
+      <span>O'rtacha: <b id="gradeEntryAvg">â</b></span>
       <span>A'lo: <b id="gradeEntryAlo" class="xl-total-green">0</b></span>
       <span>Qoniqarsiz: <b id="gradeEntryFail" class="xl-total-red">0</b></span>
     </div>
   </div>
 </div>
 
-<!-- ═══ TEACHER: ATTENDANCE ═══ -->
+<!-- âââ TEACHER: ATTENDANCE âââ -->
 <div class="page" id="page-teacher-attendance">
   <div class="page-header">
     <div class="page-header-left">
-      <div class="ph-title">📋 Davomat</div>
+      <div class="ph-title">ð Davomat</div>
       <div class="ph-sub">Talabalar davomatini belgilash</div>
     </div>
     <div class="page-header-right">
@@ -943,16 +943,16 @@
       <tbody id="attendanceBody"></tbody>
     </table>
     <div style="padding-top:14px;display:flex;gap:10px;justify-content:flex-end">
-      <button class="btn btn-primary" onclick="saveAttendance()">💾 Saqlash</button>
+      <button class="btn btn-primary" onclick="saveAttendance()">ð¾ Saqlash</button>
     </div>
   </div>
 </div>
 
-<!-- ═══ TEACHER: STUDENTS LIST ═══ -->
+<!-- âââ TEACHER: STUDENTS LIST âââ -->
 <div class="page" id="page-teacher-students">
   <div class="page-header">
     <div class="page-header-left">
-      <div class="ph-title">👥 Talabalar ro'yxati</div>
+      <div class="ph-title">ð¥ Talabalar ro'yxati</div>
       <div class="ph-sub">Guruhlarim bo'yicha talabalar</div>
     </div>
     <div class="page-header-right">
@@ -974,23 +974,23 @@
     </table>
   </div>
 </div>
-<!-- ═══ DEKANAT: DASHBOARD ═══ -->
+<!-- âââ DEKANAT: DASHBOARD âââ -->
 <div class="page" id="page-dekanat-dashboard">
   <div class="page-header">
     <div class="page-header-left">
-      <div class="ph-title">🏛️ Dekanat — Bosh panel</div>
+      <div class="ph-title">ðï¸ Dekanat â Bosh panel</div>
       <div class="ph-sub">Fakultet umumiy ko'rsatkichlari</div>
     </div>
     <div class="page-header-right">
-      <button class="btn btn-secondary" onclick="showPage('dekanat-report')">📊 Hisobot</button>
-      <button class="btn btn-primary" onclick="showPage('dekanat-schedule')">📅 Jadval boshqaruvi</button>
+      <button class="btn btn-secondary" onclick="showPage('dekanat-report')">ð Hisobot</button>
+      <button class="btn btn-primary" onclick="showPage('dekanat-schedule')">ð Jadval boshqaruvi</button>
     </div>
   </div>
   <div class="hemis-banner">
     <div style="display:flex;align-items:center;gap:14px">
       <div class="hb-dot"></div>
       <div>
-        <div style="font-weight:700;font-size:14px">IDU Platform — HEMIS + EduPage + LMS — bitta tizimda</div>
+        <div style="font-weight:700;font-size:14px">IDU Platform â HEMIS + EduPage + LMS â bitta tizimda</div>
         <div style="font-size:12px;opacity:0.8">Barcha ma'lumotlar real vaqtda yangilanadi</div>
       </div>
     </div>
@@ -1004,28 +1004,28 @@
   <div class="stats-grid">
     <div class="stat-card">
       <div class="stat-card-top"><div class="stat-card-label">Jami talabalar</div>
-        <div class="stat-card-icon" style="background:var(--primary-light)">🎓</div></div>
+        <div class="stat-card-icon" style="background:var(--primary-light)">ð</div></div>
       <div class="stat-card-val" style="color:var(--primary)">312</div>
-      <div class="stat-card-change sc-up">↑ +8 bu semestr</div>
+      <div class="stat-card-change sc-up">â +8 bu semestr</div>
       <div class="stat-card-bar scb-blue"></div>
     </div>
     <div class="stat-card">
       <div class="stat-card-top"><div class="stat-card-label">O'qituvchilar</div>
-        <div class="stat-card-icon" style="background:var(--green-light)">👨‍🏫</div></div>
+        <div class="stat-card-icon" style="background:var(--green-light)">ð¨âð«</div></div>
       <div class="stat-card-val" style="color:var(--green)">18</div>
       <div class="stat-card-change sc-flat">Joriy holat</div>
       <div class="stat-card-bar scb-green"></div>
     </div>
     <div class="stat-card">
       <div class="stat-card-top"><div class="stat-card-label">Guruhlar</div>
-        <div class="stat-card-icon" style="background:var(--orange-light)">👥</div></div>
+        <div class="stat-card-icon" style="background:var(--orange-light)">ð¥</div></div>
       <div class="stat-card-val" style="color:var(--orange)">12</div>
       <div class="stat-card-change sc-flat">4 kurs</div>
       <div class="stat-card-bar scb-orange"></div>
     </div>
     <div class="stat-card">
       <div class="stat-card-top"><div class="stat-card-label">Xavfli talabalar</div>
-        <div class="stat-card-icon" style="background:var(--red-light)">⚠️</div></div>
+        <div class="stat-card-icon" style="background:var(--red-light)">â ï¸</div></div>
       <div class="stat-card-val" style="color:var(--red)">14</div>
       <div class="stat-card-change sc-down">Darhol diqqat</div>
       <div class="stat-card-bar scb-red"></div>
@@ -1047,32 +1047,32 @@
     <div class="card-header"><div class="card-title">Tezkor amallar</div></div>
     <div class="erp-grid">
       <div class="erp-tile" onclick="showPage('dekanat-schedule')">
-        <div class="erp-emoji">📅</div>
+        <div class="erp-emoji">ð</div>
         <div class="erp-name">Jadval boshqaruvi</div>
         <div class="erp-desc">Darslar, xonalar, o'qituvchilar</div>
       </div>
       <div class="erp-tile" onclick="showPage('dekanat-students')">
-        <div class="erp-emoji">🎓</div>
+        <div class="erp-emoji">ð</div>
         <div class="erp-name">Talabalar</div>
         <div class="erp-desc">Ro'yxat, baholar, davomat</div>
       </div>
       <div class="erp-tile" onclick="showPage('dekanat-teachers')">
-        <div class="erp-emoji">👨‍🏫</div>
+        <div class="erp-emoji">ð¨âð«</div>
         <div class="erp-name">O'qituvchilar</div>
         <div class="erp-desc">Kafedralar, yuklamalar</div>
       </div>
       <div class="erp-tile" onclick="showPage('dekanat-grades')">
-        <div class="erp-emoji">📊</div>
+        <div class="erp-emoji">ð</div>
         <div class="erp-name">Baholash nazorati</div>
         <div class="erp-desc">100-ball, hisobotlar</div>
       </div>
       <div class="erp-tile" onclick="showPage('dekanat-attendance')">
-        <div class="erp-emoji">📋</div>
+        <div class="erp-emoji">ð</div>
         <div class="erp-name">Davomat hisoboti</div>
         <div class="erp-desc">Guruh va sana bo'yicha</div>
       </div>
       <div class="erp-tile" onclick="showPage('dekanat-report')">
-        <div class="erp-emoji">📈</div>
+        <div class="erp-emoji">ð</div>
         <div class="erp-name">Tahlil va hisobotlar</div>
         <div class="erp-desc">Statistika, eksport</div>
       </div>
@@ -1080,12 +1080,12 @@
   </div>
 </div>
 
-<!-- ═══ DEKANAT: SCHEDULE MANAGER ═══ -->
+<!-- âââ DEKANAT: SCHEDULE MANAGER âââ -->
 <div class="page" id="page-dekanat-schedule">
   <div class="page-header">
     <div class="page-header-left">
-      <div class="ph-title">📅 Jadval boshqaruvi</div>
-      <div class="ph-sub">Barcha guruhlar uchun dars jadvali — tahrirlash mumkin</div>
+      <div class="ph-title">ð Jadval boshqaruvi</div>
+      <div class="ph-sub">Barcha guruhlar uchun dars jadvali â tahrirlash mumkin</div>
     </div>
     <div class="page-header-right">
       <select class="form-select" style="width:auto" id="dekScheduleGroup" onchange="renderDekanatSchedule()">
@@ -1111,11 +1111,11 @@
   </div>
 </div>
 
-<!-- ═══ ADD/EDIT LESSON MODAL ═══ -->
+<!-- âââ ADD/EDIT LESSON MODAL âââ -->
 <div id="addLessonModal" class="modal-overlay" style="display:none;position:fixed;inset:0;background:rgba(0,0,0,0.4);z-index:9999;align-items:center;justify-content:center">
   <div style="background:white;border-radius:18px;padding:28px 30px;width:480px;max-width:95vw;box-shadow:0 20px 60px rgba(0,0,0,0.18);position:relative;animation:authIn 0.3s ease">
-    <button onclick="closeAddLessonModal()" style="position:absolute;top:14px;right:14px;background:var(--bg2);border:none;border-radius:8px;width:30px;height:30px;cursor:pointer;font-size:16px;display:flex;align-items:center;justify-content:center">✕</button>
-    <div style="font-size:18px;font-weight:800;margin-bottom:6px" id="lessonModalTitle">➕ Yangi dars qo'shish</div>
+    <button onclick="closeAddLessonModal()" style="position:absolute;top:14px;right:14px;background:var(--bg2);border:none;border-radius:8px;width:30px;height:30px;cursor:pointer;font-size:16px;display:flex;align-items:center;justify-content:center">â</button>
+    <div style="font-size:18px;font-weight:800;margin-bottom:6px" id="lessonModalTitle">â Yangi dars qo'shish</div>
     <div style="font-size:13px;color:var(--text3);margin-bottom:20px" id="lessonModalSub">Jadvalga yangi dars kiritish</div>
     <input type="hidden" id="editLessonDay">
     <input type="hidden" id="editLessonTime">
@@ -1133,11 +1133,11 @@
       <div class="form-group" style="margin:0">
         <label class="form-label">Para</label>
         <select class="form-select" id="lessonTime">
-          <option value="0">1-para (08:30–10:00)</option>
-          <option value="1">2-para (10:15–11:45)</option>
-          <option value="2">3-para (12:30–14:00)</option>
-          <option value="3">4-para (14:15–15:45)</option>
-          <option value="4">5-para (16:00–17:30)</option>
+          <option value="0">1-para (08:30â10:00)</option>
+          <option value="1">2-para (10:15â11:45)</option>
+          <option value="2">3-para (12:30â14:00)</option>
+          <option value="3">4-para (14:15â15:45)</option>
+          <option value="4">5-para (16:00â17:30)</option>
         </select>
       </div>
     </div>
@@ -1206,28 +1206,28 @@
       </select>
     </div>
     <div style="display:flex;gap:10px">
-      <button class="btn btn-primary" style="flex:1" onclick="saveNewLesson()">💾 Saqlash</button>
-      <button id="deleteLessonBtn" class="btn" style="background:var(--red-light);color:var(--red);border:1px solid #FCA5A5;display:none" onclick="deleteLesson()">🗑️ O'chirish</button>
+      <button class="btn btn-primary" style="flex:1" onclick="saveNewLesson()">ð¾ Saqlash</button>
+      <button id="deleteLessonBtn" class="btn" style="background:var(--red-light);color:var(--red);border:1px solid #FCA5A5;display:none" onclick="deleteLesson()">ðï¸ O'chirish</button>
       <button class="btn btn-secondary" onclick="closeAddLessonModal()">Bekor qilish</button>
     </div>
   </div>
 </div>
 
-<!-- ═══ DEKANAT: STUDENTS ═══ -->
+<!-- âââ DEKANAT: STUDENTS âââ -->
 <div class="page" id="page-dekanat-students">
   <div class="page-header">
     <div class="page-header-left">
-      <div class="ph-title">🎓 Talabalar</div>
-      <div class="ph-sub">Barcha talabalar ro'yxati — guruh va kurs boshqaruvi</div>
+      <div class="ph-title">ð Talabalar</div>
+      <div class="ph-sub">Barcha talabalar ro'yxati â guruh va kurs boshqaruvi</div>
     </div>
     <div class="page-header-right">
-      <input class="form-input" style="width:200px" placeholder="🔍 Qidirish..." id="studentSearch" oninput="filterStudents()">
+      <input class="form-input" style="width:200px" placeholder="ð Qidirish..." id="studentSearch" oninput="filterStudents()">
       <select class="form-select" style="width:auto" id="studentGroupFilter" onchange="filterStudents()">
         <option value="">Barcha guruhlar</option>
         <option>AI-2301</option><option>CS-2301</option><option>IT-2301</option><option>DB-2301</option>
       </select>
       <button class="btn btn-primary" onclick="openAddStudentModal()">+ Talaba qo'shish</button>
-      <button class="btn" style="background:var(--purple-light);color:var(--purple);border:1.5px solid #C4B5FD" onclick="showPage('dekanat-groups')">👥 Guruhlar</button>
+      <button class="btn" style="background:var(--purple-light);color:var(--purple);border:1.5px solid #C4B5FD" onclick="showPage('dekanat-groups')">ð¥ Guruhlar</button>
     </div>
   </div>
   <div class="card">
@@ -1241,15 +1241,15 @@
   </div>
 </div>
 
-<!-- ═══ DEKANAT: GROUPS MANAGER ═══ -->
+<!-- âââ DEKANAT: GROUPS MANAGER âââ -->
 <div class="page" id="page-dekanat-groups">
   <div class="page-header">
     <div class="page-header-left">
-      <div class="ph-title">👥 Guruhlar va Kurslar boshqaruvi</div>
+      <div class="ph-title">ð¥ Guruhlar va Kurslar boshqaruvi</div>
       <div class="ph-sub">Guruh qo'shish, tahrirlash, talabalarni ko'chirish</div>
     </div>
     <div class="page-header-right">
-      <button class="btn btn-secondary" onclick="showPage('dekanat-students')">← Talabalar</button>
+      <button class="btn btn-secondary" onclick="showPage('dekanat-students')">â Talabalar</button>
       <button class="btn btn-primary" onclick="openAddGroupModal()">+ Yangi guruh</button>
     </div>
   </div>
@@ -1260,20 +1260,20 @@
   <!-- Bulk actions -->
   <div class="card" style="margin-bottom:16px">
     <div class="card-header">
-      <div class="card-title">🔄 Talabani ko'chirish / Kurs o'zgartirish</div>
+      <div class="card-title">ð Talabani ko'chirish / Kurs o'zgartirish</div>
       <div class="card-badge cb-purple">Tezkor amal</div>
     </div>
     <div style="display:grid;grid-template-columns:1fr 1fr 1fr auto;gap:12px;align-items:end">
       <div>
         <label class="form-label">Talaba</label>
         <select class="form-select" id="moveStudentSelect">
-          <option value="">— Talabani tanlang —</option>
+          <option value="">â Talabani tanlang â</option>
         </select>
       </div>
       <div>
         <label class="form-label">Yangi guruh</label>
         <select class="form-select" id="moveToGroup">
-          <option value="">— Guruhni tanlang —</option>
+          <option value="">â Guruhni tanlang â</option>
         </select>
       </div>
       <div>
@@ -1285,34 +1285,34 @@
           <option value="4">4-kurs</option>
         </select>
       </div>
-      <button class="btn btn-primary" style="padding:11px 18px" onclick="moveStudentToGroup()">✅ Ko'chirish</button>
+      <button class="btn btn-primary" style="padding:11px 18px" onclick="moveStudentToGroup()">â Ko'chirish</button>
     </div>
   </div>
 
   <!-- All students with inline edit -->
   <div class="card">
     <div class="card-header">
-      <div class="card-title">📋 Barcha talabalar — inline tahrirlash</div>
-      <div style="font-size:12px;color:var(--text3)">Guruh yoki kursga bosing → o'zgartiring</div>
+      <div class="card-title">ð Barcha talabalar â inline tahrirlash</div>
+      <div style="font-size:12px;color:var(--text3)">Guruh yoki kursga bosing â o'zgartiring</div>
     </div>
     <table class="dekanat-table">
       <thead><tr>
-        <th>#</th><th>Talaba ismi</th><th>Guruh ▾</th><th>Kurs ▾</th><th>Ball</th><th>Davomat</th><th>Amal</th>
+        <th>#</th><th>Talaba ismi</th><th>Guruh â¾</th><th>Kurs â¾</th><th>Ball</th><th>Davomat</th><th>Amal</th>
       </tr></thead>
       <tbody id="groupsStudentBody"></tbody>
     </table>
   </div>
 </div>
 
-<!-- ═══ DEKANAT: TEACHERS ═══ -->
+<!-- âââ DEKANAT: TEACHERS âââ -->
 <div class="page" id="page-dekanat-teachers">
   <div class="page-header">
     <div class="page-header-left">
-      <div class="ph-title">👨‍🏫 O'qituvchilar</div>
+      <div class="ph-title">ð¨âð« O'qituvchilar</div>
       <div class="ph-sub">Kafedralar va o'quv yuki</div>
     </div>
     <div class="page-header-right">
-      <button class="btn btn-primary" onclick="showToast('✅','Qo\'shildi','O\'qituvchi ro\'yxatga qo\'shildi')">+ O'qituvchi qo'shish</button>
+      <button class="btn btn-primary" onclick="showToast('â','Qo\'shildi','O\'qituvchi ro\'yxatga qo\'shildi')">+ O'qituvchi qo'shish</button>
     </div>
   </div>
   <div class="card">
@@ -1326,12 +1326,12 @@
   </div>
 </div>
 
-<!-- ═══ DEKANAT: GRADES OVERVIEW ═══ -->
+<!-- âââ DEKANAT: GRADES OVERVIEW âââ -->
 <div class="page" id="page-dekanat-grades">
   <div class="page-header">
     <div class="page-header-left">
-      <div class="ph-title">📊 Baholash nazorati</div>
-      <div class="ph-sub">100-ballik tizim — kuzatish rejimi</div>
+      <div class="ph-title">ð Baholash nazorati</div>
+      <div class="ph-sub">100-ballik tizim â kuzatish rejimi</div>
     </div>
     <div class="page-header-right">
       <select class="form-select" style="width:auto" id="dekGradeGroup" onchange="renderDekanatGrades()">
@@ -1356,16 +1356,16 @@
   <div class="stats-grid" id="dekGradeStats"></div>
   <div class="xl-wrap">
     <div class="xl-toolbar">
-      <span class="xl-toolbar-title" id="dekGradeTitle">📊 Baholar jadvali</span>
-      <span style="font-size:11px;background:#FEF3C7;color:#92400E;border:1px solid #FCD34D;padding:2px 10px;border-radius:20px">👁 Faqat ko'rish rejimi</span>
-      <button class="xl-btn xl-export" onclick="exportDekanatGrades()" style="margin-left:auto">📥 Excel yuklab olish</button>
+      <span class="xl-toolbar-title" id="dekGradeTitle">ð Baholar jadvali</span>
+      <span style="font-size:11px;background:#FEF3C7;color:#92400E;border:1px solid #FCD34D;padding:2px 10px;border-radius:20px">ð Faqat ko'rish rejimi</span>
+      <button class="xl-btn xl-export" onclick="exportDekanatGrades()" style="margin-left:auto">ð¥ Excel yuklab olish</button>
     </div>
     <div class="xl-search-row">
-      <input class="xl-search" id="dekGradeSearch" placeholder="🔍 Talaba ismi..." oninput="renderDekanatGrades()">
+      <input class="xl-search" id="dekGradeSearch" placeholder="ð Talaba ismi..." oninput="renderDekanatGrades()">
       <button class="xl-filter-chip active" onclick="dekGradeFilter('all',this)">Barchasi</button>
-      <button class="xl-filter-chip" onclick="dekGradeFilter('alo',this)">⭐ A'lo</button>
-      <button class="xl-filter-chip" onclick="dekGradeFilter('yaxshi',this)">👍 Yaxshi</button>
-      <button class="xl-filter-chip" onclick="dekGradeFilter('fail',this)">⚠️ Qoniqarsiz</button>
+      <button class="xl-filter-chip" onclick="dekGradeFilter('alo',this)">â­ A'lo</button>
+      <button class="xl-filter-chip" onclick="dekGradeFilter('yaxshi',this)">ð Yaxshi</button>
+      <button class="xl-filter-chip" onclick="dekGradeFilter('fail',this)">â ï¸ Qoniqarsiz</button>
     </div>
     <table class="xl-table dek-table">
       <thead>
@@ -1386,7 +1386,7 @@
     </table>
     <div class="xl-footer">
       <span>Yozuvlar: <b id="dekGradeCount">0</b></span>
-      <span>O'rtacha: <b id="dekGradeAvg">—</b></span>
+      <span>O'rtacha: <b id="dekGradeAvg">â</b></span>
       <span>A'lo: <b id="dekGradeAlo" class="xl-total-green">0</b></span>
       <span>Yaxshi: <b id="dekGradeGood" class="xl-total-blue">0</b></span>
       <span>Qoniqarsiz: <b id="dekGradeFail" class="xl-total-red">0</b></span>
@@ -1394,38 +1394,38 @@
   </div>
 </div>
 
-<!-- ═══ DEKANAT: ATTENDANCE REPORT ═══ -->
+<!-- âââ DEKANAT: ATTENDANCE REPORT âââ -->
 <div class="page" id="page-dekanat-attendance">
   <div class="page-header">
     <div class="page-header-left">
-      <div class="ph-title">📋 Davomat hisoboti</div>
+      <div class="ph-title">ð Davomat hisoboti</div>
       <div class="ph-sub">Guruh va oy bo'yicha</div>
     </div>
     <div class="page-header-right">
       <select class="form-select" style="width:auto" id="dekAttGroup">
         <option>AI-2301</option><option>CS-2301</option><option>IT-2301</option><option>DB-2301</option><option>AI-2301</option>
       </select>
-      <button class="btn btn-secondary" onclick="exportAttendance()">📤 Export Excel</button>
+      <button class="btn btn-secondary" onclick="exportAttendance()">ð¤ Export Excel</button>
     </div>
   </div>
   <div class="stats-grid-3" style="margin-bottom:18px">
     <div class="stat-card">
       <div class="stat-card-top"><div class="stat-card-label">Umumiy davomat</div>
-        <div class="stat-card-icon" style="background:var(--green-light)">✅</div></div>
+        <div class="stat-card-icon" style="background:var(--green-light)">â</div></div>
       <div class="stat-card-val" style="color:var(--green)">94.2%</div>
-      <div class="stat-card-change sc-up">↑ Yaxshi ko'rsatkich</div>
+      <div class="stat-card-change sc-up">â Yaxshi ko'rsatkich</div>
       <div class="stat-card-bar scb-green"></div>
     </div>
     <div class="stat-card">
       <div class="stat-card-top"><div class="stat-card-label">Sababli kelmaganlar</div>
-        <div class="stat-card-icon" style="background:var(--yellow-light)">📄</div></div>
+        <div class="stat-card-icon" style="background:var(--yellow-light)">ð</div></div>
       <div class="stat-card-val" style="color:var(--yellow)">8</div>
       <div class="stat-card-change sc-flat">Bu oy</div>
       <div class="stat-card-bar scb-orange"></div>
     </div>
     <div class="stat-card">
       <div class="stat-card-top"><div class="stat-card-label">Sababsiz kelmaganlar</div>
-        <div class="stat-card-icon" style="background:var(--red-light)">❌</div></div>
+        <div class="stat-card-icon" style="background:var(--red-light)">â</div></div>
       <div class="stat-card-val" style="color:var(--red)">3</div>
       <div class="stat-card-change sc-down">Ogohlantirildi</div>
       <div class="stat-card-bar scb-red"></div>
@@ -1441,31 +1441,31 @@
   </div>
 </div>
 
-<!-- ═══ DEKANAT: REPORT ═══ -->
+<!-- âââ DEKANAT: REPORT âââ -->
 <div class="page" id="page-dekanat-report">
   <div class="page-header">
     <div class="page-header-left">
-      <div class="ph-title">📈 Tahlil va Hisobotlar</div>
-      <div class="ph-sub">2025–2026 o'quv yili · II semestr · Barcha guruhlar bo'yicha to'liq statistika</div>
+      <div class="ph-title">ð Tahlil va Hisobotlar</div>
+      <div class="ph-sub">2025â2026 o'quv yili Â· II semestr Â· Barcha guruhlar bo'yicha to'liq statistika</div>
     </div>
     <div class="page-header-right export-btn-row">
       <select class="form-select" style="width:auto" id="rptSemSelect" onchange="renderFullReport()">
-        <option value="2" selected>II semestr (2025–2026)</option>
-        <option value="1">I semestr (2025–2026)</option>
-        <option value="0">II semestr (2024–2025)</option>
+        <option value="2" selected>II semestr (2025â2026)</option>
+        <option value="1">I semestr (2025â2026)</option>
+        <option value="0">II semestr (2024â2025)</option>
       </select>
-      <button class="btn btn-secondary" onclick="exportReportCSV()">📊 CSV export</button>
-      <button class="print-btn" onclick="printReport()">🖨️ Chop etish</button>
+      <button class="btn btn-secondary" onclick="exportReportCSV()">ð CSV export</button>
+      <button class="print-btn" onclick="printReport()">ð¨ï¸ Chop etish</button>
     </div>
   </div>
 
   <!-- Tabs -->
   <div class="report-tabs">
-    <button class="rtab active" onclick="switchRTab('overview',this)">📊 Umumiy ko'rinish</button>
-    <button class="rtab" onclick="switchRTab('groups',this)">👥 Guruhlar tahlili</button>
-    <button class="rtab" onclick="switchRTab('teachers',this)">👨‍🏫 O'qituvchilar samaradorligi</button>
-    <button class="rtab" onclick="switchRTab('risk',this)">⚠️ Xavf guruhi</button>
-    <button class="rtab" onclick="switchRTab('compare',this)">📉 Semestr taqqoslama</button>
+    <button class="rtab active" onclick="switchRTab('overview',this)">ð Umumiy ko'rinish</button>
+    <button class="rtab" onclick="switchRTab('groups',this)">ð¥ Guruhlar tahlili</button>
+    <button class="rtab" onclick="switchRTab('teachers',this)">ð¨âð« O'qituvchilar samaradorligi</button>
+    <button class="rtab" onclick="switchRTab('risk',this)">â ï¸ Xavf guruhi</button>
+    <button class="rtab" onclick="switchRTab('compare',this)">ð Semestr taqqoslama</button>
   </div>
 
   <!-- PANEL 1: Overview -->
@@ -1475,27 +1475,27 @@
       <div class="rpt-kpi">
         <div class="rpt-kpi-val" style="color:#1B4FD8">156</div>
         <div class="rpt-kpi-lbl">Jami talabalar</div>
-        <div class="rpt-kpi-trend" style="color:#16A34A">↑ +12 o'tgan semestga</div>
+        <div class="rpt-kpi-trend" style="color:#16A34A">â +12 o'tgan semestga</div>
       </div>
       <div class="rpt-kpi">
         <div class="rpt-kpi-val" style="color:#16A34A">74.8</div>
         <div class="rpt-kpi-lbl">O'rtacha ball</div>
-        <div class="rpt-kpi-trend" style="color:#16A34A">↑ +2.3 ball</div>
+        <div class="rpt-kpi-trend" style="color:#16A34A">â +2.3 ball</div>
       </div>
       <div class="rpt-kpi">
         <div class="rpt-kpi-val" style="color:#7C3AED">3.21</div>
         <div class="rpt-kpi-lbl">O'rtacha GPA</div>
-        <div class="rpt-kpi-trend" style="color:#16A34A">↑ +0.15</div>
+        <div class="rpt-kpi-trend" style="color:#16A34A">â +0.15</div>
       </div>
       <div class="rpt-kpi">
         <div class="rpt-kpi-val" style="color:#EA580C">94.2%</div>
         <div class="rpt-kpi-lbl">Davomat</div>
-        <div class="rpt-kpi-trend" style="color:#16A34A">↑ Yaxshi</div>
+        <div class="rpt-kpi-trend" style="color:#16A34A">â Yaxshi</div>
       </div>
       <div class="rpt-kpi">
         <div class="rpt-kpi-val" style="color:#DC2626">13</div>
         <div class="rpt-kpi-lbl">Xavf guruhida</div>
-        <div class="rpt-kpi-trend" style="color:#DC2626">↓ Nazorat kerak</div>
+        <div class="rpt-kpi-trend" style="color:#DC2626">â Nazorat kerak</div>
       </div>
     </div>
 
@@ -1529,7 +1529,7 @@
     <div class="card">
       <div class="card-header">
         <div class="card-title">Fanlar bo'yicha o'rtacha ballar</div>
-        <div class="card-badge cb-purple">2025–2026 · II sem</div>
+        <div class="card-badge cb-purple">2025â2026 Â· II sem</div>
       </div>
       <div id="subjectAvgTable"></div>
     </div>
@@ -1574,14 +1574,14 @@
     <div class="grid-2">
       <div class="card">
         <div class="card-header">
-          <div class="card-title">🔴 Yuqori xavf — 55 dan past</div>
+          <div class="card-title">ð´ Yuqori xavf â 55 dan past</div>
           <div class="card-badge" style="background:#FEE2E2;color:#DC2626" id="highRiskBadge">0 ta</div>
         </div>
         <div id="riskHighList"></div>
       </div>
       <div class="card">
         <div class="card-header">
-          <div class="card-title">🟡 O'rta xavf — 56–65 oralig'i</div>
+          <div class="card-title">ð¡ O'rta xavf â 56â65 oralig'i</div>
           <div class="card-badge" style="background:#FEF3C7;color:#D97706" id="midRiskBadge">0 ta</div>
         </div>
         <div id="riskMidList"></div>
@@ -1599,7 +1599,7 @@
   <!-- PANEL 5: Compare -->
   <div class="report-panel" id="rpanel-compare">
     <div style="background:#EFF6FF;border:1.5px solid #BFDBFE;border-radius:12px;padding:14px 16px;margin-bottom:18px;font-size:13px;color:#1E40AF">
-      📌 Quyidagi jadval joriy va o'tgan semestr ko'rsatkichlarini solishtiradi. Ijobiy o'zgarishlar yashil, salbiylar qizil rangda ko'rsatilgan.
+      ð Quyidagi jadval joriy va o'tgan semestr ko'rsatkichlarini solishtiradi. Ijobiy o'zgarishlar yashil, salbiylar qizil rangda ko'rsatilgan.
     </div>
     <div class="card" style="margin-bottom:14px">
       <div class="card-header"><div class="card-title">Guruhlar bo'yicha semestr taqqoslama</div></div>
@@ -1619,20 +1619,20 @@
   </div>
 </div>
 
-<!-- ═══ STARTUP G'OYALAR ═══ -->
+<!-- âââ STARTUP G'OYALAR âââ -->
 <div class="page" id="page-startup">
   <div class="page-header">
     <div class="page-header-left">
-      <div class="ph-title">🚀 Startup G'oyalar</div>
-      <div class="ph-sub">Talabalar innovatsion loyihalari — investorlar ko'rishi mumkin</div>
+      <div class="ph-title">ð Startup G'oyalar</div>
+      <div class="ph-sub">Talabalar innovatsion loyihalari â investorlar ko'rishi mumkin</div>
     </div>
     <div class="page-header-right">
       <div class="filter-row" style="margin:0;gap:6px">
         <button class="filter-chip active" onclick="filterIdeas('all',this)">Barchasi</button>
-        <button class="filter-chip" onclick="filterIdeas('tech',this)">💻 Tech</button>
-        <button class="filter-chip" onclick="filterIdeas('health',this)">🏥 Health</button>
-        <button class="filter-chip" onclick="filterIdeas('edu',this)">📚 Edu</button>
-        <button class="filter-chip" onclick="filterIdeas('fintech',this)">💰 Fintech</button>
+        <button class="filter-chip" onclick="filterIdeas('tech',this)">ð» Tech</button>
+        <button class="filter-chip" onclick="filterIdeas('health',this)">ð¥ Health</button>
+        <button class="filter-chip" onclick="filterIdeas('edu',this)">ð Edu</button>
+        <button class="filter-chip" onclick="filterIdeas('fintech',this)">ð° Fintech</button>
       </div>
       <button class="btn btn-primary" id="addIdeaBtn" onclick="toggleIdeaForm()" style="display:none">+ G'oya qo'shish</button>
     </div>
@@ -1640,20 +1640,20 @@
 
   <!-- Form (faqat talabalar uchun) -->
   <div class="idea-form-card" id="ideaFormCard" style="display:none">
-    <div class="idea-form-title">💡 Yangi startup g'oya kiritish</div>
+    <div class="idea-form-title">ð¡ Yangi startup g'oya kiritish</div>
     <div class="grid-2" style="margin-bottom:14px">
       <div class="form-group" style="margin:0">
         <label class="form-label">G'oya nomi *</label>
-        <input class="form-input" id="ideaTitle" placeholder="Masalan: EduBot — AI o'qituvchi">
+        <input class="form-input" id="ideaTitle" placeholder="Masalan: EduBot â AI o'qituvchi">
       </div>
       <div class="form-group" style="margin:0">
         <label class="form-label">Kategoriya *</label>
         <select class="form-select" id="ideaCategory">
-          <option value="tech">💻 Texnologiya</option>
-          <option value="health">🏥 Sog'liqni saqlash</option>
-          <option value="edu">📚 Ta'lim</option>
-          <option value="fintech">💰 Moliya</option>
-          <option value="social">🌍 Ijtimoiy</option>
+          <option value="tech">ð» Texnologiya</option>
+          <option value="health">ð¥ Sog'liqni saqlash</option>
+          <option value="edu">ð Ta'lim</option>
+          <option value="fintech">ð° Moliya</option>
+          <option value="social">ð Ijtimoiy</option>
         </select>
       </div>
     </div>
@@ -1677,39 +1677,39 @@
     </div>
     <div style="display:flex;gap:10px;justify-content:flex-end">
       <button class="btn btn-secondary" onclick="toggleIdeaForm()">Bekor qilish</button>
-      <button class="btn btn-primary" onclick="submitIdea()">🚀 G'oyani yuborish</button>
+      <button class="btn btn-primary" onclick="submitIdea()">ð G'oyani yuborish</button>
     </div>
   </div>
 
   <div id="ideasList"></div>
 </div>
 
-<!-- ═══ INVESTOR: DASHBOARD ═══ -->
+<!-- âââ INVESTOR: DASHBOARD âââ -->
 <div class="page" id="page-investor-dashboard">
   <div class="page-header">
     <div class="page-header-left">
-      <div class="ph-title">💼 Investor Panel</div>
+      <div class="ph-title">ð¼ Investor Panel</div>
       <div class="ph-sub" id="investorCompanyName">TechVentures UZ</div>
     </div>
   </div>
   <div class="stats-grid-3" style="margin-bottom:18px">
     <div class="stat-card">
       <div class="stat-card-top"><div class="stat-card-label">Ko'rilgan g'oyalar</div>
-        <div class="stat-card-icon" style="background:var(--orange-light)">👁️</div></div>
+        <div class="stat-card-icon" style="background:var(--orange-light)">ðï¸</div></div>
       <div class="stat-card-val" style="color:var(--orange)" id="investorViewedCount">12</div>
       <div class="stat-card-change sc-flat">Joriy sessiya</div>
       <div class="stat-card-bar scb-orange"></div>
     </div>
     <div class="stat-card">
       <div class="stat-card-top"><div class="stat-card-label">Baholangan</div>
-        <div class="stat-card-icon" style="background:var(--yellow-light)">⭐</div></div>
+        <div class="stat-card-icon" style="background:var(--yellow-light)">â­</div></div>
       <div class="stat-card-val" style="color:var(--yellow)" id="investorRatedCount">5</div>
       <div class="stat-card-change sc-flat">Yulduz baho berildi</div>
       <div class="stat-card-bar scb-orange"></div>
     </div>
     <div class="stat-card">
       <div class="stat-card-top"><div class="stat-card-label">Qiziqarli g'oyalar</div>
-        <div class="stat-card-icon" style="background:var(--green-light)">💚</div></div>
+        <div class="stat-card-icon" style="background:var(--green-light)">ð</div></div>
       <div class="stat-card-val" style="color:var(--green)" id="investorInterestedCount">3</div>
       <div class="stat-card-change sc-up">Investitsiya so'ralgan</div>
       <div class="stat-card-bar scb-green"></div>
@@ -1718,127 +1718,127 @@
   <div class="card">
     <div class="card-header">
       <div class="card-title">Eng yuqori baholangan g'oyalar</div>
-      <button class="btn btn-primary btn-sm" onclick="showPage('startup')">Barcha g'oyalar →</button>
+      <button class="btn btn-primary btn-sm" onclick="showPage('startup')">Barcha g'oyalar â</button>
     </div>
     <div id="topIdeasList"></div>
   </div>
 </div>
 
-<!-- ════ QUIZ MODAL ════ -->
+<!-- ââââ QUIZ MODAL ââââ -->
 <div class="modal-bg" id="quizModal">
   <div class="modal-box">
     <div class="modal-head">
-      <div class="modal-title">🧠 Bilim testi</div>
-      <button class="modal-close" onclick="closeQuiz()">✕</button>
+      <div class="modal-title">ð§  Bilim testi</div>
+      <button class="modal-close" onclick="closeQuiz()">â</button>
     </div>
     <div id="quizContent"></div>
   </div>
 </div>
 
 
-<!-- ════ STUDENT DETAIL MODAL ════ -->
+<!-- ââââ STUDENT DETAIL MODAL ââââ -->
 <div class="modal-bg" id="studentDetailModal">
   <div class="modal-box modal-box-lg">
     <div class="modal-head">
       <div class="modal-title" id="studentDetailTitle">Talaba profili</div>
-      <button class="modal-close" onclick="document.getElementById('studentDetailModal').classList.remove('open')">✕</button>
+      <button class="modal-close" onclick="document.getElementById('studentDetailModal').classList.remove('open')">â</button>
     </div>
     <div id="studentDetailContent"></div>
   </div>
 </div>
 
-<!-- ═══ ANTI-CHEAT OVERLAY ═══ -->
+<!-- âââ ANTI-CHEAT OVERLAY âââ -->
 <div class="anticheat-overlay" id="anticheatOverlay">
-  <div class="anticheat-icon">🚨</div>
+  <div class="anticheat-icon">ð¨</div>
   <div class="anticheat-title">OGOHLANTIRISH!</div>
   <div class="anticheat-msg" id="anticheatMsg">Siz test jarayonida sahifani terk etdingiz. Bu harakatlar qayd etiladi va dekanatga yuboriladi!</div>
   <div class="warn-counter" id="warnCounter"></div>
   <button class="btn btn-auth" style="max-width:260px;background:white;color:var(--red);font-size:16px" onclick="dismissWarning()">
-    Tushundim — qaytish
+    Tushundim â qaytish
   </button>
 </div>
 
-<!-- ═══ GAME HUB ═══ -->
+<!-- âââ GAME HUB âââ -->
 <div class="page" id="page-games">
   <div class="page-header">
     <div class="page-header-left">
-      <div class="ph-title">🎮 O'yin markazi</div>
-      <div class="ph-sub">Har bir fan bo'yicha interfaol o'yinlar — bilimni o'yin orqali mustahkamla!</div>
+      <div class="ph-title">ð® O'yin markazi</div>
+      <div class="ph-sub">Har bir fan bo'yicha interfaol o'yinlar â bilimni o'yin orqali mustahkamla!</div>
     </div>
     <div class="page-header-right">
-      <div class="coin-badge" id="gameCoinsDisplay">🪙 0</div>
-      <div class="level-badge" id="gameLevelDisplay">⚡ Daraja 1</div>
+      <div class="coin-badge" id="gameCoinsDisplay">ðª 0</div>
+      <div class="level-badge" id="gameLevelDisplay">â¡ Daraja 1</div>
     </div>
   </div>
 
   <div class="daily-challenge-card">
     <div class="dc-header">
-      <div class="dc-title">🔥 Kunlik musobaqa</div>
+      <div class="dc-title">ð¥ Kunlik musobaqa</div>
       <div class="dc-countdown" id="dcCountdown">23:45:12</div>
     </div>
-    <div class="dc-task" id="dcTask">Matematika: 5 ta integral hisoblang — 60 soniyada!</div>
-    <div class="dc-reward">🎁 Mukofot: +500 XP · +100 IDU Coin · "Kunlik chempion" nishoni</div>
+    <div class="dc-task" id="dcTask">Matematika: 5 ta integral hisoblang â 60 soniyada!</div>
+    <div class="dc-reward">ð Mukofot: +500 XP Â· +100 IDU Coin Â· "Kunlik chempion" nishoni</div>
   </div>
 
   <div class="game-hub-grid">
     <div class="game-card gc-math" onclick="startGame('math')">
-      <span class="game-card-emoji">🔢</span>
+      <span class="game-card-emoji">ð¢</span>
       <div class="game-card-title">Matematika Chempioni</div>
       <div class="game-card-sub">Tezkor hisoblash, tenglamalar, integral</div>
       <div class="game-card-stats">
-        <div class="game-card-stat">⏱ 60s</div>
-        <div class="game-card-stat">🎯 10 savol</div>
-        <div class="game-card-stat">🪙 +50</div>
+        <div class="game-card-stat">â± 60s</div>
+        <div class="game-card-stat">ð¯ 10 savol</div>
+        <div class="game-card-stat">ðª +50</div>
       </div>
     </div>
     <div class="game-card gc-prog" onclick="startGame('prog')">
-      <span class="game-card-emoji">💻</span>
+      <span class="game-card-emoji">ð»</span>
       <div class="game-card-title">Kod to'ldirish</div>
       <div class="game-card-sub">Python/JS kodini to'g'ri to'ldiring</div>
       <div class="game-card-stats">
-        <div class="game-card-stat">⏱ 90s</div>
-        <div class="game-card-stat">🎯 8 savol</div>
-        <div class="game-card-stat">🪙 +70</div>
+        <div class="game-card-stat">â± 90s</div>
+        <div class="game-card-stat">ð¯ 8 savol</div>
+        <div class="game-card-stat">ðª +70</div>
       </div>
     </div>
     <div class="game-card gc-eng" onclick="startGame('english')">
-      <span class="game-card-emoji">🌍</span>
+      <span class="game-card-emoji">ð</span>
       <div class="game-card-title">So'z juftlash</div>
       <div class="game-card-sub">Ingliz-O'zbek so'zlarini moslashtiring</div>
       <div class="game-card-stats">
-        <div class="game-card-stat">⏱ 45s</div>
-        <div class="game-card-stat">🎯 12 juft</div>
-        <div class="game-card-stat">🪙 +40</div>
+        <div class="game-card-stat">â± 45s</div>
+        <div class="game-card-stat">ð¯ 12 juft</div>
+        <div class="game-card-stat">ðª +40</div>
       </div>
     </div>
     <div class="game-card gc-phys" onclick="startGame('physics')">
-      <span class="game-card-emoji">⚛️</span>
+      <span class="game-card-emoji">âï¸</span>
       <div class="game-card-title">Formula izlash</div>
       <div class="game-card-sub">Fizika formulalarini moslashtiring</div>
       <div class="game-card-stats">
-        <div class="game-card-stat">⏱ 60s</div>
-        <div class="game-card-stat">🎯 8 ta</div>
-        <div class="game-card-stat">🪙 +60</div>
+        <div class="game-card-stat">â± 60s</div>
+        <div class="game-card-stat">ð¯ 8 ta</div>
+        <div class="game-card-stat">ðª +60</div>
       </div>
     </div>
     <div class="game-card gc-algo" onclick="startGame('algo')">
-      <span class="game-card-emoji">📊</span>
+      <span class="game-card-emoji">ð</span>
       <div class="game-card-title">Tartiblash o'yini</div>
       <div class="game-card-sub">Massivni to'g'ri tartibga soling</div>
       <div class="game-card-stats">
-        <div class="game-card-stat">⏱ 30s</div>
-        <div class="game-card-stat">🎯 5 bosqich</div>
-        <div class="game-card-stat">🪙 +80</div>
+        <div class="game-card-stat">â± 30s</div>
+        <div class="game-card-stat">ð¯ 5 bosqich</div>
+        <div class="game-card-stat">ðª +80</div>
       </div>
     </div>
     <div class="game-card gc-hist" onclick="startGame('logic')">
-      <span class="game-card-emoji">🧩</span>
+      <span class="game-card-emoji">ð§©</span>
       <div class="game-card-title">Mantiq masalasi</div>
       <div class="game-card-sub">Qiziqarli mantiqiy savollarga javob bering</div>
       <div class="game-card-stats">
-        <div class="game-card-stat">⏱ 120s</div>
-        <div class="game-card-stat">🎯 6 savol</div>
-        <div class="game-card-stat">🪙 +90</div>
+        <div class="game-card-stat">â± 120s</div>
+        <div class="game-card-stat">ð¯ 6 savol</div>
+        <div class="game-card-stat">ðª +90</div>
       </div>
     </div>
   </div>
@@ -1848,12 +1848,12 @@
     <div class="card">
       <div class="game-header">
         <div style="display:flex;align-items:center;gap:12px">
-          <button class="btn btn-secondary btn-sm" onclick="exitGame()">← Chiqish</button>
+          <button class="btn btn-secondary btn-sm" onclick="exitGame()">â Chiqish</button>
           <div id="gameTitle" style="font-size:16px;font-weight:800"></div>
         </div>
         <div class="game-score-bar">
           <div class="gs-item"><div class="gs-val" id="gameScore" style="color:var(--green)">0</div><div class="gs-key">Ball</div></div>
-          <div class="gs-item"><div class="gs-val" id="gameStreak2" style="color:var(--orange)">0🔥</div><div class="gs-key">Streak</div></div>
+          <div class="gs-item"><div class="gs-val" id="gameStreak2" style="color:var(--orange)">0ð¥</div><div class="gs-key">Streak</div></div>
           <div class="gs-item"><div class="gs-val" id="gameQ">0/10</div><div class="gs-key">Savol</div></div>
         </div>
         <div>
@@ -1866,18 +1866,18 @@
   </div>
 </div>
 
-<!-- ═══ VAQT BOSHQARUVI ═══ -->
+<!-- âââ VAQT BOSHQARUVI âââ -->
 <div class="page" id="page-time">
   <div class="page-header">
     <div class="page-header-left">
-      <div class="ph-title">⏰ Vaqt boshqaruvi</div>
-      <div class="ph-sub">Pomodoro taymeri · Haftalik maqsadlar · Study streak</div>
+      <div class="ph-title">â° Vaqt boshqaruvi</div>
+      <div class="ph-sub">Pomodoro taymeri Â· Haftalik maqsadlar Â· Study streak</div>
     </div>
   </div>
   <div class="grid-2" style="margin-bottom:16px">
     <!-- Pomodoro -->
     <div class="card">
-      <div class="card-header"><div class="card-title">🍅 Pomodoro Taymeri</div></div>
+      <div class="card-header"><div class="card-title">ð Pomodoro Taymeri</div></div>
       <div class="pomo-wrap">
         <div class="pomo-mode-btns">
           <button class="pomo-mode-btn active" onclick="setPomoMode(25,'Diqqat vaqti',this)">Diqqat (25m)</button>
@@ -1895,8 +1895,8 @@
           <div class="pomo-dot" id="pd2"></div><div class="pomo-dot" id="pd3"></div>
         </div>
         <div class="pomo-btns">
-          <button class="btn btn-primary" id="pomoStartBtn" onclick="togglePomo()">▶ Boshlash</button>
-          <button class="btn btn-secondary" onclick="resetPomo()">↺ Reset</button>
+          <button class="btn btn-primary" id="pomoStartBtn" onclick="togglePomo()">â¶ Boshlash</button>
+          <button class="btn btn-secondary" onclick="resetPomo()">âº Reset</button>
         </div>
         <div style="font-size:13px;color:var(--text3);text-align:center">
           Bugun: <strong id="pomoTodaySessions" style="color:var(--primary)">0</strong> ta sessiya tamamlandi
@@ -1906,22 +1906,22 @@
     <!-- Streak + Mood -->
     <div>
       <div class="streak-card">
-        <div class="streak-fire">🔥</div>
+        <div class="streak-fire">ð¥</div>
         <div class="streak-num" id="streakNum">0</div>
-        <div class="streak-label">kunlik streak — Har kuni o'qishda davom eting!</div>
+        <div class="streak-label">kunlik streak â Har kuni o'qishda davom eting!</div>
         <div style="margin-top:12px;font-size:12px;color:var(--text2)">
           Rekord: <strong id="streakRecord">0</strong> kun
         </div>
       </div>
       <div class="card" style="margin-top:12px">
-        <div class="card-header"><div class="card-title">😊 Bugungi kayfiyat</div></div>
+        <div class="card-header"><div class="card-title">ð Bugungi kayfiyat</div></div>
         <div style="font-size:13px;color:var(--text2);margin-bottom:12px">Qanday his qilyapsiz?</div>
         <div class="mood-grid">
-          <div class="mood-btn" onclick="setMood(5,this)"><div class="mood-emoji">😁</div><div class="mood-label">Ajoyib</div></div>
-          <div class="mood-btn" onclick="setMood(4,this)"><div class="mood-emoji">😊</div><div class="mood-label">Yaxshi</div></div>
-          <div class="mood-btn" onclick="setMood(3,this)"><div class="mood-emoji">😐</div><div class="mood-label">Normal</div></div>
-          <div class="mood-btn" onclick="setMood(2,this)"><div class="mood-emoji">😟</div><div class="mood-label">Yomon</div></div>
-          <div class="mood-btn" onclick="setMood(1,this)"><div class="mood-emoji">😫</div><div class="mood-label">Charchadim</div></div>
+          <div class="mood-btn" onclick="setMood(5,this)"><div class="mood-emoji">ð</div><div class="mood-label">Ajoyib</div></div>
+          <div class="mood-btn" onclick="setMood(4,this)"><div class="mood-emoji">ð</div><div class="mood-label">Yaxshi</div></div>
+          <div class="mood-btn" onclick="setMood(3,this)"><div class="mood-emoji">ð</div><div class="mood-label">Normal</div></div>
+          <div class="mood-btn" onclick="setMood(2,this)"><div class="mood-emoji">ð</div><div class="mood-label">Yomon</div></div>
+          <div class="mood-btn" onclick="setMood(1,this)"><div class="mood-emoji">ð«</div><div class="mood-label">Charchadim</div></div>
         </div>
         <div id="moodAdvice" style="font-size:13px;color:var(--text2);text-align:center;padding:10px;background:var(--bg);border-radius:var(--r);display:none"></div>
       </div>
@@ -1930,7 +1930,7 @@
   <!-- Haftalik maqsadlar -->
   <div class="card">
     <div class="card-header">
-      <div class="card-title">🎯 Haftalik maqsadlar</div>
+      <div class="card-title">ð¯ Haftalik maqsadlar</div>
       <button class="btn btn-primary btn-sm" onclick="addGoal()">+ Maqsad</button>
     </div>
     <div class="weekly-goals" id="weeklyGoals"></div>
@@ -1944,16 +1944,16 @@
   </div>
 </div>
 
-<!-- ═══ GAMIFIKATSIYA ═══ -->
+<!-- âââ GAMIFIKATSIYA âââ -->
 <div class="page" id="page-gamification">
   <div class="page-header">
     <div class="page-header-left">
-      <div class="ph-title">🏆 Gamifikatsiya</div>
+      <div class="ph-title">ð Gamifikatsiya</div>
       <div class="ph-sub">XP, darajalar, IDU Coin, mukofotlar</div>
     </div>
     <div class="page-header-right">
-      <div class="coin-badge" id="totalCoinsDisplay">🪙 0 IDU Coin</div>
-      <div class="level-badge" id="totalLevelDisplay">⚡ Daraja 1</div>
+      <div class="coin-badge" id="totalCoinsDisplay">ðª 0 IDU Coin</div>
+      <div class="level-badge" id="totalLevelDisplay">â¡ Daraja 1</div>
     </div>
   </div>
 
@@ -1976,7 +1976,7 @@
       </div>
       <div style="text-align:center;padding:12px;background:var(--bg);border-radius:var(--r2)">
         <div style="font-size:24px;font-weight:900;color:var(--orange);font-family:'DM Mono',monospace" id="totalCoinsStat">0</div>
-        <div style="font-size:11px;color:var(--text3)">IDU Coin 🪙</div>
+        <div style="font-size:11px;color:var(--text3)">IDU Coin ðª</div>
       </div>
       <div style="text-align:center;padding:12px;background:var(--bg);border-radius:var(--r2)">
         <div style="font-size:24px;font-weight:900;color:var(--green);font-family:'DM Mono',monospace" id="gamesPlayedStat">0</div>
@@ -1988,7 +1988,7 @@
   <div class="grid-2" style="margin-bottom:16px">
     <!-- Leaderboard -->
     <div class="card">
-      <div class="card-header"><div class="card-title">🏅 Reyting</div></div>
+      <div class="card-header"><div class="card-title">ð Reyting</div></div>
       <div class="leaderboard-tab">
         <button class="lb-tab active" onclick="switchLB('xp',this)">XP bo'yicha</button>
         <button class="lb-tab" onclick="switchLB('coins',this)">Coin bo'yicha</button>
@@ -1998,7 +1998,7 @@
     </div>
     <!-- Achievements -->
     <div class="card">
-      <div class="card-header"><div class="card-title">🎖️ Nishonlar</div></div>
+      <div class="card-header"><div class="card-title">ðï¸ Nishonlar</div></div>
       <div id="achievementsList"></div>
     </div>
   </div>
@@ -2006,38 +2006,38 @@
   <!-- Reward Shop -->
   <div class="card">
     <div class="card-header">
-      <div class="card-title">🏪 IDU Do'kon</div>
+      <div class="card-title">ðª IDU Do'kon</div>
       <div style="font-size:13px;color:var(--text2)">IDU Coin bilan sotib oling</div>
     </div>
     <div class="reward-shop-grid" id="rewardShop"></div>
   </div>
 </div>
 
-<!-- ═══ PROFESSORLAR BAHOLASH ═══ -->
+<!-- âââ PROFESSORLAR BAHOLASH âââ -->
 <div class="page" id="page-professors">
   <div class="page-header">
     <div class="page-header-left">
-      <div class="ph-title" id="prof-page-title">⭐ Ustozlarni baholash</div>
-      <div class="ph-sub" id="prof-page-sub">Anonim sharh va reyting — faqat siz ko'rsatasiz, ism ko'rinmaydi</div>
+      <div class="ph-title" id="prof-page-title">â­ Ustozlarni baholash</div>
+      <div class="ph-sub" id="prof-page-sub">Anonim sharh va reyting â faqat siz ko'rsatasiz, ism ko'rinmaydi</div>
     </div>
   </div>
   <!-- Stats row -->
   <div class="prof-stats-row" id="profStatsRow"></div>
   <!-- Search + Filter -->
   <div class="prof-search-bar">
-    <input class="prof-search-input" id="profSearchInput" placeholder="🔍 Ustoz ismi yoki fan bo'yicha qidirish..." oninput="renderProfessorsPage()">
+    <input class="prof-search-input" id="profSearchInput" placeholder="ð Ustoz ismi yoki fan bo'yicha qidirish..." oninput="renderProfessorsPage()">
   </div>
   <div class="prof-filter-row" id="profFilterRow"></div>
   <!-- Professor grid -->
   <div class="prof-grid" id="profGrid"></div>
 </div>
 
-<!-- ═══ PROFESSOR REVIEW MODAL ═══ -->
+<!-- âââ PROFESSOR REVIEW MODAL âââ -->
 <div id="profReviewModal" onclick="if(event.target===this)closeProfReview()">
   <div class="prm-box">
     <div class="prm-head">
       <div style="font-size:18px;font-weight:800;color:#0F172A" id="prmTitle">Baholash</div>
-      <button onclick="closeProfReview()" style="background:none;border:none;font-size:22px;cursor:pointer;color:#64748B">✕</button>
+      <button onclick="closeProfReview()" style="background:none;border:none;font-size:22px;cursor:pointer;color:#64748B">â</button>
     </div>
     <div class="prm-body">
       <!-- Professor info -->
@@ -2052,38 +2052,38 @@
       <div style="text-align:center;margin-bottom:6px">
         <div style="font-size:13px;font-weight:600;color:#64748B" id="prmStarLabel">Umumiy baho</div>
         <div class="prm-stars-row" id="prmStarsRow">
-          <span class="prm-star" onclick="setPrmStar(1)">⭐</span>
-          <span class="prm-star" onclick="setPrmStar(2)">⭐</span>
-          <span class="prm-star" onclick="setPrmStar(3)">⭐</span>
-          <span class="prm-star" onclick="setPrmStar(4)">⭐</span>
-          <span class="prm-star" onclick="setPrmStar(5)">⭐</span>
+          <span class="prm-star" onclick="setPrmStar(1)">â­</span>
+          <span class="prm-star" onclick="setPrmStar(2)">â­</span>
+          <span class="prm-star" onclick="setPrmStar(3)">â­</span>
+          <span class="prm-star" onclick="setPrmStar(4)">â­</span>
+          <span class="prm-star" onclick="setPrmStar(5)">â­</span>
         </div>
         <div style="font-size:12px;color:#94A3B8" id="prmStarHint">Yulduzni bosing</div>
       </div>
       <!-- Category ratings -->
       <div class="prm-cats" id="prmCats">
         <div class="prm-cat-item">
-          <div class="prm-cat-label" id="prmCat1L">📚 Tushuntirish</div>
+          <div class="prm-cat-label" id="prmCat1L">ð Tushuntirish</div>
           <div class="prm-cat-stars" id="prmCat1">
-            <span class="prm-cat-star" onclick="setPrmCat(1,1)">⭐</span><span class="prm-cat-star" onclick="setPrmCat(1,2)">⭐</span><span class="prm-cat-star" onclick="setPrmCat(1,3)">⭐</span><span class="prm-cat-star" onclick="setPrmCat(1,4)">⭐</span><span class="prm-cat-star" onclick="setPrmCat(1,5)">⭐</span>
+            <span class="prm-cat-star" onclick="setPrmCat(1,1)">â­</span><span class="prm-cat-star" onclick="setPrmCat(1,2)">â­</span><span class="prm-cat-star" onclick="setPrmCat(1,3)">â­</span><span class="prm-cat-star" onclick="setPrmCat(1,4)">â­</span><span class="prm-cat-star" onclick="setPrmCat(1,5)">â­</span>
           </div>
         </div>
         <div class="prm-cat-item">
-          <div class="prm-cat-label" id="prmCat2L">⏰ Vaqtinchalik</div>
+          <div class="prm-cat-label" id="prmCat2L">â° Vaqtinchalik</div>
           <div class="prm-cat-stars" id="prmCat2">
-            <span class="prm-cat-star" onclick="setPrmCat(2,1)">⭐</span><span class="prm-cat-star" onclick="setPrmCat(2,2)">⭐</span><span class="prm-cat-star" onclick="setPrmCat(2,3)">⭐</span><span class="prm-cat-star" onclick="setPrmCat(2,4)">⭐</span><span class="prm-cat-star" onclick="setPrmCat(2,5)">⭐</span>
+            <span class="prm-cat-star" onclick="setPrmCat(2,1)">â­</span><span class="prm-cat-star" onclick="setPrmCat(2,2)">â­</span><span class="prm-cat-star" onclick="setPrmCat(2,3)">â­</span><span class="prm-cat-star" onclick="setPrmCat(2,4)">â­</span><span class="prm-cat-star" onclick="setPrmCat(2,5)">â­</span>
           </div>
         </div>
         <div class="prm-cat-item">
-          <div class="prm-cat-label" id="prmCat3L">🤝 Munosabat</div>
+          <div class="prm-cat-label" id="prmCat3L">ð¤ Munosabat</div>
           <div class="prm-cat-stars" id="prmCat3">
-            <span class="prm-cat-star" onclick="setPrmCat(3,1)">⭐</span><span class="prm-cat-star" onclick="setPrmCat(3,2)">⭐</span><span class="prm-cat-star" onclick="setPrmCat(3,3)">⭐</span><span class="prm-cat-star" onclick="setPrmCat(3,4)">⭐</span><span class="prm-cat-star" onclick="setPrmCat(3,5)">⭐</span>
+            <span class="prm-cat-star" onclick="setPrmCat(3,1)">â­</span><span class="prm-cat-star" onclick="setPrmCat(3,2)">â­</span><span class="prm-cat-star" onclick="setPrmCat(3,3)">â­</span><span class="prm-cat-star" onclick="setPrmCat(3,4)">â­</span><span class="prm-cat-star" onclick="setPrmCat(3,5)">â­</span>
           </div>
         </div>
         <div class="prm-cat-item">
-          <div class="prm-cat-label" id="prmCat4L">📝 Vazifalar</div>
+          <div class="prm-cat-label" id="prmCat4L">ð Vazifalar</div>
           <div class="prm-cat-stars" id="prmCat4">
-            <span class="prm-cat-star" onclick="setPrmCat(4,1)">⭐</span><span class="prm-cat-star" onclick="setPrmCat(4,2)">⭐</span><span class="prm-cat-star" onclick="setPrmCat(4,3)">⭐</span><span class="prm-cat-star" onclick="setPrmCat(4,4)">⭐</span><span class="prm-cat-star" onclick="setPrmCat(4,5)">⭐</span>
+            <span class="prm-cat-star" onclick="setPrmCat(4,1)">â­</span><span class="prm-cat-star" onclick="setPrmCat(4,2)">â­</span><span class="prm-cat-star" onclick="setPrmCat(4,3)">â­</span><span class="prm-cat-star" onclick="setPrmCat(4,4)">â­</span><span class="prm-cat-star" onclick="setPrmCat(4,5)">â­</span>
           </div>
         </div>
       </div>
@@ -2092,23 +2092,23 @@
       <textarea class="prm-textarea" id="prmComment" rows="3" placeholder="Bu ustoz haqida fikringizni yozing... (ixtiyoriy)"></textarea>
       <!-- Anonymous notice -->
       <div class="prm-anon-info">
-        🔒 <span id="prmAnonText">Sharhingiz to'liq anonim — ismingiz hech qachon ko'rinmaydi</span>
+        ð <span id="prmAnonText">Sharhingiz to'liq anonim â ismingiz hech qachon ko'rinmaydi</span>
       </div>
-      <button class="prm-submit" onclick="submitProfReview()" id="prmSubmitBtn">⭐ Baholashni yuborish</button>
+      <button class="prm-submit" onclick="submitProfReview()" id="prmSubmitBtn">â­ Baholashni yuborish</button>
     </div>
   </div>
 </div>
 
-<!-- ═══ HAMKORLAR ═══ -->
+<!-- âââ HAMKORLAR âââ -->
 <div class="page" id="page-idu-premium">
   <div class="page-header">
     <div class="page-header-left">
-      <div class="ph-title">🤝 Hamkorlar</div>
-      <div class="ph-sub">Ish o'rinlari · Sertifikatlar · Kompaniya profillari</div>
+      <div class="ph-title">ð¤ Hamkorlar</div>
+      <div class="ph-sub">Ish o'rinlari Â· Sertifikatlar Â· Kompaniya profillari</div>
     </div>
     <div class="page-header-right">
       <button class="btn" style="background:var(--primary-light);color:var(--primary);border:1.5px solid var(--primary);position:relative" onclick="showPage('my-applications')">
-        📋 Mening arizalarim
+        ð Mening arizalarim
         <span id="appCountBadge" style="display:none;position:absolute;top:-6px;right:-6px;background:var(--red);color:white;font-size:9px;font-weight:800;padding:1px 5px;border-radius:8px">0</span>
       </button>
     </div>
@@ -2124,12 +2124,12 @@
 
   <!-- Tabs -->
   <div class="partners-tabs">
-    <button class="ptab active" id="ptab-vacancies" onclick="switchPartnersTab('vacancies')">💼 Vakansiyalar</button>
-    <button class="ptab" id="ptab-companies" onclick="switchPartnersTab('companies')">🏢 Kompaniyalar</button>
-    <button class="ptab" id="ptab-certs" onclick="switchPartnersTab('certs')">🎓 Sertifikatlar</button>
+    <button class="ptab active" id="ptab-vacancies" onclick="switchPartnersTab('vacancies')">ð¼ Vakansiyalar</button>
+    <button class="ptab" id="ptab-companies" onclick="switchPartnersTab('companies')">ð¢ Kompaniyalar</button>
+    <button class="ptab" id="ptab-certs" onclick="switchPartnersTab('certs')">ð Sertifikatlar</button>
   </div>
 
-  <!-- ── TAB: VAKANSIYALAR ── -->
+  <!-- ââ TAB: VAKANSIYALAR ââ -->
   <div id="tab-vacancies">
     <!-- Search + filter -->
     <div class="partners-search-row">
@@ -2139,24 +2139,24 @@
     </div>
     <div class="job-filters" id="jobFilters">
       <button class="jf-chip active" onclick="setJobFilter('all',this)">Barchasi</button>
-      <button class="jf-chip" onclick="setJobFilter('Full-time',this)">✅ Full-time</button>
-      <button class="jf-chip" onclick="setJobFilter('Part-time',this)">🕐 Part-time</button>
-      <button class="jf-chip" onclick="setJobFilter('Amaliyot',this)">🎓 Amaliyot</button>
+      <button class="jf-chip" onclick="setJobFilter('Full-time',this)">â Full-time</button>
+      <button class="jf-chip" onclick="setJobFilter('Part-time',this)">ð Part-time</button>
+      <button class="jf-chip" onclick="setJobFilter('Amaliyot',this)">ð Amaliyot</button>
     </div>
     <div id="vacancyList"></div>
   </div>
 
-  <!-- ── TAB: KOMPANIYALAR ── -->
+  <!-- ââ TAB: KOMPANIYALAR ââ -->
   <div id="tab-companies" style="display:none">
     <div class="company-grid" id="companyGrid"></div>
   </div>
 
-  <!-- ── TAB: SERTIFIKATLAR ── -->
+  <!-- ââ TAB: SERTIFIKATLAR ââ -->
   <div id="tab-certs" style="display:none">
     <div class="premium-banner" style="margin-bottom:16px">
-      <div class="premium-title">🎓 IDU Rasmiy Sertifikat</div>
+      <div class="premium-title">ð IDU Rasmiy Sertifikat</div>
       <div class="premium-desc">Muvaffaqiyatli tugatilgan fanlar uchun rasmiy sertifikat oling.<br>Hamkor kompaniyalar IDU sertifikatini tan oladi!</div>
-      <button class="btn" style="background:white;color:#D97706;font-weight:700" onclick="buyCert('Umumiy IDU','50,000')">Sertifikat olish →</button>
+      <button class="btn" style="background:white;color:#D97706;font-weight:700" onclick="buyCert('Umumiy IDU','50,000')">Sertifikat olish â</button>
     </div>
     <div class="grid-3">
       <div class="cert-card">
@@ -2199,12 +2199,12 @@
   </div>
 </div>
 
-<!-- ═══ JOB DETAIL MODAL ═══ -->
+<!-- âââ JOB DETAIL MODAL âââ -->
 <div class="job-detail-modal" id="jobDetailModal" onclick="if(event.target===this)closeJobDetail()">
   <div class="jdm-box">
     <div class="jdm-header">
       <div style="display:flex;justify-content:flex-end;margin-bottom:8px">
-        <button onclick="closeJobDetail()" style="background:none;border:none;font-size:20px;cursor:pointer;color:var(--text2);line-height:1">✕</button>
+        <button onclick="closeJobDetail()" style="background:none;border:none;font-size:20px;cursor:pointer;color:var(--text2);line-height:1">â</button>
       </div>
       <div class="jdm-top">
         <div class="jdm-logo" id="jdmLogo"></div>
@@ -2228,61 +2228,61 @@
         <div class="jdm-section-title">Texnologiyalar</div>
         <div style="display:flex;gap:6px;flex-wrap:wrap" id="jdmTags"></div>
       </div>
-      <button id="jdmApplyBtn" class="btn btn-primary" style="width:100%;padding:12px;font-size:15px;margin-top:8px" onclick="applyFromDetail()">📩 Ariza yuborish</button>
+      <button id="jdmApplyBtn" class="btn btn-primary" style="width:100%;padding:12px;font-size:15px;margin-top:8px" onclick="applyFromDetail()">ð© Ariza yuborish</button>
     </div>
   </div>
 </div>
 
-<!-- ═══ MY APPLICATIONS PAGE (student) ═══ -->
+<!-- âââ MY APPLICATIONS PAGE (student) âââ -->
 <div class="page" id="page-my-applications">
   <div class="page-header">
     <div class="page-header-left">
-      <div class="ph-title">📋 Mening arizalarim</div>
+      <div class="ph-title">ð Mening arizalarim</div>
       <div class="ph-sub">Sertifikat buyurtmalari va ish ariza holatlari</div>
     </div>
     <div class="page-header-right">
-      <button class="btn btn-secondary" onclick="showPage('idu-premium')">← Orqaga</button>
+      <button class="btn btn-secondary" onclick="showPage('idu-premium')">â Orqaga</button>
     </div>
   </div>
   <div id="myApplicationsList">
-    <div class="empty-state"><div class="empty-state-icon">📭</div><div>Hali ariza yo'q</div></div>
+    <div class="empty-state"><div class="empty-state-icon">ð­</div><div>Hali ariza yo'q</div></div>
   </div>
 </div>
 
-<!-- ═══ DEKANAT: APPLICATIONS MANAGER ═══ -->
+<!-- âââ DEKANAT: APPLICATIONS MANAGER âââ -->
 <div class="page" id="page-dekanat-applications">
   <div class="page-header">
     <div class="page-header-left">
-      <div class="ph-title">📬 Arizalar boshqaruvi</div>
+      <div class="ph-title">ð¬ Arizalar boshqaruvi</div>
       <div class="ph-sub">Sertifikat buyurtmalari va ish murojaatlari</div>
     </div>
     <div class="page-header-right">
       <div class="filter-row" style="margin:0">
         <button class="filter-chip active" onclick="filterApps('all',this)">Barchasi</button>
-        <button class="filter-chip" onclick="filterApps('cert',this)">🎓 Sertifikat</button>
-        <button class="filter-chip" onclick="filterApps('job',this)">💼 Ish ariza</button>
-        <button class="filter-chip" onclick="filterApps('etiraz',this)">⚠️ E'tirozlar</button>
-        <button class="filter-chip" onclick="filterApps('pending',this)">⏳ Kutilmoqda</button>
+        <button class="filter-chip" onclick="filterApps('cert',this)">ð Sertifikat</button>
+        <button class="filter-chip" onclick="filterApps('job',this)">ð¼ Ish ariza</button>
+        <button class="filter-chip" onclick="filterApps('etiraz',this)">â ï¸ E'tirozlar</button>
+        <button class="filter-chip" onclick="filterApps('pending',this)">â³ Kutilmoqda</button>
       </div>
     </div>
   </div>
   <div class="stats-grid-3" style="margin-bottom:16px">
     <div class="stat-card">
-      <div class="stat-card-top"><div class="stat-card-label">Jami arizalar</div><div class="stat-card-icon" style="background:var(--primary-light)">📋</div></div>
+      <div class="stat-card-top"><div class="stat-card-label">Jami arizalar</div><div class="stat-card-icon" style="background:var(--primary-light)">ð</div></div>
       <div class="stat-card-val" style="color:var(--primary)" id="totalAppsCount">0</div>
       <div class="stat-card-change sc-flat">Barcha vaqt</div>
       <div class="stat-card-bar scb-blue"></div>
     </div>
     <div class="stat-card">
-      <div class="stat-card-top"><div class="stat-card-label">Kutilmoqda</div><div class="stat-card-icon" style="background:var(--yellow-light)">⏳</div></div>
+      <div class="stat-card-top"><div class="stat-card-label">Kutilmoqda</div><div class="stat-card-icon" style="background:var(--yellow-light)">â³</div></div>
       <div class="stat-card-val" style="color:var(--yellow)" id="pendingAppsCount">0</div>
       <div class="stat-card-change sc-flat">Ko'rib chiqilmagan</div>
       <div class="stat-card-bar scb-orange"></div>
     </div>
     <div class="stat-card">
-      <div class="stat-card-top"><div class="stat-card-label">Tasdiqlangan</div><div class="stat-card-icon" style="background:var(--green-light)">✅</div></div>
+      <div class="stat-card-top"><div class="stat-card-label">Tasdiqlangan</div><div class="stat-card-icon" style="background:var(--green-light)">â</div></div>
       <div class="stat-card-val" style="color:var(--green)" id="approvedAppsCount">0</div>
-      <div class="stat-card-change sc-up">↑ Bu oy</div>
+      <div class="stat-card-change sc-up">â Bu oy</div>
       <div class="stat-card-bar scb-green"></div>
     </div>
   </div>
@@ -2298,11 +2298,11 @@
   </div>
 </div>
 
-<!-- ═══ ADD/EDIT STUDENT MODAL ═══ -->
+<!-- âââ ADD/EDIT STUDENT MODAL âââ -->
 <div id="studentEditModal" style="display:none;position:fixed;inset:0;background:rgba(15,23,42,0.5);z-index:9999;align-items:center;justify-content:center;padding:16px">
   <div style="background:white;border-radius:20px;padding:28px 28px 24px;width:100%;max-width:460px;box-shadow:0 24px 60px rgba(0,0,0,0.18);position:relative;animation:authIn 0.3s ease">
-    <button onclick="closeStudentModal()" style="position:absolute;top:12px;right:12px;background:var(--bg2);border:none;border-radius:8px;width:30px;height:30px;cursor:pointer;font-size:15px">✕</button>
-    <div style="font-size:17px;font-weight:800;margin-bottom:18px" id="studentModalTitle">👤 Talaba ma'lumotlarini tahrirlash</div>
+    <button onclick="closeStudentModal()" style="position:absolute;top:12px;right:12px;background:var(--bg2);border:none;border-radius:8px;width:30px;height:30px;cursor:pointer;font-size:15px">â</button>
+    <div style="font-size:17px;font-weight:800;margin-bottom:18px" id="studentModalTitle">ð¤ Talaba ma'lumotlarini tahrirlash</div>
     <input type="hidden" id="editStudentId">
     <div class="form-row" style="margin-bottom:13px">
       <div class="form-group" style="margin:0">
@@ -2340,18 +2340,18 @@
       </div>
     </div>
     <div style="display:flex;gap:10px">
-      <button class="btn btn-primary" style="flex:1" onclick="saveStudentEdit()">💾 Saqlash</button>
-      <button id="deleteStudentBtn" class="btn" style="background:var(--red-light);color:var(--red);border:1px solid #FCA5A5;display:none" onclick="deleteStudent()">🗑️ O'chirish</button>
+      <button class="btn btn-primary" style="flex:1" onclick="saveStudentEdit()">ð¾ Saqlash</button>
+      <button id="deleteStudentBtn" class="btn" style="background:var(--red-light);color:var(--red);border:1px solid #FCA5A5;display:none" onclick="deleteStudent()">ðï¸ O'chirish</button>
       <button class="btn btn-secondary" onclick="closeStudentModal()">Bekor</button>
     </div>
   </div>
 </div>
 
-<!-- ═══ ADD GROUP MODAL ═══ -->
+<!-- âââ ADD GROUP MODAL âââ -->
 <div id="addGroupModal" style="display:none;position:fixed;inset:0;background:rgba(15,23,42,0.5);z-index:9999;align-items:center;justify-content:center;padding:16px">
   <div style="background:white;border-radius:20px;padding:28px 28px 24px;width:100%;max-width:420px;box-shadow:0 24px 60px rgba(0,0,0,0.18);position:relative;animation:authIn 0.3s ease">
-    <button onclick="document.getElementById('addGroupModal').style.display='none'" style="position:absolute;top:12px;right:12px;background:var(--bg2);border:none;border-radius:8px;width:30px;height:30px;cursor:pointer;font-size:15px">✕</button>
-    <div style="font-size:17px;font-weight:800;margin-bottom:18px">👥 Yangi guruh yaratish</div>
+    <button onclick="document.getElementById('addGroupModal').style.display='none'" style="position:absolute;top:12px;right:12px;background:var(--bg2);border:none;border-radius:8px;width:30px;height:30px;cursor:pointer;font-size:15px">â</button>
+    <div style="font-size:17px;font-weight:800;margin-bottom:18px">ð¥ Yangi guruh yaratish</div>
     <div class="form-group" style="margin-bottom:13px">
       <label class="form-label">Guruh nomi (masalan: AI-2401)</label>
       <input class="form-input" id="newGroupName" placeholder="AI-2401">
@@ -2379,16 +2379,16 @@
       <input class="form-input" id="newGroupCount" type="number" placeholder="25" min="1" max="50">
     </div>
     <div style="display:flex;gap:10px">
-      <button class="btn btn-primary" style="flex:1" onclick="saveNewGroup()">✅ Yaratish</button>
+      <button class="btn btn-primary" style="flex:1" onclick="saveNewGroup()">â Yaratish</button>
       <button class="btn btn-secondary" onclick="document.getElementById('addGroupModal').style.display='none'">Bekor</button>
     </div>
   </div>
 </div>
 
-<!-- ═══ JOB APPLICATION MODAL ═══ -->
+<!-- âââ JOB APPLICATION MODAL âââ -->
 <div id="jobApplyModal" style="display:none;position:fixed;inset:0;background:rgba(15,23,42,0.55);z-index:9999;align-items:center;justify-content:center;padding:16px">
   <div style="background:white;border-radius:20px;padding:32px 30px 28px;width:100%;max-width:500px;box-shadow:0 24px 64px rgba(0,0,0,0.2);position:relative;animation:authIn 0.3s ease;max-height:90vh;overflow-y:auto">
-    <button onclick="closeJobModal()" style="position:absolute;top:14px;right:14px;background:var(--bg2);border:none;border-radius:8px;width:32px;height:32px;cursor:pointer;font-size:16px;display:flex;align-items:center;justify-content:center;color:var(--text2)">✕</button>
+    <button onclick="closeJobModal()" style="position:absolute;top:14px;right:14px;background:var(--bg2);border:none;border-radius:8px;width:32px;height:32px;cursor:pointer;font-size:16px;display:flex;align-items:center;justify-content:center;color:var(--text2)">â</button>
 
     <!-- Header -->
     <div style="display:flex;align-items:center;gap:12px;margin-bottom:20px">
@@ -2401,7 +2401,7 @@
 
     <!-- Already applied warning -->
     <div id="alreadyAppliedWarn" style="display:none;background:var(--yellow-light);border:1px solid #FCD34D;border-radius:10px;padding:10px 14px;margin-bottom:16px;font-size:13px;color:var(--yellow);font-weight:600">
-      ⚠️ Siz bu kompaniyaga allaqachon ariza yuborgansiz
+      â ï¸ Siz bu kompaniyaga allaqachon ariza yuborgansiz
     </div>
 
     <!-- Form -->
@@ -2419,7 +2419,7 @@
     <div class="form-group" style="margin-bottom:14px">
       <label class="form-label">Telefon raqam <span style="color:var(--red)">*</span></label>
       <div style="position:relative">
-        <span style="position:absolute;left:12px;top:50%;transform:translateY(-50%);font-size:14px;color:var(--text3);font-weight:600">🇺🇿 +998</span>
+        <span style="position:absolute;left:12px;top:50%;transform:translateY(-50%);font-size:14px;color:var(--text3);font-weight:600">ðºð¿ +998</span>
         <input class="form-input" id="applyPhone" placeholder="90 123 45 67" type="tel" style="padding-left:80px" maxlength="12">
       </div>
     </div>
@@ -2447,18 +2447,18 @@
         ondragover="event.preventDefault();this.style.borderColor='var(--primary)';this.style.background='var(--primary-light)'"
         ondragleave="this.style.borderColor='var(--border2)';this.style.background='var(--bg)'"
         ondrop="handleResumeDrop(event)">
-        <div style="font-size:28px;margin-bottom:6px">📎</div>
+        <div style="font-size:28px;margin-bottom:6px">ð</div>
         <div style="font-size:14px;font-weight:600;color:var(--text2)" id="resumeDropText">Faylni bu yerga tashlang yoki bosing</div>
-        <div style="font-size:12px;color:var(--text3);margin-top:3px">PDF, DOC, DOCX — max 5MB</div>
+        <div style="font-size:12px;color:var(--text3);margin-top:3px">PDF, DOC, DOCX â max 5MB</div>
       </div>
       <input type="file" id="resumeFileInput" accept=".pdf,.doc,.docx" style="display:none" onchange="handleResumeSelect(this)">
       <div id="resumeFileInfo" style="display:none;margin-top:10px;padding:10px 14px;background:var(--green-light);border-radius:10px;border:1px solid #86EFAC;display:flex;align-items:center;gap:10px">
-        <span style="font-size:20px">📄</span>
+        <span style="font-size:20px">ð</span>
         <div style="flex:1">
           <div style="font-size:13px;font-weight:700;color:var(--green)" id="resumeFileName">fayl.pdf</div>
           <div style="font-size:11px;color:var(--text3)" id="resumeFileSize"></div>
         </div>
-        <button onclick="clearResume()" style="background:none;border:none;cursor:pointer;color:var(--text3);font-size:16px">✕</button>
+        <button onclick="clearResume()" style="background:none;border:none;cursor:pointer;color:var(--text3);font-size:16px">â</button>
       </div>
     </div>
 
@@ -2467,94 +2467,94 @@
 
     <!-- Buttons -->
     <div style="display:flex;gap:10px">
-      <button class="btn btn-primary" style="flex:1;padding:13px" onclick="submitJobApplication()">📩 Ariza yuborish</button>
+      <button class="btn btn-primary" style="flex:1;padding:13px" onclick="submitJobApplication()">ð© Ariza yuborish</button>
       <button class="btn btn-secondary" onclick="closeJobModal()">Bekor qilish</button>
     </div>
   </div>
 </div>
 
-<!-- ═══ STUDENT: SESIYA TEST REJIM ═══ -->
+<!-- âââ STUDENT: SESIYA TEST REJIM âââ -->
 <div class="page" id="page-sesiya-test">
   <div class="page-header">
     <div class="page-header-left">
-      <div class="ph-title">🧪 Test Rejim</div>
+      <div class="ph-title">ð§ª Test Rejim</div>
       <div class="ph-sub" id="testPageSub">Semestr yakuniy imtihon tayyorgarlik mashqi</div>
     </div>
   </div>
 
   <!-- PHASE 0: LOCKED -->
   <div id="stest-locked" style="display:flex;flex-direction:column;align-items:center;justify-content:center;min-height:380px;text-align:center">
-    <div style="width:96px;height:96px;border-radius:50%;background:linear-gradient(135deg,#FEF3C7,#FED7AA);display:flex;align-items:center;justify-content:center;font-size:44px;margin-bottom:24px;animation:pulse3 2.5s infinite;box-shadow:0 4px 24px rgba(234,88,12,0.15)">🔒</div>
+    <div style="width:96px;height:96px;border-radius:50%;background:linear-gradient(135deg,#FEF3C7,#FED7AA);display:flex;align-items:center;justify-content:center;font-size:44px;margin-bottom:24px;animation:pulse3 2.5s infinite;box-shadow:0 4px 24px rgba(234,88,12,0.15)">ð</div>
     <div style="font-size:22px;font-weight:800;color:#0F172A;margin-bottom:8px">Test rejim qulflangan</div>
     <div style="font-size:14px;color:#64748B;line-height:1.7;max-width:380px">Dekanat tomonidan faollashtirilishini kuting.<br>Ruxsat berilganda avtomatik ravishda ochiladi.</div>
-    <div style="margin-top:24px;padding:12px 24px;background:#FFF7ED;border:1.5px solid #FED7AA;border-radius:12px;font-size:13px;color:#EA580C;font-weight:600">⏳ Dekanat ruxsati kutilmoqda</div>
+    <div style="margin-top:24px;padding:12px 24px;background:#FFF7ED;border:1.5px solid #FED7AA;border-radius:12px;font-size:13px;color:#EA580C;font-weight:600">â³ Dekanat ruxsati kutilmoqda</div>
   </div>
 
   <!-- PHASE 1: YO'RIQNOMA + FAN TANLASH -->
   <div id="stest-instructions" style="display:none">
     <div style="background:linear-gradient(135deg,#EEF3FF,#DBEAFE);border:1.5px solid #93C5FD;border-radius:16px;padding:22px 26px;margin-bottom:22px">
-      <div style="font-size:20px;font-weight:800;color:#1E40AF;margin-bottom:14px">📋 Test yo'riqnomasi</div>
+      <div style="font-size:20px;font-weight:800;color:#1E40AF;margin-bottom:14px">ð Test yo'riqnomasi</div>
       <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:16px">
         <div style="background:white;border-radius:10px;padding:12px 14px;border:1px solid #DBEAFE;display:flex;align-items:center;gap:10px">
-          <span style="font-size:20px">📝</span>
+          <span style="font-size:20px">ð</span>
           <div><div style="font-size:11px;color:#64748B;font-weight:600;text-transform:uppercase;letter-spacing:0.5px">Savollar soni</div><div style="font-size:16px;font-weight:800;color:#1E40AF">20 ta savol</div></div>
         </div>
         <div style="background:white;border-radius:10px;padding:12px 14px;border:1px solid #DBEAFE;display:flex;align-items:center;gap:10px">
-          <span style="font-size:20px">⏱️</span>
+          <span style="font-size:20px">â±ï¸</span>
           <div><div style="font-size:11px;color:#64748B;font-weight:600;text-transform:uppercase;letter-spacing:0.5px">Vaqt chegarasi</div><div style="font-size:16px;font-weight:800;color:#1E40AF">30 daqiqa</div></div>
         </div>
         <div style="background:white;border-radius:10px;padding:12px 14px;border:1px solid #DBEAFE;display:flex;align-items:center;gap:10px">
-          <span style="font-size:20px">⚠️</span>
+          <span style="font-size:20px">â ï¸</span>
           <div><div style="font-size:11px;color:#64748B;font-weight:600;text-transform:uppercase;letter-spacing:0.5px">E'tiborga oling</div><div style="font-size:13px;font-weight:600;color:#DC2626">Tab almashtirish qayd etiladi</div></div>
         </div>
         <div style="background:white;border-radius:10px;padding:12px 14px;border:1px solid #DBEAFE;display:flex;align-items:center;gap:10px">
-          <span style="font-size:20px">🎯</span>
+          <span style="font-size:20px">ð¯</span>
           <div><div style="font-size:11px;color:#64748B;font-weight:600;text-transform:uppercase;letter-spacing:0.5px">Natija</div><div style="font-size:13px;font-weight:600;color:#16A34A">Darhol ko'rasiz</div></div>
         </div>
       </div>
       <div style="background:white;border-radius:10px;padding:14px 16px;border:1px solid #FED7AA;margin-bottom:16px">
-        <div style="font-size:13px;font-weight:700;color:#92400E;margin-bottom:8px">📌 Qoidalar:</div>
+        <div style="font-size:13px;font-weight:700;color:#92400E;margin-bottom:8px">ð Qoidalar:</div>
         <div style="font-size:13px;color:#64748B;line-height:1.8">
-          ✅ Har bir savolga faqat bitta javob tanlang<br>
-          ✅ Savolga e'tirozingiz bo'lsa — "E'tiroz" tugmasini bosing<br>
-          ✅ Testni yakunlagandan keyin javoblar va xatolar ko'rinadi<br>
-          ⛔ Test vaqtida sahifadan chiqmaslik tavsiya etiladi<br>
-          ⛔ Boshqa tabga o'tish avtomatik qayd etiladi
+          â Har bir savolga faqat bitta javob tanlang<br>
+          â Savolga e'tirozingiz bo'lsa â "E'tiroz" tugmasini bosing<br>
+          â Testni yakunlagandan keyin javoblar va xatolar ko'rinadi<br>
+          â Test vaqtida sahifadan chiqmaslik tavsiya etiladi<br>
+          â Boshqa tabga o'tish avtomatik qayd etiladi
         </div>
       </div>
     </div>
 
-    <div style="font-size:16px;font-weight:800;color:#0F172A;margin-bottom:16px">📚 Fanni tanlang:</div>
+    <div style="font-size:16px;font-weight:800;color:#0F172A;margin-bottom:16px">ð Fanni tanlang:</div>
     <div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(220px,1fr));gap:14px;margin-bottom:24px">
       <div onclick="startTestWithSubject('algo')" style="background:white;border:2px solid #E2E8F0;border-radius:14px;padding:20px;cursor:pointer;transition:all 0.18s;text-align:center" onmouseover="this.style.borderColor='#1B4FD8';this.style.transform='translateY(-2px)';this.style.boxShadow='0 6px 20px rgba(27,79,216,0.12)'" onmouseout="this.style.borderColor='#E2E8F0';this.style.transform='';this.style.boxShadow=''">
-        <div style="font-size:32px;margin-bottom:10px">💻</div>
+        <div style="font-size:32px;margin-bottom:10px">ð»</div>
         <div style="font-size:14px;font-weight:800;color:#0F172A">Algoritmlar va Dasturlash</div>
-        <div style="font-size:12px;color:#64748B;margin-top:4px">20 savol · 30 daqiqa</div>
-        <div style="margin-top:10px;padding:5px 12px;background:#EEF3FF;border-radius:20px;font-size:11px;font-weight:700;color:#1B4FD8;display:inline-block">Boshlash →</div>
+        <div style="font-size:12px;color:#64748B;margin-top:4px">20 savol Â· 30 daqiqa</div>
+        <div style="margin-top:10px;padding:5px 12px;background:#EEF3FF;border-radius:20px;font-size:11px;font-weight:700;color:#1B4FD8;display:inline-block">Boshlash â</div>
       </div>
       <div onclick="startTestWithSubject('ai')" style="background:white;border:2px solid #E2E8F0;border-radius:14px;padding:20px;cursor:pointer;transition:all 0.18s;text-align:center" onmouseover="this.style.borderColor='#7C3AED';this.style.transform='translateY(-2px)';this.style.boxShadow='0 6px 20px rgba(124,58,237,0.12)'" onmouseout="this.style.borderColor='#E2E8F0';this.style.transform='';this.style.boxShadow=''">
-        <div style="font-size:32px;margin-bottom:10px">🤖</div>
+        <div style="font-size:32px;margin-bottom:10px">ð¤</div>
         <div style="font-size:14px;font-weight:800;color:#0F172A">Sun'iy Intellekt</div>
-        <div style="font-size:12px;color:#64748B;margin-top:4px">20 savol · 30 daqiqa</div>
-        <div style="margin-top:10px;padding:5px 12px;background:#F3E8FF;border-radius:20px;font-size:11px;font-weight:700;color:#7C3AED;display:inline-block">Boshlash →</div>
+        <div style="font-size:12px;color:#64748B;margin-top:4px">20 savol Â· 30 daqiqa</div>
+        <div style="margin-top:10px;padding:5px 12px;background:#F3E8FF;border-radius:20px;font-size:11px;font-weight:700;color:#7C3AED;display:inline-block">Boshlash â</div>
       </div>
       <div onclick="startTestWithSubject('math')" style="background:white;border:2px solid #E2E8F0;border-radius:14px;padding:20px;cursor:pointer;transition:all 0.18s;text-align:center" onmouseover="this.style.borderColor='#059669';this.style.transform='translateY(-2px)';this.style.boxShadow='0 6px 20px rgba(5,150,105,0.12)'" onmouseout="this.style.borderColor='#E2E8F0';this.style.transform='';this.style.boxShadow=''">
-        <div style="font-size:32px;margin-bottom:10px">📐</div>
+        <div style="font-size:32px;margin-bottom:10px">ð</div>
         <div style="font-size:14px;font-weight:800;color:#0F172A">Matematika (AI uchun)</div>
-        <div style="font-size:12px;color:#64748B;margin-top:4px">20 savol · 30 daqiqa</div>
-        <div style="margin-top:10px;padding:5px 12px;background:#DCFCE7;border-radius:20px;font-size:11px;font-weight:700;color:#059669;display:inline-block">Boshlash →</div>
+        <div style="font-size:12px;color:#64748B;margin-top:4px">20 savol Â· 30 daqiqa</div>
+        <div style="margin-top:10px;padding:5px 12px;background:#DCFCE7;border-radius:20px;font-size:11px;font-weight:700;color:#059669;display:inline-block">Boshlash â</div>
       </div>
       <div onclick="startTestWithSubject('db')" style="background:white;border:2px solid #E2E8F0;border-radius:14px;padding:20px;cursor:pointer;transition:all 0.18s;text-align:center" onmouseover="this.style.borderColor='#EA580C';this.style.transform='translateY(-2px)';this.style.boxShadow='0 6px 20px rgba(234,88,12,0.12)'" onmouseout="this.style.borderColor='#E2E8F0';this.style.transform='';this.style.boxShadow=''">
-        <div style="font-size:32px;margin-bottom:10px">🗄️</div>
+        <div style="font-size:32px;margin-bottom:10px">ðï¸</div>
         <div style="font-size:14px;font-weight:800;color:#0F172A">Ma'lumotlar Bazasi</div>
-        <div style="font-size:12px;color:#64748B;margin-top:4px">20 savol · 30 daqiqa</div>
-        <div style="margin-top:10px;padding:5px 12px;background:#FFF7ED;border-radius:20px;font-size:11px;font-weight:700;color:#EA580C;display:inline-block">Boshlash →</div>
+        <div style="font-size:12px;color:#64748B;margin-top:4px">20 savol Â· 30 daqiqa</div>
+        <div style="margin-top:10px;padding:5px 12px;background:#FFF7ED;border-radius:20px;font-size:11px;font-weight:700;color:#EA580C;display:inline-block">Boshlash â</div>
       </div>
       <div onclick="startTestWithSubject('web')" style="background:white;border:2px solid #E2E8F0;border-radius:14px;padding:20px;cursor:pointer;transition:all 0.18s;text-align:center" onmouseover="this.style.borderColor='#0891B2';this.style.transform='translateY(-2px)';this.style.boxShadow='0 6px 20px rgba(8,145,178,0.12)'" onmouseout="this.style.borderColor='#E2E8F0';this.style.transform='';this.style.boxShadow=''">
-        <div style="font-size:32px;margin-bottom:10px">🌐</div>
+        <div style="font-size:32px;margin-bottom:10px">ð</div>
         <div style="font-size:14px;font-weight:800;color:#0F172A">Web Dasturlash</div>
-        <div style="font-size:12px;color:#64748B;margin-top:4px">20 savol · 30 daqiqa</div>
-        <div style="margin-top:10px;padding:5px 12px;background:#ECFEFF;border-radius:20px;font-size:11px;font-weight:700;color:#0891B2;display:inline-block">Boshlash →</div>
+        <div style="font-size:12px;color:#64748B;margin-top:4px">20 savol Â· 30 daqiqa</div>
+        <div style="margin-top:10px;padding:5px 12px;background:#ECFEFF;border-radius:20px;font-size:11px;font-weight:700;color:#0891B2;display:inline-block">Boshlash â</div>
       </div>
     </div>
   </div>
@@ -2564,10 +2564,10 @@
     <!-- Timer bar -->
     <div style="background:linear-gradient(135deg,#EEF3FF,#DBEAFE);border:1.5px solid #93C5FD;border-radius:14px;padding:16px 22px;margin-bottom:18px;display:flex;align-items:center;justify-content:space-between">
       <div style="display:flex;align-items:center;gap:12px">
-        <span style="font-size:22px" id="testSubjectIcon">💻</span>
+        <span style="font-size:22px" id="testSubjectIcon">ð»</span>
         <div>
           <div style="font-size:15px;font-weight:800;color:#1E40AF" id="testSubjectName">Algoritmlar</div>
-          <div style="font-size:12px;color:#3B82F6">Mashq · baholar hisoblanmaydi</div>
+          <div style="font-size:12px;color:#3B82F6">Mashq Â· baholar hisoblanmaydi</div>
         </div>
       </div>
       <div style="display:flex;align-items:center;gap:20px">
@@ -2590,7 +2590,7 @@
     <!-- Submit button -->
     <div style="margin-top:24px;padding:20px;background:#F8FAFC;border-radius:14px;border:1.5px solid #E2E8F0;text-align:center">
       <div style="font-size:13px;color:#64748B;margin-bottom:12px" id="testAnsweredCount">0 ta savol javob berildi</div>
-      <button onclick="submitTestExam()" id="testSubmitBtn" style="padding:13px 40px;background:linear-gradient(135deg,#1B4FD8,#3B82F6);color:white;border:none;border-radius:10px;font-family:'Outfit',sans-serif;font-size:15px;font-weight:700;cursor:pointer;box-shadow:0 4px 14px rgba(27,79,216,0.26)">📤 Testni yakunlash</button>
+      <button onclick="submitTestExam()" id="testSubmitBtn" style="padding:13px 40px;background:linear-gradient(135deg,#1B4FD8,#3B82F6);color:white;border:none;border-radius:10px;font-family:'Outfit',sans-serif;font-size:15px;font-weight:700;cursor:pointer;box-shadow:0 4px 14px rgba(27,79,216,0.26)">ð¤ Testni yakunlash</button>
     </div>
   </div>
 
@@ -2598,98 +2598,98 @@
   <div id="stest-results" style="display:none">
     <div id="testResultsContent"></div>
     <div style="margin-top:20px;display:flex;gap:12px">
-      <button onclick="showTestInstructions()" style="flex:1;padding:13px;background:white;border:2px solid #1B4FD8;color:#1B4FD8;border-radius:10px;font-family:'Outfit',sans-serif;font-size:14px;font-weight:700;cursor:pointer">🔄 Qaytadan sinash</button>
-      <button onclick="showPage('bosh-sahifa')" style="flex:1;padding:13px;background:linear-gradient(135deg,#1B4FD8,#3B82F6);color:white;border:none;border-radius:10px;font-family:'Outfit',sans-serif;font-size:14px;font-weight:700;cursor:pointer">🏠 Bosh sahifaga</button>
+      <button onclick="showTestInstructions()" style="flex:1;padding:13px;background:white;border:2px solid #1B4FD8;color:#1B4FD8;border-radius:10px;font-family:'Outfit',sans-serif;font-size:14px;font-weight:700;cursor:pointer">ð Qaytadan sinash</button>
+      <button onclick="showPage('bosh-sahifa')" style="flex:1;padding:13px;background:linear-gradient(135deg,#1B4FD8,#3B82F6);color:white;border:none;border-radius:10px;font-family:'Outfit',sans-serif;font-size:14px;font-weight:700;cursor:pointer">ð  Bosh sahifaga</button>
     </div>
   </div>
 </div>
 
-<!-- ═══ STUDENT: HAQIQIY SESIYA ═══ -->
+<!-- âââ STUDENT: HAQIQIY SESIYA âââ -->
 <div class="page" id="page-sesiya-real">
   <div class="page-header">
     <div class="page-header-left">
-      <div class="ph-title">📝 Sesiya</div>
+      <div class="ph-title">ð Sesiya</div>
       <div class="ph-sub" id="realPageSub">Rasmiy yakuniy imtihon</div>
     </div>
   </div>
 
   <!-- PHASE 0: LOCKED -->
   <div id="sreal-locked" style="display:flex;flex-direction:column;align-items:center;justify-content:center;min-height:380px;text-align:center">
-    <div style="width:96px;height:96px;border-radius:50%;background:linear-gradient(135deg,#FEE2E2,#FCA5A5);display:flex;align-items:center;justify-content:center;font-size:44px;margin-bottom:24px;animation:pulse3 2.5s infinite;box-shadow:0 4px 24px rgba(220,38,38,0.15)">🔐</div>
+    <div style="width:96px;height:96px;border-radius:50%;background:linear-gradient(135deg,#FEE2E2,#FCA5A5);display:flex;align-items:center;justify-content:center;font-size:44px;margin-bottom:24px;animation:pulse3 2.5s infinite;box-shadow:0 4px 24px rgba(220,38,38,0.15)">ð</div>
     <div style="font-size:22px;font-weight:800;color:#0F172A;margin-bottom:8px">Sesiya qulflangan</div>
     <div style="font-size:14px;color:#64748B;line-height:1.7;max-width:380px">Imtihon dekanat tomonidan boshlanishi mumkin.<br>Faollashtirilganda bu yerda imtihon paydo bo'ladi.</div>
-    <div style="margin-top:24px;padding:12px 24px;background:#FFF5F5;border:1.5px solid #FCA5A5;border-radius:12px;font-size:13px;color:#DC2626;font-weight:600">🔐 Faqat dekanat faollashtira oladi</div>
+    <div style="margin-top:24px;padding:12px 24px;background:#FFF5F5;border:1.5px solid #FCA5A5;border-radius:12px;font-size:13px;color:#DC2626;font-weight:600">ð Faqat dekanat faollashtira oladi</div>
   </div>
 
   <!-- PHASE 1: YO'RIQNOMA + FAN TANLASH -->
   <div id="sreal-instructions" style="display:none">
     <div style="background:linear-gradient(135deg,#FFF5F5,#FEE2E2);border:1.5px solid #FCA5A5;border-radius:16px;padding:22px 26px;margin-bottom:22px">
-      <div style="font-size:20px;font-weight:800;color:#991B1B;margin-bottom:14px">📋 Imtihon yo'riqnomasi</div>
+      <div style="font-size:20px;font-weight:800;color:#991B1B;margin-bottom:14px">ð Imtihon yo'riqnomasi</div>
       <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:16px">
         <div style="background:white;border-radius:10px;padding:12px 14px;border:1px solid #FEE2E2;display:flex;align-items:center;gap:10px">
-          <span style="font-size:20px">📝</span>
+          <span style="font-size:20px">ð</span>
           <div><div style="font-size:11px;color:#64748B;font-weight:600;text-transform:uppercase;letter-spacing:0.5px">Savollar soni</div><div style="font-size:16px;font-weight:800;color:#DC2626">30 ta savol</div></div>
         </div>
         <div style="background:white;border-radius:10px;padding:12px 14px;border:1px solid #FEE2E2;display:flex;align-items:center;gap:10px">
-          <span style="font-size:20px">⏱️</span>
+          <span style="font-size:20px">â±ï¸</span>
           <div><div style="font-size:11px;color:#64748B;font-weight:600;text-transform:uppercase;letter-spacing:0.5px">Vaqt chegarasi</div><div style="font-size:16px;font-weight:800;color:#DC2626">90 daqiqa</div></div>
         </div>
         <div style="background:white;border-radius:10px;padding:12px 14px;border:1px solid #FEE2E2;display:flex;align-items:center;gap:10px">
-          <span style="font-size:20px">⭐</span>
+          <span style="font-size:20px">â­</span>
           <div><div style="font-size:11px;color:#64748B;font-weight:600;text-transform:uppercase;letter-spacing:0.5px">Maksimal ball</div><div style="font-size:16px;font-weight:800;color:#16A34A">100 ball</div></div>
         </div>
         <div style="background:white;border-radius:10px;padding:12px 14px;border:1px solid #FEE2E2;display:flex;align-items:center;gap:10px">
-          <span style="font-size:20px">📊</span>
+          <span style="font-size:20px">ð</span>
           <div><div style="font-size:11px;color:#64748B;font-weight:600;text-transform:uppercase;letter-spacing:0.5px">Natija</div><div style="font-size:13px;font-weight:600;color:#16A34A">Darhol ko'rasiz</div></div>
         </div>
       </div>
       <div style="background:#FFFBEB;border:1.5px solid #FCD34D;border-radius:10px;padding:14px 16px;margin-bottom:16px">
-        <div style="font-size:13px;font-weight:700;color:#92400E;margin-bottom:8px">⚠️ Muhim qoidalar:</div>
+        <div style="font-size:13px;font-weight:700;color:#92400E;margin-bottom:8px">â ï¸ Muhim qoidalar:</div>
         <div style="font-size:13px;color:#64748B;line-height:1.8">
-          ✅ Har bir savolga faqat bitta javob tanlang<br>
-          ✅ Savolga e'tirozingiz bo'lsa — "E'tiroz" tugmasini bosing<br>
-          ✅ Imtihon yakunida natijalar darhol ko'rsatiladi<br>
-          ⛔ <strong>Imtihon paytida sahifadan chiqmang</strong> — barcha harakatlar qayd etiladi<br>
-          ⛔ Tab almashtirish avtomatik dekanatga yuboriladi<br>
-          ⛔ Nusxa olish va o'ng tugma bloklangan
+          â Har bir savolga faqat bitta javob tanlang<br>
+          â Savolga e'tirozingiz bo'lsa â "E'tiroz" tugmasini bosing<br>
+          â Imtihon yakunida natijalar darhol ko'rsatiladi<br>
+          â <strong>Imtihon paytida sahifadan chiqmang</strong> â barcha harakatlar qayd etiladi<br>
+          â Tab almashtirish avtomatik dekanatga yuboriladi<br>
+          â Nusxa olish va o'ng tugma bloklangan
         </div>
       </div>
       <div style="background:#FEE2E2;border-radius:10px;padding:12px 16px;font-size:13px;color:#991B1B;font-weight:700;text-align:center">
-        🔐 Bu rasmiy imtihon — javoblar dekanatga yuboriladi va baholanadi!
+        ð Bu rasmiy imtihon â javoblar dekanatga yuboriladi va baholanadi!
       </div>
     </div>
 
-    <div style="font-size:16px;font-weight:800;color:#0F172A;margin-bottom:16px">📚 Imtihon fanini tanlang:</div>
+    <div style="font-size:16px;font-weight:800;color:#0F172A;margin-bottom:16px">ð Imtihon fanini tanlang:</div>
     <div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(220px,1fr));gap:14px;margin-bottom:24px">
       <div onclick="startRealWithSubject('algo')" style="background:white;border:2px solid #E2E8F0;border-radius:14px;padding:20px;cursor:pointer;transition:all 0.18s;text-align:center" onmouseover="this.style.borderColor='#DC2626';this.style.transform='translateY(-2px)';this.style.boxShadow='0 6px 20px rgba(220,38,38,0.12)'" onmouseout="this.style.borderColor='#E2E8F0';this.style.transform='';this.style.boxShadow=''">
-        <div style="font-size:32px;margin-bottom:10px">💻</div>
+        <div style="font-size:32px;margin-bottom:10px">ð»</div>
         <div style="font-size:14px;font-weight:800;color:#0F172A">Algoritmlar va Dasturlash</div>
-        <div style="font-size:12px;color:#64748B;margin-top:4px">30 savol · 90 daqiqa · 100 ball</div>
-        <div style="margin-top:10px;padding:5px 12px;background:#FEE2E2;border-radius:20px;font-size:11px;font-weight:700;color:#DC2626;display:inline-block">Boshlash →</div>
+        <div style="font-size:12px;color:#64748B;margin-top:4px">30 savol Â· 90 daqiqa Â· 100 ball</div>
+        <div style="margin-top:10px;padding:5px 12px;background:#FEE2E2;border-radius:20px;font-size:11px;font-weight:700;color:#DC2626;display:inline-block">Boshlash â</div>
       </div>
       <div onclick="startRealWithSubject('ai')" style="background:white;border:2px solid #E2E8F0;border-radius:14px;padding:20px;cursor:pointer;transition:all 0.18s;text-align:center" onmouseover="this.style.borderColor='#DC2626';this.style.transform='translateY(-2px)';this.style.boxShadow='0 6px 20px rgba(220,38,38,0.12)'" onmouseout="this.style.borderColor='#E2E8F0';this.style.transform='';this.style.boxShadow=''">
-        <div style="font-size:32px;margin-bottom:10px">🤖</div>
+        <div style="font-size:32px;margin-bottom:10px">ð¤</div>
         <div style="font-size:14px;font-weight:800;color:#0F172A">Sun'iy Intellekt</div>
-        <div style="font-size:12px;color:#64748B;margin-top:4px">30 savol · 90 daqiqa · 100 ball</div>
-        <div style="margin-top:10px;padding:5px 12px;background:#FEE2E2;border-radius:20px;font-size:11px;font-weight:700;color:#DC2626;display:inline-block">Boshlash →</div>
+        <div style="font-size:12px;color:#64748B;margin-top:4px">30 savol Â· 90 daqiqa Â· 100 ball</div>
+        <div style="margin-top:10px;padding:5px 12px;background:#FEE2E2;border-radius:20px;font-size:11px;font-weight:700;color:#DC2626;display:inline-block">Boshlash â</div>
       </div>
       <div onclick="startRealWithSubject('math')" style="background:white;border:2px solid #E2E8F0;border-radius:14px;padding:20px;cursor:pointer;transition:all 0.18s;text-align:center" onmouseover="this.style.borderColor='#DC2626';this.style.transform='translateY(-2px)';this.style.boxShadow='0 6px 20px rgba(220,38,38,0.12)'" onmouseout="this.style.borderColor='#E2E8F0';this.style.transform='';this.style.boxShadow=''">
-        <div style="font-size:32px;margin-bottom:10px">📐</div>
+        <div style="font-size:32px;margin-bottom:10px">ð</div>
         <div style="font-size:14px;font-weight:800;color:#0F172A">Matematika (AI uchun)</div>
-        <div style="font-size:12px;color:#64748B;margin-top:4px">30 savol · 90 daqiqa · 100 ball</div>
-        <div style="margin-top:10px;padding:5px 12px;background:#FEE2E2;border-radius:20px;font-size:11px;font-weight:700;color:#DC2626;display:inline-block">Boshlash →</div>
+        <div style="font-size:12px;color:#64748B;margin-top:4px">30 savol Â· 90 daqiqa Â· 100 ball</div>
+        <div style="margin-top:10px;padding:5px 12px;background:#FEE2E2;border-radius:20px;font-size:11px;font-weight:700;color:#DC2626;display:inline-block">Boshlash â</div>
       </div>
       <div onclick="startRealWithSubject('db')" style="background:white;border:2px solid #E2E8F0;border-radius:14px;padding:20px;cursor:pointer;transition:all 0.18s;text-align:center" onmouseover="this.style.borderColor='#DC2626';this.style.transform='translateY(-2px)';this.style.boxShadow='0 6px 20px rgba(220,38,38,0.12)'" onmouseout="this.style.borderColor='#E2E8F0';this.style.transform='';this.style.boxShadow=''">
-        <div style="font-size:32px;margin-bottom:10px">🗄️</div>
+        <div style="font-size:32px;margin-bottom:10px">ðï¸</div>
         <div style="font-size:14px;font-weight:800;color:#0F172A">Ma'lumotlar Bazasi</div>
-        <div style="font-size:12px;color:#64748B;margin-top:4px">30 savol · 90 daqiqa · 100 ball</div>
-        <div style="margin-top:10px;padding:5px 12px;background:#FEE2E2;border-radius:20px;font-size:11px;font-weight:700;color:#DC2626;display:inline-block">Boshlash →</div>
+        <div style="font-size:12px;color:#64748B;margin-top:4px">30 savol Â· 90 daqiqa Â· 100 ball</div>
+        <div style="margin-top:10px;padding:5px 12px;background:#FEE2E2;border-radius:20px;font-size:11px;font-weight:700;color:#DC2626;display:inline-block">Boshlash â</div>
       </div>
       <div onclick="startRealWithSubject('web')" style="background:white;border:2px solid #E2E8F0;border-radius:14px;padding:20px;cursor:pointer;transition:all 0.18s;text-align:center" onmouseover="this.style.borderColor='#DC2626';this.style.transform='translateY(-2px)';this.style.boxShadow='0 6px 20px rgba(220,38,38,0.12)'" onmouseout="this.style.borderColor='#E2E8F0';this.style.transform='';this.style.boxShadow=''">
-        <div style="font-size:32px;margin-bottom:10px">🌐</div>
+        <div style="font-size:32px;margin-bottom:10px">ð</div>
         <div style="font-size:14px;font-weight:800;color:#0F172A">Web Dasturlash</div>
-        <div style="font-size:12px;color:#64748B;margin-top:4px">30 savol · 90 daqiqa · 100 ball</div>
-        <div style="margin-top:10px;padding:5px 12px;background:#FEE2E2;border-radius:20px;font-size:11px;font-weight:700;color:#DC2626;display:inline-block">Boshlash →</div>
+        <div style="font-size:12px;color:#64748B;margin-top:4px">30 savol Â· 90 daqiqa Â· 100 ball</div>
+        <div style="margin-top:10px;padding:5px 12px;background:#FEE2E2;border-radius:20px;font-size:11px;font-weight:700;color:#DC2626;display:inline-block">Boshlash â</div>
       </div>
     </div>
   </div>
@@ -2698,10 +2698,10 @@
   <div id="sreal-active" style="display:none">
     <div style="background:linear-gradient(135deg,#FFF5F5,#FEE2E2);border:1.5px solid #FCA5A5;border-radius:14px;padding:16px 22px;margin-bottom:18px;display:flex;align-items:center;justify-content:space-between">
       <div style="display:flex;align-items:center;gap:12px">
-        <span style="font-size:22px" id="realSubjectIcon">💻</span>
+        <span style="font-size:22px" id="realSubjectIcon">ð»</span>
         <div>
           <div style="font-size:15px;font-weight:800;color:#991B1B" id="realSubjectName">Algoritmlar</div>
-          <div style="font-size:12px;color:#DC2626">Rasmiy imtihon · javoblar saqlanadi</div>
+          <div style="font-size:12px;color:#DC2626">Rasmiy imtihon Â· javoblar saqlanadi</div>
         </div>
       </div>
       <div style="display:flex;align-items:center;gap:20px">
@@ -2719,12 +2719,12 @@
       <div id="realProgressBar" style="height:100%;background:linear-gradient(90deg,#DC2626,#EF4444);border-radius:10px;width:0%;transition:width 0.4s ease"></div>
     </div>
     <div style="background:#FFFBEB;border:1.5px solid #FCD34D;border-radius:10px;padding:12px 16px;margin-bottom:18px;font-size:13px;color:#92400E;display:flex;align-items:center;gap:8px;font-weight:600">
-      ⚠️ Imtihon paytida sahifadan chiqmang! Barcha harakatlar qayd etiladi.
+      â ï¸ Imtihon paytida sahifadan chiqmang! Barcha harakatlar qayd etiladi.
     </div>
     <div id="realQuestionsContainer"></div>
     <div style="margin-top:24px;padding:20px;background:#FFF5F5;border-radius:14px;border:1.5px solid #FCA5A5;text-align:center">
       <div style="font-size:13px;color:#64748B;margin-bottom:12px" id="realAnsweredCount">0 ta savol javob berildi</div>
-      <button onclick="submitRealExam()" style="padding:13px 40px;background:linear-gradient(135deg,#DC2626,#EF4444);color:white;border:none;border-radius:10px;font-family:'Outfit',sans-serif;font-size:15px;font-weight:700;cursor:pointer;box-shadow:0 4px 14px rgba(220,38,38,0.26)">📤 Imtihonni yakunlash va topshirish</button>
+      <button onclick="submitRealExam()" style="padding:13px 40px;background:linear-gradient(135deg,#DC2626,#EF4444);color:white;border:none;border-radius:10px;font-family:'Outfit',sans-serif;font-size:15px;font-weight:700;cursor:pointer;box-shadow:0 4px 14px rgba(220,38,38,0.26)">ð¤ Imtihonni yakunlash va topshirish</button>
     </div>
   </div>
 
@@ -2732,44 +2732,44 @@
   <div id="sreal-results" style="display:none">
     <div id="realResultsContent"></div>
     <div style="margin-top:20px;display:flex;gap:12px">
-      <button onclick="showPage('bosh-sahifa')" style="flex:1;padding:13px;background:linear-gradient(135deg,#DC2626,#EF4444);color:white;border:none;border-radius:10px;font-family:'Outfit',sans-serif;font-size:14px;font-weight:700;cursor:pointer">🏠 Bosh sahifaga</button>
+      <button onclick="showPage('bosh-sahifa')" style="flex:1;padding:13px;background:linear-gradient(135deg,#DC2626,#EF4444);color:white;border:none;border-radius:10px;font-family:'Outfit',sans-serif;font-size:14px;font-weight:700;cursor:pointer">ð  Bosh sahifaga</button>
     </div>
   </div>
 </div>
 
-<!-- ═══ DEKANAT: SAVOLLAR BOSHQARUVI ═══ -->
+<!-- âââ DEKANAT: SAVOLLAR BOSHQARUVI âââ -->
 <div class="page" id="page-dekanat-questions">
   <div class="page-header">
     <div class="page-header-left">
-      <div class="ph-title">📝 Savollar Boshqaruvi</div>
+      <div class="ph-title">ð Savollar Boshqaruvi</div>
       <div class="ph-sub">Test va Sesiya savollarini kiritish, tahrirlash va o'chirish</div>
     </div>
     <div class="page-header-right">
-      <button class="btn btn-primary" onclick="openAddQuestionModal()">➕ Savol qo'shish</button>
+      <button class="btn btn-primary" onclick="openAddQuestionModal()">â Savol qo'shish</button>
     </div>
   </div>
 
   <!-- Stats -->
   <div style="display:grid;grid-template-columns:repeat(4,1fr);gap:14px;margin-bottom:22px" id="qStatsRow">
-    <div class="stat-card"><div class="stat-card-top"><div class="stat-card-label">Jami savollar</div><div class="stat-card-icon" style="background:#EEF3FF">📝</div></div><div class="stat-card-val" style="color:var(--primary)" id="qStatTotal">0</div><div class="stat-card-change sc-flat">Dekanat kiritgan</div><div class="stat-card-bar scb-blue"></div></div>
-    <div class="stat-card"><div class="stat-card-top"><div class="stat-card-label">Test savollari</div><div class="stat-card-icon" style="background:#DCFCE7">🧪</div></div><div class="stat-card-val" style="color:var(--green)" id="qStatTest">0</div><div class="stat-card-change sc-flat">Mashq uchun</div><div class="stat-card-bar scb-green"></div></div>
-    <div class="stat-card"><div class="stat-card-top"><div class="stat-card-label">Sesiya savollari</div><div class="stat-card-icon" style="background:#FEE2E2">📋</div></div><div class="stat-card-val" style="color:var(--red)" id="qStatReal">0</div><div class="stat-card-change sc-flat">Rasmiy imtihon</div><div class="stat-card-bar scb-red"></div></div>
-    <div class="stat-card"><div class="stat-card-top"><div class="stat-card-label">Fanlar</div><div class="stat-card-icon" style="background:#F3E8FF">📚</div></div><div class="stat-card-val" style="color:var(--purple)" id="qStatSubjects">0</div><div class="stat-card-change sc-flat">Aktiv fanlar</div><div class="stat-card-bar scb-purple"></div></div>
+    <div class="stat-card"><div class="stat-card-top"><div class="stat-card-label">Jami savollar</div><div class="stat-card-icon" style="background:#EEF3FF">ð</div></div><div class="stat-card-val" style="color:var(--primary)" id="qStatTotal">0</div><div class="stat-card-change sc-flat">Dekanat kiritgan</div><div class="stat-card-bar scb-blue"></div></div>
+    <div class="stat-card"><div class="stat-card-top"><div class="stat-card-label">Test savollari</div><div class="stat-card-icon" style="background:#DCFCE7">ð§ª</div></div><div class="stat-card-val" style="color:var(--green)" id="qStatTest">0</div><div class="stat-card-change sc-flat">Mashq uchun</div><div class="stat-card-bar scb-green"></div></div>
+    <div class="stat-card"><div class="stat-card-top"><div class="stat-card-label">Sesiya savollari</div><div class="stat-card-icon" style="background:#FEE2E2">ð</div></div><div class="stat-card-val" style="color:var(--red)" id="qStatReal">0</div><div class="stat-card-change sc-flat">Rasmiy imtihon</div><div class="stat-card-bar scb-red"></div></div>
+    <div class="stat-card"><div class="stat-card-top"><div class="stat-card-label">Fanlar</div><div class="stat-card-icon" style="background:#F3E8FF">ð</div></div><div class="stat-card-val" style="color:var(--purple)" id="qStatSubjects">0</div><div class="stat-card-change sc-flat">Aktiv fanlar</div><div class="stat-card-bar scb-purple"></div></div>
   </div>
 
   <!-- Filter row -->
   <div style="display:flex;gap:10px;margin-bottom:18px;flex-wrap:wrap;align-items:center">
     <div class="filter-row" style="margin:0;flex:1">
       <button class="filter-chip active" onclick="filterQs('all',this)" id="qf-all">Barchasi</button>
-      <button class="filter-chip" onclick="filterQs('test',this)" id="qf-test">🧪 Test</button>
-      <button class="filter-chip" onclick="filterQs('real',this)" id="qf-real">📋 Sesiya</button>
-      <button class="filter-chip" onclick="filterQs('algo',this)">💻 Algo</button>
-      <button class="filter-chip" onclick="filterQs('ai',this)">🤖 AI</button>
-      <button class="filter-chip" onclick="filterQs('math',this)">📐 Math</button>
-      <button class="filter-chip" onclick="filterQs('db',this)">🗄️ DB</button>
-      <button class="filter-chip" onclick="filterQs('web',this)">🌐 Web</button>
+      <button class="filter-chip" onclick="filterQs('test',this)" id="qf-test">ð§ª Test</button>
+      <button class="filter-chip" onclick="filterQs('real',this)" id="qf-real">ð Sesiya</button>
+      <button class="filter-chip" onclick="filterQs('algo',this)">ð» Algo</button>
+      <button class="filter-chip" onclick="filterQs('ai',this)">ð¤ AI</button>
+      <button class="filter-chip" onclick="filterQs('math',this)">ð Math</button>
+      <button class="filter-chip" onclick="filterQs('db',this)">ðï¸ DB</button>
+      <button class="filter-chip" onclick="filterQs('web',this)">ð Web</button>
     </div>
-    <button onclick="clearAllDekanatQuestions()" style="padding:8px 14px;background:#FEE2E2;border:1.5px solid #FCA5A5;border-radius:8px;color:#DC2626;font-family:'Outfit',sans-serif;font-size:12.5px;font-weight:700;cursor:pointer">🗑️ Barchasini o'chirish</button>
+    <button onclick="clearAllDekanatQuestions()" style="padding:8px 14px;background:#FEE2E2;border:1.5px solid #FCA5A5;border-radius:8px;color:#DC2626;font-family:'Outfit',sans-serif;font-size:12.5px;font-weight:700;cursor:pointer">ðï¸ Barchasini o'chirish</button>
   </div>
 
   <!-- Questions table -->
@@ -2785,7 +2785,7 @@
       </tr></thead>
       <tbody id="questionsTableBody">
         <tr><td colspan="6" style="text-align:center;color:var(--text3);padding:40px">
-          <div style="font-size:32px;margin-bottom:10px">📝</div>
+          <div style="font-size:32px;margin-bottom:10px">ð</div>
           <div style="font-weight:600">Hali savol kiritilmagan</div>
           <div style="font-size:12px;color:var(--text3);margin-top:6px">"Savol qo'shish" tugmasini bosib savollarni kiriting</div>
         </td></tr>
@@ -2795,32 +2795,32 @@
 
   <!-- Info box -->
   <div style="margin-top:16px;background:#EEF3FF;border:1.5px solid #93C5FD;border-radius:12px;padding:14px 18px;font-size:13px;color:#1E40AF">
-    💡 <strong>Eslatma:</strong> Dekanat kiritgan savollar tizim savollaridan <strong>ustun turadi</strong>. Test uchun kamida 20 ta, Sesiya uchun kamida 30 ta savol kiritish tavsiya etiladi.
+    ð¡ <strong>Eslatma:</strong> Dekanat kiritgan savollar tizim savollaridan <strong>ustun turadi</strong>. Test uchun kamida 20 ta, Sesiya uchun kamida 30 ta savol kiritish tavsiya etiladi.
   </div>
 </div>
 
 <!-- MODAL: Savol qo'shish / tahrirlash -->
 <div id="addQuestionModal" style="display:none;position:fixed;top:0;left:0;width:100%;height:100%;background:rgba(0,0,0,0.5);z-index:3000;overflow:auto">
   <div style="background:white;border-radius:18px;padding:28px;max-width:600px;margin:40px auto;position:relative">
-    <div style="font-size:18px;font-weight:800;color:#0F172A;margin-bottom:22px" id="questionModalTitle">➕ Yangi savol qo'shish</div>
+    <div style="font-size:18px;font-weight:800;color:#0F172A;margin-bottom:22px" id="questionModalTitle">â Yangi savol qo'shish</div>
 
     <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:16px">
       <div>
         <div style="font-size:12px;font-weight:700;color:#64748B;text-transform:uppercase;letter-spacing:0.5px;margin-bottom:6px">Fan</div>
         <select id="qModalSubject" style="width:100%;padding:10px 12px;border:1.5px solid #E2E8F0;border-radius:8px;font-family:'Outfit',sans-serif;font-size:13px;outline:none">
-          <option value="algo">💻 Algoritmlar va Dasturlash</option>
-          <option value="ai">🤖 Sun'iy Intellekt</option>
-          <option value="math">📐 Matematika</option>
-          <option value="db">🗄️ Ma'lumotlar Bazasi</option>
-          <option value="web">🌐 Web Dasturlash</option>
+          <option value="algo">ð» Algoritmlar va Dasturlash</option>
+          <option value="ai">ð¤ Sun'iy Intellekt</option>
+          <option value="math">ð Matematika</option>
+          <option value="db">ðï¸ Ma'lumotlar Bazasi</option>
+          <option value="web">ð Web Dasturlash</option>
         </select>
       </div>
       <div>
         <div style="font-size:12px;font-weight:700;color:#64748B;text-transform:uppercase;letter-spacing:0.5px;margin-bottom:6px">Tur</div>
         <select id="qModalType" style="width:100%;padding:10px 12px;border:1.5px solid #E2E8F0;border-radius:8px;font-family:'Outfit',sans-serif;font-size:13px;outline:none">
-          <option value="test">🧪 Test Rejim (mashq)</option>
-          <option value="real">📋 Sesiya (rasmiy imtihon)</option>
-          <option value="both">📝 Ikkala turda ham</option>
+          <option value="test">ð§ª Test Rejim (mashq)</option>
+          <option value="real">ð Sesiya (rasmiy imtihon)</option>
+          <option value="both">ð Ikkala turda ham</option>
         </select>
       </div>
     </div>
@@ -2839,22 +2839,22 @@
     </div>
 
     <div style="margin-bottom:20px">
-      <div style="font-size:12px;font-weight:700;color:#64748B;text-transform:uppercase;letter-spacing:0.5px;margin-bottom:6px">💡 Izoh (tushuntirish)</div>
+      <div style="font-size:12px;font-weight:700;color:#64748B;text-transform:uppercase;letter-spacing:0.5px;margin-bottom:6px">ð¡ Izoh (tushuntirish)</div>
       <textarea id="qModalIzoh" placeholder="To'g'ri javob nima uchun to'g'ri ekanligini tushuntiring..." style="width:100%;padding:10px 12px;border:1.5px solid #E2E8F0;border-radius:8px;font-family:'Outfit',sans-serif;font-size:13px;resize:vertical;min-height:60px;outline:none;box-sizing:border-box"></textarea>
     </div>
 
     <div style="display:flex;gap:10px">
-      <button onclick="saveQuestionModal()" style="flex:1;padding:12px;background:linear-gradient(135deg,#1B4FD8,#3B82F6);color:white;border:none;border-radius:10px;font-family:'Outfit',sans-serif;font-size:14px;font-weight:700;cursor:pointer">💾 Saqlash</button>
+      <button onclick="saveQuestionModal()" style="flex:1;padding:12px;background:linear-gradient(135deg,#1B4FD8,#3B82F6);color:white;border:none;border-radius:10px;font-family:'Outfit',sans-serif;font-size:14px;font-weight:700;cursor:pointer">ð¾ Saqlash</button>
       <button onclick="closeQuestionModal()" style="padding:12px 20px;background:white;border:2px solid #E2E8F0;border-radius:10px;font-family:'Outfit',sans-serif;font-size:14px;cursor:pointer">Bekor</button>
     </div>
   </div>
 </div>
 
-<!-- ═══ DEKANAT: SESIYA BOSHQARUVI ═══ -->
+<!-- âââ DEKANAT: SESIYA BOSHQARUVI âââ -->
 <div class="page" id="page-dekanat-sesiya">
   <div class="page-header">
     <div class="page-header-left">
-      <div class="ph-title">🗝️ Sesiya Boshqaruvi</div>
+      <div class="ph-title">ðï¸ Sesiya Boshqaruvi</div>
       <div class="ph-sub">Test rejim va haqiqiy sesiyani faollashtirish / bloklash</div>
     </div>
   </div>
@@ -2866,25 +2866,25 @@
     <div id="cardTestMode" style="background:#fff;border:2px solid #E2E8F0;border-radius:16px;padding:24px;box-shadow:0 2px 12px rgba(0,0,0,0.05);transition:all 0.3s">
       <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:16px">
         <div style="display:flex;align-items:center;gap:12px">
-          <div style="width:48px;height:48px;border-radius:14px;background:linear-gradient(135deg,#EEF3FF,#DBEAFE);display:flex;align-items:center;justify-content:center;font-size:24px">🧪</div>
+          <div style="width:48px;height:48px;border-radius:14px;background:linear-gradient(135deg,#EEF3FF,#DBEAFE);display:flex;align-items:center;justify-content:center;font-size:24px">ð§ª</div>
           <div>
             <div style="font-size:16px;font-weight:800;color:#0F172A">Test Rejim</div>
             <div style="font-size:12px;color:#64748B">Mashq imtihon sessiyasi</div>
           </div>
         </div>
-        <div id="testStatusBadge" style="padding:5px 14px;border-radius:20px;font-size:12px;font-weight:700;background:#FEF3C7;color:#D97706">🔒 Qulflangan</div>
+        <div id="testStatusBadge" style="padding:5px 14px;border-radius:20px;font-size:12px;font-weight:700;background:#FEF3C7;color:#D97706">ð Qulflangan</div>
       </div>
       <div style="background:#F8FAFC;border-radius:10px;padding:12px 14px;margin-bottom:16px;font-size:12.5px;color:#64748B;line-height:1.6">
-        📋 Talabalar sesiyadan oldin mashq qilishi uchun. Baholar <strong>hisoblanmaydi</strong>. Xotirjam muhit.
+        ð Talabalar sesiyadan oldin mashq qilishi uchun. Baholar <strong>hisoblanmaydi</strong>. Xotirjam muhit.
       </div>
       <div style="display:flex;gap:10px">
         <button id="btnUnlockTest" onclick="setSesiyaState('test', true)"
           style="flex:1;padding:11px;background:linear-gradient(135deg,#16A34A,#22C55E);color:white;border:none;border-radius:9px;font-family:'Outfit',sans-serif;font-size:13.5px;font-weight:700;cursor:pointer;transition:all 0.2s">
-          ✅ Faollashtirish
+          â Faollashtirish
         </button>
         <button id="btnLockTest" onclick="setSesiyaState('test', false)"
           style="flex:1;padding:11px;background:linear-gradient(135deg,#DC2626,#EF4444);color:white;border:none;border-radius:9px;font-family:'Outfit',sans-serif;font-size:13.5px;font-weight:700;cursor:pointer;transition:all 0.2s;display:none">
-          🔒 Bloklash
+          ð Bloklash
         </button>
       </div>
     </div>
@@ -2893,25 +2893,25 @@
     <div id="cardRealMode" style="background:#fff;border:2px solid #E2E8F0;border-radius:16px;padding:24px;box-shadow:0 2px 12px rgba(0,0,0,0.05);transition:all 0.3s">
       <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:16px">
         <div style="display:flex;align-items:center;gap:12px">
-          <div style="width:48px;height:48px;border-radius:14px;background:linear-gradient(135deg,#FEE2E2,#FCA5A5);display:flex;align-items:center;justify-content:center;font-size:24px">📝</div>
+          <div style="width:48px;height:48px;border-radius:14px;background:linear-gradient(135deg,#FEE2E2,#FCA5A5);display:flex;align-items:center;justify-content:center;font-size:24px">ð</div>
           <div>
             <div style="font-size:16px;font-weight:800;color:#0F172A">Sesiya</div>
             <div style="font-size:12px;color:#64748B">Rasmiy yakuniy imtihon</div>
           </div>
         </div>
-        <div id="realStatusBadge" style="padding:5px 14px;border-radius:20px;font-size:12px;font-weight:700;background:#FEF3C7;color:#D97706">🔒 Qulflangan</div>
+        <div id="realStatusBadge" style="padding:5px 14px;border-radius:20px;font-size:12px;font-weight:700;background:#FEF3C7;color:#D97706">ð Qulflangan</div>
       </div>
       <div style="background:#FFF5F5;border-radius:10px;padding:12px 14px;margin-bottom:16px;font-size:12.5px;color:#64748B;line-height:1.6">
-        ⚠️ Rasmiy imtihon. Talabalar javoblari <strong>baholanadi</strong> va saqlanadi. Ehtiyotkorlik bilan yoqing.
+        â ï¸ Rasmiy imtihon. Talabalar javoblari <strong>baholanadi</strong> va saqlanadi. Ehtiyotkorlik bilan yoqing.
       </div>
       <div style="display:flex;gap:10px">
         <button id="btnUnlockReal" onclick="setSesiyaState('real', true)"
           style="flex:1;padding:11px;background:linear-gradient(135deg,#DC2626,#EF4444);color:white;border:none;border-radius:9px;font-family:'Outfit',sans-serif;font-size:13.5px;font-weight:700;cursor:pointer;transition:all 0.2s">
-          🚀 Imtihonni boshlash
+          ð Imtihonni boshlash
         </button>
         <button id="btnLockReal" onclick="setSesiyaState('real', false)"
           style="flex:1;padding:11px;background:linear-gradient(135deg,#475569,#64748B);color:white;border:none;border-radius:9px;font-family:'Outfit',sans-serif;font-size:13.5px;font-weight:700;cursor:pointer;transition:all 0.2s;display:none">
-          🔒 Imtihonni yopish
+          ð Imtihonni yopish
         </button>
       </div>
     </div>
@@ -2919,7 +2919,7 @@
 
   <!-- Activity log -->
   <div class="card">
-    <div class="card-header"><div class="card-title">📋 Sesiya tarixi</div></div>
+    <div class="card-header"><div class="card-title">ð Sesiya tarixi</div></div>
     <div id="sesiyaLog" style="display:flex;flex-direction:column;gap:8px">
       <div style="padding:12px 14px;background:#F8FAFC;border-radius:9px;border:1px solid #E2E8F0;font-size:13px;color:#64748B;text-align:center">
         Hozircha hech qanday harakat amalga oshirilmagan
@@ -2931,5 +2931,27 @@
     </main>
   </div>
 </div>
-<script src="js/main.js"></script>
+<!-- ========== IDU Platform — Modular JS Architecture ========== -->
+  <!-- Core -->
+  <script src="js/core/config.js"></script>
+  <script src="js/core/auth.js"></script>
+  <script src="js/core/router.js"></script>
+  <!-- UI -->
+  <script src="js/ui/toast.js"></script>
+  <script src="js/ui/modal.js"></script>
+  <!-- Pages -->
+  <script src="js/pages/student.js"></script>
+  <script src="js/pages/teacher.js"></script>
+  <script src="js/pages/dekanat.js"></script>
+  <script src="js/pages/investor.js"></script>
+  <!-- Features -->
+  <script src="js/features/assignments.js"></script>
+  <script src="js/features/grades.js"></script>
+  <script src="js/features/schedule.js"></script>
+  <script src="js/features/ai-chat.js"></script>
+  <script src="js/features/exams.js"></script>
+  <script src="js/features/games.js"></script>
+  <script src="js/features/reports.js"></script>
+  <script src="js/features/notifications.js"></script>
+  <script src="js/main.js"></script>
 </html>
