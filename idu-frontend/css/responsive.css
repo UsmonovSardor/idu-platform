@@ -1,16 +1,25 @@
 /* ================================================
-   IDU Platform — Professional Responsive CSS
-   Barcha qurilmalarga: Telefon, Tablet, Desktop
+   IDU Platform — Optimized Responsive CSS v2
+   Professional · Clean · Mobile-First
    ================================================ */
+
+/* ========== LARGE TABLET (max 1200px) ========== */
+@media (max-width:1200px){
+  .sidebar{width:210px}
+  .grid-7-3{grid-template-columns:1fr 1fr}
+}
 
 /* ========== TABLET (max 1024px) ========== */
 @media (max-width:1024px){
-  .sidebar{width:200px}
-  .hemis-nav{padding:0 24px}
+  .sidebar{width:190px}
+  .hemis-nav{padding:0 20px}
   .stats-grid{grid-template-columns:repeat(2,1fr)}
   .stats-grid-3{grid-template-columns:repeat(2,1fr)}
   .grade-grid{grid-template-columns:repeat(2,1fr)}
+  .grid-2{grid-template-columns:repeat(2,1fr)}
   .grid-3{grid-template-columns:repeat(2,1fr)}
+  .grid-1-2{grid-template-columns:1fr}
+  .grid-7-3{grid-template-columns:1fr}
   .erp-grid{grid-template-columns:repeat(2,1fr)}
   .prof-grid{grid-template-columns:repeat(2,1fr)}
   .company-grid{grid-template-columns:repeat(2,1fr)}
@@ -19,90 +28,173 @@
 /* ========== MOBILE (max 768px) ========== */
 @media (max-width:768px){
 
-  .login-modal-bg{align-items:flex-end!important;padding:0!important}
-  .login-modal{width:100vw!important;max-width:100vw!important;border-radius:24px 24px 0 0!important;position:fixed!important;bottom:0!important;left:0!important;right:0!important;max-height:92vh!important;overflow-y:auto!important}
+  /* === LOGIN MODAL: pastdan chiqadi === */
+  .login-modal-bg{
+    align-items:flex-end!important;
+    padding:0!important
+  }
+  .login-modal{
+    width:100vw!important;
+    max-width:100vw!important;
+    border-radius:24px 24px 0 0!important;
+    position:fixed!important;
+    bottom:0!important;left:0!important;right:0!important;
+    max-height:93vh!important;
+    overflow-y:auto!important
+  }
   .login-split{flex-direction:column!important;min-height:unset!important}
   .login-left{display:none!important}
-  .login-right{width:100%!important;padding:32px 20px 40px!important;border-radius:24px 24px 0 0!important}
+  .login-right{
+    width:100%!important;
+    padding:28px 20px 44px!important;
+    border-radius:24px 24px 0 0!important
+  }
 
+  /* === LANDING BOSH SAHIFA === */
   .hemis-nav{padding:0 16px!important;height:56px!important}
   .hemis-nav-links{display:none!important}
   .hn-drop{display:none!important}
-  .hn-kirish{font-size:13px!important;padding:8px 16px!important}
-  .hemis-hero{padding:44px 16px 24px!important;text-align:center!important}
-  .hero-title{font-size:26px!important;line-height:1.25!important}
-  .hero-sub{font-size:14px!important}
-  .hero-btns{flex-direction:column!important;width:100%!important;gap:10px!important}
-  .hb-primary,.hb-secondary{width:100%!important;justify-content:center!important}
-  .hemis-stats{grid-template-columns:1fr 1fr!important}
-  .hemis-banner{padding:20px 16px!important;flex-direction:column!important;gap:12px!important}
+  .hemis-hero{padding:48px 20px 28px!important;text-align:center!important}
+  .hero-title{font-size:28px!important;line-height:1.22!important;letter-spacing:-0.5px!important}
+  .hero-sub{font-size:15px!important;line-height:1.5!important;max-width:320px!important;margin:0 auto 20px!important}
+  .hero-btns{flex-direction:column!important;width:100%!important;gap:12px!important}
+  .hb-primary,.hb-secondary{width:100%!important;justify-content:center!important;padding:14px 20px!important;font-size:15px!important}
+  .hemis-stats{grid-template-columns:1fr 1fr!important;gap:0!important}
+  .h-stat{padding:16px 12px!important}
+  .hemis-banner{padding:20px!important;flex-direction:column!important;gap:14px!important;text-align:center!important}
 
-  .topnav{padding:0 12px!important;height:54px!important}
+  /* === APP: TOPNAV === */
+  .topnav{padding:0 14px!important;height:56px!important}
   .topnav-tabs{display:none!important}
+  .topnav-logo-icon{width:30px!important;height:30px!important;font-size:13px!important}
+  .topnav-logo-text{font-size:15px!important;font-weight:700!important}
 
-  .sidebar{position:fixed!important;left:0!important;top:0!important;bottom:0!important;z-index:300!important;width:270px!important;transform:translateX(-100%)!important;transition:transform 0.28s cubic-bezier(0.4,0,0.2,1)!important;box-shadow:4px 0 32px rgba(0,0,0,0.18)!important}
+  /* === SIDEBAR: overlay === */
+  .sidebar{
+    position:fixed!important;
+    left:0!important;top:0!important;bottom:0!important;
+    z-index:300!important;
+    width:280px!important;
+    transform:translateX(-100%)!important;
+    transition:transform 0.3s cubic-bezier(0.4,0,0.2,1)!important;
+    box-shadow:8px 0 40px rgba(0,0,0,0.15)!important
+  }
   .sidebar.mobile-open{transform:translateX(0)!important}
-  .sidebar-backdrop{display:none;position:fixed;inset:0;z-index:299;background:rgba(0,0,0,0.4);backdrop-filter:blur(2px)}
+  .sidebar-backdrop{
+    display:none;
+    position:fixed;inset:0;z-index:299;
+    background:rgba(15,23,42,0.45);
+    backdrop-filter:blur(3px)
+  }
   .sidebar-backdrop.active{display:block!important}
   .mobile-menu-btn{display:flex!important}
 
-  .page{padding:14px!important;padding-top:70px!important}
-  .page-header{flex-direction:column!important;align-items:flex-start!important;gap:10px!important}
-  .page-header-right{width:100%!important;display:flex!important;flex-wrap:wrap!important;gap:8px!important}
-  .page-header-right .btn{flex:1!important;min-width:130px!important;justify-content:center!important;font-size:13px!important}
+  /* === PAGE === */
+  .page{padding:16px!important;padding-top:72px!important}
+  .page-header{
+    flex-direction:column!important;
+    align-items:flex-start!important;
+    gap:12px!important;
+    margin-bottom:16px!important
+  }
+  .page-header h2,.page-header-title{font-size:20px!important}
+  .page-header-right{
+    width:100%!important;
+    display:flex!important;
+    flex-wrap:wrap!important;
+    gap:8px!important
+  }
+  .page-header-right .btn{
+    flex:1!important;
+    min-width:120px!important;
+    justify-content:center!important;
+    font-size:13px!important;
+    padding:9px 14px!important
+  }
 
-  .stats-grid{grid-template-columns:1fr 1fr!important;gap:10px!important}
-  .stats-grid-3{grid-template-columns:1fr 1fr!important;gap:10px!important}
-  .grade-grid{grid-template-columns:1fr!important;gap:10px!important}
-  .grid-2{grid-template-columns:1fr!important;gap:10px!important}
-  .grid-3{grid-template-columns:1fr!important;gap:10px!important}
-  .grid-1-2{grid-template-columns:1fr!important;gap:10px!important}
-  .grid-7-3{grid-template-columns:1fr!important;gap:10px!important}
-  .erp-grid{grid-template-columns:1fr!important}
-  .prof-grid{grid-template-columns:1fr!important}
-  .demo-grid{grid-template-columns:1fr!important}
-  .company-grid{grid-template-columns:1fr 1fr!important}
-  .game-hub-grid{grid-template-columns:1fr 1fr!important}
-  .reward-shop-grid{grid-template-columns:1fr 1fr!important}
-  .mood-grid{grid-template-columns:repeat(3,1fr)!important}
-  .week-grid{grid-template-columns:repeat(4,1fr)!important}
+  /* === STATS GRIDLAR === */
+  .stats-grid{
+    grid-template-columns:1fr 1fr!important;
+    gap:12px!important
+  }
+  .stats-grid-3{
+    grid-template-columns:1fr 1fr!important;
+    gap:12px!important
+  }
+  .grade-grid{grid-template-columns:1fr!important;gap:12px!important}
+  .grid-2{grid-template-columns:1fr!important;gap:12px!important}
+  .grid-3{grid-template-columns:1fr!important;gap:12px!important}
+  .grid-1-2{grid-template-columns:1fr!important;gap:12px!important}
+  .grid-7-3{grid-template-columns:1fr!important;gap:12px!important}
+  .erp-grid{grid-template-columns:1fr!important;gap:12px!important}
+  .prof-grid{grid-template-columns:1fr!important;gap:12px!important}
+  .demo-grid{grid-template-columns:1fr!important;gap:12px!important}
+  .company-grid{grid-template-columns:1fr 1fr!important;gap:10px!important}
+  .game-hub-grid{grid-template-columns:1fr 1fr!important;gap:10px!important}
+  .reward-shop-grid{grid-template-columns:1fr 1fr!important;gap:10px!important}
+  .mood-grid{grid-template-columns:repeat(4,1fr)!important;gap:8px!important}
+  .week-grid{grid-template-columns:repeat(4,1fr)!important;gap:6px!important}
+  .hb-stats{grid-template-columns:1fr 1fr!important;gap:10px!important}
 
-  .table-wrap{overflow-x:auto!important;-webkit-overflow-scrolling:touch!important;border-radius:12px!important}
+  /* === JADVALLAR === */
+  .table-wrap{
+    overflow-x:auto!important;
+    -webkit-overflow-scrolling:touch!important;
+    border-radius:12px!important
+  }
   table{min-width:520px!important;font-size:13px!important}
   .xl-table{min-width:600px!important}
+  .xl-wrap{overflow-x:auto!important;-webkit-overflow-scrolling:touch!important}
   .timetable-wrap{overflow-x:auto!important;-webkit-overflow-scrolling:touch!important}
-  .timetable{min-width:500px!important}
-  .dekanat-table{min-width:480px!important}
+  .timetable{min-width:480px!important}
+  .dekanat-table{min-width:460px!important}
 
-  .modal-box{width:96vw!important;max-width:96vw!important;max-height:88vh!important;overflow-y:auto!important;margin:0 auto!important;border-radius:18px!important}
+  /* === MODAL === */
+  .modal-box{
+    width:96vw!important;
+    max-width:96vw!important;
+    max-height:88vh!important;
+    overflow-y:auto!important;
+    margin:16px auto!important;
+    border-radius:20px!important
+  }
 
-  .ai-chat-wrap{height:calc(100vh - 140px)!important}
-  .chat-bubble-wrap{padding:10px!important}
+  /* === AI CHAT === */
+  .ai-chat-wrap{height:calc(100vh - 150px)!important}
+  .chat-bubble-wrap{padding:12px!important}
 
-  .report-panel{flex-direction:column!important}
+  /* === REPORT === */
+  .report-panel{flex-direction:column!important;gap:16px!important}
   .rpt-bar-wrap,.rpt-donut-wrap{width:100%!important}
-  .xl-wrap{overflow-x:auto!important}
+  .tpr-bar-wrap{flex-direction:column!important;gap:10px!important}
 
-  .xp-bar-wrap{flex-direction:column!important;gap:6px!important}
-  .pomo-wrap{padding:16px!important}
-  .prof-rating-bar-wrap{flex-direction:column!important}
-  .partners-search-wrap{flex-direction:column!important;gap:8px!important}
-  .idea-stats{flex-direction:column!important}
-  .hamkor-stats-row{flex-direction:column!important}
-  .prof-stats-row{flex-direction:column!important}
-  .hb-stats{grid-template-columns:1fr 1fr!important}
+  /* === BOSHQALAR === */
+  .xp-bar-wrap{flex-direction:column!important;gap:8px!important}
+  .pomo-wrap{padding:18px!important}
+  .prof-rating-bar-wrap{flex-direction:column!important;gap:10px!important}
+  .partners-search-wrap{flex-direction:column!important;gap:10px!important}
+  .idea-stats{flex-direction:column!important;gap:8px!important}
+  .hamkor-stats-row{flex-direction:column!important;gap:10px!important}
+  .prof-stats-row{flex-direction:column!important;gap:10px!important}
+  .dc-header{flex-direction:column!important;gap:10px!important}
+  .jdm-header{flex-direction:column!important;gap:10px!important}
+  .cbc-header{flex-direction:column!important;gap:10px!important}
+  .game-header{flex-direction:column!important;gap:10px!important}
 }
 
 /* ========== KICHIK TELEFON (max 390px) ========== */
 @media (max-width:390px){
-  .stats-grid{grid-template-columns:1fr!important}
+  .stats-grid{grid-template-columns:1fr!important;gap:10px!important}
+  .stats-grid-3{grid-template-columns:1fr!important;gap:10px!important}
   .topnav-logo-text{display:none!important}
-  .page{padding:10px!important;padding-top:64px!important}
-  table{font-size:12px!important;min-width:420px!important}
-  .page-header-right .btn{font-size:12px!important;padding:6px 10px!important}
-  .hero-title{font-size:22px!important}
+  .page{padding:12px!important;padding-top:68px!important}
+  table{font-size:12px!important;min-width:400px!important}
+  .page-header-right .btn{font-size:12px!important;padding:8px 12px!important}
+  .hero-title{font-size:24px!important}
   .company-grid{grid-template-columns:1fr!important}
   .game-hub-grid{grid-template-columns:1fr!important}
   .reward-shop-grid{grid-template-columns:1fr!important}
+  .mood-grid{grid-template-columns:repeat(3,1fr)!important}
   .hemis-stats{grid-template-columns:1fr 1fr!important}
+  .modal-box{width:100vw!important;border-radius:16px!important;margin:8px auto!important}
 }
