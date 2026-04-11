@@ -1,14 +1,12 @@
 'use strict';
-// =============================================
-// IDU Platform — Core Configuration & API
-// =============================================
+// ==============================================
+//  IDU Platform — core/config.js
+//  API sozlamalari va global holatlar
+// ==============================================
 
 var API_BASE = 'https://idu-platform-production.up.railway.app/api';
-var _apiToken = null;
-var currentUser  = null;
-
-function setToken(t) { _apiToken = t; }
-function getToken()  { return _apiToken; }
+var _apiToken  = null;
+var currentUser = null;
 
 function safeHTML(str) {
   if (typeof DOMPurify !== 'undefined') {
@@ -26,11 +24,6 @@ function safeHTML(str) {
   return String(str || '').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
 }
 
-/**
- * api(method, path, body) â Wrapper for all backend API calls.
- * Returns parsed JSON on success, throws Error on failure.
- * Falls back silently to offline mode if server unreachable.
- */
 async function api(method, path, body) {
   var headers = { 'Content-Type': 'application/json' };
   if (_apiToken) headers['Authorization'] = 'Bearer ' + _apiToken;
@@ -51,11 +44,6 @@ async function api(method, path, body) {
   }
 }
 
-/**
- * apiLogin(role, email, password) â Call backend auth, store JWT.
- * Returns { ok: true, user } on success, { ok: false, error } on failure.
- * Falls back to local USERS array if server is unreachable (demo/offline mode).
- */
 async function apiLogin(role, email, password, remember) {
   try {
     var result = await api('POST', '/auth/login', { email: email, password: password });
@@ -74,9 +62,6 @@ async function apiLogin(role, email, password, remember) {
   }
 }
 
-/**
- * apiSubmitApplication(data) â POST to backend; falls back to localStorage.
- */
 async function apiSubmitApplication(data) {
   if (!_apiToken) return false;
   try {
@@ -87,9 +72,6 @@ async function apiSubmitApplication(data) {
   }
 }
 
-/**
- * apiSubmitExam(attemptId, answers) â Submit exam to backend.
- */
 async function apiSubmitExam(attemptId, answers) {
   if (!_apiToken || !attemptId) return null;
   try {
