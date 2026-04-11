@@ -1,16 +1,61 @@
-/* ===== MOBILE (600px gacha) ===== */
-@media (max-width: 600px) {
-  .hemis-nav { flex-direction: column; padding: 10px; }
-  .hn-kirish { width: 100%; margin-top: 8px; }
-  .sidebar { display: none; }
-  .main-content { width: 100% !important; padding: 10px !important; }
-  table { font-size: 12px; display: block; overflow-x: auto; }
-  .modal-box { width: 95% !important; margin: 10px auto; }
+/* IDU Platform — Responsive CSS */
+
+/* ===== TABLET 1024px ===== */
+@media (max-width: 1024px) {
+  .sidebar { width: 180px; }
+  .hemis-nav { padding: 0 20px; }
+  .stats-grid { grid-template-columns: repeat(2,1fr); }
 }
 
-/* ===== TABLET (600px - 1024px) ===== */
-@media (min-width: 600px) and (max-width: 1024px) {
-  .sidebar { width: 60px; }
-  .sidebar .menu-label { display: none; }
-  .main-content { padding: 15px; }
+/* ===== MOBILE 600px ===== */
+@media (max-width: 600px) {
+
+  /* Topnav */
+  .topnav { padding: 0 12px; height: 54px; }
+  .topnav-tabs { display: none; }
+
+  /* Page */
+  .page { padding: 12px; padding-top: 68px; }
+  .page-header { flex-direction: column; align-items: flex-start; gap: 8px; }
+  .page-header-right { width: 100%; display: flex; flex-wrap: wrap; gap: 6px; }
+  .page-header-right .btn { flex: 1; min-width: 120px; justify-content: center; }
+
+  /* Cards */
+  .stats-grid { grid-template-columns: 1fr 1fr; gap: 8px; }
+  .grade-grid { grid-template-columns: 1fr; gap: 8px; }
+  .partners-grid { grid-template-columns: 1fr; }
+  .idea-list { grid-template-columns: 1fr; }
+
+  /* Jadvallar scroll */
+  .table-wrap { overflow-x: auto; -webkit-overflow-scrolling: touch; border-radius: 10px; }
+  table { min-width: 480px; font-size: 13px; }
+
+  /* Modal */
+  .modal-box { width: 96vw !important; max-height: 88vh; overflow-y: auto; margin: 0 auto; border-radius: 16px; }
+  .modal-backdrop { align-items: flex-end; padding-bottom: 0; }
+
+  /* AI Chat */
+  .ai-chat-wrap { height: calc(100vh - 140px); }
+
+  /* Report */
+  .report-panel { flex-direction: column; }
+  .rpt-bar-wrap, .rpt-donut-wrap { width: 100%; }
+
+  /* Schedule */
+  .timetable-wrap { overflow-x: auto; }
+
+  /* Topnav right — faqat 2 ta icon */
+  .topnav-right .nav-icon-btn:nth-child(n+3) { display: none; }
+
+  /* XP bar */
+  .xp-bar-wrap { flex-direction: column; gap: 6px; }
+}
+
+/* ===== KICHIK TELEFON 375px ===== */
+@media (max-width: 375px) {
+  .stats-grid { grid-template-columns: 1fr; }
+  .topnav-logo-text { display: none; }
+  .page { padding: 8px; padding-top: 62px; }
+  table { font-size: 12px; }
+  .page-header-right .btn { font-size: 12px; padding: 6px 10px; }
 }
