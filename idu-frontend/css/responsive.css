@@ -59,3 +59,29 @@
   table { font-size: 12px; }
   .page-header-right .btn { font-size: 12px; padding: 6px 10px; }
 }
+/* Login modal to'liq ekranga sig'sin */
+.login-modal {
+  width: 100vw !important;
+  max-width: 100vw !important;
+  border-radius: 20px 20px 0 0;
+  position: fixed;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  display: flex;
+  flex-direction: column;
+}
+
+.login-modal-left {
+  display: none !important;
+}
+
+.login-modal-right {
+  width: 100% !important;
+  padding: 24px 20px !important;
+}
+
+.login-modal-bg {
+  align-items: flex-end !important;
+  padding: 0 !important;
+}
