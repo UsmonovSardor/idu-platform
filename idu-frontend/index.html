@@ -1,0 +1,2953 @@
+<!DOCTYPE html>
+<html lang="uz">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>IDU — International Digital University</title>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/dompurify/3.0.8/purify.min.js"></script>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800&family=DM+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="css/style.css">
+<link rel="stylesheet" href="css/responsive.css">
+</head>
+
+<body>
+<div class="toast-container" id="toastContainer"></div>
+<!-- ════════ AUTH SCREEN ════════ -->
+<div id="authScreen">
+  <nav class="hemis-nav" id="hemis-nav">
+    <div class="hemis-nav-logo"><div class="hn-dot">IDU</div><span class="hn-name">IDU</span></div>
+    <div class="hemis-nav-links">
+
+      <a class="hn-link" id="nav-about" onclick="openAboutModal()">Tizim haqida</a>
+
+      <a class="hn-link" id="nav-features" onclick="openFeatModal()">Tizim imkoniyatlari</a>
+
+      <!-- Yo'riqnomalar dropdown -->
+      <div class="hn-drop">
+        <a class="hn-link" id="nav-guides">Yo'riqnomalar <span class="hn-drop-arrow">▼</span></a>
+        <div class="hn-drop-menu" id="navGuidesMenu">
+          <div class="hn-drop-item" onclick="openGuideModal('student')">
+            <div class="hn-drop-item-icon" style="background:#EEF3FF">👨‍🎓</div>
+            <div><div class="hn-drop-item-text" id="ng-student">Talabalarga</div><div class="hn-drop-item-sub">Kirish, baholar, jadval</div></div>
+          </div>
+          <div class="hn-drop-item" onclick="openGuideModal('teacher')">
+            <div class="hn-drop-item-icon" style="background:#F0FDF4">👨‍🏫</div>
+            <div><div class="hn-drop-item-text" id="ng-teacher">O'qituvchilarga</div><div class="hn-drop-item-sub">Baholash, davomat, jadval</div></div>
+          </div>
+          <div class="hn-drop-item" onclick="openGuideModal('dekanat')">
+            <div class="hn-drop-item-icon" style="background:#FDF4FF">🏛️</div>
+            <div><div class="hn-drop-item-text" id="ng-dekanat">Dekanlarga</div><div class="hn-drop-item-sub">Talabalar, hisobotlar, arizalar</div></div>
+          </div>
+          <div class="hn-drop-item" onclick="openGuideModal('admin')">
+            <div class="hn-drop-item-icon" style="background:#FFF7ED">⚙️</div>
+            <div><div class="hn-drop-item-text" id="ng-admin">Administratorlarga</div><div class="hn-drop-item-sub">Tizim sozlamalari, foydalanuvchilar</div></div>
+          </div>
+          <div class="hn-drop-item" onclick="openGuideModal('kafedra')">
+            <div class="hn-drop-item-icon" style="background:#F0FDF4">📚</div>
+            <div><div class="hn-drop-item-text" id="ng-kafedra">Kafedra mudirlariga</div><div class="hn-drop-item-sub">Fan dasturlari, o'qituvchilar</div></div>
+          </div>
+        </div>
+      </div>
+
+      <a class="hn-link" id="nav-faq" onclick="openFaqModal()">FAQ</a>
+
+    </div>
+    <div class="hn-right">
+      <div class="lang-drop" id="langDrop">
+        <div class="lang-current" onclick="toggleLangDrop()">
+          <span class="lc-flag" id="lcFlag">🇺🇿</span>
+          <span id="lcText">UZ</span>
+          <span class="lc-arrow">▼</span>
+        </div>
+        <div class="lang-options" id="langOptions">
+          <div class="lang-option active" id="lopt-uz" onclick="setLang('uz')">
+            <span class="lo-flag">🇺🇿</span> O'zbek
+          </div>
+          <div class="lang-option" id="lopt-ru" onclick="setLang('ru')">
+            <span class="lo-flag">🇷🇺</span> Русский
+          </div>
+        </div>
+      </div>
+      <button class="hn-kirish" onclick="openLoginModal()" id="nav-kirish">Kirish</button>
+    </div>
+  </nav>
+  <div class="hemis-hero">
+    <h1 class="hero-title">
+      <span class="ht-brand">IDU</span> — <span id="hero-title-text">International Digital University</span>
+    </h1>
+    <p class="hero-sub" id="hero-sub">Zamonaviy ta'lim platformasi — talabalar, o'qituvchilar, dekanat va investorlar uchun yagona raqamli muhit.</p>
+    <div class="hemis-stats">
+      <div class="h-stat"><div class="h-stat-val">4.2K+</div><div class="h-stat-key" id="hstat1">Talabalar</div></div>
+      <div class="h-stat"><div class="h-stat-val">180+</div><div class="h-stat-key" id="hstat2">O'qituvchilar</div></div>
+      <div class="h-stat"><div class="h-stat-val">98%</div><div class="h-stat-key" id="hstat3">Muvaffaqiyat</div></div>
+      <div class="h-stat"><div class="h-stat-val">24/7</div><div class="h-stat-key" id="hstat4">Onlayn</div></div>
+      <div class="h-stat"><div class="h-stat-val">40+</div><div class="h-stat-key" id="hstat5">Fanlar</div></div>
+      <div class="h-stat"><div class="h-stat-val">12</div><div class="h-stat-key" id="hstat6">Hamkorlar</div></div>
+    </div>
+  </div>
+</div>
+
+
+<!-- ══ GUIDE MODAL ══ -->
+<div id="guideModal" style="display:none;position:fixed;inset:0;z-index:9800;background:rgba(15,23,42,0.5);backdrop-filter:blur(6px);align-items:center;justify-content:center;padding:16px" onclick="if(event.target===this)closeGuideModal()">
+  <div style="background:#fff;border-radius:20px;width:100%;max-width:600px;max-height:88vh;overflow-y:auto;box-shadow:0 24px 80px rgba(0,0,0,0.18)">
+    <div style="padding:24px 28px 0">
+      <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:20px">
+        <div style="display:flex;align-items:center;gap:10px">
+          <span id="guideModalIcon" style="font-size:26px"></span>
+          <span style="font-size:20px;font-weight:800;color:#0F172A" id="guideModalTitle">Yo'riqnoma</span>
+        </div>
+        <button onclick="closeGuideModal()" style="background:none;border:none;font-size:22px;cursor:pointer;color:#64748B">✕</button>
+      </div>
+    </div>
+    <div id="guideModalBody" style="padding:0 28px 28px"></div>
+  </div>
+</div>
+
+<!-- ══ FAQ MODAL ══ -->
+<div id="faqModal" style="display:none;position:fixed;inset:0;z-index:9800;background:rgba(15,23,42,0.5);backdrop-filter:blur(6px);align-items:center;justify-content:center;padding:16px" onclick="if(event.target===this)closeFaqModal()">
+  <div style="background:#fff;border-radius:20px;width:100%;max-width:620px;max-height:88vh;overflow-y:auto;box-shadow:0 24px 80px rgba(0,0,0,0.18)">
+    <div style="padding:24px 28px">
+      <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:22px">
+        <div style="font-size:20px;font-weight:800;color:#0F172A">❓ Tez-tez so'raladigan savollar</div>
+        <button onclick="closeFaqModal()" style="background:none;border:none;font-size:22px;cursor:pointer;color:#64748B">✕</button>
+      </div>
+      <div id="faqModalBody"></div>
+    </div>
+  </div>
+</div>
+
+<!-- ══ ABOUT MODAL ══ -->
+<div id="aboutModal" style="display:none;position:fixed;inset:0;z-index:9800;background:rgba(15,23,42,0.5);backdrop-filter:blur(6px);align-items:center;justify-content:center;padding:16px" onclick="if(event.target===this)closeAboutModal()">
+  <div style="background:#fff;border-radius:20px;width:100%;max-width:640px;max-height:88vh;overflow-y:auto;box-shadow:0 24px 80px rgba(0,0,0,0.18)">
+    <div style="padding:28px">
+      <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:22px">
+        <div style="font-size:20px;font-weight:800;color:#0F172A">🏛️ IDU tizimi haqida</div>
+        <button onclick="closeAboutModal()" style="background:none;border:none;font-size:22px;cursor:pointer;color:#64748B">✕</button>
+      </div>
+      <div style="font-size:14.5px;color:#475569;line-height:1.8;margin-bottom:18px">
+        <b style="color:#0F172A">IDU — International Digital University</b> platformasi O'zbekistondagi oliy ta'lim muassasalari uchun mo'ljallangan zamonaviy raqamli boshqaruv tizimi.
+      </div>
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:20px">
+        <div style="background:#EEF3FF;border-radius:12px;padding:16px">
+          <div style="font-size:24px;font-weight:900;color:#1B4FD8">4200+</div>
+          <div style="font-size:12px;color:#475569;font-weight:600">Faol talabalar</div>
+        </div>
+        <div style="background:#F0FDF4;border-radius:12px;padding:16px">
+          <div style="font-size:24px;font-weight:900;color:#16A34A">180+</div>
+          <div style="font-size:12px;color:#475569;font-weight:600">O'qituvchilar</div>
+        </div>
+        <div style="background:#FFF7ED;border-radius:12px;padding:16px">
+          <div style="font-size:24px;font-weight:900;color:#EA580C">40+</div>
+          <div style="font-size:12px;color:#475569;font-weight:600">O'quv fanlar</div>
+        </div>
+        <div style="background:#F5F3FF;border-radius:12px;padding:16px">
+          <div style="font-size:24px;font-weight:900;color:#7C3AED">12</div>
+          <div style="font-size:12px;color:#475569;font-weight:600">Hamkor kompaniyalar</div>
+        </div>
+      </div>
+      <div style="background:#F8FAFC;border-radius:12px;padding:16px">
+        <div style="font-size:13px;font-weight:700;color:#0F172A;margin-bottom:10px">Asosiy modullar:</div>
+        <div style="display:flex;flex-wrap:wrap;gap:8px">
+          <span style="padding:5px 12px;background:#EEF3FF;color:#1B4FD8;border-radius:8px;font-size:12px;font-weight:600">📅 Dars jadvali</span>
+          <span style="padding:5px 12px;background:#F0FDF4;color:#16A34A;border-radius:8px;font-size:12px;font-weight:600">📊 Baholar</span>
+          <span style="padding:5px 12px;background:#FFF7ED;color:#EA580C;border-radius:8px;font-size:12px;font-weight:600">📝 Vazifalar</span>
+          <span style="padding:5px 12px;background:#F5F3FF;color:#7C3AED;border-radius:8px;font-size:12px;font-weight:600">🤖 AI Tutor</span>
+          <span style="padding:5px 12px;background:#ECFDF5;color:#0D9488;border-radius:8px;font-size:12px;font-weight:600">🚀 Startup</span>
+          <span style="padding:5px 12px;background:#FDF4FF;color:#A21CAF;border-radius:8px;font-size:12px;font-weight:600">🤝 Hamkorlar</span>
+          <span style="padding:5px 12px;background:#FEF3C7;color:#D97706;border-radius:8px;font-size:12px;font-weight:600">⏰ Vaqt boshqaruvi</span>
+          <span style="padding:5px 12px;background:#FEE2E2;color:#DC2626;border-radius:8px;font-size:12px;font-weight:600">🔒 SMS 2FA</span>
+        </div>
+      </div>
+      <button onclick="closeAboutModal();openLoginModal()" style="width:100%;margin-top:18px;padding:12px;background:linear-gradient(135deg,#1B4FD8,#3B82F6);color:#fff;border:none;border-radius:10px;font-family:'Outfit',sans-serif;font-size:14.5px;font-weight:700;cursor:pointer">Tizimga kirish →</button>
+    </div>
+  </div>
+</div>
+
+<!-- ══ FEATURES MODAL ══ -->
+<div id="featModal" style="display:none;position:fixed;inset:0;z-index:9800;background:rgba(15,23,42,0.5);backdrop-filter:blur(6px);align-items:center;justify-content:center;padding:16px" onclick="if(event.target===this)closeFeatModal()">
+  <div style="background:#fff;border-radius:20px;width:100%;max-width:660px;max-height:88vh;overflow-y:auto;box-shadow:0 24px 80px rgba(0,0,0,0.18)">
+    <div style="padding:28px">
+      <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:22px">
+        <div style="font-size:20px;font-weight:800;color:#0F172A">⚡ Tizim imkoniyatlari</div>
+        <button onclick="closeFeatModal()" style="background:none;border:none;font-size:22px;cursor:pointer;color:#64748B">✕</button>
+      </div>
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px">
+        <div style="border:1.5px solid #E2E8F0;border-radius:12px;padding:16px">
+          <div style="font-size:22px;margin-bottom:8px">📱</div>
+          <div style="font-size:14px;font-weight:700;color:#0F172A;margin-bottom:4px">SMS 2FA xavfsizlik</div>
+          <div style="font-size:12.5px;color:#64748B;line-height:1.6">Ikki faktorli autentifikatsiya — paroldan keyin telefonga tasdiqlash kodi</div>
+        </div>
+        <div style="border:1.5px solid #E2E8F0;border-radius:12px;padding:16px">
+          <div style="font-size:22px;margin-bottom:8px">🤖</div>
+          <div style="font-size:14px;font-weight:700;color:#0F172A;margin-bottom:4px">AI Tutor</div>
+          <div style="font-size:12.5px;color:#64748B;line-height:1.6">Sun'iy intellekt yordamchi — savollaringizga javob beradi va tushuntiradi</div>
+        </div>
+        <div style="border:1.5px solid #E2E8F0;border-radius:12px;padding:16px">
+          <div style="font-size:22px;margin-bottom:8px">⏰</div>
+          <div style="font-size:14px;font-weight:700;color:#0F172A;margin-bottom:4px">Vaqt boshqaruvi</div>
+          <div style="font-size:12.5px;color:#64748B;line-height:1.6">Pomodoro taymeri, haftalik maqsadlar va o'qish streakini kuzatish</div>
+        </div>
+        <div style="border:1.5px solid #E2E8F0;border-radius:12px;padding:16px">
+          <div style="font-size:22px;margin-bottom:8px">🤝</div>
+          <div style="font-size:14px;font-weight:700;color:#0F172A;margin-bottom:4px">Hamkorlar va vakansiyalar</div>
+          <div style="font-size:12.5px;color:#64748B;line-height:1.6">23+ vakansiya, 6 kompaniya — to'g'ridan to'g'ri ariza yuborish</div>
+        </div>
+        <div style="border:1.5px solid #E2E8F0;border-radius:12px;padding:16px">
+          <div style="font-size:22px;margin-bottom:8px">🚀</div>
+          <div style="font-size:14px;font-weight:700;color:#0F172A;margin-bottom:4px">Startup platformasi</div>
+          <div style="font-size:12.5px;color:#64748B;line-height:1.6">G'oyalar, jamoalar, investorlar bilan bog'lanish imkoniyati</div>
+        </div>
+        <div style="border:1.5px solid #E2E8F0;border-radius:12px;padding:16px">
+          <div style="font-size:22px;margin-bottom:8px">🎓</div>
+          <div style="font-size:14px;font-weight:700;color:#0F172A;margin-bottom:4px">Rasmiy sertifikatlar</div>
+          <div style="font-size:12.5px;color:#64748B;line-height:1.6">Kurslarni tugatgandan so'ng hamkor kompaniyalar tan oladigan sertifikatlar</div>
+        </div>
+      </div>
+      <button onclick="closeFeatModal();openLoginModal()" style="width:100%;margin-top:18px;padding:12px;background:linear-gradient(135deg,#1B4FD8,#3B82F6);color:#fff;border:none;border-radius:10px;font-family:'Outfit',sans-serif;font-size:14.5px;font-weight:700;cursor:pointer">Tizimga kirish →</button>
+    </div>
+  </div>
+</div>
+
+<!-- LOGIN MODAL -->
+<div class="login-modal-bg" id="loginModalBg" onclick="closeLoginModal(event)">
+  <div class="login-modal" id="loginModal" style="max-width:600px;border-radius:20px;overflow:hidden;padding:0;position:relative">
+    <button class="lm-close" onclick="closeLoginModalForce()" style="position:absolute;top:14px;right:14px;z-index:10;width:32px;height:32px;border-radius:50%;background:rgba(255,255,255,0.18);border:none;cursor:pointer;font-size:16px;display:flex;align-items:center;justify-content:center;color:white">&#x2715;</button>
+    <div class="login-split">
+      <!-- LEFT PANEL -->
+      <div class="login-left">
+        <div class="ll-logo">
+          <div class="ll-logo-dot">IDU</div>
+          <div class="ll-logo-name">International<br>Digital University</div>
+          <div class="ll-logo-sub">TOSHKENT &middot; O'ZBEKISTON</div>
+        </div>
+        <div class="ll-tagline">
+          <p>Zamonaviy raqamli ta'lim tizimi. Bilim &mdash; kelajagingiz poydevori.</p>
+          <div class="ll-badges">
+            <div class="ll-badge"><span class="ll-badge-dot"></span>Talabalar uchun</div>
+            <div class="ll-badge"><span class="ll-badge-dot"></span>Professorlar uchun</div>
+            <div class="ll-badge"><span class="ll-badge-dot"></span>Dekanat &amp; Investorlar</div>
+          </div>
+        </div>
+      </div>
+      <!-- RIGHT PANEL -->
+      <div class="login-right">
+        <div class="lr-top">
+          <div class="lr-title">Tizimga kirish</div>
+          <div class="lr-sub">Login va parolni kiriting &mdash; rol avtomatik aniqlanadi</div>
+          <div class="login-error-box" id="mainLoginError">
+            <span>&#x26A0;&#xFE0F;</span>&nbsp;<span id="mainLoginErrorMsg">Login yoki parol noto'g'ri</span>
+          </div>
+          <div class="login-input-wrap">
+            <span class="login-input-icon">&#x1F464;</span>
+            <input class="login-input-field" id="mainLogin" type="text" placeholder="Login" autocomplete="off"
+              onkeydown="if(event.key==='Enter')document.getElementById('mainPass').focus()">
+          </div>
+          <div class="login-input-wrap">
+            <span class="login-input-icon">&#x1F512;</span>
+             <input class="login-input-field" id="mainPass" type="password" placeholder="Parol"
+                onkeydown="if(event.key==='Enter')realAutoLogin()">
+             <button class="login-eye" id="eyeBtn" onclick="togglePassEye()" title="Ko'rsatish/yashirish">&#x1F441;</button>
+          </div>
+          <button class="login-submit" onclick="realAutoLogin()" id="loginSubmitBtn">
+            <span>Kirish</span><span style="font-size:16px">&#8594;</span>
+          </button>
+        </div>
+        <!-- DEMO CARDS -->
+        <div class="demo-section">
+          <div class="demo-section-title">Sinov hisoblar</div>
+          <div class="demo-grid">
+            <div class="demo-card" onclick="fillMainLogin('alisher','1234')">
+              <div class="demo-card-role dc-s">&#x1F393; Talaba</div>
+              <div class="demo-card-login">alisher</div>
+              <div class="demo-card-pass">••••</div>
+            </div>
+            <div class="demo-card" onclick="fillMainLogin('karimov','admin')">
+              <div class="demo-card-role dc-t">&#x1F468;&#x200D;&#x1F3EB; Professor</div>
+              <div class="demo-card-login">karimov</div>
+              <div class="demo-card-pass">••••••</div>
+            </div>
+            <div class="demo-card" onclick="fillMainLogin('dekanat','admin123')">
+              <div class="demo-card-role dc-d">&#x1F3DB; Dekanat</div>
+              <div class="demo-card-login">dekanat</div>
+              <div class="demo-card-pass">••••••••</div>
+            </div>
+            <div class="demo-card" onclick="fillMainLogin('invest1','inv123')">
+              <div class="demo-card-role dc-i">&#x1F4BC; Investor</div>
+              <div class="demo-card-login">invest1</div>
+              <div class="demo-card-pass">••••••</div>
+            </div>
+          </div>
+          <div style="font-size:10.5px;color:#94A3B8;margin-top:8px;text-align:center">Kirish uchun kartochkaga bosing</div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- hidden stubs kept for OTP/forgot flows that reference these IDs -->
+<div id="step-otp" style="display:none">
+  <div id="otpPhoneShow"></div>
+  <div id="otpDemoBox"><strong id="otpDemoCode"></strong></div>
+  <div class="form-error" id="otpError"><span>Kod noto'g'ri.</span></div>
+  <input id="otpInput" type="text" style="display:none">
+  <a id="resendLink" style="display:none"></a>
+  <span id="resendTimer" style="display:none"><span id="resendCount">60</span></span>
+</div>
+<!-- stubs for legacy fill* helpers and error divs -->
+<input id="sLogin" type="hidden"><input id="sPass" type="hidden">
+<input id="tLogin" type="hidden"><input id="tPass" type="hidden">
+<input id="dLogin" type="hidden"><input id="dPass" type="hidden">
+<input id="iLogin" type="hidden"><input id="iPass" type="hidden">
+<input id="sRemember" type="hidden"><input id="tRemember" type="hidden"><input id="dRemember" type="hidden">
+<select id="sCourse" style="display:none"><option value="2" selected></option></select>
+<select id="sGroup" style="display:none"><option value="AI-2301" selected>AI-2301</option></select>
+<select id="tDept" style="display:none"><option value="Matematika" selected></option></select>
+<input id="iCompany" type="hidden" value="TechVentures UZ">
+<div id="studentError" style="display:none"><span></span></div>
+<div id="teacherError" style="display:none"><span></span></div>
+<div id="dekanatError" style="display:none"><span></span></div>
+<div id="investorError" style="display:none"><span></span></div>
+
+<!-- ════════ PAROLNI UNUTDIM MODAL ════════ -->
+<div id="forgotModal" style="display:none;position:fixed;inset:0;z-index:9999;background:rgba(15,23,42,0.55);backdrop-filter:blur(8px);align-items:center;justify-content:center">
+  <div style="background:#fff;border-radius:20px;width:100%;max-width:420px;padding:28px 28px 24px;box-shadow:0 24px 80px rgba(0,0,0,0.20);position:relative;animation:modalIn 0.28s cubic-bezier(0.16,1,0.3,1)">
+    <button onclick="closeForgotModal()" style="position:absolute;top:14px;right:14px;width:32px;height:32px;border-radius:50%;background:#F1F5F9;border:none;cursor:pointer;font-size:16px;display:flex;align-items:center;justify-content:center;color:#64748B">✕</button>
+
+    <!-- Step 1: Telefon raqam kiriting -->
+    <div id="fp-step1">
+      <div style="font-size:22px;margin-bottom:6px">🔐</div>
+      <div style="font-size:18px;font-weight:800;color:#0F172A;margin-bottom:6px">Parolni tiklash</div>
+      <div style="font-size:13.5px;color:#64748B;margin-bottom:20px;line-height:1.6">Ro'yxatdan o'tgan telefon raqamingizni kiriting. Yangi parol SMS orqali yuboriladi.</div>
+      <div class="form-error" id="fpError" style="display:none;background:#FFF5F5;border:1px solid #FCA5A5;color:#DC2626;border-radius:8px;padding:9px 13px;font-size:13px;font-weight:500;margin-bottom:14px">⚠️ Bu telefon raqam topilmadi</div>
+      <div class="form-group">
+        <label class="form-label">📱 Telefon raqam</label>
+        <div style="display:flex;align-items:center;gap:8px">
+          <span style="padding:11px 13px;background:#F8FAFC;border:1.5px solid #E8EDF5;border-radius:9px;font-size:14px;font-weight:600;color:#475569;white-space:nowrap">+998</span>
+          <input class="form-input" id="fpPhone" type="tel" placeholder="90 123 45 67" maxlength="9" style="flex:1" onkeydown="if(event.key==='Enter')sendForgotOTP()">
+        </div>
+      </div>
+      <button onclick="sendForgotOTP()" style="width:100%;padding:12px;background:linear-gradient(135deg,#1B4FD8,#3B82F6);color:white;border:none;border-radius:9px;font-family:'Outfit',sans-serif;font-size:14.5px;font-weight:700;cursor:pointer;margin-top:6px;box-shadow:0 4px 14px rgba(27,79,216,0.26)">SMS yuborish 📨</button>
+    </div>
+
+    <!-- Step 2: OTP tasdiqlash -->
+    <div id="fp-step2" style="display:none">
+      <div style="font-size:22px;margin-bottom:6px">📩</div>
+      <div style="font-size:18px;font-weight:800;color:#0F172A;margin-bottom:6px">SMS kod</div>
+      <div style="font-size:13.5px;color:#64748B;margin-bottom:6px;line-height:1.6">SMS yuborildi: <span id="fpPhoneDisplay" style="font-weight:700;color:#1B4FD8"></span></div>
+      <div style="background:#F0FDF4;border:1.5px solid #86EFAC;border-radius:10px;padding:12px 14px;margin-bottom:18px;font-size:13px;color:#166534;display:flex;align-items:center;gap:9px">
+        <span style="font-size:18px">📱</span>
+        <div>
+          <div style="font-weight:700;margin-bottom:2px">Tasdiqlash kodi yuborildi</div>
+          <div style="font-size:12px;color:#16A34A">Sinov rejimi: <span id="fpOtpDemo" style="font-family:monospace;font-weight:800;letter-spacing:3px;color:#0F172A"></span></div>
+        </div>
+      </div>
+      <div class="form-error" id="fpOtpError" style="display:none;background:#FFF5F5;border:1px solid #FCA5A5;color:#DC2626;border-radius:8px;padding:9px 13px;font-size:13px;font-weight:500;margin-bottom:14px">⚠️ Kod noto'g'ri. Qayta urinib ko'ring.</div>
+      <div class="form-group">
+        <label class="form-label">🔢 Tasdiqlash kodi (6 raqam)</label>
+        <input class="form-input" id="fpOtpInput" type="text" placeholder="• • • • • •" maxlength="6" style="font-size:20px;font-weight:700;letter-spacing:8px;text-align:center" onkeydown="if(event.key==='Enter')verifyOTP()">
+      </div>
+      <button onclick="verifyOTP()" style="width:100%;padding:12px;background:linear-gradient(135deg,#16A34A,#4ADE80);color:white;border:none;border-radius:9px;font-family:'Outfit',sans-serif;font-size:14.5px;font-weight:700;cursor:pointer;margin-top:6px">✅ Tasdiqlash</button>
+      <div style="text-align:center;margin-top:12px;font-size:13px;color:#94A3B8"><a onclick="showFpStep1()" style="color:#1B4FD8;cursor:pointer;font-weight:600">← Orqaga</a></div>
+    </div>
+
+    <!-- Step 3: (unused - auto-skip to step 4) -->
+    <div id="fp-step3" style="display:none"></div>
+
+    <!-- Step 4: Yangi login+parol SMS ko'rinishida -->
+    <div id="fp-step4" style="display:none;text-align:center;padding:10px 0">
+      <div style="font-size:48px;margin-bottom:12px">📲</div>
+      <div style="font-size:20px;font-weight:800;color:#0F172A;margin-bottom:6px">Yangi ma'lumotlar tayyor!</div>
+      <div style="font-size:13.5px;color:#64748B;margin-bottom:16px;line-height:1.6">Quyidagi yangi kirish ma'lumotlarini eslab qoling.</div>
+      <!-- SMS-style box -->
+      <div style="background:linear-gradient(135deg,#EEF3FF,#DBEAFE);border:1.5px solid #BFDBFE;border-radius:14px;padding:16px 18px;text-align:left;margin-bottom:18px">
+        <div style="font-size:11px;font-weight:700;color:#1B4FD8;text-transform:uppercase;letter-spacing:0.5px;margin-bottom:10px">📱 Demo SMS xabari</div>
+        <div style="font-size:13.5px;color:#1E3A8A;line-height:2">
+          IDU tizimiga kirish ma'lumotlari:<br>
+          🔐 Login: <strong id="fpNewLogin" style="font-size:15px;letter-spacing:1px;color:#1B4FD8;font-family:monospace"></strong><br>
+          🔑 Parol: <strong id="fpCredPass" style="font-size:15px;letter-spacing:2px;color:#16A34A;font-family:monospace"></strong>
+        </div>
+        <div style="font-size:11px;color:#64748B;margin-top:10px;border-top:1px solid #BFDBFE;padding-top:8px">⚠️ Xavfsizlik uchun tizimga kirgach parolni o'zgartiring.</div>
+      </div>
+      <button onclick="closeForgotModal();openLoginModal()" style="padding:12px 32px;background:linear-gradient(135deg,#1B4FD8,#3B82F6);color:white;border:none;border-radius:9px;font-family:'Outfit',sans-serif;font-size:14.5px;font-weight:700;cursor:pointer;box-shadow:0 4px 14px rgba(27,79,216,0.26)">Tizimga kirish →</button>
+    </div>
+  </div>
+</div>
+
+<!-- ════════ TELEFON QO'SHISH MODAL (birinchi kirish) ════════ -->
+<div id="phoneSetupModal" style="display:none;position:fixed;inset:0;z-index:9999;background:rgba(15,23,42,0.55);backdrop-filter:blur(8px);align-items:center;justify-content:center">
+  <div style="background:#fff;border-radius:20px;width:100%;max-width:420px;padding:28px 28px 24px;box-shadow:0 24px 80px rgba(0,0,0,0.20);position:relative;animation:modalIn 0.28s cubic-bezier(0.16,1,0.3,1)">
+    <div style="text-align:center;margin-bottom:6px;font-size:36px">📱</div>
+    <div style="font-size:19px;font-weight:800;color:#0F172A;margin-bottom:6px;text-align:center">Telefon raqamni kiriting</div>
+    <div style="font-size:13.5px;color:#64748B;margin-bottom:20px;line-height:1.6;text-align:center">Parolni tiklash uchun raqamingiz kerak bo'ladi. Bu faqat bir marta so'raladi.</div>
+    <div class="form-group">
+      <label class="form-label">📱 Telefon raqam</label>
+      <div style="display:flex;align-items:center;gap:8px">
+        <span style="padding:11px 13px;background:#F8FAFC;border:1.5px solid #E8EDF5;border-radius:9px;font-size:14px;font-weight:600;color:#475569;white-space:nowrap">+998</span>
+        <input class="form-input" id="setupPhone" type="tel" placeholder="90 123 45 67" maxlength="9" onkeydown="if(event.key==='Enter')savePhoneSetup()">
+      </div>
+    </div>
+    <div class="form-error" id="setupPhoneError" style="display:none;background:#FFF5F5;border:1px solid #FCA5A5;color:#DC2626;border-radius:8px;padding:9px 13px;font-size:13px;margin-bottom:10px">⚠️ Telefon raqamni to'g'ri kiriting</div>
+    <button onclick="savePhoneSetup()" style="width:100%;padding:12px;background:linear-gradient(135deg,#1B4FD8,#3B82F6);color:white;border:none;border-radius:9px;font-family:'Outfit',sans-serif;font-size:14.5px;font-weight:700;cursor:pointer;margin-top:6px;box-shadow:0 4px 14px rgba(27,79,216,0.26)">Saqlash va davom etish ✓</button>
+    <div style="text-align:center;margin-top:10px"><a onclick="skipPhoneSetup()" style="font-size:12.5px;color:#94A3B8;cursor:pointer">Keyinroq kiriting</a></div>
+  </div>
+</div>
+
+<!-- ════════ APP SCREEN ════════ -->
+
+<div id="appScreen">
+  <!-- DATE TIME BAR -->
+  <div class="datetime-bar" id="datetimeBar">
+    <div class="dtb-left">
+      <span class="dtb-day" id="dtbDay">—</span>
+      <span class="dtb-date" id="dtbDate">—</span>
+    </div>
+    <div class="dtb-right">
+      <span class="dtb-sem">📚 2025–2026 · II semestr</span>
+      <span class="dtb-clock" id="dtbClock">00:00:00</span>
+    </div>
+  </div>
+  <!-- Mobile sidebar backdrop -->
+  <div class="sidebar-backdrop" id="sidebarBackdrop" onclick="closeMobileSidebar()"></div>
+
+  <nav class="topnav">
+    <!-- Mobile menu toggle (only visible on small screens via CSS) -->
+    <button class="mobile-menu-btn" id="mobileMenuBtn" onclick="toggleMobileSidebar()" aria-label="Menu">
+      ☰
+    </button>
+    <div class="topnav-logo">
+      <div class="topnav-logo-icon">IDU</div>
+      <div class="topnav-logo-text">I<em>D</em>U</div>
+    </div>
+    <div class="topnav-tabs" id="topnavTabs"></div>
+    <div class="topnav-right">
+      <div class="nav-icon-btn" title="Yangilash" onclick="syncData()">↻</div>
+      <div class="nav-icon-btn" id="notifBtn" onclick="showPage('notifications')">
+        🔔<div class="notif-badge" id="notifCount">3</div>
+      </div>
+      <div class="user-chip" id="userChip">
+        <div class="uc-avatar" id="chipAvatar"></div>
+        <div class="uc-info">
+          <div class="uc-name" id="chipName"></div>
+          <div class="uc-role" id="chipRole"></div>
+        </div>
+      </div>
+      <button class="logout-btn" onclick="logout()">Chiqish</button>
+    </div>
+  </nav>
+  <div class="app-body">
+    <aside class="sidebar" id="appSidebar"></aside>
+    <main class="main-content" id="mainContent">
+<!-- ═══ STUDENT: DASHBOARD ═══ -->
+<div class="page" id="page-dashboard">
+  <div class="page-header">
+    <div class="page-header-left">
+      <div class="ph-title" id="dash-page-title">Bosh sahifa</div>
+      <div class="ph-sub" id="dashDate"></div>
+    </div>
+    <div class="page-header-right">
+      <button class="btn btn-secondary" onclick="showPage('timetable')" id="dash-btn-jadval">📅 Jadval</button>
+      <button class="btn btn-primary" onclick="openQuiz()" id="dash-btn-quiz">🧠 Quiz boshlash</button>
+    </div>
+  </div>
+  <div class="hemis-banner">
+    <div style="display:flex;align-items:center;gap:14px">
+      <div class="hb-dot"></div>
+      <div>
+        <div style="font-weight:700;font-size:14px" id="dash-banner-title">IDU Platform — HEMIS o'rnini bosuvchi tizim</div>
+        <div style="font-size:12px;opacity:0.8" id="dash-banner-sub">Oxirgi yangilanish: bugun 08:42 · Barcha ma'lumotlar joriy</div>
+      </div>
+    </div>
+    <div class="hb-stats">
+      <div><div class="hb-stat-val">156</div><div class="hb-stat-key" id="dash-hb1">Talabalar</div></div>
+      <div><div class="hb-stat-val">24</div><div class="hb-stat-key" id="dash-hb2">Fanlar</div></div>
+      <div><div class="hb-stat-val">98%</div><div class="hb-stat-key" id="dash-hb3">Davomat</div></div>
+      <div><div class="hb-stat-val">14</div><div class="hb-stat-key" id="dash-hb4">O'qituvchilar</div></div>
+    </div>
+  </div>
+  <div class="stats-grid">
+    <div class="stat-card">
+      <div class="stat-card-top"><div class="stat-card-label">GPA</div>
+        <div class="stat-card-icon" style="background:var(--primary-light)">📈</div></div>
+      <div class="stat-card-val" style="color:var(--primary)">3.7</div>
+      <div class="stat-card-change sc-up" id="dash-gpa-change">↑ +0.2 o'tgan semestr</div>
+      <div class="stat-card-bar scb-blue"></div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-card-top"><div class="stat-card-label" id="dash-stat-total">Umumiy ball</div>
+        <div class="stat-card-icon" style="background:var(--green-light)">⭐</div></div>
+      <div class="stat-card-val" style="color:var(--green)">847</div>
+      <div class="stat-card-change sc-up" id="dash-total-change">↑ +23 bu hafta</div>
+      <div class="stat-card-bar scb-green"></div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-card-top"><div class="stat-card-label" id="dash-stat-rating">Reyting o'rni</div>
+        <div class="stat-card-icon" style="background:var(--orange-light)">🏅</div></div>
+      <div class="stat-card-val" style="color:var(--orange)">#12</div>
+      <div class="stat-card-change sc-up" id="dash-rating-change">↑ 156 ichida</div>
+      <div class="stat-card-bar scb-orange"></div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-card-top"><div class="stat-card-label" id="dash-stat-davomat">Davomat</div>
+        <div class="stat-card-icon" style="background:var(--primary-light)">📅</div></div>
+      <div class="stat-card-val" style="color:var(--primary)">94%</div>
+      <div class="stat-card-change sc-flat" id="dash-stat-semester">Joriy semestr</div>
+      <div class="stat-card-bar scb-blue"></div>
+    </div>
+  </div>
+  <div class="grid-2" style="margin-bottom:16px">
+    <div class="card">
+      <div class="card-header">
+        <div class="card-title" id="dash-today-title">Bugungi darslar</div>
+        <div class="card-badge cb-blue" id="todayBadge">3-Mart</div>
+      </div>
+      <div id="todaySchedule"></div>
+    </div>
+    <div class="card">
+      <div class="card-header">
+        <div class="card-title" id="dash-tasks-title">Yaqinlashayotgan vazifalar</div>
+        <div class="card-badge cb-red" id="dash-tasks-badge">5 ta</div>
+      </div>
+      <div id="upcomingTasks"></div>
+    </div>
+  </div>
+  <div class="grid-7-3">
+    <div class="card">
+      <div class="card-header">
+        <div class="card-title" id="dash-grades-title">So'nggi baholar</div>
+        <button class="btn btn-secondary btn-sm" onclick="showPage('grades')" id="dash-grades-all">Barchasi →</button>
+      </div>
+      <table class="grade-table">
+        <thead><tr>
+          <th id="th-fan">Fan</th><th id="th-jn">JN</th><th id="th-on">ON</th><th id="th-yn">YN</th><th id="th-mi">MI</th><th id="th-jami">Jami</th><th id="th-baho">Baho</th>
+        </tr></thead>
+        <tbody id="recentGradesBody"></tbody>
+      </table>
+    </div>
+    <div class="card">
+      <div class="card-header"><div class="card-title" id="dash-achieve-title">Yutuqlar 🏆</div></div>
+      <div class="badge-row"><div class="badge-icon">🌟</div>
+        <div><div class="badge-name" id="dash-ach1-name">A'lochi talaba</div>
+          <div class="badge-desc" id="dash-ach1-desc">GPA 3.5+ saqlash</div></div>
+        <div class="badge-reward">+100</div></div>
+      <div class="badge-row"><div class="badge-icon">📅</div>
+        <div><div class="badge-name" id="dash-ach2-name">Devomli talaba</div>
+          <div class="badge-desc" id="dash-ach2-desc">95%+ davomat</div></div>
+        <div class="badge-reward">+50</div></div>
+      <div class="badge-row"><div class="badge-icon">💡</div>
+        <div><div class="badge-name" id="dash-ach3-name">Innovator</div>
+          <div class="badge-desc" id="dash-ach3-desc">Startup g'oya kiritish</div></div>
+        <div class="badge-reward">+75</div></div>
+    </div>
+  </div>
+</div>
+
+<!-- ═══ STUDENT: TIMETABLE ═══ -->
+<div class="page" id="page-timetable">
+  <div class="page-header">
+    <div class="page-header-left">
+      <div class="ph-title" id="tt-page-title">📅 Dars jadvali</div>
+      <div class="ph-sub" id="ttWeekLabel">Haftalik dars va xonalar jadvali</div>
+    </div>
+    <div class="page-header-right">
+      <button class="btn btn-secondary" onclick="changeWeek(-1)" style="padding:8px 14px;font-size:13px" id="tt-btn-prev">← Oldingi hafta</button>
+      <button class="btn btn-secondary" onclick="changeWeek(0)" style="padding:8px 14px;font-size:13px;background:var(--primary-light);color:var(--primary)" id="tt-btn-cur">Joriy hafta</button>
+      <button class="btn btn-secondary" onclick="changeWeek(1)" style="padding:8px 14px;font-size:13px" id="tt-btn-next">Keyingi hafta →</button>
+      <div class="filter-row" style="margin:0">
+        <button class="filter-chip active" onclick="setTTView('week',this)" id="tt-btn-weekly">Haftalik</button>
+        <button class="filter-chip" onclick="setTTView('day',this)" id="tt-btn-daily">Kunlik</button>
+      </div>
+    </div>
+  </div>
+  <div class="week-grid" id="ttWeekNav"></div>
+  <div class="card" style="padding:16px">
+    <div class="timetable-wrap">
+      <table class="timetable" id="ttTable">
+        <thead id="ttHead"></thead>
+        <tbody id="ttBody"></tbody>
+      </table>
+    </div>
+  </div>
+  <div style="margin-top:14px;display:flex;gap:10px;flex-wrap:wrap" id="ttLegend"></div>
+</div>
+
+<!-- ═══ STUDENT: GRADES (100-ball) ═══ -->
+<div class="page" id="page-grades">
+  <div class="page-header">
+    <div class="page-header-left">
+      <div class="ph-title">📊 Baholar (100-ballik tizim)</div>
+      <div class="ph-sub">JN=30 · ON=20 · YN=30 · MI=20</div>
+    </div>
+    <div class="page-header-right">
+      <select class="form-select" style="width:auto" id="semesterSelect" onchange="renderGrades()">
+        <option value="1">I semestr</option>
+        <option value="2" selected>II semestr</option>
+      </select>
+    </div>
+  </div>
+  <div class="stats-grid-3" style="margin-bottom:18px">
+    <div class="stat-card">
+      <div class="stat-card-top"><div class="stat-card-label">O'rtacha ball</div>
+        <div class="stat-card-icon" style="background:var(--primary-light)">📊</div></div>
+      <div class="stat-card-val" style="color:var(--primary)" id="avgScore">82.4</div>
+      <div class="stat-card-change sc-flat">Joriy semestr</div>
+      <div class="stat-card-bar scb-blue"></div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-card-top"><div class="stat-card-label">A'lo baholar</div>
+        <div class="stat-card-icon" style="background:var(--green-light)">🏆</div></div>
+      <div class="stat-card-val" style="color:var(--green)" id="excellentCount">3</div>
+      <div class="stat-card-change sc-up">86+ ball</div>
+      <div class="stat-card-bar scb-green"></div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-card-top"><div class="stat-card-label">Qoniqarsiz</div>
+        <div class="stat-card-icon" style="background:var(--red-light)">⚠️</div></div>
+      <div class="stat-card-val" style="color:var(--red)" id="failCount">0</div>
+      <div class="stat-card-change sc-flat">55 ball dan past</div>
+      <div class="stat-card-bar scb-red"></div>
+    </div>
+  </div>
+  <!-- Legend -->
+  <div class="xl-legend">
+    <span class="xl-legend-item"><span class="xl-legend-dot" style="background:#EDE9FE;border:1px solid #C4B5FD"></span>JN — Joriy nazorat (30)</span>
+    <span class="xl-legend-item"><span class="xl-legend-dot" style="background:#DBEAFE;border:1px solid #93C5FD"></span>ON — Oraliq (20)</span>
+    <span class="xl-legend-item"><span class="xl-legend-dot" style="background:#DCFCE7;border:1px solid #86EFAC"></span>YN — Yakuniy (30)</span>
+    <span class="xl-legend-item"><span class="xl-legend-dot" style="background:#FEF3C7;border:1px solid #FCD34D"></span>MI — Mustaqil ish (20)</span>
+  </div>
+  <!-- Excel table -->
+  <div class="xl-wrap">
+    <div class="xl-toolbar">
+      <span class="xl-toolbar-title">📊 Fanlar bo'yicha baholar jadvali</span>
+      <button class="xl-btn xl-export" onclick="exportStudentGrades()">📥 Excel yuklab olish</button>
+    </div>
+    <div class="xl-search-row">
+      <input class="xl-search" id="gradesSearch" placeholder="🔍 Fan nomi..." oninput="renderGrades()">
+      <button class="xl-filter-chip active" onclick="filterGradesSt('all',this)">Barchasi</button>
+      <button class="xl-filter-chip" onclick="filterGradesSt('alo',this)">⭐ A'lo (86+)</button>
+      <button class="xl-filter-chip" onclick="filterGradesSt('yaxshi',this)">👍 Yaxshi (71-85)</button>
+      <button class="xl-filter-chip" onclick="filterGradesSt('qoniq',this)">⚠️ Qoniqarsiz (&lt;71)</button>
+    </div>
+    <table class="xl-table">
+      <thead>
+        <tr><th></th><th>A</th><th>B</th><th>C</th><th>D</th><th>E</th><th>F</th><th>G</th><th>H</th><th>I</th></tr>
+        <tr>
+          <th></th>
+          <th style="min-width:180px;text-align:left">Fan nomi</th>
+          <th style="min-width:140px;text-align:left">O'qituvchi</th>
+          <th class="xl-head-jn">JN /30</th>
+          <th class="xl-head-on">ON /20</th>
+          <th class="xl-head-yn">YN /30</th>
+          <th class="xl-head-mi">MI /20</th>
+          <th class="xl-head-total">Jami /100</th>
+          <th class="xl-head-baho">Baho</th>
+          <th class="xl-head-status">Status</th>
+        </tr>
+      </thead>
+      <tbody id="gradesBody"></tbody>
+    </table>
+    <div class="xl-footer">
+      <span>O'rtacha: <b id="avgScore">—</b></span>
+      <span>A'lo: <b id="excellentCount" class="xl-total-green">0</b></span>
+      <span>Yaxshi: <b id="goodCountSt" class="xl-total-blue">0</b></span>
+      <span>Qoniqarsiz: <b id="failCount" class="xl-total-red">0</b></span>
+      <span style="margin-left:auto;font-size:11px;opacity:0.7">🔒 Faqat professor o'zgartira oladi</span>
+    </div>
+  </div>
+</div>
+
+<!-- ═══ STUDENT: TASKS ═══ -->
+<div class="page" id="page-tasks">
+  <div class="page-header">
+    <div class="page-header-left">
+      <div class="ph-title">📝 Vazifalar</div>
+      <div class="ph-sub">Topshiriqlar, testlar va laboratoriya ishlari</div>
+    </div>
+  </div>
+  <div class="filter-row">
+    <button class="filter-chip active" onclick="filterTasks('all',this)">Barchasi</button>
+    <button class="filter-chip" onclick="filterTasks('test',this)">Testlar</button>
+    <button class="filter-chip" onclick="filterTasks('lab',this)">Laboratoriya</button>
+    <button class="filter-chip" onclick="filterTasks('hw',this)">Uy vazifasi</button>
+    <button class="filter-chip" onclick="filterTasks('project',this)">Loyihalar</button>
+  </div>
+  <div id="tasksList"></div>
+</div>
+
+<!-- ═══ STUDENT: MATERIALS (LMS) ═══ -->
+<div class="page" id="page-materials">
+  <div class="page-header">
+    <div class="page-header-left">
+      <div class="ph-title">📚 Kurs materiallari</div>
+      <div class="ph-sub">Ma'ruzalar, taqdimotlar, video darslar</div>
+    </div>
+  </div>
+  <div class="filter-row">
+    <button class="filter-chip active" onclick="filterMaterials('all',this)">Barchasi</button>
+    <button class="filter-chip" onclick="filterMaterials('lecture',this)">Ma'ruzalar</button>
+    <button class="filter-chip" onclick="filterMaterials('video',this)">Videolar</button>
+    <button class="filter-chip" onclick="filterMaterials('pdf',this)">PDF</button>
+  </div>
+  <div id="materialsList"></div>
+</div>
+
+<!-- ═══ STUDENT: RATING ═══ -->
+<div class="page" id="page-rating">
+  <div class="page-header">
+    <div class="page-header-left">
+      <div class="ph-title">🏆 Reyting</div>
+      <div class="ph-sub">Guruh va kurs reytingi</div>
+    </div>
+    <div class="page-header-right">
+      <select class="form-select" style="width:auto" id="ratingFilter" onchange="renderRating()">
+        <option value="group">Guruh reytingi</option>
+        <option value="course">Kurs reytingi</option>
+        <option value="faculty">Fakultet reytingi</option>
+      </select>
+    </div>
+  </div>
+  <div class="grid-7-3">
+    <div class="card">
+      <div class="card-header"><div class="card-title">Reyting jadvali</div></div>
+      <div id="ratingList"></div>
+    </div>
+    <div class="card">
+      <div class="card-header"><div class="card-title">Sizning ko'rsatkichlaringiz</div></div>
+      <div style="text-align:center;padding:20px 0">
+        <div style="font-size:48px;font-weight:900;color:var(--primary);font-family:'DM Mono',monospace">#12</div>
+        <div style="font-size:13px;color:var(--text3);margin-bottom:16px">156 ta talaba ichida</div>
+      </div>
+      <div class="bb-row"><span class="bb-label">GPA</span><span class="bb-val" style="color:var(--primary)">3.7</span></div>
+      <div class="divider"></div>
+      <div class="bb-row"><span class="bb-label">O'rtacha ball</span><span class="bb-val">82.4</span></div>
+      <div class="divider"></div>
+      <div class="bb-row"><span class="bb-label">Davomat</span><span class="bb-val" style="color:var(--green)">94%</span></div>
+      <div class="divider"></div>
+      <div class="bb-row"><span class="bb-label">Yutuq ballari</span><span class="bb-val" style="color:var(--orange)">847</span></div>
+    </div>
+  </div>
+</div>
+
+<!-- ═══ STUDENT: AI TUTOR ═══ -->
+<div class="page" id="page-aitutor">
+  <div class="page-header">
+    <div class="page-header-left">
+      <div class="ph-title">🤖 AI Tutor</div>
+      <div class="ph-sub">Sun'iy intellekt yordamida o'rganing</div>
+    </div>
+  </div>
+  <div class="card" style="padding:20px">
+    <div class="ai-chat-wrap">
+      <div class="ai-chat-messages" id="aiMessages">
+        <div class="chat-bubble-wrap ai">
+          <div class="bubble-avatar ba-ai">🤖</div>
+          <div class="bubble-body">
+            <div class="bubble">Salom! Men IDU AI Tutor — o'qishingizda yordam beraman. Qaysi fan bo'yicha savol bor? 📚</div>
+            <div class="bubble-time">Hozir</div>
+          </div>
+        </div>
+      </div>
+      <div class="ai-input-area">
+        <div class="ai-quick-btns">
+          <button class="ai-qbtn" onclick="askAI('Algebra formulalarini tushuntir')">📐 Algebra</button>
+          <button class="ai-qbtn" onclick="askAI('Python dasturlashni o\'rgat')">💻 Python</button>
+          <button class="ai-qbtn" onclick="askAI('Ingliz tilida essay yozishga yordam ber')">📝 Essay</button>
+          <button class="ai-qbtn" onclick="askAI('Imtihonga tayyorlanishga yordam ber')">🎯 Imtihon</button>
+          <button class="ai-qbtn" onclick="askAI('Fizika masalasini yech')">⚛️ Fizika</button>
+        </div>
+        <div class="ai-input-row">
+          <textarea class="ai-textarea" id="aiInput" rows="1" placeholder="Savolingizni yozing..."
+            onkeydown="if(event.key==='Enter'&&!event.shiftKey){event.preventDefault();sendAIMsg()}"></textarea>
+          <button class="ai-send" id="aiSendBtn" onclick="sendAIMsg()">➤</button>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ═══ NOTIFICATIONS ═══ -->
+<div class="page" id="page-notifications">
+  <div class="page-header">
+    <div class="page-header-left">
+      <div class="ph-title">🔔 Bildirishnomalar</div>
+      <div class="ph-sub">Barcha yangiliklar va xabarlar</div>
+    </div>
+    <div class="page-header-right">
+      <button class="btn btn-secondary btn-sm" onclick="markAllRead()">Barchasini o'qildi</button>
+    </div>
+  </div>
+  <div class="card">
+    <div id="notifList"></div>
+  </div>
+</div>
+
+<!-- ═══ TEACHER: DASHBOARD ═══ -->
+<div class="page" id="page-teacher-dashboard">
+  <div class="page-header">
+    <div class="page-header-left">
+      <div class="ph-title">O'qituvchi paneli</div>
+      <div class="ph-sub" id="teacherDashDate"></div>
+    </div>
+    <div class="page-header-right">
+      <button class="btn btn-primary" onclick="showPage('teacher-grade')">✏️ Baho kiritish</button>
+    </div>
+  </div>
+  <div class="stats-grid">
+    <div class="stat-card">
+      <div class="stat-card-top"><div class="stat-card-label">Jami talabalar</div>
+        <div class="stat-card-icon" style="background:var(--primary-light)">👥</div></div>
+      <div class="stat-card-val" style="color:var(--primary)">87</div>
+      <div class="stat-card-change sc-flat">3 guruh</div>
+      <div class="stat-card-bar scb-blue"></div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-card-top"><div class="stat-card-label">O'rtacha ball</div>
+        <div class="stat-card-icon" style="background:var(--green-light)">📊</div></div>
+      <div class="stat-card-val" style="color:var(--green)">74.2</div>
+      <div class="stat-card-change sc-up">↑ +2.1 o'tgan oyga nisbatan</div>
+      <div class="stat-card-bar scb-green"></div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-card-top"><div class="stat-card-label">Bugungi darslar</div>
+        <div class="stat-card-icon" style="background:var(--orange-light)">📅</div></div>
+      <div class="stat-card-val" style="color:var(--orange)">4</div>
+      <div class="stat-card-change sc-flat">Jadvalda</div>
+      <div class="stat-card-bar scb-orange"></div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-card-top"><div class="stat-card-label">Xavfli talabalar</div>
+        <div class="stat-card-icon" style="background:var(--red-light)">⚠️</div></div>
+      <div class="stat-card-val" style="color:var(--red)">5</div>
+      <div class="stat-card-change sc-down">Davomat yoki ball past</div>
+      <div class="stat-card-bar scb-red"></div>
+    </div>
+  </div>
+  <div class="grid-2">
+    <div class="card">
+      <div class="card-header"><div class="card-title">Bugungi darslar</div>
+        <div class="card-badge cb-blue" id="teacherTodayBadge">3-Mart</div></div>
+      <div id="teacherTodaySchedule"></div>
+    </div>
+    <div class="card">
+      <div class="card-header"><div class="card-title">Xavfli talabalar</div>
+        <div class="card-badge cb-red">5 ta</div></div>
+      <div id="atRiskStudents"></div>
+    </div>
+  </div>
+</div>
+
+<!-- ═══ TEACHER: TIMETABLE ═══ -->
+<div class="page" id="page-teacher-timetable">
+  <div class="page-header">
+    <div class="page-header-left">
+      <div class="ph-title">📅 Mening jadvalim</div>
+      <div class="ph-sub">Qaysi fan, qaysi guruh, qaysi xona</div>
+    </div>
+  </div>
+  <div class="card" style="margin-bottom:16px;padding:16px 20px">
+    <div style="font-size:13px;color:var(--text2);margin-bottom:10px;font-weight:600">Bugungi darslarim:</div>
+    <div id="teacherTodayFull"></div>
+  </div>
+  <div class="card" style="padding:16px">
+    <div class="card-header"><div class="card-title">Haftalik jadval</div></div>
+    <div class="timetable-wrap">
+      <table class="timetable" id="teacherTTTable">
+        <thead id="teacherTTHead"></thead>
+        <tbody id="teacherTTBody"></tbody>
+      </table>
+    </div>
+  </div>
+</div>
+
+<!-- ═══ TEACHER: GRADE ENTRY ═══ -->
+<div class="page" id="page-teacher-grade">
+  <div class="page-header">
+    <div class="page-header-left">
+      <div class="ph-title">✏️ Baho kiritish</div>
+      <div class="ph-sub">100-ballik tizim — faqat professor o'zgartira oladi</div>
+    </div>
+    <div class="page-header-right">
+      <select class="form-select" style="width:auto" id="gradeSubjectSelect" onchange="loadGradeGroup()">
+        <option value="Machine Learning">Machine Learning</option>
+        <option value="Python for AI">Python for AI</option>
+        <option value="Deep Learning">Deep Learning</option>
+        <option value="Data Science">Data Science</option>
+        <option value="Natural Language Processing">NLP</option>
+        <option value="Computer Vision">Computer Vision</option>
+        <option value="Matematika (AI uchun)">Matematika (AI uchun)</option>
+        <option value="Ingliz tili (Tech)">Ingliz tili (Tech)</option>
+      </select>
+      <select class="form-select" style="width:auto" id="gradeGroupSelect" onchange="loadGradeGroup()">
+        <option value="AI-2301">AI-2301</option>
+        <option value="CS-2301">CS-2301</option>
+        <option value="IT-2301">IT-2301</option>
+        <option value="DB-2301">DB-2301</option>
+      </select>
+    </div>
+  </div>
+  <div class="xl-wrap">
+    <div class="xl-toolbar">
+      <span class="xl-toolbar-title" id="gradeEntryTitle">✏️ Baho kiritish jadvali</span>
+      <span style="font-size:11px;background:#DCFCE7;color:#166534;border:1px solid #86EFAC;padding:2px 10px;border-radius:20px">🔒 Faqat professor tahrirlaydi</span>
+      <button class="xl-btn xl-save" onclick="saveAllGrades()" style="margin-left:auto">💾 Barchani saqlash</button>
+      <button class="xl-btn xl-export" onclick="exportGrades()">📥 Excel</button>
+    </div>
+    <div class="xl-warn-banner">
+      ⚠️ <span>Ball limitdan oshsa qizil rang ko'rsatiladi. JN≤30 · ON≤20 · YN≤30 · MI≤20</span>
+    </div>
+    <table class="xl-table">
+      <thead>
+        <tr><th></th><th>A</th><th>B</th><th>C</th><th>D</th><th>E</th><th>F</th><th>G</th><th>H</th></tr>
+        <tr>
+          <th></th>
+          <th style="min-width:160px;text-align:left">Talaba</th>
+          <th style="min-width:80px;text-align:center">Guruh</th>
+          <th class="xl-head-jn">JN /30</th>
+          <th class="xl-head-on">ON /20</th>
+          <th class="xl-head-yn">YN /30</th>
+          <th class="xl-head-mi">MI /20</th>
+          <th class="xl-head-total">Jami /100</th>
+          <th class="xl-head-baho">Baho</th>
+          <th></th>
+        </tr>
+      </thead>
+      <tbody id="gradeEntryBody"></tbody>
+    </table>
+    <div class="xl-footer">
+      <span>Talabalar: <b id="gradeEntryCount">0</b></span>
+      <span>O'rtacha: <b id="gradeEntryAvg">—</b></span>
+      <span>A'lo: <b id="gradeEntryAlo" class="xl-total-green">0</b></span>
+      <span>Qoniqarsiz: <b id="gradeEntryFail" class="xl-total-red">0</b></span>
+    </div>
+  </div>
+</div>
+
+<!-- ═══ TEACHER: ATTENDANCE ═══ -->
+<div class="page" id="page-teacher-attendance">
+  <div class="page-header">
+    <div class="page-header-left">
+      <div class="ph-title">📋 Davomat</div>
+      <div class="ph-sub">Talabalar davomatini belgilash</div>
+    </div>
+    <div class="page-header-right">
+      <select class="form-select" style="width:auto" id="attGroupSelect">
+        <option>AI-2301</option><option>CS-2301</option><option>IT-2301</option><option>DB-2301</option><option>AI-2301</option>
+      </select>
+      <input type="date" class="form-input" style="width:auto" id="attDate">
+    </div>
+  </div>
+  <div class="card">
+    <table class="dekanat-table">
+      <thead><tr><th>#</th><th>Talaba</th><th>Davomat</th><th>Sababli/Sababsiz</th><th>Izoh</th></tr></thead>
+      <tbody id="attendanceBody"></tbody>
+    </table>
+    <div style="padding-top:14px;display:flex;gap:10px;justify-content:flex-end">
+      <button class="btn btn-primary" onclick="saveAttendance()">💾 Saqlash</button>
+    </div>
+  </div>
+</div>
+
+<!-- ═══ TEACHER: STUDENTS LIST ═══ -->
+<div class="page" id="page-teacher-students">
+  <div class="page-header">
+    <div class="page-header-left">
+      <div class="ph-title">👥 Talabalar ro'yxati</div>
+      <div class="ph-sub">Guruhlarim bo'yicha talabalar</div>
+    </div>
+    <div class="page-header-right">
+      <select class="form-select" style="width:auto" id="studGroupFilter" onchange="renderStudentList()">
+        <option value="all">Barcha guruhlar</option>
+        <option value="CS-2301">CS-2301</option>
+        <option value="IT-2301">IT-2301</option>
+        <option value="AI-2301">AI-2301</option>
+      </select>
+    </div>
+  </div>
+  <div class="card">
+    <table class="dekanat-table">
+      <thead><tr>
+        <th>#</th><th>Talaba</th><th>Guruh</th>
+        <th>O'rt. ball</th><th>Davomat</th><th>Status</th><th>Amal</th>
+      </tr></thead>
+      <tbody id="teacherStudentBody"></tbody>
+    </table>
+  </div>
+</div>
+<!-- ═══ DEKANAT: DASHBOARD ═══ -->
+<div class="page" id="page-dekanat-dashboard">
+  <div class="page-header">
+    <div class="page-header-left">
+      <div class="ph-title">🏛️ Dekanat — Bosh panel</div>
+      <div class="ph-sub">Fakultet umumiy ko'rsatkichlari</div>
+    </div>
+    <div class="page-header-right">
+      <button class="btn btn-secondary" onclick="showPage('dekanat-report')">📊 Hisobot</button>
+      <button class="btn btn-primary" onclick="showPage('dekanat-schedule')">📅 Jadval boshqaruvi</button>
+    </div>
+  </div>
+  <div class="hemis-banner">
+    <div style="display:flex;align-items:center;gap:14px">
+      <div class="hb-dot"></div>
+      <div>
+        <div style="font-weight:700;font-size:14px">IDU Platform — HEMIS + EduPage + LMS — bitta tizimda</div>
+        <div style="font-size:12px;opacity:0.8">Barcha ma'lumotlar real vaqtda yangilanadi</div>
+      </div>
+    </div>
+    <div class="hb-stats">
+      <div><div class="hb-stat-val">312</div><div class="hb-stat-key">Talabalar</div></div>
+      <div><div class="hb-stat-val">18</div><div class="hb-stat-key">O'qituvchilar</div></div>
+      <div><div class="hb-stat-val">24</div><div class="hb-stat-key">Fanlar</div></div>
+      <div><div class="hb-stat-val">96%</div><div class="hb-stat-key">Davomat</div></div>
+    </div>
+  </div>
+  <div class="stats-grid">
+    <div class="stat-card">
+      <div class="stat-card-top"><div class="stat-card-label">Jami talabalar</div>
+        <div class="stat-card-icon" style="background:var(--primary-light)">🎓</div></div>
+      <div class="stat-card-val" style="color:var(--primary)">312</div>
+      <div class="stat-card-change sc-up">↑ +8 bu semestr</div>
+      <div class="stat-card-bar scb-blue"></div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-card-top"><div class="stat-card-label">O'qituvchilar</div>
+        <div class="stat-card-icon" style="background:var(--green-light)">👨‍🏫</div></div>
+      <div class="stat-card-val" style="color:var(--green)">18</div>
+      <div class="stat-card-change sc-flat">Joriy holat</div>
+      <div class="stat-card-bar scb-green"></div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-card-top"><div class="stat-card-label">Guruhlar</div>
+        <div class="stat-card-icon" style="background:var(--orange-light)">👥</div></div>
+      <div class="stat-card-val" style="color:var(--orange)">12</div>
+      <div class="stat-card-change sc-flat">4 kurs</div>
+      <div class="stat-card-bar scb-orange"></div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-card-top"><div class="stat-card-label">Xavfli talabalar</div>
+        <div class="stat-card-icon" style="background:var(--red-light)">⚠️</div></div>
+      <div class="stat-card-val" style="color:var(--red)">14</div>
+      <div class="stat-card-change sc-down">Darhol diqqat</div>
+      <div class="stat-card-bar scb-red"></div>
+    </div>
+  </div>
+  <div class="grid-2" style="margin-bottom:16px">
+    <div class="card">
+      <div class="card-header"><div class="card-title">Guruhlar reytingi</div>
+        <div class="card-badge cb-blue">O'rt. ball</div></div>
+      <div id="groupRankingList"></div>
+    </div>
+    <div class="card">
+      <div class="card-header"><div class="card-title">Eng yaxshi o'qituvchilar</div>
+        <div class="card-badge cb-green">Baholash</div></div>
+      <div id="topTeachersList"></div>
+    </div>
+  </div>
+  <div class="card">
+    <div class="card-header"><div class="card-title">Tezkor amallar</div></div>
+    <div class="erp-grid">
+      <div class="erp-tile" onclick="showPage('dekanat-schedule')">
+        <div class="erp-emoji">📅</div>
+        <div class="erp-name">Jadval boshqaruvi</div>
+        <div class="erp-desc">Darslar, xonalar, o'qituvchilar</div>
+      </div>
+      <div class="erp-tile" onclick="showPage('dekanat-students')">
+        <div class="erp-emoji">🎓</div>
+        <div class="erp-name">Talabalar</div>
+        <div class="erp-desc">Ro'yxat, baholar, davomat</div>
+      </div>
+      <div class="erp-tile" onclick="showPage('dekanat-teachers')">
+        <div class="erp-emoji">👨‍🏫</div>
+        <div class="erp-name">O'qituvchilar</div>
+        <div class="erp-desc">Kafedralar, yuklamalar</div>
+      </div>
+      <div class="erp-tile" onclick="showPage('dekanat-grades')">
+        <div class="erp-emoji">📊</div>
+        <div class="erp-name">Baholash nazorati</div>
+        <div class="erp-desc">100-ball, hisobotlar</div>
+      </div>
+      <div class="erp-tile" onclick="showPage('dekanat-attendance')">
+        <div class="erp-emoji">📋</div>
+        <div class="erp-name">Davomat hisoboti</div>
+        <div class="erp-desc">Guruh va sana bo'yicha</div>
+      </div>
+      <div class="erp-tile" onclick="showPage('dekanat-report')">
+        <div class="erp-emoji">📈</div>
+        <div class="erp-name">Tahlil va hisobotlar</div>
+        <div class="erp-desc">Statistika, eksport</div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ═══ DEKANAT: SCHEDULE MANAGER ═══ -->
+<div class="page" id="page-dekanat-schedule">
+  <div class="page-header">
+    <div class="page-header-left">
+      <div class="ph-title">📅 Jadval boshqaruvi</div>
+      <div class="ph-sub">Barcha guruhlar uchun dars jadvali — tahrirlash mumkin</div>
+    </div>
+    <div class="page-header-right">
+      <select class="form-select" style="width:auto" id="dekScheduleGroup" onchange="renderDekanatSchedule()">
+        <option value="AI-2301">AI-2301</option>
+        <option value="CS-2301">CS-2301</option>
+        <option value="IT-2301">IT-2301</option>
+        <option value="DB-2301">DB-2301</option>
+      </select>
+      <button class="btn btn-primary" onclick="openAddLessonModal()">+ Dars qo'shish</button>
+    </div>
+  </div>
+  <div class="card" style="padding:16px">
+    <div class="timetable-wrap">
+      <table class="timetable" id="dekTTTable">
+        <thead id="dekTTHead"></thead>
+        <tbody id="dekTTBody"></tbody>
+      </table>
+    </div>
+  </div>
+  <div style="margin-top:12px" class="card">
+    <div class="card-header"><div class="card-title">Xonalar band bo'lish holati</div></div>
+    <div id="roomStatusGrid" style="display:grid;grid-template-columns:repeat(4,1fr);gap:10px"></div>
+  </div>
+</div>
+
+<!-- ═══ ADD/EDIT LESSON MODAL ═══ -->
+<div id="addLessonModal" class="modal-overlay" style="display:none;position:fixed;inset:0;background:rgba(0,0,0,0.4);z-index:9999;align-items:center;justify-content:center">
+  <div style="background:white;border-radius:18px;padding:28px 30px;width:480px;max-width:95vw;box-shadow:0 20px 60px rgba(0,0,0,0.18);position:relative;animation:authIn 0.3s ease">
+    <button onclick="closeAddLessonModal()" style="position:absolute;top:14px;right:14px;background:var(--bg2);border:none;border-radius:8px;width:30px;height:30px;cursor:pointer;font-size:16px;display:flex;align-items:center;justify-content:center">✕</button>
+    <div style="font-size:18px;font-weight:800;margin-bottom:6px" id="lessonModalTitle">➕ Yangi dars qo'shish</div>
+    <div style="font-size:13px;color:var(--text3);margin-bottom:20px" id="lessonModalSub">Jadvalga yangi dars kiritish</div>
+    <input type="hidden" id="editLessonDay">
+    <input type="hidden" id="editLessonTime">
+    <div class="form-row" style="margin-bottom:14px">
+      <div class="form-group" style="margin:0">
+        <label class="form-label">Kun</label>
+        <select class="form-select" id="lessonDay">
+          <option value="0">Dushanba</option>
+          <option value="1">Seshanba</option>
+          <option value="2">Chorshanba</option>
+          <option value="3">Payshanba</option>
+          <option value="4">Juma</option>
+        </select>
+      </div>
+      <div class="form-group" style="margin:0">
+        <label class="form-label">Para</label>
+        <select class="form-select" id="lessonTime">
+          <option value="0">1-para (08:30–10:00)</option>
+          <option value="1">2-para (10:15–11:45)</option>
+          <option value="2">3-para (12:30–14:00)</option>
+          <option value="3">4-para (14:15–15:45)</option>
+          <option value="4">5-para (16:00–17:30)</option>
+        </select>
+      </div>
+    </div>
+    <div class="form-group">
+      <label class="form-label">Fan nomi</label>
+      <select class="form-select" id="lessonSubject">
+        <option>Machine Learning</option>
+        <option>Python for AI</option>
+        <option>Deep Learning</option>
+        <option>Data Science</option>
+        <option>Computer Vision</option>
+        <option>Neural Networks</option>
+        <option>Natural Language Processing</option>
+        <option>Matematika (AI uchun)</option>
+        <option>Network Security</option>
+        <option>Ethical Hacking</option>
+        <option>Web Application Security</option>
+        <option>Kriptografiya</option>
+        <option>Digital Forensics</option>
+        <option>Cloud Security</option>
+        <option>IDS/IPS Tizimlari</option>
+        <option>Dasturlash Asoslari</option>
+        <option>Ma'lumotlar Tuzilmasi</option>
+        <option>Algoritmlar</option>
+        <option>Web Dasturlash</option>
+        <option>Ma'lumotlar Bazasi</option>
+        <option>Kompyuter Tarmoqlari</option>
+        <option>Operatsion Tizimlar</option>
+        <option>Raqamli Marketing</option>
+        <option>E-Tijorat</option>
+        <option>Biznes Analitika</option>
+        <option>Raqamli Transformatsiya</option>
+        <option>Loyiha Boshqaruvi</option>
+        <option>Moliyaviy Texnologiyalar</option>
+        <option>Tadbirkorlik</option>
+        <option>Ingliz tili (Tech)</option>
+      </select>
+    </div>
+    <div class="form-row" style="margin-bottom:14px">
+      <div class="form-group" style="margin:0">
+        <label class="form-label">O'qituvchi</label>
+        <select class="form-select" id="lessonTeacher">
+          <option>Prof. Rahimov J.</option>
+          <option>Prof. Ergashev T.</option>
+          <option>Prof. Yusupova M.</option>
+          <option>Prof. Rahimova N.</option>
+          <option>Prof. Toshmatov A.</option>
+          <option>Prof. Nazarov B.</option>
+          <option>Prof. Rahimov Sh.</option>
+        </select>
+      </div>
+      <div class="form-group" style="margin:0">
+        <label class="form-label">Xona</label>
+        <select class="form-select" id="lessonRoom">
+          <option>Lab-AI</option><option>Lab-CS</option><option>Lab-IT</option>
+          <option>A-101</option><option>A-102</option><option>A-201</option>
+          <option>A-202</option><option>A-301</option><option>B-101</option>
+          <option>B-201</option><option>B-301</option>
+        </select>
+      </div>
+    </div>
+    <div class="form-group" style="margin-bottom:20px">
+      <label class="form-label">Dars turi</label>
+      <select class="form-select" id="lessonType">
+        <option>Ma'ruza</option><option>Amaliyot</option><option>Laboratoriya</option><option>Seminar</option>
+      </select>
+    </div>
+    <div style="display:flex;gap:10px">
+      <button class="btn btn-primary" style="flex:1" onclick="saveNewLesson()">💾 Saqlash</button>
+      <button id="deleteLessonBtn" class="btn" style="background:var(--red-light);color:var(--red);border:1px solid #FCA5A5;display:none" onclick="deleteLesson()">🗑️ O'chirish</button>
+      <button class="btn btn-secondary" onclick="closeAddLessonModal()">Bekor qilish</button>
+    </div>
+  </div>
+</div>
+
+<!-- ═══ DEKANAT: STUDENTS ═══ -->
+<div class="page" id="page-dekanat-students">
+  <div class="page-header">
+    <div class="page-header-left">
+      <div class="ph-title">🎓 Talabalar</div>
+      <div class="ph-sub">Barcha talabalar ro'yxati — guruh va kurs boshqaruvi</div>
+    </div>
+    <div class="page-header-right">
+      <input class="form-input" style="width:200px" placeholder="🔍 Qidirish..." id="studentSearch" oninput="filterStudents()">
+      <select class="form-select" style="width:auto" id="studentGroupFilter" onchange="filterStudents()">
+        <option value="">Barcha guruhlar</option>
+        <option>AI-2301</option><option>CS-2301</option><option>IT-2301</option><option>DB-2301</option>
+      </select>
+      <button class="btn btn-primary" onclick="openAddStudentModal()">+ Talaba qo'shish</button>
+      <button class="btn" style="background:var(--purple-light);color:var(--purple);border:1.5px solid #C4B5FD" onclick="showPage('dekanat-groups')">👥 Guruhlar</button>
+    </div>
+  </div>
+  <div class="card">
+    <table class="dekanat-table">
+      <thead><tr>
+        <th>#</th><th>Talaba</th><th>Guruh</th><th>Kurs</th>
+        <th>O'rt. ball</th><th>Davomat</th><th>GPA</th><th>Status</th><th>Amal</th>
+      </tr></thead>
+      <tbody id="dekanatStudentBody"></tbody>
+    </table>
+  </div>
+</div>
+
+<!-- ═══ DEKANAT: GROUPS MANAGER ═══ -->
+<div class="page" id="page-dekanat-groups">
+  <div class="page-header">
+    <div class="page-header-left">
+      <div class="ph-title">👥 Guruhlar va Kurslar boshqaruvi</div>
+      <div class="ph-sub">Guruh qo'shish, tahrirlash, talabalarni ko'chirish</div>
+    </div>
+    <div class="page-header-right">
+      <button class="btn btn-secondary" onclick="showPage('dekanat-students')">← Talabalar</button>
+      <button class="btn btn-primary" onclick="openAddGroupModal()">+ Yangi guruh</button>
+    </div>
+  </div>
+
+  <!-- Groups overview cards -->
+  <div id="groupsOverviewGrid" style="display:grid;grid-template-columns:repeat(auto-fill,minmax(260px,1fr));gap:14px;margin-bottom:20px"></div>
+
+  <!-- Bulk actions -->
+  <div class="card" style="margin-bottom:16px">
+    <div class="card-header">
+      <div class="card-title">🔄 Talabani ko'chirish / Kurs o'zgartirish</div>
+      <div class="card-badge cb-purple">Tezkor amal</div>
+    </div>
+    <div style="display:grid;grid-template-columns:1fr 1fr 1fr auto;gap:12px;align-items:end">
+      <div>
+        <label class="form-label">Talaba</label>
+        <select class="form-select" id="moveStudentSelect">
+          <option value="">— Talabani tanlang —</option>
+        </select>
+      </div>
+      <div>
+        <label class="form-label">Yangi guruh</label>
+        <select class="form-select" id="moveToGroup">
+          <option value="">— Guruhni tanlang —</option>
+        </select>
+      </div>
+      <div>
+        <label class="form-label">Kurs</label>
+        <select class="form-select" id="moveToCourse">
+          <option value="1">1-kurs</option>
+          <option value="2">2-kurs</option>
+          <option value="3">3-kurs</option>
+          <option value="4">4-kurs</option>
+        </select>
+      </div>
+      <button class="btn btn-primary" style="padding:11px 18px" onclick="moveStudentToGroup()">✅ Ko'chirish</button>
+    </div>
+  </div>
+
+  <!-- All students with inline edit -->
+  <div class="card">
+    <div class="card-header">
+      <div class="card-title">📋 Barcha talabalar — inline tahrirlash</div>
+      <div style="font-size:12px;color:var(--text3)">Guruh yoki kursga bosing → o'zgartiring</div>
+    </div>
+    <table class="dekanat-table">
+      <thead><tr>
+        <th>#</th><th>Talaba ismi</th><th>Guruh ▾</th><th>Kurs ▾</th><th>Ball</th><th>Davomat</th><th>Amal</th>
+      </tr></thead>
+      <tbody id="groupsStudentBody"></tbody>
+    </table>
+  </div>
+</div>
+
+<!-- ═══ DEKANAT: TEACHERS ═══ -->
+<div class="page" id="page-dekanat-teachers">
+  <div class="page-header">
+    <div class="page-header-left">
+      <div class="ph-title">👨‍🏫 O'qituvchilar</div>
+      <div class="ph-sub">Kafedralar va o'quv yuki</div>
+    </div>
+    <div class="page-header-right">
+      <button class="btn btn-primary" onclick="showToast('✅','Qo\'shildi','O\'qituvchi ro\'yxatga qo\'shildi')">+ O'qituvchi qo'shish</button>
+    </div>
+  </div>
+  <div class="card">
+    <table class="dekanat-table">
+      <thead><tr>
+        <th>#</th><th>O'qituvchi</th><th>Kafedra</th>
+        <th>Fanlar</th><th>Guruhlar</th><th>Soat/hafta</th><th>Reyting</th><th>Status</th>
+      </tr></thead>
+      <tbody id="dekanatTeacherBody"></tbody>
+    </table>
+  </div>
+</div>
+
+<!-- ═══ DEKANAT: GRADES OVERVIEW ═══ -->
+<div class="page" id="page-dekanat-grades">
+  <div class="page-header">
+    <div class="page-header-left">
+      <div class="ph-title">📊 Baholash nazorati</div>
+      <div class="ph-sub">100-ballik tizim — kuzatish rejimi</div>
+    </div>
+    <div class="page-header-right">
+      <select class="form-select" style="width:auto" id="dekGradeGroup" onchange="renderDekanatGrades()">
+        <option value="AI-2301">AI-2301</option>
+        <option value="CS-2301">CS-2301</option>
+        <option value="IT-2301">IT-2301</option>
+        <option value="DB-2301">DB-2301</option>
+      </select>
+      <select class="form-select" style="width:auto" id="dekGradeSub" onchange="renderDekanatGrades()">
+        <option value="all">Barcha fanlar</option>
+        <option value="Machine Learning">Machine Learning</option>
+        <option value="Python for AI">Python for AI</option>
+        <option value="Deep Learning">Deep Learning</option>
+        <option value="Data Science">Data Science</option>
+        <option value="Matematika (AI uchun)">Matematika (AI uchun)</option>
+        <option value="Ingliz tili (Tech)">Ingliz tili (Tech)</option>
+        <option value="Natural Language Processing">NLP</option>
+        <option value="Computer Vision">Computer Vision</option>
+      </select>
+    </div>
+  </div>
+  <div class="stats-grid" id="dekGradeStats"></div>
+  <div class="xl-wrap">
+    <div class="xl-toolbar">
+      <span class="xl-toolbar-title" id="dekGradeTitle">📊 Baholar jadvali</span>
+      <span style="font-size:11px;background:#FEF3C7;color:#92400E;border:1px solid #FCD34D;padding:2px 10px;border-radius:20px">👁 Faqat ko'rish rejimi</span>
+      <button class="xl-btn xl-export" onclick="exportDekanatGrades()" style="margin-left:auto">📥 Excel yuklab olish</button>
+    </div>
+    <div class="xl-search-row">
+      <input class="xl-search" id="dekGradeSearch" placeholder="🔍 Talaba ismi..." oninput="renderDekanatGrades()">
+      <button class="xl-filter-chip active" onclick="dekGradeFilter('all',this)">Barchasi</button>
+      <button class="xl-filter-chip" onclick="dekGradeFilter('alo',this)">⭐ A'lo</button>
+      <button class="xl-filter-chip" onclick="dekGradeFilter('yaxshi',this)">👍 Yaxshi</button>
+      <button class="xl-filter-chip" onclick="dekGradeFilter('fail',this)">⚠️ Qoniqarsiz</button>
+    </div>
+    <table class="xl-table dek-table">
+      <thead>
+        <tr><th></th><th>A</th><th>B</th><th>C</th><th>D</th><th>E</th><th>F</th><th>G</th><th>H</th></tr>
+        <tr>
+          <th></th>
+          <th style="min-width:140px;text-align:left">Talaba</th>
+          <th style="min-width:160px;text-align:left">Fan</th>
+          <th class="xl-head-jn">JN /30</th>
+          <th class="xl-head-on">ON /20</th>
+          <th class="xl-head-yn">YN /30</th>
+          <th class="xl-head-mi">MI /20</th>
+          <th class="xl-head-total">Jami /100</th>
+          <th class="xl-head-baho">Baho</th>
+        </tr>
+      </thead>
+      <tbody id="dekGradeBody"></tbody>
+    </table>
+    <div class="xl-footer">
+      <span>Yozuvlar: <b id="dekGradeCount">0</b></span>
+      <span>O'rtacha: <b id="dekGradeAvg">—</b></span>
+      <span>A'lo: <b id="dekGradeAlo" class="xl-total-green">0</b></span>
+      <span>Yaxshi: <b id="dekGradeGood" class="xl-total-blue">0</b></span>
+      <span>Qoniqarsiz: <b id="dekGradeFail" class="xl-total-red">0</b></span>
+    </div>
+  </div>
+</div>
+
+<!-- ═══ DEKANAT: ATTENDANCE REPORT ═══ -->
+<div class="page" id="page-dekanat-attendance">
+  <div class="page-header">
+    <div class="page-header-left">
+      <div class="ph-title">📋 Davomat hisoboti</div>
+      <div class="ph-sub">Guruh va oy bo'yicha</div>
+    </div>
+    <div class="page-header-right">
+      <select class="form-select" style="width:auto" id="dekAttGroup">
+        <option>AI-2301</option><option>CS-2301</option><option>IT-2301</option><option>DB-2301</option><option>AI-2301</option>
+      </select>
+      <button class="btn btn-secondary" onclick="exportAttendance()">📤 Export Excel</button>
+    </div>
+  </div>
+  <div class="stats-grid-3" style="margin-bottom:18px">
+    <div class="stat-card">
+      <div class="stat-card-top"><div class="stat-card-label">Umumiy davomat</div>
+        <div class="stat-card-icon" style="background:var(--green-light)">✅</div></div>
+      <div class="stat-card-val" style="color:var(--green)">94.2%</div>
+      <div class="stat-card-change sc-up">↑ Yaxshi ko'rsatkich</div>
+      <div class="stat-card-bar scb-green"></div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-card-top"><div class="stat-card-label">Sababli kelmaganlar</div>
+        <div class="stat-card-icon" style="background:var(--yellow-light)">📄</div></div>
+      <div class="stat-card-val" style="color:var(--yellow)">8</div>
+      <div class="stat-card-change sc-flat">Bu oy</div>
+      <div class="stat-card-bar scb-orange"></div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-card-top"><div class="stat-card-label">Sababsiz kelmaganlar</div>
+        <div class="stat-card-icon" style="background:var(--red-light)">❌</div></div>
+      <div class="stat-card-val" style="color:var(--red)">3</div>
+      <div class="stat-card-change sc-down">Ogohlantirildi</div>
+      <div class="stat-card-bar scb-red"></div>
+    </div>
+  </div>
+  <div class="card">
+    <table class="dekanat-table">
+      <thead><tr>
+        <th>Talaba</th><th>Sana</th><th>Fan</th><th>Status</th><th>Sabab</th>
+      </tr></thead>
+      <tbody id="dekAttBody"></tbody>
+    </table>
+  </div>
+</div>
+
+<!-- ═══ DEKANAT: REPORT ═══ -->
+<div class="page" id="page-dekanat-report">
+  <div class="page-header">
+    <div class="page-header-left">
+      <div class="ph-title">📈 Tahlil va Hisobotlar</div>
+      <div class="ph-sub">2025–2026 o'quv yili · II semestr · Barcha guruhlar bo'yicha to'liq statistika</div>
+    </div>
+    <div class="page-header-right export-btn-row">
+      <select class="form-select" style="width:auto" id="rptSemSelect" onchange="renderFullReport()">
+        <option value="2" selected>II semestr (2025–2026)</option>
+        <option value="1">I semestr (2025–2026)</option>
+        <option value="0">II semestr (2024–2025)</option>
+      </select>
+      <button class="btn btn-secondary" onclick="exportReportCSV()">📊 CSV export</button>
+      <button class="print-btn" onclick="printReport()">🖨️ Chop etish</button>
+    </div>
+  </div>
+
+  <!-- Tabs -->
+  <div class="report-tabs">
+    <button class="rtab active" onclick="switchRTab('overview',this)">📊 Umumiy ko'rinish</button>
+    <button class="rtab" onclick="switchRTab('groups',this)">👥 Guruhlar tahlili</button>
+    <button class="rtab" onclick="switchRTab('teachers',this)">👨‍🏫 O'qituvchilar samaradorligi</button>
+    <button class="rtab" onclick="switchRTab('risk',this)">⚠️ Xavf guruhi</button>
+    <button class="rtab" onclick="switchRTab('compare',this)">📉 Semestr taqqoslama</button>
+  </div>
+
+  <!-- PANEL 1: Overview -->
+  <div class="report-panel active" id="rpanel-overview">
+    <!-- KPI row -->
+    <div class="rpt-kpi-row">
+      <div class="rpt-kpi">
+        <div class="rpt-kpi-val" style="color:#1B4FD8">156</div>
+        <div class="rpt-kpi-lbl">Jami talabalar</div>
+        <div class="rpt-kpi-trend" style="color:#16A34A">↑ +12 o'tgan semestga</div>
+      </div>
+      <div class="rpt-kpi">
+        <div class="rpt-kpi-val" style="color:#16A34A">74.8</div>
+        <div class="rpt-kpi-lbl">O'rtacha ball</div>
+        <div class="rpt-kpi-trend" style="color:#16A34A">↑ +2.3 ball</div>
+      </div>
+      <div class="rpt-kpi">
+        <div class="rpt-kpi-val" style="color:#7C3AED">3.21</div>
+        <div class="rpt-kpi-lbl">O'rtacha GPA</div>
+        <div class="rpt-kpi-trend" style="color:#16A34A">↑ +0.15</div>
+      </div>
+      <div class="rpt-kpi">
+        <div class="rpt-kpi-val" style="color:#EA580C">94.2%</div>
+        <div class="rpt-kpi-lbl">Davomat</div>
+        <div class="rpt-kpi-trend" style="color:#16A34A">↑ Yaxshi</div>
+      </div>
+      <div class="rpt-kpi">
+        <div class="rpt-kpi-val" style="color:#DC2626">13</div>
+        <div class="rpt-kpi-lbl">Xavf guruhida</div>
+        <div class="rpt-kpi-trend" style="color:#DC2626">↓ Nazorat kerak</div>
+      </div>
+    </div>
+
+    <div class="grid-2" style="margin-bottom:16px">
+      <!-- Grade distribution bar chart -->
+      <div class="card">
+        <div class="card-header">
+          <div class="card-title">Baholar taqsimoti</div>
+          <div class="card-badge cb-blue">Joriy semestr</div>
+        </div>
+        <div id="gradeDistribution" style="padding:6px 0"></div>
+        <div style="margin-top:12px;padding-top:10px;border-top:1px solid var(--border);display:flex;gap:14px;flex-wrap:wrap">
+          <div class="rpt-legend-item"><div class="rpt-legend-dot" style="background:#16A34A"></div>A'lo (86-100)</div>
+          <div class="rpt-legend-item"><div class="rpt-legend-dot" style="background:#1B4FD8"></div>Yaxshi (71-85)</div>
+          <div class="rpt-legend-item"><div class="rpt-legend-dot" style="background:#D97706"></div>Qoniqarli (56-70)</div>
+          <div class="rpt-legend-item"><div class="rpt-legend-dot" style="background:#DC2626"></div>Qoniqarsiz (&lt;55)</div>
+        </div>
+      </div>
+
+      <!-- Group avg chart with full bar chart look -->
+      <div class="card">
+        <div class="card-header">
+          <div class="card-title">Guruhlar o'rtacha bali</div>
+          <div class="card-badge cb-green">4 guruh</div>
+        </div>
+        <div id="groupAvgChart" style="padding:6px 0"></div>
+      </div>
+    </div>
+
+    <!-- Subject avg table -->
+    <div class="card">
+      <div class="card-header">
+        <div class="card-title">Fanlar bo'yicha o'rtacha ballar</div>
+        <div class="card-badge cb-purple">2025–2026 · II sem</div>
+      </div>
+      <div id="subjectAvgTable"></div>
+    </div>
+  </div>
+
+  <!-- PANEL 2: Groups -->
+  <div class="report-panel" id="rpanel-groups">
+    <div id="groupDetailReport"></div>
+  </div>
+
+  <!-- PANEL 3: Teachers -->
+  <div class="report-panel" id="rpanel-teachers">
+    <div class="grid-2" style="margin-bottom:16px">
+      <div class="card">
+        <div class="card-header">
+          <div class="card-title">O'qituvchilar samaradorligi reytingi</div>
+          <div class="card-badge cb-blue">O'rtacha ball asosida</div>
+        </div>
+        <div id="teacherPerfList"></div>
+      </div>
+      <div class="card">
+        <div class="card-header">
+          <div class="card-title">O'qituvchi yuki (soat/hafta)</div>
+        </div>
+        <div id="teacherLoadChart"></div>
+      </div>
+    </div>
+    <div class="card">
+      <div class="card-header"><div class="card-title">O'qituvchilar tafsiloti</div></div>
+      <table class="dekanat-table" id="teacherDetailTable">
+        <thead><tr>
+          <th>#</th><th>O'qituvchi</th><th>Kafedra</th><th>Fanlar soni</th>
+          <th>Guruhlar</th><th>Ort. ball</th><th>A'lochilar %</th><th>Reyting</th>
+        </tr></thead>
+        <tbody id="teacherDetailBody"></tbody>
+      </table>
+    </div>
+  </div>
+
+  <!-- PANEL 4: Risk -->
+  <div class="report-panel" id="rpanel-risk">
+    <div class="grid-2">
+      <div class="card">
+        <div class="card-header">
+          <div class="card-title">🔴 Yuqori xavf — 55 dan past</div>
+          <div class="card-badge" style="background:#FEE2E2;color:#DC2626" id="highRiskBadge">0 ta</div>
+        </div>
+        <div id="riskHighList"></div>
+      </div>
+      <div class="card">
+        <div class="card-header">
+          <div class="card-title">🟡 O'rta xavf — 56–65 oralig'i</div>
+          <div class="card-badge" style="background:#FEF3C7;color:#D97706" id="midRiskBadge">0 ta</div>
+        </div>
+        <div id="riskMidList"></div>
+      </div>
+    </div>
+    <div class="card" style="margin-top:14px">
+      <div class="card-header"><div class="card-title">Davomat muammosi bo'lgan talabalar (&lt;80%)</div></div>
+      <table class="dekanat-table">
+        <thead><tr><th>Talaba</th><th>Guruh</th><th>Davomat</th><th>Sababsiz</th><th>Holat</th></tr></thead>
+        <tbody id="attendRiskBody"></tbody>
+      </table>
+    </div>
+  </div>
+
+  <!-- PANEL 5: Compare -->
+  <div class="report-panel" id="rpanel-compare">
+    <div style="background:#EFF6FF;border:1.5px solid #BFDBFE;border-radius:12px;padding:14px 16px;margin-bottom:18px;font-size:13px;color:#1E40AF">
+      📌 Quyidagi jadval joriy va o'tgan semestr ko'rsatkichlarini solishtiradi. Ijobiy o'zgarishlar yashil, salbiylar qizil rangda ko'rsatilgan.
+    </div>
+    <div class="card" style="margin-bottom:14px">
+      <div class="card-header"><div class="card-title">Guruhlar bo'yicha semestr taqqoslama</div></div>
+      <table class="sem-cmp-table">
+        <thead><tr>
+          <th>Guruh</th>
+          <th>O'rtacha (I sem)</th><th>O'rtacha (II sem)</th><th>O'zgarish</th>
+          <th>Muvaffaqiyat (I)</th><th>Muvaffaqiyat (II)</th><th>Delta</th>
+        </tr></thead>
+        <tbody id="semCmpBody"></tbody>
+      </table>
+    </div>
+    <div class="card">
+      <div class="card-header"><div class="card-title">Fanlar bo'yicha taqqoslama grafik</div></div>
+      <div id="subjectCmpChart" style="padding:10px 0"></div>
+    </div>
+  </div>
+</div>
+
+<!-- ═══ STARTUP G'OYALAR ═══ -->
+<div class="page" id="page-startup">
+  <div class="page-header">
+    <div class="page-header-left">
+      <div class="ph-title">🚀 Startup G'oyalar</div>
+      <div class="ph-sub">Talabalar innovatsion loyihalari — investorlar ko'rishi mumkin</div>
+    </div>
+    <div class="page-header-right">
+      <div class="filter-row" style="margin:0;gap:6px">
+        <button class="filter-chip active" onclick="filterIdeas('all',this)">Barchasi</button>
+        <button class="filter-chip" onclick="filterIdeas('tech',this)">💻 Tech</button>
+        <button class="filter-chip" onclick="filterIdeas('health',this)">🏥 Health</button>
+        <button class="filter-chip" onclick="filterIdeas('edu',this)">📚 Edu</button>
+        <button class="filter-chip" onclick="filterIdeas('fintech',this)">💰 Fintech</button>
+      </div>
+      <button class="btn btn-primary" id="addIdeaBtn" onclick="toggleIdeaForm()" style="display:none">+ G'oya qo'shish</button>
+    </div>
+  </div>
+
+  <!-- Form (faqat talabalar uchun) -->
+  <div class="idea-form-card" id="ideaFormCard" style="display:none">
+    <div class="idea-form-title">💡 Yangi startup g'oya kiritish</div>
+    <div class="grid-2" style="margin-bottom:14px">
+      <div class="form-group" style="margin:0">
+        <label class="form-label">G'oya nomi *</label>
+        <input class="form-input" id="ideaTitle" placeholder="Masalan: EduBot — AI o'qituvchi">
+      </div>
+      <div class="form-group" style="margin:0">
+        <label class="form-label">Kategoriya *</label>
+        <select class="form-select" id="ideaCategory">
+          <option value="tech">💻 Texnologiya</option>
+          <option value="health">🏥 Sog'liqni saqlash</option>
+          <option value="edu">📚 Ta'lim</option>
+          <option value="fintech">💰 Moliya</option>
+          <option value="social">🌍 Ijtimoiy</option>
+        </select>
+      </div>
+    </div>
+    <div class="form-group">
+      <label class="form-label">G'oya tavsifi *</label>
+      <textarea class="form-input" id="ideaDesc" rows="3"
+        placeholder="G'oyangizni batafsil tushuntiring: muammo, yechim, bozor..."></textarea>
+    </div>
+    <div class="form-group">
+      <label class="form-label">Investitsiya hajmi (ixtiyoriy)</label>
+      <input class="form-input" id="ideaInvestment" placeholder="Masalan: 50,000$">
+    </div>
+    <div style="margin-bottom:14px">
+      <label class="form-label">Jamoa a'zolari (3-4 kishi)</label>
+      <div style="display:flex;gap:8px;flex-wrap:wrap" id="teamMembersRow">
+        <input class="form-input" style="width:180px" placeholder="1-a'zo ismi" id="tm1">
+        <input class="form-input" style="width:180px" placeholder="2-a'zo ismi" id="tm2">
+        <input class="form-input" style="width:180px" placeholder="3-a'zo ismi" id="tm3">
+        <input class="form-input" style="width:180px" placeholder="4-a'zo ismi (ixtiyoriy)" id="tm4">
+      </div>
+    </div>
+    <div style="display:flex;gap:10px;justify-content:flex-end">
+      <button class="btn btn-secondary" onclick="toggleIdeaForm()">Bekor qilish</button>
+      <button class="btn btn-primary" onclick="submitIdea()">🚀 G'oyani yuborish</button>
+    </div>
+  </div>
+
+  <div id="ideasList"></div>
+</div>
+
+<!-- ═══ INVESTOR: DASHBOARD ═══ -->
+<div class="page" id="page-investor-dashboard">
+  <div class="page-header">
+    <div class="page-header-left">
+      <div class="ph-title">💼 Investor Panel</div>
+      <div class="ph-sub" id="investorCompanyName">TechVentures UZ</div>
+    </div>
+  </div>
+  <div class="stats-grid-3" style="margin-bottom:18px">
+    <div class="stat-card">
+      <div class="stat-card-top"><div class="stat-card-label">Ko'rilgan g'oyalar</div>
+        <div class="stat-card-icon" style="background:var(--orange-light)">👁️</div></div>
+      <div class="stat-card-val" style="color:var(--orange)" id="investorViewedCount">12</div>
+      <div class="stat-card-change sc-flat">Joriy sessiya</div>
+      <div class="stat-card-bar scb-orange"></div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-card-top"><div class="stat-card-label">Baholangan</div>
+        <div class="stat-card-icon" style="background:var(--yellow-light)">⭐</div></div>
+      <div class="stat-card-val" style="color:var(--yellow)" id="investorRatedCount">5</div>
+      <div class="stat-card-change sc-flat">Yulduz baho berildi</div>
+      <div class="stat-card-bar scb-orange"></div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-card-top"><div class="stat-card-label">Qiziqarli g'oyalar</div>
+        <div class="stat-card-icon" style="background:var(--green-light)">💚</div></div>
+      <div class="stat-card-val" style="color:var(--green)" id="investorInterestedCount">3</div>
+      <div class="stat-card-change sc-up">Investitsiya so'ralgan</div>
+      <div class="stat-card-bar scb-green"></div>
+    </div>
+  </div>
+  <div class="card">
+    <div class="card-header">
+      <div class="card-title">Eng yuqori baholangan g'oyalar</div>
+      <button class="btn btn-primary btn-sm" onclick="showPage('startup')">Barcha g'oyalar →</button>
+    </div>
+    <div id="topIdeasList"></div>
+  </div>
+</div>
+
+<!-- ════ QUIZ MODAL ════ -->
+<div class="modal-bg" id="quizModal">
+  <div class="modal-box">
+    <div class="modal-head">
+      <div class="modal-title">🧠 Bilim testi</div>
+      <button class="modal-close" onclick="closeQuiz()">✕</button>
+    </div>
+    <div id="quizContent"></div>
+  </div>
+</div>
+
+
+<!-- ════ STUDENT DETAIL MODAL ════ -->
+<div class="modal-bg" id="studentDetailModal">
+  <div class="modal-box modal-box-lg">
+    <div class="modal-head">
+      <div class="modal-title" id="studentDetailTitle">Talaba profili</div>
+      <button class="modal-close" onclick="document.getElementById('studentDetailModal').classList.remove('open')">✕</button>
+    </div>
+    <div id="studentDetailContent"></div>
+  </div>
+</div>
+
+<!-- ═══ ANTI-CHEAT OVERLAY ═══ -->
+<div class="anticheat-overlay" id="anticheatOverlay">
+  <div class="anticheat-icon">🚨</div>
+  <div class="anticheat-title">OGOHLANTIRISH!</div>
+  <div class="anticheat-msg" id="anticheatMsg">Siz test jarayonida sahifani terk etdingiz. Bu harakatlar qayd etiladi va dekanatga yuboriladi!</div>
+  <div class="warn-counter" id="warnCounter"></div>
+  <button class="btn btn-auth" style="max-width:260px;background:white;color:var(--red);font-size:16px" onclick="dismissWarning()">
+    Tushundim — qaytish
+  </button>
+</div>
+
+<!-- ═══ GAME HUB ═══ -->
+<div class="page" id="page-games">
+  <div class="page-header">
+    <div class="page-header-left">
+      <div class="ph-title">🎮 O'yin markazi</div>
+      <div class="ph-sub">Har bir fan bo'yicha interfaol o'yinlar — bilimni o'yin orqali mustahkamla!</div>
+    </div>
+    <div class="page-header-right">
+      <div class="coin-badge" id="gameCoinsDisplay">🪙 0</div>
+      <div class="level-badge" id="gameLevelDisplay">⚡ Daraja 1</div>
+    </div>
+  </div>
+
+  <div class="daily-challenge-card">
+    <div class="dc-header">
+      <div class="dc-title">🔥 Kunlik musobaqa</div>
+      <div class="dc-countdown" id="dcCountdown">23:45:12</div>
+    </div>
+    <div class="dc-task" id="dcTask">Matematika: 5 ta integral hisoblang — 60 soniyada!</div>
+    <div class="dc-reward">🎁 Mukofot: +500 XP · +100 IDU Coin · "Kunlik chempion" nishoni</div>
+  </div>
+
+  <div class="game-hub-grid">
+    <div class="game-card gc-math" onclick="startGame('math')">
+      <span class="game-card-emoji">🔢</span>
+      <div class="game-card-title">Matematika Chempioni</div>
+      <div class="game-card-sub">Tezkor hisoblash, tenglamalar, integral</div>
+      <div class="game-card-stats">
+        <div class="game-card-stat">⏱ 60s</div>
+        <div class="game-card-stat">🎯 10 savol</div>
+        <div class="game-card-stat">🪙 +50</div>
+      </div>
+    </div>
+    <div class="game-card gc-prog" onclick="startGame('prog')">
+      <span class="game-card-emoji">💻</span>
+      <div class="game-card-title">Kod to'ldirish</div>
+      <div class="game-card-sub">Python/JS kodini to'g'ri to'ldiring</div>
+      <div class="game-card-stats">
+        <div class="game-card-stat">⏱ 90s</div>
+        <div class="game-card-stat">🎯 8 savol</div>
+        <div class="game-card-stat">🪙 +70</div>
+      </div>
+    </div>
+    <div class="game-card gc-eng" onclick="startGame('english')">
+      <span class="game-card-emoji">🌍</span>
+      <div class="game-card-title">So'z juftlash</div>
+      <div class="game-card-sub">Ingliz-O'zbek so'zlarini moslashtiring</div>
+      <div class="game-card-stats">
+        <div class="game-card-stat">⏱ 45s</div>
+        <div class="game-card-stat">🎯 12 juft</div>
+        <div class="game-card-stat">🪙 +40</div>
+      </div>
+    </div>
+    <div class="game-card gc-phys" onclick="startGame('physics')">
+      <span class="game-card-emoji">⚛️</span>
+      <div class="game-card-title">Formula izlash</div>
+      <div class="game-card-sub">Fizika formulalarini moslashtiring</div>
+      <div class="game-card-stats">
+        <div class="game-card-stat">⏱ 60s</div>
+        <div class="game-card-stat">🎯 8 ta</div>
+        <div class="game-card-stat">🪙 +60</div>
+      </div>
+    </div>
+    <div class="game-card gc-algo" onclick="startGame('algo')">
+      <span class="game-card-emoji">📊</span>
+      <div class="game-card-title">Tartiblash o'yini</div>
+      <div class="game-card-sub">Massivni to'g'ri tartibga soling</div>
+      <div class="game-card-stats">
+        <div class="game-card-stat">⏱ 30s</div>
+        <div class="game-card-stat">🎯 5 bosqich</div>
+        <div class="game-card-stat">🪙 +80</div>
+      </div>
+    </div>
+    <div class="game-card gc-hist" onclick="startGame('logic')">
+      <span class="game-card-emoji">🧩</span>
+      <div class="game-card-title">Mantiq masalasi</div>
+      <div class="game-card-sub">Qiziqarli mantiqiy savollarga javob bering</div>
+      <div class="game-card-stats">
+        <div class="game-card-stat">⏱ 120s</div>
+        <div class="game-card-stat">🎯 6 savol</div>
+        <div class="game-card-stat">🪙 +90</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Game Arena (shown when game starts) -->
+  <div id="gameArena" style="display:none">
+    <div class="card">
+      <div class="game-header">
+        <div style="display:flex;align-items:center;gap:12px">
+          <button class="btn btn-secondary btn-sm" onclick="exitGame()">← Chiqish</button>
+          <div id="gameTitle" style="font-size:16px;font-weight:800"></div>
+        </div>
+        <div class="game-score-bar">
+          <div class="gs-item"><div class="gs-val" id="gameScore" style="color:var(--green)">0</div><div class="gs-key">Ball</div></div>
+          <div class="gs-item"><div class="gs-val" id="gameStreak2" style="color:var(--orange)">0🔥</div><div class="gs-key">Streak</div></div>
+          <div class="gs-item"><div class="gs-val" id="gameQ">0/10</div><div class="gs-key">Savol</div></div>
+        </div>
+        <div>
+          <div class="game-timer" id="gameTimer">60</div>
+          <div style="font-size:10px;color:var(--text3);text-align:center">soniya</div>
+        </div>
+      </div>
+      <div id="gameContent" class="game-arena"></div>
+    </div>
+  </div>
+</div>
+
+<!-- ═══ VAQT BOSHQARUVI ═══ -->
+<div class="page" id="page-time">
+  <div class="page-header">
+    <div class="page-header-left">
+      <div class="ph-title">⏰ Vaqt boshqaruvi</div>
+      <div class="ph-sub">Pomodoro taymeri · Haftalik maqsadlar · Study streak</div>
+    </div>
+  </div>
+  <div class="grid-2" style="margin-bottom:16px">
+    <!-- Pomodoro -->
+    <div class="card">
+      <div class="card-header"><div class="card-title">🍅 Pomodoro Taymeri</div></div>
+      <div class="pomo-wrap">
+        <div class="pomo-mode-btns">
+          <button class="pomo-mode-btn active" onclick="setPomoMode(25,'Diqqat vaqti',this)">Diqqat (25m)</button>
+          <button class="pomo-mode-btn" onclick="setPomoMode(5,'Qisqa tanaffus',this)">Tanaffus (5m)</button>
+          <button class="pomo-mode-btn" onclick="setPomoMode(15,'Uzun tanaffus',this)">Uzun (15m)</button>
+        </div>
+        <div class="pomo-circle" id="pomoCircle" style="background:conic-gradient(var(--primary) 0deg, var(--bg2) 0deg)">
+          <div>
+            <div id="pomoTime" style="font-size:40px;font-weight:900;font-family:'DM Mono',monospace;text-align:center">25:00</div>
+          </div>
+        </div>
+        <div class="pomo-label" id="pomoLabel">DIQQAT VAQTI</div>
+        <div class="pomo-session-count" id="pomoSessions">
+          <div class="pomo-dot" id="pd0"></div><div class="pomo-dot" id="pd1"></div>
+          <div class="pomo-dot" id="pd2"></div><div class="pomo-dot" id="pd3"></div>
+        </div>
+        <div class="pomo-btns">
+          <button class="btn btn-primary" id="pomoStartBtn" onclick="togglePomo()">▶ Boshlash</button>
+          <button class="btn btn-secondary" onclick="resetPomo()">↺ Reset</button>
+        </div>
+        <div style="font-size:13px;color:var(--text3);text-align:center">
+          Bugun: <strong id="pomoTodaySessions" style="color:var(--primary)">0</strong> ta sessiya tamamlandi
+        </div>
+      </div>
+    </div>
+    <!-- Streak + Mood -->
+    <div>
+      <div class="streak-card">
+        <div class="streak-fire">🔥</div>
+        <div class="streak-num" id="streakNum">0</div>
+        <div class="streak-label">kunlik streak — Har kuni o'qishda davom eting!</div>
+        <div style="margin-top:12px;font-size:12px;color:var(--text2)">
+          Rekord: <strong id="streakRecord">0</strong> kun
+        </div>
+      </div>
+      <div class="card" style="margin-top:12px">
+        <div class="card-header"><div class="card-title">😊 Bugungi kayfiyat</div></div>
+        <div style="font-size:13px;color:var(--text2);margin-bottom:12px">Qanday his qilyapsiz?</div>
+        <div class="mood-grid">
+          <div class="mood-btn" onclick="setMood(5,this)"><div class="mood-emoji">😁</div><div class="mood-label">Ajoyib</div></div>
+          <div class="mood-btn" onclick="setMood(4,this)"><div class="mood-emoji">😊</div><div class="mood-label">Yaxshi</div></div>
+          <div class="mood-btn" onclick="setMood(3,this)"><div class="mood-emoji">😐</div><div class="mood-label">Normal</div></div>
+          <div class="mood-btn" onclick="setMood(2,this)"><div class="mood-emoji">😟</div><div class="mood-label">Yomon</div></div>
+          <div class="mood-btn" onclick="setMood(1,this)"><div class="mood-emoji">😫</div><div class="mood-label">Charchadim</div></div>
+        </div>
+        <div id="moodAdvice" style="font-size:13px;color:var(--text2);text-align:center;padding:10px;background:var(--bg);border-radius:var(--r);display:none"></div>
+      </div>
+    </div>
+  </div>
+  <!-- Haftalik maqsadlar -->
+  <div class="card">
+    <div class="card-header">
+      <div class="card-title">🎯 Haftalik maqsadlar</div>
+      <button class="btn btn-primary btn-sm" onclick="addGoal()">+ Maqsad</button>
+    </div>
+    <div class="weekly-goals" id="weeklyGoals"></div>
+    <div style="margin-top:16px;padding-top:14px;border-top:1px solid var(--border);display:flex;align-items:center;gap:12px">
+      <div style="flex:1">
+        <div style="font-size:12px;color:var(--text3);margin-bottom:4px">Haftalik progress</div>
+        <div class="xp-bar-wrap"><div class="xp-bar-fill" id="weeklyProgressBar" style="width:0%"></div></div>
+      </div>
+      <div style="font-size:14px;font-weight:700;color:var(--purple)" id="weeklyProgressText">0/7</div>
+    </div>
+  </div>
+</div>
+
+<!-- ═══ GAMIFIKATSIYA ═══ -->
+<div class="page" id="page-gamification">
+  <div class="page-header">
+    <div class="page-header-left">
+      <div class="ph-title">🏆 Gamifikatsiya</div>
+      <div class="ph-sub">XP, darajalar, IDU Coin, mukofotlar</div>
+    </div>
+    <div class="page-header-right">
+      <div class="coin-badge" id="totalCoinsDisplay">🪙 0 IDU Coin</div>
+      <div class="level-badge" id="totalLevelDisplay">⚡ Daraja 1</div>
+    </div>
+  </div>
+
+  <!-- XP Progress -->
+  <div class="card" style="margin-bottom:16px">
+    <div style="display:flex;align-items:center;gap:16px;margin-bottom:14px">
+      <div style="width:56px;height:56px;border-radius:14px;background:linear-gradient(135deg,var(--purple),#A78BFA);display:flex;align-items:center;justify-content:center;font-size:24px;font-weight:900;color:white" id="bigLevelBadge">1</div>
+      <div style="flex:1">
+        <div style="font-size:14px;font-weight:700;margin-bottom:6px">Keyingi darajaga: <span id="xpToNext">100</span> XP kerak</div>
+        <div class="xp-bar-wrap" style="height:14px"><div class="xp-bar-fill" id="xpBarFill" style="width:0%"></div></div>
+        <div style="display:flex;justify-content:space-between;font-size:11px;color:var(--text3);margin-top:4px">
+          <span id="currentXP">0 XP</span><span id="maxXP">100 XP</span>
+        </div>
+      </div>
+    </div>
+    <div class="stats-grid-3">
+      <div style="text-align:center;padding:12px;background:var(--bg);border-radius:var(--r2)">
+        <div style="font-size:24px;font-weight:900;color:var(--purple);font-family:'DM Mono',monospace" id="totalXPStat">0</div>
+        <div style="font-size:11px;color:var(--text3)">Jami XP</div>
+      </div>
+      <div style="text-align:center;padding:12px;background:var(--bg);border-radius:var(--r2)">
+        <div style="font-size:24px;font-weight:900;color:var(--orange);font-family:'DM Mono',monospace" id="totalCoinsStat">0</div>
+        <div style="font-size:11px;color:var(--text3)">IDU Coin 🪙</div>
+      </div>
+      <div style="text-align:center;padding:12px;background:var(--bg);border-radius:var(--r2)">
+        <div style="font-size:24px;font-weight:900;color:var(--green);font-family:'DM Mono',monospace" id="gamesPlayedStat">0</div>
+        <div style="font-size:11px;color:var(--text3)">O'yin o'ynaldi</div>
+      </div>
+    </div>
+  </div>
+
+  <div class="grid-2" style="margin-bottom:16px">
+    <!-- Leaderboard -->
+    <div class="card">
+      <div class="card-header"><div class="card-title">🏅 Reyting</div></div>
+      <div class="leaderboard-tab">
+        <button class="lb-tab active" onclick="switchLB('xp',this)">XP bo'yicha</button>
+        <button class="lb-tab" onclick="switchLB('coins',this)">Coin bo'yicha</button>
+        <button class="lb-tab" onclick="switchLB('games',this)">O'yin</button>
+      </div>
+      <div id="gamificationLeaderboard"></div>
+    </div>
+    <!-- Achievements -->
+    <div class="card">
+      <div class="card-header"><div class="card-title">🎖️ Nishonlar</div></div>
+      <div id="achievementsList"></div>
+    </div>
+  </div>
+
+  <!-- Reward Shop -->
+  <div class="card">
+    <div class="card-header">
+      <div class="card-title">🏪 IDU Do'kon</div>
+      <div style="font-size:13px;color:var(--text2)">IDU Coin bilan sotib oling</div>
+    </div>
+    <div class="reward-shop-grid" id="rewardShop"></div>
+  </div>
+</div>
+
+<!-- ═══ PROFESSORLAR BAHOLASH ═══ -->
+<div class="page" id="page-professors">
+  <div class="page-header">
+    <div class="page-header-left">
+      <div class="ph-title" id="prof-page-title">⭐ Ustozlarni baholash</div>
+      <div class="ph-sub" id="prof-page-sub">Anonim sharh va reyting — faqat siz ko'rsatasiz, ism ko'rinmaydi</div>
+    </div>
+  </div>
+  <!-- Stats row -->
+  <div class="prof-stats-row" id="profStatsRow"></div>
+  <!-- Search + Filter -->
+  <div class="prof-search-bar">
+    <input class="prof-search-input" id="profSearchInput" placeholder="🔍 Ustoz ismi yoki fan bo'yicha qidirish..." oninput="renderProfessorsPage()">
+  </div>
+  <div class="prof-filter-row" id="profFilterRow"></div>
+  <!-- Professor grid -->
+  <div class="prof-grid" id="profGrid"></div>
+</div>
+
+<!-- ═══ PROFESSOR REVIEW MODAL ═══ -->
+<div id="profReviewModal" onclick="if(event.target===this)closeProfReview()">
+  <div class="prm-box">
+    <div class="prm-head">
+      <div style="font-size:18px;font-weight:800;color:#0F172A" id="prmTitle">Baholash</div>
+      <button onclick="closeProfReview()" style="background:none;border:none;font-size:22px;cursor:pointer;color:#64748B">✕</button>
+    </div>
+    <div class="prm-body">
+      <!-- Professor info -->
+      <div class="prm-prof-info">
+        <div class="prof-avatar" id="prmAvatar" style="width:44px;height:44px;border-radius:11px;font-size:16px"></div>
+        <div>
+          <div style="font-size:15px;font-weight:800;color:#0F172A" id="prmProfName"></div>
+          <div style="font-size:12px;color:#64748B" id="prmProfSub"></div>
+        </div>
+      </div>
+      <!-- Overall stars -->
+      <div style="text-align:center;margin-bottom:6px">
+        <div style="font-size:13px;font-weight:600;color:#64748B" id="prmStarLabel">Umumiy baho</div>
+        <div class="prm-stars-row" id="prmStarsRow">
+          <span class="prm-star" onclick="setPrmStar(1)">⭐</span>
+          <span class="prm-star" onclick="setPrmStar(2)">⭐</span>
+          <span class="prm-star" onclick="setPrmStar(3)">⭐</span>
+          <span class="prm-star" onclick="setPrmStar(4)">⭐</span>
+          <span class="prm-star" onclick="setPrmStar(5)">⭐</span>
+        </div>
+        <div style="font-size:12px;color:#94A3B8" id="prmStarHint">Yulduzni bosing</div>
+      </div>
+      <!-- Category ratings -->
+      <div class="prm-cats" id="prmCats">
+        <div class="prm-cat-item">
+          <div class="prm-cat-label" id="prmCat1L">📚 Tushuntirish</div>
+          <div class="prm-cat-stars" id="prmCat1">
+            <span class="prm-cat-star" onclick="setPrmCat(1,1)">⭐</span><span class="prm-cat-star" onclick="setPrmCat(1,2)">⭐</span><span class="prm-cat-star" onclick="setPrmCat(1,3)">⭐</span><span class="prm-cat-star" onclick="setPrmCat(1,4)">⭐</span><span class="prm-cat-star" onclick="setPrmCat(1,5)">⭐</span>
+          </div>
+        </div>
+        <div class="prm-cat-item">
+          <div class="prm-cat-label" id="prmCat2L">⏰ Vaqtinchalik</div>
+          <div class="prm-cat-stars" id="prmCat2">
+            <span class="prm-cat-star" onclick="setPrmCat(2,1)">⭐</span><span class="prm-cat-star" onclick="setPrmCat(2,2)">⭐</span><span class="prm-cat-star" onclick="setPrmCat(2,3)">⭐</span><span class="prm-cat-star" onclick="setPrmCat(2,4)">⭐</span><span class="prm-cat-star" onclick="setPrmCat(2,5)">⭐</span>
+          </div>
+        </div>
+        <div class="prm-cat-item">
+          <div class="prm-cat-label" id="prmCat3L">🤝 Munosabat</div>
+          <div class="prm-cat-stars" id="prmCat3">
+            <span class="prm-cat-star" onclick="setPrmCat(3,1)">⭐</span><span class="prm-cat-star" onclick="setPrmCat(3,2)">⭐</span><span class="prm-cat-star" onclick="setPrmCat(3,3)">⭐</span><span class="prm-cat-star" onclick="setPrmCat(3,4)">⭐</span><span class="prm-cat-star" onclick="setPrmCat(3,5)">⭐</span>
+          </div>
+        </div>
+        <div class="prm-cat-item">
+          <div class="prm-cat-label" id="prmCat4L">📝 Vazifalar</div>
+          <div class="prm-cat-stars" id="prmCat4">
+            <span class="prm-cat-star" onclick="setPrmCat(4,1)">⭐</span><span class="prm-cat-star" onclick="setPrmCat(4,2)">⭐</span><span class="prm-cat-star" onclick="setPrmCat(4,3)">⭐</span><span class="prm-cat-star" onclick="setPrmCat(4,4)">⭐</span><span class="prm-cat-star" onclick="setPrmCat(4,5)">⭐</span>
+          </div>
+        </div>
+      </div>
+      <!-- Comment -->
+      <div style="margin-bottom:6px;font-size:13px;font-weight:600;color:#0F172A" id="prmCommentLabel">Sharh yozing</div>
+      <textarea class="prm-textarea" id="prmComment" rows="3" placeholder="Bu ustoz haqida fikringizni yozing... (ixtiyoriy)"></textarea>
+      <!-- Anonymous notice -->
+      <div class="prm-anon-info">
+        🔒 <span id="prmAnonText">Sharhingiz to'liq anonim — ismingiz hech qachon ko'rinmaydi</span>
+      </div>
+      <button class="prm-submit" onclick="submitProfReview()" id="prmSubmitBtn">⭐ Baholashni yuborish</button>
+    </div>
+  </div>
+</div>
+
+<!-- ═══ HAMKORLAR ═══ -->
+<div class="page" id="page-idu-premium">
+  <div class="page-header">
+    <div class="page-header-left">
+      <div class="ph-title">🤝 Hamkorlar</div>
+      <div class="ph-sub">Ish o'rinlari · Sertifikatlar · Kompaniya profillari</div>
+    </div>
+    <div class="page-header-right">
+      <button class="btn" style="background:var(--primary-light);color:var(--primary);border:1.5px solid var(--primary);position:relative" onclick="showPage('my-applications')">
+        📋 Mening arizalarim
+        <span id="appCountBadge" style="display:none;position:absolute;top:-6px;right:-6px;background:var(--red);color:white;font-size:9px;font-weight:800;padding:1px 5px;border-radius:8px">0</span>
+      </button>
+    </div>
+  </div>
+
+  <!-- Stats row -->
+  <div class="hamkor-stats-row" id="hamkorStatsRow">
+    <div class="hstat-mini"><div class="hstat-mini-val" style="color:var(--primary)" id="hstat-companies">6</div><div class="hstat-mini-label">Hamkor kompaniya</div></div>
+    <div class="hstat-mini"><div class="hstat-mini-val" style="color:var(--green)" id="hstat-vacancies">0</div><div class="hstat-mini-label">Ochiq vakansiya</div></div>
+    <div class="hstat-mini"><div class="hstat-mini-val" style="color:var(--orange)" id="hstat-apps">0</div><div class="hstat-mini-label">Yuborilgan ariza</div></div>
+    <div class="hstat-mini"><div class="hstat-mini-val" style="color:var(--purple)" id="hstat-certs">43</div><div class="hstat-mini-label">Berilgan sertifikat</div></div>
+  </div>
+
+  <!-- Tabs -->
+  <div class="partners-tabs">
+    <button class="ptab active" id="ptab-vacancies" onclick="switchPartnersTab('vacancies')">💼 Vakansiyalar</button>
+    <button class="ptab" id="ptab-companies" onclick="switchPartnersTab('companies')">🏢 Kompaniyalar</button>
+    <button class="ptab" id="ptab-certs" onclick="switchPartnersTab('certs')">🎓 Sertifikatlar</button>
+  </div>
+
+  <!-- ── TAB: VAKANSIYALAR ── -->
+  <div id="tab-vacancies">
+    <!-- Search + filter -->
+    <div class="partners-search-row">
+      <div class="partners-search-wrap">
+        <input class="partners-search" id="vacancySearch" type="text" placeholder="Lavozim yoki texnologiya qidiring..." oninput="renderVacancies()">
+      </div>
+    </div>
+    <div class="job-filters" id="jobFilters">
+      <button class="jf-chip active" onclick="setJobFilter('all',this)">Barchasi</button>
+      <button class="jf-chip" onclick="setJobFilter('Full-time',this)">✅ Full-time</button>
+      <button class="jf-chip" onclick="setJobFilter('Part-time',this)">🕐 Part-time</button>
+      <button class="jf-chip" onclick="setJobFilter('Amaliyot',this)">🎓 Amaliyot</button>
+    </div>
+    <div id="vacancyList"></div>
+  </div>
+
+  <!-- ── TAB: KOMPANIYALAR ── -->
+  <div id="tab-companies" style="display:none">
+    <div class="company-grid" id="companyGrid"></div>
+  </div>
+
+  <!-- ── TAB: SERTIFIKATLAR ── -->
+  <div id="tab-certs" style="display:none">
+    <div class="premium-banner" style="margin-bottom:16px">
+      <div class="premium-title">🎓 IDU Rasmiy Sertifikat</div>
+      <div class="premium-desc">Muvaffaqiyatli tugatilgan fanlar uchun rasmiy sertifikat oling.<br>Hamkor kompaniyalar IDU sertifikatini tan oladi!</div>
+      <button class="btn" style="background:white;color:#D97706;font-weight:700" onclick="buyCert('Umumiy IDU','50,000')">Sertifikat olish →</button>
+    </div>
+    <div class="grid-3">
+      <div class="cert-card">
+        <div class="cert-title">Python Dasturlash</div>
+        <div class="cert-sub">Kurs tugagandan so'ng beriladi</div>
+        <div class="cert-price">50,000 so'm</div>
+        <button class="btn btn-primary btn-sm" style="width:100%" onclick="buyCert('Python Dasturlash','50,000')">Buyurtma berish</button>
+      </div>
+      <div class="cert-card">
+        <div class="cert-title">Web Development</div>
+        <div class="cert-sub">HTML/CSS/JS sertifikati</div>
+        <div class="cert-price">75,000 so'm</div>
+        <button class="btn btn-primary btn-sm" style="width:100%" onclick="buyCert('Web Development','75,000')">Buyurtma berish</button>
+      </div>
+      <div class="cert-card">
+        <div class="cert-title">Data Science</div>
+        <div class="cert-sub">Python + ML asoslari</div>
+        <div class="cert-price">100,000 so'm</div>
+        <button class="btn btn-primary btn-sm" style="width:100%" onclick="buyCert('Data Science','100,000')">Buyurtma berish</button>
+      </div>
+      <div class="cert-card">
+        <div class="cert-title">Mobile Development</div>
+        <div class="cert-sub">Flutter asoslari</div>
+        <div class="cert-price">80,000 so'm</div>
+        <button class="btn btn-primary btn-sm" style="width:100%" onclick="buyCert('Mobile Development','80,000')">Buyurtma berish</button>
+      </div>
+      <div class="cert-card">
+        <div class="cert-title">Cybersecurity</div>
+        <div class="cert-sub">Axborot xavfsizligi asoslari</div>
+        <div class="cert-price">90,000 so'm</div>
+        <button class="btn btn-primary btn-sm" style="width:100%" onclick="buyCert('Cybersecurity','90,000')">Buyurtma berish</button>
+      </div>
+      <div class="cert-card">
+        <div class="cert-title">AI & Machine Learning</div>
+        <div class="cert-sub">ML modellari va neural networks</div>
+        <div class="cert-price">120,000 so'm</div>
+        <button class="btn btn-primary btn-sm" style="width:100%" onclick="buyCert('AI & Machine Learning','120,000')">Buyurtma berish</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ═══ JOB DETAIL MODAL ═══ -->
+<div class="job-detail-modal" id="jobDetailModal" onclick="if(event.target===this)closeJobDetail()">
+  <div class="jdm-box">
+    <div class="jdm-header">
+      <div style="display:flex;justify-content:flex-end;margin-bottom:8px">
+        <button onclick="closeJobDetail()" style="background:none;border:none;font-size:20px;cursor:pointer;color:var(--text2);line-height:1">✕</button>
+      </div>
+      <div class="jdm-top">
+        <div class="jdm-logo" id="jdmLogo"></div>
+        <div>
+          <div class="jdm-title" id="jdmTitle"></div>
+          <div class="jdm-company" id="jdmCompany"></div>
+        </div>
+      </div>
+      <div style="display:flex;gap:8px;flex-wrap:wrap;margin-bottom:16px" id="jdmMeta"></div>
+    </div>
+    <div class="jdm-body">
+      <div class="jdm-section">
+        <div class="jdm-section-title">Tavsif</div>
+        <div style="font-size:14px;color:var(--text2);line-height:1.7" id="jdmDesc"></div>
+      </div>
+      <div class="jdm-section">
+        <div class="jdm-section-title">Talablar</div>
+        <div id="jdmReqs"></div>
+      </div>
+      <div class="jdm-section">
+        <div class="jdm-section-title">Texnologiyalar</div>
+        <div style="display:flex;gap:6px;flex-wrap:wrap" id="jdmTags"></div>
+      </div>
+      <button id="jdmApplyBtn" class="btn btn-primary" style="width:100%;padding:12px;font-size:15px;margin-top:8px" onclick="applyFromDetail()">📩 Ariza yuborish</button>
+    </div>
+  </div>
+</div>
+
+<!-- ═══ MY APPLICATIONS PAGE (student) ═══ -->
+<div class="page" id="page-my-applications">
+  <div class="page-header">
+    <div class="page-header-left">
+      <div class="ph-title">📋 Mening arizalarim</div>
+      <div class="ph-sub">Sertifikat buyurtmalari va ish ariza holatlari</div>
+    </div>
+    <div class="page-header-right">
+      <button class="btn btn-secondary" onclick="showPage('idu-premium')">← Orqaga</button>
+    </div>
+  </div>
+  <div id="myApplicationsList">
+    <div class="empty-state"><div class="empty-state-icon">📭</div><div>Hali ariza yo'q</div></div>
+  </div>
+</div>
+
+<!-- ═══ DEKANAT: APPLICATIONS MANAGER ═══ -->
+<div class="page" id="page-dekanat-applications">
+  <div class="page-header">
+    <div class="page-header-left">
+      <div class="ph-title">📬 Arizalar boshqaruvi</div>
+      <div class="ph-sub">Sertifikat buyurtmalari va ish murojaatlari</div>
+    </div>
+    <div class="page-header-right">
+      <div class="filter-row" style="margin:0">
+        <button class="filter-chip active" onclick="filterApps('all',this)">Barchasi</button>
+        <button class="filter-chip" onclick="filterApps('cert',this)">🎓 Sertifikat</button>
+        <button class="filter-chip" onclick="filterApps('job',this)">💼 Ish ariza</button>
+        <button class="filter-chip" onclick="filterApps('etiraz',this)">⚠️ E'tirozlar</button>
+        <button class="filter-chip" onclick="filterApps('pending',this)">⏳ Kutilmoqda</button>
+      </div>
+    </div>
+  </div>
+  <div class="stats-grid-3" style="margin-bottom:16px">
+    <div class="stat-card">
+      <div class="stat-card-top"><div class="stat-card-label">Jami arizalar</div><div class="stat-card-icon" style="background:var(--primary-light)">📋</div></div>
+      <div class="stat-card-val" style="color:var(--primary)" id="totalAppsCount">0</div>
+      <div class="stat-card-change sc-flat">Barcha vaqt</div>
+      <div class="stat-card-bar scb-blue"></div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-card-top"><div class="stat-card-label">Kutilmoqda</div><div class="stat-card-icon" style="background:var(--yellow-light)">⏳</div></div>
+      <div class="stat-card-val" style="color:var(--yellow)" id="pendingAppsCount">0</div>
+      <div class="stat-card-change sc-flat">Ko'rib chiqilmagan</div>
+      <div class="stat-card-bar scb-orange"></div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-card-top"><div class="stat-card-label">Tasdiqlangan</div><div class="stat-card-icon" style="background:var(--green-light)">✅</div></div>
+      <div class="stat-card-val" style="color:var(--green)" id="approvedAppsCount">0</div>
+      <div class="stat-card-change sc-up">↑ Bu oy</div>
+      <div class="stat-card-bar scb-green"></div>
+    </div>
+  </div>
+  <div class="card">
+    <table class="dekanat-table" id="applicationsTable">
+      <thead><tr>
+        <th>#</th><th>Talaba / Kontakt</th><th>Guruh</th><th>Ariza turi</th><th>Tafsilot / Resume</th><th>Sana</th><th>Holat</th><th>Amal</th>
+      </tr></thead>
+      <tbody id="applicationsBody">
+        <tr><td colspan="8" style="text-align:center;color:var(--text3);padding:30px">Hali ariza yo'q</td></tr>
+      </tbody>
+    </table>
+  </div>
+</div>
+
+<!-- ═══ ADD/EDIT STUDENT MODAL ═══ -->
+<div id="studentEditModal" style="display:none;position:fixed;inset:0;background:rgba(15,23,42,0.5);z-index:9999;align-items:center;justify-content:center;padding:16px">
+  <div style="background:white;border-radius:20px;padding:28px 28px 24px;width:100%;max-width:460px;box-shadow:0 24px 60px rgba(0,0,0,0.18);position:relative;animation:authIn 0.3s ease">
+    <button onclick="closeStudentModal()" style="position:absolute;top:12px;right:12px;background:var(--bg2);border:none;border-radius:8px;width:30px;height:30px;cursor:pointer;font-size:15px">✕</button>
+    <div style="font-size:17px;font-weight:800;margin-bottom:18px" id="studentModalTitle">👤 Talaba ma'lumotlarini tahrirlash</div>
+    <input type="hidden" id="editStudentId">
+    <div class="form-row" style="margin-bottom:13px">
+      <div class="form-group" style="margin:0">
+        <label class="form-label">Familiya Ism</label>
+        <input class="form-input" id="editStudentName" placeholder="Azimov Alisher">
+      </div>
+      <div class="form-group" style="margin:0">
+        <label class="form-label">Login</label>
+        <input class="form-input" id="editStudentLogin" placeholder="alisher">
+      </div>
+    </div>
+    <div class="form-row" style="margin-bottom:13px">
+      <div class="form-group" style="margin:0">
+        <label class="form-label">Guruh</label>
+        <select class="form-select" id="editStudentGroup">
+          <option>AI-2301</option><option>CS-2301</option><option>IT-2301</option><option>DB-2301</option>
+        </select>
+      </div>
+      <div class="form-group" style="margin:0">
+        <label class="form-label">Kurs</label>
+        <select class="form-select" id="editStudentCourse">
+          <option value="1">1-kurs</option><option value="2">2-kurs</option>
+          <option value="3">3-kurs</option><option value="4">4-kurs</option>
+        </select>
+      </div>
+    </div>
+    <div class="form-row" style="margin-bottom:18px">
+      <div class="form-group" style="margin:0">
+        <label class="form-label">O'rtacha ball</label>
+        <input class="form-input" id="editStudentAvg" type="number" min="0" max="100" placeholder="80">
+      </div>
+      <div class="form-group" style="margin:0">
+        <label class="form-label">Davomat %</label>
+        <input class="form-input" id="editStudentAtt" type="number" min="0" max="100" placeholder="95">
+      </div>
+    </div>
+    <div style="display:flex;gap:10px">
+      <button class="btn btn-primary" style="flex:1" onclick="saveStudentEdit()">💾 Saqlash</button>
+      <button id="deleteStudentBtn" class="btn" style="background:var(--red-light);color:var(--red);border:1px solid #FCA5A5;display:none" onclick="deleteStudent()">🗑️ O'chirish</button>
+      <button class="btn btn-secondary" onclick="closeStudentModal()">Bekor</button>
+    </div>
+  </div>
+</div>
+
+<!-- ═══ ADD GROUP MODAL ═══ -->
+<div id="addGroupModal" style="display:none;position:fixed;inset:0;background:rgba(15,23,42,0.5);z-index:9999;align-items:center;justify-content:center;padding:16px">
+  <div style="background:white;border-radius:20px;padding:28px 28px 24px;width:100%;max-width:420px;box-shadow:0 24px 60px rgba(0,0,0,0.18);position:relative;animation:authIn 0.3s ease">
+    <button onclick="document.getElementById('addGroupModal').style.display='none'" style="position:absolute;top:12px;right:12px;background:var(--bg2);border:none;border-radius:8px;width:30px;height:30px;cursor:pointer;font-size:15px">✕</button>
+    <div style="font-size:17px;font-weight:800;margin-bottom:18px">👥 Yangi guruh yaratish</div>
+    <div class="form-group" style="margin-bottom:13px">
+      <label class="form-label">Guruh nomi (masalan: AI-2401)</label>
+      <input class="form-input" id="newGroupName" placeholder="AI-2401">
+    </div>
+    <div class="form-row" style="margin-bottom:13px">
+      <div class="form-group" style="margin:0">
+        <label class="form-label">Yo'nalish</label>
+        <select class="form-select" id="newGroupDir">
+          <option>Sun'iy Intellekt</option>
+          <option>Kiberxavfsizlik</option>
+          <option>Computing & IT</option>
+          <option>Digital Business</option>
+        </select>
+      </div>
+      <div class="form-group" style="margin:0">
+        <label class="form-label">Kurs</label>
+        <select class="form-select" id="newGroupCourse">
+          <option value="1">1-kurs</option><option value="2">2-kurs</option>
+          <option value="3">3-kurs</option><option value="4">4-kurs</option>
+        </select>
+      </div>
+    </div>
+    <div class="form-group" style="margin-bottom:18px">
+      <label class="form-label">Talabalar soni (taxminiy)</label>
+      <input class="form-input" id="newGroupCount" type="number" placeholder="25" min="1" max="50">
+    </div>
+    <div style="display:flex;gap:10px">
+      <button class="btn btn-primary" style="flex:1" onclick="saveNewGroup()">✅ Yaratish</button>
+      <button class="btn btn-secondary" onclick="document.getElementById('addGroupModal').style.display='none'">Bekor</button>
+    </div>
+  </div>
+</div>
+
+<!-- ═══ JOB APPLICATION MODAL ═══ -->
+<div id="jobApplyModal" style="display:none;position:fixed;inset:0;background:rgba(15,23,42,0.55);z-index:9999;align-items:center;justify-content:center;padding:16px">
+  <div style="background:white;border-radius:20px;padding:32px 30px 28px;width:100%;max-width:500px;box-shadow:0 24px 64px rgba(0,0,0,0.2);position:relative;animation:authIn 0.3s ease;max-height:90vh;overflow-y:auto">
+    <button onclick="closeJobModal()" style="position:absolute;top:14px;right:14px;background:var(--bg2);border:none;border-radius:8px;width:32px;height:32px;cursor:pointer;font-size:16px;display:flex;align-items:center;justify-content:center;color:var(--text2)">✕</button>
+
+    <!-- Header -->
+    <div style="display:flex;align-items:center;gap:12px;margin-bottom:20px">
+      <div id="jobModalLogo" style="width:48px;height:48px;border-radius:12px;background:var(--primary-light);display:flex;align-items:center;justify-content:center;font-size:22px;flex-shrink:0"></div>
+      <div>
+        <div style="font-size:18px;font-weight:800;letter-spacing:-0.3px" id="jobModalTitle">Ish arizasi</div>
+        <div style="font-size:13px;color:var(--text2)" id="jobModalSub">Kompaniya nomi</div>
+      </div>
+    </div>
+
+    <!-- Already applied warning -->
+    <div id="alreadyAppliedWarn" style="display:none;background:var(--yellow-light);border:1px solid #FCD34D;border-radius:10px;padding:10px 14px;margin-bottom:16px;font-size:13px;color:var(--yellow);font-weight:600">
+      ⚠️ Siz bu kompaniyaga allaqachon ariza yuborgansiz
+    </div>
+
+    <!-- Form -->
+    <div class="form-row" style="margin-bottom:14px">
+      <div class="form-group" style="margin:0">
+        <label class="form-label">Ism <span style="color:var(--red)">*</span></label>
+        <input class="form-input" id="applyFirstName" placeholder="Sardor" type="text">
+      </div>
+      <div class="form-group" style="margin:0">
+        <label class="form-label">Familiya <span style="color:var(--red)">*</span></label>
+        <input class="form-input" id="applyLastName" placeholder="Toshmatov" type="text">
+      </div>
+    </div>
+
+    <div class="form-group" style="margin-bottom:14px">
+      <label class="form-label">Telefon raqam <span style="color:var(--red)">*</span></label>
+      <div style="position:relative">
+        <span style="position:absolute;left:12px;top:50%;transform:translateY(-50%);font-size:14px;color:var(--text3);font-weight:600">🇺🇿 +998</span>
+        <input class="form-input" id="applyPhone" placeholder="90 123 45 67" type="tel" style="padding-left:80px" maxlength="12">
+      </div>
+    </div>
+
+    <div class="form-group" style="margin-bottom:14px">
+      <label class="form-label">Email</label>
+      <input class="form-input" id="applyEmail" placeholder="sardor@example.com" type="email">
+    </div>
+
+    <div class="form-group" style="margin-bottom:14px">
+      <label class="form-label">Qaysi lavozimga murojaat qilmoqchisiz? <span style="color:var(--red)">*</span></label>
+      <select class="form-select" id="applyPosition"></select>
+    </div>
+
+    <div class="form-group" style="margin-bottom:14px">
+      <label class="form-label">Qisqacha o'zingiz haqingizda</label>
+      <textarea class="form-input" id="applyBio" placeholder="Tajribalarim, ko'nikmalarim..." rows="3" style="resize:vertical;min-height:70px"></textarea>
+    </div>
+
+    <!-- Resume upload -->
+    <div class="form-group" style="margin-bottom:20px">
+      <label class="form-label">Resume / CV fayl <span style="color:var(--red)">*</span></label>
+      <div id="resumeDropZone" onclick="document.getElementById('resumeFileInput').click()"
+        style="border:2px dashed var(--border2);border-radius:12px;padding:20px;text-align:center;cursor:pointer;transition:all 0.2s;background:var(--bg)"
+        ondragover="event.preventDefault();this.style.borderColor='var(--primary)';this.style.background='var(--primary-light)'"
+        ondragleave="this.style.borderColor='var(--border2)';this.style.background='var(--bg)'"
+        ondrop="handleResumeDrop(event)">
+        <div style="font-size:28px;margin-bottom:6px">📎</div>
+        <div style="font-size:14px;font-weight:600;color:var(--text2)" id="resumeDropText">Faylni bu yerga tashlang yoki bosing</div>
+        <div style="font-size:12px;color:var(--text3);margin-top:3px">PDF, DOC, DOCX — max 5MB</div>
+      </div>
+      <input type="file" id="resumeFileInput" accept=".pdf,.doc,.docx" style="display:none" onchange="handleResumeSelect(this)">
+      <div id="resumeFileInfo" style="display:none;margin-top:10px;padding:10px 14px;background:var(--green-light);border-radius:10px;border:1px solid #86EFAC;display:flex;align-items:center;gap:10px">
+        <span style="font-size:20px">📄</span>
+        <div style="flex:1">
+          <div style="font-size:13px;font-weight:700;color:var(--green)" id="resumeFileName">fayl.pdf</div>
+          <div style="font-size:11px;color:var(--text3)" id="resumeFileSize"></div>
+        </div>
+        <button onclick="clearResume()" style="background:none;border:none;cursor:pointer;color:var(--text3);font-size:16px">✕</button>
+      </div>
+    </div>
+
+    <!-- Error -->
+    <div id="applyFormError" style="display:none;background:var(--red-light);border:1px solid #FCA5A5;color:var(--red);border-radius:8px;padding:10px 14px;font-size:13px;font-weight:500;margin-bottom:14px"></div>
+
+    <!-- Buttons -->
+    <div style="display:flex;gap:10px">
+      <button class="btn btn-primary" style="flex:1;padding:13px" onclick="submitJobApplication()">📩 Ariza yuborish</button>
+      <button class="btn btn-secondary" onclick="closeJobModal()">Bekor qilish</button>
+    </div>
+  </div>
+</div>
+
+<!-- ═══ STUDENT: SESIYA TEST REJIM ═══ -->
+<div class="page" id="page-sesiya-test">
+  <div class="page-header">
+    <div class="page-header-left">
+      <div class="ph-title">🧪 Test Rejim</div>
+      <div class="ph-sub" id="testPageSub">Semestr yakuniy imtihon tayyorgarlik mashqi</div>
+    </div>
+  </div>
+
+  <!-- PHASE 0: LOCKED -->
+  <div id="stest-locked" style="display:flex;flex-direction:column;align-items:center;justify-content:center;min-height:380px;text-align:center">
+    <div style="width:96px;height:96px;border-radius:50%;background:linear-gradient(135deg,#FEF3C7,#FED7AA);display:flex;align-items:center;justify-content:center;font-size:44px;margin-bottom:24px;animation:pulse3 2.5s infinite;box-shadow:0 4px 24px rgba(234,88,12,0.15)">🔒</div>
+    <div style="font-size:22px;font-weight:800;color:#0F172A;margin-bottom:8px">Test rejim qulflangan</div>
+    <div style="font-size:14px;color:#64748B;line-height:1.7;max-width:380px">Dekanat tomonidan faollashtirilishini kuting.<br>Ruxsat berilganda avtomatik ravishda ochiladi.</div>
+    <div style="margin-top:24px;padding:12px 24px;background:#FFF7ED;border:1.5px solid #FED7AA;border-radius:12px;font-size:13px;color:#EA580C;font-weight:600">⏳ Dekanat ruxsati kutilmoqda</div>
+  </div>
+
+  <!-- PHASE 1: YO'RIQNOMA + FAN TANLASH -->
+  <div id="stest-instructions" style="display:none">
+    <div style="background:linear-gradient(135deg,#EEF3FF,#DBEAFE);border:1.5px solid #93C5FD;border-radius:16px;padding:22px 26px;margin-bottom:22px">
+      <div style="font-size:20px;font-weight:800;color:#1E40AF;margin-bottom:14px">📋 Test yo'riqnomasi</div>
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:16px">
+        <div style="background:white;border-radius:10px;padding:12px 14px;border:1px solid #DBEAFE;display:flex;align-items:center;gap:10px">
+          <span style="font-size:20px">📝</span>
+          <div><div style="font-size:11px;color:#64748B;font-weight:600;text-transform:uppercase;letter-spacing:0.5px">Savollar soni</div><div style="font-size:16px;font-weight:800;color:#1E40AF">20 ta savol</div></div>
+        </div>
+        <div style="background:white;border-radius:10px;padding:12px 14px;border:1px solid #DBEAFE;display:flex;align-items:center;gap:10px">
+          <span style="font-size:20px">⏱️</span>
+          <div><div style="font-size:11px;color:#64748B;font-weight:600;text-transform:uppercase;letter-spacing:0.5px">Vaqt chegarasi</div><div style="font-size:16px;font-weight:800;color:#1E40AF">30 daqiqa</div></div>
+        </div>
+        <div style="background:white;border-radius:10px;padding:12px 14px;border:1px solid #DBEAFE;display:flex;align-items:center;gap:10px">
+          <span style="font-size:20px">⚠️</span>
+          <div><div style="font-size:11px;color:#64748B;font-weight:600;text-transform:uppercase;letter-spacing:0.5px">E'tiborga oling</div><div style="font-size:13px;font-weight:600;color:#DC2626">Tab almashtirish qayd etiladi</div></div>
+        </div>
+        <div style="background:white;border-radius:10px;padding:12px 14px;border:1px solid #DBEAFE;display:flex;align-items:center;gap:10px">
+          <span style="font-size:20px">🎯</span>
+          <div><div style="font-size:11px;color:#64748B;font-weight:600;text-transform:uppercase;letter-spacing:0.5px">Natija</div><div style="font-size:13px;font-weight:600;color:#16A34A">Darhol ko'rasiz</div></div>
+        </div>
+      </div>
+      <div style="background:white;border-radius:10px;padding:14px 16px;border:1px solid #FED7AA;margin-bottom:16px">
+        <div style="font-size:13px;font-weight:700;color:#92400E;margin-bottom:8px">📌 Qoidalar:</div>
+        <div style="font-size:13px;color:#64748B;line-height:1.8">
+          ✅ Har bir savolga faqat bitta javob tanlang<br>
+          ✅ Savolga e'tirozingiz bo'lsa — "E'tiroz" tugmasini bosing<br>
+          ✅ Testni yakunlagandan keyin javoblar va xatolar ko'rinadi<br>
+          ⛔ Test vaqtida sahifadan chiqmaslik tavsiya etiladi<br>
+          ⛔ Boshqa tabga o'tish avtomatik qayd etiladi
+        </div>
+      </div>
+    </div>
+
+    <div style="font-size:16px;font-weight:800;color:#0F172A;margin-bottom:16px">📚 Fanni tanlang:</div>
+    <div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(220px,1fr));gap:14px;margin-bottom:24px">
+      <div onclick="startTestWithSubject('algo')" style="background:white;border:2px solid #E2E8F0;border-radius:14px;padding:20px;cursor:pointer;transition:all 0.18s;text-align:center" onmouseover="this.style.borderColor='#1B4FD8';this.style.transform='translateY(-2px)';this.style.boxShadow='0 6px 20px rgba(27,79,216,0.12)'" onmouseout="this.style.borderColor='#E2E8F0';this.style.transform='';this.style.boxShadow=''">
+        <div style="font-size:32px;margin-bottom:10px">💻</div>
+        <div style="font-size:14px;font-weight:800;color:#0F172A">Algoritmlar va Dasturlash</div>
+        <div style="font-size:12px;color:#64748B;margin-top:4px">20 savol · 30 daqiqa</div>
+        <div style="margin-top:10px;padding:5px 12px;background:#EEF3FF;border-radius:20px;font-size:11px;font-weight:700;color:#1B4FD8;display:inline-block">Boshlash →</div>
+      </div>
+      <div onclick="startTestWithSubject('ai')" style="background:white;border:2px solid #E2E8F0;border-radius:14px;padding:20px;cursor:pointer;transition:all 0.18s;text-align:center" onmouseover="this.style.borderColor='#7C3AED';this.style.transform='translateY(-2px)';this.style.boxShadow='0 6px 20px rgba(124,58,237,0.12)'" onmouseout="this.style.borderColor='#E2E8F0';this.style.transform='';this.style.boxShadow=''">
+        <div style="font-size:32px;margin-bottom:10px">🤖</div>
+        <div style="font-size:14px;font-weight:800;color:#0F172A">Sun'iy Intellekt</div>
+        <div style="font-size:12px;color:#64748B;margin-top:4px">20 savol · 30 daqiqa</div>
+        <div style="margin-top:10px;padding:5px 12px;background:#F3E8FF;border-radius:20px;font-size:11px;font-weight:700;color:#7C3AED;display:inline-block">Boshlash →</div>
+      </div>
+      <div onclick="startTestWithSubject('math')" style="background:white;border:2px solid #E2E8F0;border-radius:14px;padding:20px;cursor:pointer;transition:all 0.18s;text-align:center" onmouseover="this.style.borderColor='#059669';this.style.transform='translateY(-2px)';this.style.boxShadow='0 6px 20px rgba(5,150,105,0.12)'" onmouseout="this.style.borderColor='#E2E8F0';this.style.transform='';this.style.boxShadow=''">
+        <div style="font-size:32px;margin-bottom:10px">📐</div>
+        <div style="font-size:14px;font-weight:800;color:#0F172A">Matematika (AI uchun)</div>
+        <div style="font-size:12px;color:#64748B;margin-top:4px">20 savol · 30 daqiqa</div>
+        <div style="margin-top:10px;padding:5px 12px;background:#DCFCE7;border-radius:20px;font-size:11px;font-weight:700;color:#059669;display:inline-block">Boshlash →</div>
+      </div>
+      <div onclick="startTestWithSubject('db')" style="background:white;border:2px solid #E2E8F0;border-radius:14px;padding:20px;cursor:pointer;transition:all 0.18s;text-align:center" onmouseover="this.style.borderColor='#EA580C';this.style.transform='translateY(-2px)';this.style.boxShadow='0 6px 20px rgba(234,88,12,0.12)'" onmouseout="this.style.borderColor='#E2E8F0';this.style.transform='';this.style.boxShadow=''">
+        <div style="font-size:32px;margin-bottom:10px">🗄️</div>
+        <div style="font-size:14px;font-weight:800;color:#0F172A">Ma'lumotlar Bazasi</div>
+        <div style="font-size:12px;color:#64748B;margin-top:4px">20 savol · 30 daqiqa</div>
+        <div style="margin-top:10px;padding:5px 12px;background:#FFF7ED;border-radius:20px;font-size:11px;font-weight:700;color:#EA580C;display:inline-block">Boshlash →</div>
+      </div>
+      <div onclick="startTestWithSubject('web')" style="background:white;border:2px solid #E2E8F0;border-radius:14px;padding:20px;cursor:pointer;transition:all 0.18s;text-align:center" onmouseover="this.style.borderColor='#0891B2';this.style.transform='translateY(-2px)';this.style.boxShadow='0 6px 20px rgba(8,145,178,0.12)'" onmouseout="this.style.borderColor='#E2E8F0';this.style.transform='';this.style.boxShadow=''">
+        <div style="font-size:32px;margin-bottom:10px">🌐</div>
+        <div style="font-size:14px;font-weight:800;color:#0F172A">Web Dasturlash</div>
+        <div style="font-size:12px;color:#64748B;margin-top:4px">20 savol · 30 daqiqa</div>
+        <div style="margin-top:10px;padding:5px 12px;background:#ECFEFF;border-radius:20px;font-size:11px;font-weight:700;color:#0891B2;display:inline-block">Boshlash →</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- PHASE 2: ACTIVE TEST -->
+  <div id="stest-active" style="display:none">
+    <!-- Timer bar -->
+    <div style="background:linear-gradient(135deg,#EEF3FF,#DBEAFE);border:1.5px solid #93C5FD;border-radius:14px;padding:16px 22px;margin-bottom:18px;display:flex;align-items:center;justify-content:space-between">
+      <div style="display:flex;align-items:center;gap:12px">
+        <span style="font-size:22px" id="testSubjectIcon">💻</span>
+        <div>
+          <div style="font-size:15px;font-weight:800;color:#1E40AF" id="testSubjectName">Algoritmlar</div>
+          <div style="font-size:12px;color:#3B82F6">Mashq · baholar hisoblanmaydi</div>
+        </div>
+      </div>
+      <div style="display:flex;align-items:center;gap:20px">
+        <div style="text-align:center">
+          <div style="font-size:11px;color:#64748B;text-transform:uppercase;letter-spacing:0.5px;margin-bottom:2px">Savol</div>
+          <div style="font-size:16px;font-weight:800;color:#0F172A" id="testProgressLabel">0/20</div>
+        </div>
+        <div style="text-align:center">
+          <div style="font-size:11px;color:#64748B;text-transform:uppercase;letter-spacing:0.5px;margin-bottom:2px">Vaqt</div>
+          <div style="font-size:22px;font-weight:900;color:#1B4FD8;font-family:'DM Mono',monospace" id="testTimerDisplay">30:00</div>
+        </div>
+      </div>
+    </div>
+    <!-- Progress bar -->
+    <div style="height:5px;background:#E2E8F0;border-radius:10px;margin-bottom:20px;overflow:hidden">
+      <div id="testProgressBar" style="height:100%;background:linear-gradient(90deg,#1B4FD8,#3B82F6);border-radius:10px;width:0%;transition:width 0.4s ease"></div>
+    </div>
+    <!-- Questions container -->
+    <div id="testQuestionsContainer"></div>
+    <!-- Submit button -->
+    <div style="margin-top:24px;padding:20px;background:#F8FAFC;border-radius:14px;border:1.5px solid #E2E8F0;text-align:center">
+      <div style="font-size:13px;color:#64748B;margin-bottom:12px" id="testAnsweredCount">0 ta savol javob berildi</div>
+      <button onclick="submitTestExam()" id="testSubmitBtn" style="padding:13px 40px;background:linear-gradient(135deg,#1B4FD8,#3B82F6);color:white;border:none;border-radius:10px;font-family:'Outfit',sans-serif;font-size:15px;font-weight:700;cursor:pointer;box-shadow:0 4px 14px rgba(27,79,216,0.26)">📤 Testni yakunlash</button>
+    </div>
+  </div>
+
+  <!-- PHASE 3: RESULTS -->
+  <div id="stest-results" style="display:none">
+    <div id="testResultsContent"></div>
+    <div style="margin-top:20px;display:flex;gap:12px">
+      <button onclick="showTestInstructions()" style="flex:1;padding:13px;background:white;border:2px solid #1B4FD8;color:#1B4FD8;border-radius:10px;font-family:'Outfit',sans-serif;font-size:14px;font-weight:700;cursor:pointer">🔄 Qaytadan sinash</button>
+      <button onclick="showPage('bosh-sahifa')" style="flex:1;padding:13px;background:linear-gradient(135deg,#1B4FD8,#3B82F6);color:white;border:none;border-radius:10px;font-family:'Outfit',sans-serif;font-size:14px;font-weight:700;cursor:pointer">🏠 Bosh sahifaga</button>
+    </div>
+  </div>
+</div>
+
+<!-- ═══ STUDENT: HAQIQIY SESIYA ═══ -->
+<div class="page" id="page-sesiya-real">
+  <div class="page-header">
+    <div class="page-header-left">
+      <div class="ph-title">📝 Sesiya</div>
+      <div class="ph-sub" id="realPageSub">Rasmiy yakuniy imtihon</div>
+    </div>
+  </div>
+
+  <!-- PHASE 0: LOCKED -->
+  <div id="sreal-locked" style="display:flex;flex-direction:column;align-items:center;justify-content:center;min-height:380px;text-align:center">
+    <div style="width:96px;height:96px;border-radius:50%;background:linear-gradient(135deg,#FEE2E2,#FCA5A5);display:flex;align-items:center;justify-content:center;font-size:44px;margin-bottom:24px;animation:pulse3 2.5s infinite;box-shadow:0 4px 24px rgba(220,38,38,0.15)">🔐</div>
+    <div style="font-size:22px;font-weight:800;color:#0F172A;margin-bottom:8px">Sesiya qulflangan</div>
+    <div style="font-size:14px;color:#64748B;line-height:1.7;max-width:380px">Imtihon dekanat tomonidan boshlanishi mumkin.<br>Faollashtirilganda bu yerda imtihon paydo bo'ladi.</div>
+    <div style="margin-top:24px;padding:12px 24px;background:#FFF5F5;border:1.5px solid #FCA5A5;border-radius:12px;font-size:13px;color:#DC2626;font-weight:600">🔐 Faqat dekanat faollashtira oladi</div>
+  </div>
+
+  <!-- PHASE 1: YO'RIQNOMA + FAN TANLASH -->
+  <div id="sreal-instructions" style="display:none">
+    <div style="background:linear-gradient(135deg,#FFF5F5,#FEE2E2);border:1.5px solid #FCA5A5;border-radius:16px;padding:22px 26px;margin-bottom:22px">
+      <div style="font-size:20px;font-weight:800;color:#991B1B;margin-bottom:14px">📋 Imtihon yo'riqnomasi</div>
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:16px">
+        <div style="background:white;border-radius:10px;padding:12px 14px;border:1px solid #FEE2E2;display:flex;align-items:center;gap:10px">
+          <span style="font-size:20px">📝</span>
+          <div><div style="font-size:11px;color:#64748B;font-weight:600;text-transform:uppercase;letter-spacing:0.5px">Savollar soni</div><div style="font-size:16px;font-weight:800;color:#DC2626">30 ta savol</div></div>
+        </div>
+        <div style="background:white;border-radius:10px;padding:12px 14px;border:1px solid #FEE2E2;display:flex;align-items:center;gap:10px">
+          <span style="font-size:20px">⏱️</span>
+          <div><div style="font-size:11px;color:#64748B;font-weight:600;text-transform:uppercase;letter-spacing:0.5px">Vaqt chegarasi</div><div style="font-size:16px;font-weight:800;color:#DC2626">90 daqiqa</div></div>
+        </div>
+        <div style="background:white;border-radius:10px;padding:12px 14px;border:1px solid #FEE2E2;display:flex;align-items:center;gap:10px">
+          <span style="font-size:20px">⭐</span>
+          <div><div style="font-size:11px;color:#64748B;font-weight:600;text-transform:uppercase;letter-spacing:0.5px">Maksimal ball</div><div style="font-size:16px;font-weight:800;color:#16A34A">100 ball</div></div>
+        </div>
+        <div style="background:white;border-radius:10px;padding:12px 14px;border:1px solid #FEE2E2;display:flex;align-items:center;gap:10px">
+          <span style="font-size:20px">📊</span>
+          <div><div style="font-size:11px;color:#64748B;font-weight:600;text-transform:uppercase;letter-spacing:0.5px">Natija</div><div style="font-size:13px;font-weight:600;color:#16A34A">Darhol ko'rasiz</div></div>
+        </div>
+      </div>
+      <div style="background:#FFFBEB;border:1.5px solid #FCD34D;border-radius:10px;padding:14px 16px;margin-bottom:16px">
+        <div style="font-size:13px;font-weight:700;color:#92400E;margin-bottom:8px">⚠️ Muhim qoidalar:</div>
+        <div style="font-size:13px;color:#64748B;line-height:1.8">
+          ✅ Har bir savolga faqat bitta javob tanlang<br>
+          ✅ Savolga e'tirozingiz bo'lsa — "E'tiroz" tugmasini bosing<br>
+          ✅ Imtihon yakunida natijalar darhol ko'rsatiladi<br>
+          ⛔ <strong>Imtihon paytida sahifadan chiqmang</strong> — barcha harakatlar qayd etiladi<br>
+          ⛔ Tab almashtirish avtomatik dekanatga yuboriladi<br>
+          ⛔ Nusxa olish va o'ng tugma bloklangan
+        </div>
+      </div>
+      <div style="background:#FEE2E2;border-radius:10px;padding:12px 16px;font-size:13px;color:#991B1B;font-weight:700;text-align:center">
+        🔐 Bu rasmiy imtihon — javoblar dekanatga yuboriladi va baholanadi!
+      </div>
+    </div>
+
+    <div style="font-size:16px;font-weight:800;color:#0F172A;margin-bottom:16px">📚 Imtihon fanini tanlang:</div>
+    <div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(220px,1fr));gap:14px;margin-bottom:24px">
+      <div onclick="startRealWithSubject('algo')" style="background:white;border:2px solid #E2E8F0;border-radius:14px;padding:20px;cursor:pointer;transition:all 0.18s;text-align:center" onmouseover="this.style.borderColor='#DC2626';this.style.transform='translateY(-2px)';this.style.boxShadow='0 6px 20px rgba(220,38,38,0.12)'" onmouseout="this.style.borderColor='#E2E8F0';this.style.transform='';this.style.boxShadow=''">
+        <div style="font-size:32px;margin-bottom:10px">💻</div>
+        <div style="font-size:14px;font-weight:800;color:#0F172A">Algoritmlar va Dasturlash</div>
+        <div style="font-size:12px;color:#64748B;margin-top:4px">30 savol · 90 daqiqa · 100 ball</div>
+        <div style="margin-top:10px;padding:5px 12px;background:#FEE2E2;border-radius:20px;font-size:11px;font-weight:700;color:#DC2626;display:inline-block">Boshlash →</div>
+      </div>
+      <div onclick="startRealWithSubject('ai')" style="background:white;border:2px solid #E2E8F0;border-radius:14px;padding:20px;cursor:pointer;transition:all 0.18s;text-align:center" onmouseover="this.style.borderColor='#DC2626';this.style.transform='translateY(-2px)';this.style.boxShadow='0 6px 20px rgba(220,38,38,0.12)'" onmouseout="this.style.borderColor='#E2E8F0';this.style.transform='';this.style.boxShadow=''">
+        <div style="font-size:32px;margin-bottom:10px">🤖</div>
+        <div style="font-size:14px;font-weight:800;color:#0F172A">Sun'iy Intellekt</div>
+        <div style="font-size:12px;color:#64748B;margin-top:4px">30 savol · 90 daqiqa · 100 ball</div>
+        <div style="margin-top:10px;padding:5px 12px;background:#FEE2E2;border-radius:20px;font-size:11px;font-weight:700;color:#DC2626;display:inline-block">Boshlash →</div>
+      </div>
+      <div onclick="startRealWithSubject('math')" style="background:white;border:2px solid #E2E8F0;border-radius:14px;padding:20px;cursor:pointer;transition:all 0.18s;text-align:center" onmouseover="this.style.borderColor='#DC2626';this.style.transform='translateY(-2px)';this.style.boxShadow='0 6px 20px rgba(220,38,38,0.12)'" onmouseout="this.style.borderColor='#E2E8F0';this.style.transform='';this.style.boxShadow=''">
+        <div style="font-size:32px;margin-bottom:10px">📐</div>
+        <div style="font-size:14px;font-weight:800;color:#0F172A">Matematika (AI uchun)</div>
+        <div style="font-size:12px;color:#64748B;margin-top:4px">30 savol · 90 daqiqa · 100 ball</div>
+        <div style="margin-top:10px;padding:5px 12px;background:#FEE2E2;border-radius:20px;font-size:11px;font-weight:700;color:#DC2626;display:inline-block">Boshlash →</div>
+      </div>
+      <div onclick="startRealWithSubject('db')" style="background:white;border:2px solid #E2E8F0;border-radius:14px;padding:20px;cursor:pointer;transition:all 0.18s;text-align:center" onmouseover="this.style.borderColor='#DC2626';this.style.transform='translateY(-2px)';this.style.boxShadow='0 6px 20px rgba(220,38,38,0.12)'" onmouseout="this.style.borderColor='#E2E8F0';this.style.transform='';this.style.boxShadow=''">
+        <div style="font-size:32px;margin-bottom:10px">🗄️</div>
+        <div style="font-size:14px;font-weight:800;color:#0F172A">Ma'lumotlar Bazasi</div>
+        <div style="font-size:12px;color:#64748B;margin-top:4px">30 savol · 90 daqiqa · 100 ball</div>
+        <div style="margin-top:10px;padding:5px 12px;background:#FEE2E2;border-radius:20px;font-size:11px;font-weight:700;color:#DC2626;display:inline-block">Boshlash →</div>
+      </div>
+      <div onclick="startRealWithSubject('web')" style="background:white;border:2px solid #E2E8F0;border-radius:14px;padding:20px;cursor:pointer;transition:all 0.18s;text-align:center" onmouseover="this.style.borderColor='#DC2626';this.style.transform='translateY(-2px)';this.style.boxShadow='0 6px 20px rgba(220,38,38,0.12)'" onmouseout="this.style.borderColor='#E2E8F0';this.style.transform='';this.style.boxShadow=''">
+        <div style="font-size:32px;margin-bottom:10px">🌐</div>
+        <div style="font-size:14px;font-weight:800;color:#0F172A">Web Dasturlash</div>
+        <div style="font-size:12px;color:#64748B;margin-top:4px">30 savol · 90 daqiqa · 100 ball</div>
+        <div style="margin-top:10px;padding:5px 12px;background:#FEE2E2;border-radius:20px;font-size:11px;font-weight:700;color:#DC2626;display:inline-block">Boshlash →</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- PHASE 2: ACTIVE EXAM -->
+  <div id="sreal-active" style="display:none">
+    <div style="background:linear-gradient(135deg,#FFF5F5,#FEE2E2);border:1.5px solid #FCA5A5;border-radius:14px;padding:16px 22px;margin-bottom:18px;display:flex;align-items:center;justify-content:space-between">
+      <div style="display:flex;align-items:center;gap:12px">
+        <span style="font-size:22px" id="realSubjectIcon">💻</span>
+        <div>
+          <div style="font-size:15px;font-weight:800;color:#991B1B" id="realSubjectName">Algoritmlar</div>
+          <div style="font-size:12px;color:#DC2626">Rasmiy imtihon · javoblar saqlanadi</div>
+        </div>
+      </div>
+      <div style="display:flex;align-items:center;gap:20px">
+        <div style="text-align:center">
+          <div style="font-size:11px;color:#64748B;text-transform:uppercase;letter-spacing:0.5px;margin-bottom:2px">Savol</div>
+          <div style="font-size:16px;font-weight:800;color:#0F172A" id="realProgressLabel">0/30</div>
+        </div>
+        <div style="text-align:center">
+          <div style="font-size:11px;color:#64748B;text-transform:uppercase;letter-spacing:0.5px;margin-bottom:2px">Vaqt</div>
+          <div style="font-size:22px;font-weight:900;color:#DC2626;font-family:'DM Mono',monospace" id="realTimerDisplay">90:00</div>
+        </div>
+      </div>
+    </div>
+    <div style="height:5px;background:#FEE2E2;border-radius:10px;margin-bottom:20px;overflow:hidden">
+      <div id="realProgressBar" style="height:100%;background:linear-gradient(90deg,#DC2626,#EF4444);border-radius:10px;width:0%;transition:width 0.4s ease"></div>
+    </div>
+    <div style="background:#FFFBEB;border:1.5px solid #FCD34D;border-radius:10px;padding:12px 16px;margin-bottom:18px;font-size:13px;color:#92400E;display:flex;align-items:center;gap:8px;font-weight:600">
+      ⚠️ Imtihon paytida sahifadan chiqmang! Barcha harakatlar qayd etiladi.
+    </div>
+    <div id="realQuestionsContainer"></div>
+    <div style="margin-top:24px;padding:20px;background:#FFF5F5;border-radius:14px;border:1.5px solid #FCA5A5;text-align:center">
+      <div style="font-size:13px;color:#64748B;margin-bottom:12px" id="realAnsweredCount">0 ta savol javob berildi</div>
+      <button onclick="submitRealExam()" style="padding:13px 40px;background:linear-gradient(135deg,#DC2626,#EF4444);color:white;border:none;border-radius:10px;font-family:'Outfit',sans-serif;font-size:15px;font-weight:700;cursor:pointer;box-shadow:0 4px 14px rgba(220,38,38,0.26)">📤 Imtihonni yakunlash va topshirish</button>
+    </div>
+  </div>
+
+  <!-- PHASE 3: RESULTS -->
+  <div id="sreal-results" style="display:none">
+    <div id="realResultsContent"></div>
+    <div style="margin-top:20px;display:flex;gap:12px">
+      <button onclick="showPage('bosh-sahifa')" style="flex:1;padding:13px;background:linear-gradient(135deg,#DC2626,#EF4444);color:white;border:none;border-radius:10px;font-family:'Outfit',sans-serif;font-size:14px;font-weight:700;cursor:pointer">🏠 Bosh sahifaga</button>
+    </div>
+  </div>
+</div>
+
+<!-- ═══ DEKANAT: SAVOLLAR BOSHQARUVI ═══ -->
+<div class="page" id="page-dekanat-questions">
+  <div class="page-header">
+    <div class="page-header-left">
+      <div class="ph-title">📝 Savollar Boshqaruvi</div>
+      <div class="ph-sub">Test va Sesiya savollarini kiritish, tahrirlash va o'chirish</div>
+    </div>
+    <div class="page-header-right">
+      <button class="btn btn-primary" onclick="openAddQuestionModal()">➕ Savol qo'shish</button>
+    </div>
+  </div>
+
+  <!-- Stats -->
+  <div style="display:grid;grid-template-columns:repeat(4,1fr);gap:14px;margin-bottom:22px" id="qStatsRow">
+    <div class="stat-card"><div class="stat-card-top"><div class="stat-card-label">Jami savollar</div><div class="stat-card-icon" style="background:#EEF3FF">📝</div></div><div class="stat-card-val" style="color:var(--primary)" id="qStatTotal">0</div><div class="stat-card-change sc-flat">Dekanat kiritgan</div><div class="stat-card-bar scb-blue"></div></div>
+    <div class="stat-card"><div class="stat-card-top"><div class="stat-card-label">Test savollari</div><div class="stat-card-icon" style="background:#DCFCE7">🧪</div></div><div class="stat-card-val" style="color:var(--green)" id="qStatTest">0</div><div class="stat-card-change sc-flat">Mashq uchun</div><div class="stat-card-bar scb-green"></div></div>
+    <div class="stat-card"><div class="stat-card-top"><div class="stat-card-label">Sesiya savollari</div><div class="stat-card-icon" style="background:#FEE2E2">📋</div></div><div class="stat-card-val" style="color:var(--red)" id="qStatReal">0</div><div class="stat-card-change sc-flat">Rasmiy imtihon</div><div class="stat-card-bar scb-red"></div></div>
+    <div class="stat-card"><div class="stat-card-top"><div class="stat-card-label">Fanlar</div><div class="stat-card-icon" style="background:#F3E8FF">📚</div></div><div class="stat-card-val" style="color:var(--purple)" id="qStatSubjects">0</div><div class="stat-card-change sc-flat">Aktiv fanlar</div><div class="stat-card-bar scb-purple"></div></div>
+  </div>
+
+  <!-- Filter row -->
+  <div style="display:flex;gap:10px;margin-bottom:18px;flex-wrap:wrap;align-items:center">
+    <div class="filter-row" style="margin:0;flex:1">
+      <button class="filter-chip active" onclick="filterQs('all',this)" id="qf-all">Barchasi</button>
+      <button class="filter-chip" onclick="filterQs('test',this)" id="qf-test">🧪 Test</button>
+      <button class="filter-chip" onclick="filterQs('real',this)" id="qf-real">📋 Sesiya</button>
+      <button class="filter-chip" onclick="filterQs('algo',this)">💻 Algo</button>
+      <button class="filter-chip" onclick="filterQs('ai',this)">🤖 AI</button>
+      <button class="filter-chip" onclick="filterQs('math',this)">📐 Math</button>
+      <button class="filter-chip" onclick="filterQs('db',this)">🗄️ DB</button>
+      <button class="filter-chip" onclick="filterQs('web',this)">🌐 Web</button>
+    </div>
+    <button onclick="clearAllDekanatQuestions()" style="padding:8px 14px;background:#FEE2E2;border:1.5px solid #FCA5A5;border-radius:8px;color:#DC2626;font-family:'Outfit',sans-serif;font-size:12.5px;font-weight:700;cursor:pointer">🗑️ Barchasini o'chirish</button>
+  </div>
+
+  <!-- Questions table -->
+  <div class="card" style="padding:0;overflow:hidden">
+    <table class="dekanat-table" style="font-size:12.5px">
+      <thead><tr>
+        <th style="width:40px">#</th>
+        <th style="width:80px">Fan</th>
+        <th style="width:80px">Tur</th>
+        <th>Savol matni</th>
+        <th style="width:100px">To'g'ri javob</th>
+        <th style="width:90px">Amal</th>
+      </tr></thead>
+      <tbody id="questionsTableBody">
+        <tr><td colspan="6" style="text-align:center;color:var(--text3);padding:40px">
+          <div style="font-size:32px;margin-bottom:10px">📝</div>
+          <div style="font-weight:600">Hali savol kiritilmagan</div>
+          <div style="font-size:12px;color:var(--text3);margin-top:6px">"Savol qo'shish" tugmasini bosib savollarni kiriting</div>
+        </td></tr>
+      </tbody>
+    </table>
+  </div>
+
+  <!-- Info box -->
+  <div style="margin-top:16px;background:#EEF3FF;border:1.5px solid #93C5FD;border-radius:12px;padding:14px 18px;font-size:13px;color:#1E40AF">
+    💡 <strong>Eslatma:</strong> Dekanat kiritgan savollar tizim savollaridan <strong>ustun turadi</strong>. Test uchun kamida 20 ta, Sesiya uchun kamida 30 ta savol kiritish tavsiya etiladi.
+  </div>
+</div>
+
+<!-- MODAL: Savol qo'shish / tahrirlash -->
+<div id="addQuestionModal" style="display:none;position:fixed;top:0;left:0;width:100%;height:100%;background:rgba(0,0,0,0.5);z-index:3000;overflow:auto">
+  <div style="background:white;border-radius:18px;padding:28px;max-width:600px;margin:40px auto;position:relative">
+    <div style="font-size:18px;font-weight:800;color:#0F172A;margin-bottom:22px" id="questionModalTitle">➕ Yangi savol qo'shish</div>
+
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:16px">
+      <div>
+        <div style="font-size:12px;font-weight:700;color:#64748B;text-transform:uppercase;letter-spacing:0.5px;margin-bottom:6px">Fan</div>
+        <select id="qModalSubject" style="width:100%;padding:10px 12px;border:1.5px solid #E2E8F0;border-radius:8px;font-family:'Outfit',sans-serif;font-size:13px;outline:none">
+          <option value="algo">💻 Algoritmlar va Dasturlash</option>
+          <option value="ai">🤖 Sun'iy Intellekt</option>
+          <option value="math">📐 Matematika</option>
+          <option value="db">🗄️ Ma'lumotlar Bazasi</option>
+          <option value="web">🌐 Web Dasturlash</option>
+        </select>
+      </div>
+      <div>
+        <div style="font-size:12px;font-weight:700;color:#64748B;text-transform:uppercase;letter-spacing:0.5px;margin-bottom:6px">Tur</div>
+        <select id="qModalType" style="width:100%;padding:10px 12px;border:1.5px solid #E2E8F0;border-radius:8px;font-family:'Outfit',sans-serif;font-size:13px;outline:none">
+          <option value="test">🧪 Test Rejim (mashq)</option>
+          <option value="real">📋 Sesiya (rasmiy imtihon)</option>
+          <option value="both">📝 Ikkala turda ham</option>
+        </select>
+      </div>
+    </div>
+
+    <div style="margin-bottom:14px">
+      <div style="font-size:12px;font-weight:700;color:#64748B;text-transform:uppercase;letter-spacing:0.5px;margin-bottom:6px">Savol matni</div>
+      <textarea id="qModalText" placeholder="Savol matnini yozing..." style="width:100%;padding:10px 12px;border:1.5px solid #E2E8F0;border-radius:8px;font-family:'Outfit',sans-serif;font-size:13px;resize:vertical;min-height:72px;outline:none;box-sizing:border-box"></textarea>
+    </div>
+
+    <div style="font-size:12px;font-weight:700;color:#64748B;text-transform:uppercase;letter-spacing:0.5px;margin-bottom:8px">Javob variantlari (4 ta)</div>
+    <div id="qModalOptions" style="display:flex;flex-direction:column;gap:8px;margin-bottom:16px">
+      <div style="display:flex;align-items:center;gap:8px"><input type="radio" name="qModalCorrect" value="0" style="accent-color:#16A34A;width:16px;height:16px"><label style="font-size:12px;color:#16A34A;font-weight:700;min-width:60px">A (to'g'ri)</label><input id="qOpt0" placeholder="1-variant..." style="flex:1;padding:9px 12px;border:1.5px solid #86EFAC;border-radius:8px;font-family:'Outfit',sans-serif;font-size:13px;outline:none"></div>
+      <div style="display:flex;align-items:center;gap:8px"><input type="radio" name="qModalCorrect" value="1" style="accent-color:#1B4FD8;width:16px;height:16px"><label style="font-size:12px;color:#64748B;font-weight:700;min-width:60px">B</label><input id="qOpt1" placeholder="2-variant..." style="flex:1;padding:9px 12px;border:1.5px solid #E2E8F0;border-radius:8px;font-family:'Outfit',sans-serif;font-size:13px;outline:none"></div>
+      <div style="display:flex;align-items:center;gap:8px"><input type="radio" name="qModalCorrect" value="2" style="accent-color:#1B4FD8;width:16px;height:16px"><label style="font-size:12px;color:#64748B;font-weight:700;min-width:60px">C</label><input id="qOpt2" placeholder="3-variant..." style="flex:1;padding:9px 12px;border:1.5px solid #E2E8F0;border-radius:8px;font-family:'Outfit',sans-serif;font-size:13px;outline:none"></div>
+      <div style="display:flex;align-items:center;gap:8px"><input type="radio" name="qModalCorrect" value="3" style="accent-color:#1B4FD8;width:16px;height:16px"><label style="font-size:12px;color:#64748B;font-weight:700;min-width:60px">D</label><input id="qOpt3" placeholder="4-variant..." style="flex:1;padding:9px 12px;border:1.5px solid #E2E8F0;border-radius:8px;font-family:'Outfit',sans-serif;font-size:13px;outline:none"></div>
+    </div>
+
+    <div style="margin-bottom:20px">
+      <div style="font-size:12px;font-weight:700;color:#64748B;text-transform:uppercase;letter-spacing:0.5px;margin-bottom:6px">💡 Izoh (tushuntirish)</div>
+      <textarea id="qModalIzoh" placeholder="To'g'ri javob nima uchun to'g'ri ekanligini tushuntiring..." style="width:100%;padding:10px 12px;border:1.5px solid #E2E8F0;border-radius:8px;font-family:'Outfit',sans-serif;font-size:13px;resize:vertical;min-height:60px;outline:none;box-sizing:border-box"></textarea>
+    </div>
+
+    <div style="display:flex;gap:10px">
+      <button onclick="saveQuestionModal()" style="flex:1;padding:12px;background:linear-gradient(135deg,#1B4FD8,#3B82F6);color:white;border:none;border-radius:10px;font-family:'Outfit',sans-serif;font-size:14px;font-weight:700;cursor:pointer">💾 Saqlash</button>
+      <button onclick="closeQuestionModal()" style="padding:12px 20px;background:white;border:2px solid #E2E8F0;border-radius:10px;font-family:'Outfit',sans-serif;font-size:14px;cursor:pointer">Bekor</button>
+    </div>
+  </div>
+</div>
+
+<!-- ═══ DEKANAT: SESIYA BOSHQARUVI ═══ -->
+<div class="page" id="page-dekanat-sesiya">
+  <div class="page-header">
+    <div class="page-header-left">
+      <div class="ph-title">🗝️ Sesiya Boshqaruvi</div>
+      <div class="ph-sub">Test rejim va haqiqiy sesiyani faollashtirish / bloklash</div>
+    </div>
+  </div>
+
+  <!-- Status overview -->
+  <div style="display:grid;grid-template-columns:1fr 1fr;gap:18px;margin-bottom:24px">
+
+    <!-- TEST REJIM CARD -->
+    <div id="cardTestMode" style="background:#fff;border:2px solid #E2E8F0;border-radius:16px;padding:24px;box-shadow:0 2px 12px rgba(0,0,0,0.05);transition:all 0.3s">
+      <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:16px">
+        <div style="display:flex;align-items:center;gap:12px">
+          <div style="width:48px;height:48px;border-radius:14px;background:linear-gradient(135deg,#EEF3FF,#DBEAFE);display:flex;align-items:center;justify-content:center;font-size:24px">🧪</div>
+          <div>
+            <div style="font-size:16px;font-weight:800;color:#0F172A">Test Rejim</div>
+            <div style="font-size:12px;color:#64748B">Mashq imtihon sessiyasi</div>
+          </div>
+        </div>
+        <div id="testStatusBadge" style="padding:5px 14px;border-radius:20px;font-size:12px;font-weight:700;background:#FEF3C7;color:#D97706">🔒 Qulflangan</div>
+      </div>
+      <div style="background:#F8FAFC;border-radius:10px;padding:12px 14px;margin-bottom:16px;font-size:12.5px;color:#64748B;line-height:1.6">
+        📋 Talabalar sesiyadan oldin mashq qilishi uchun. Baholar <strong>hisoblanmaydi</strong>. Xotirjam muhit.
+      </div>
+      <div style="display:flex;gap:10px">
+        <button id="btnUnlockTest" onclick="setSesiyaState('test', true)"
+          style="flex:1;padding:11px;background:linear-gradient(135deg,#16A34A,#22C55E);color:white;border:none;border-radius:9px;font-family:'Outfit',sans-serif;font-size:13.5px;font-weight:700;cursor:pointer;transition:all 0.2s">
+          ✅ Faollashtirish
+        </button>
+        <button id="btnLockTest" onclick="setSesiyaState('test', false)"
+          style="flex:1;padding:11px;background:linear-gradient(135deg,#DC2626,#EF4444);color:white;border:none;border-radius:9px;font-family:'Outfit',sans-serif;font-size:13.5px;font-weight:700;cursor:pointer;transition:all 0.2s;display:none">
+          🔒 Bloklash
+        </button>
+      </div>
+    </div>
+
+    <!-- HAQIQIY SESIYA CARD -->
+    <div id="cardRealMode" style="background:#fff;border:2px solid #E2E8F0;border-radius:16px;padding:24px;box-shadow:0 2px 12px rgba(0,0,0,0.05);transition:all 0.3s">
+      <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:16px">
+        <div style="display:flex;align-items:center;gap:12px">
+          <div style="width:48px;height:48px;border-radius:14px;background:linear-gradient(135deg,#FEE2E2,#FCA5A5);display:flex;align-items:center;justify-content:center;font-size:24px">📝</div>
+          <div>
+            <div style="font-size:16px;font-weight:800;color:#0F172A">Sesiya</div>
+            <div style="font-size:12px;color:#64748B">Rasmiy yakuniy imtihon</div>
+          </div>
+        </div>
+        <div id="realStatusBadge" style="padding:5px 14px;border-radius:20px;font-size:12px;font-weight:700;background:#FEF3C7;color:#D97706">🔒 Qulflangan</div>
+      </div>
+      <div style="background:#FFF5F5;border-radius:10px;padding:12px 14px;margin-bottom:16px;font-size:12.5px;color:#64748B;line-height:1.6">
+        ⚠️ Rasmiy imtihon. Talabalar javoblari <strong>baholanadi</strong> va saqlanadi. Ehtiyotkorlik bilan yoqing.
+      </div>
+      <div style="display:flex;gap:10px">
+        <button id="btnUnlockReal" onclick="setSesiyaState('real', true)"
+          style="flex:1;padding:11px;background:linear-gradient(135deg,#DC2626,#EF4444);color:white;border:none;border-radius:9px;font-family:'Outfit',sans-serif;font-size:13.5px;font-weight:700;cursor:pointer;transition:all 0.2s">
+          🚀 Imtihonni boshlash
+        </button>
+        <button id="btnLockReal" onclick="setSesiyaState('real', false)"
+          style="flex:1;padding:11px;background:linear-gradient(135deg,#475569,#64748B);color:white;border:none;border-radius:9px;font-family:'Outfit',sans-serif;font-size:13.5px;font-weight:700;cursor:pointer;transition:all 0.2s;display:none">
+          🔒 Imtihonni yopish
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Activity log -->
+  <div class="card">
+    <div class="card-header"><div class="card-title">📋 Sesiya tarixi</div></div>
+    <div id="sesiyaLog" style="display:flex;flex-direction:column;gap:8px">
+      <div style="padding:12px 14px;background:#F8FAFC;border-radius:9px;border:1px solid #E2E8F0;font-size:13px;color:#64748B;text-align:center">
+        Hozircha hech qanday harakat amalga oshirilmagan
+      </div>
+    </div>
+  </div>
+</div>
+
+    </main>
+  </div>
+</div>
+  <!-- ===== IDU Platform — Modular Architecture ===== -->
+  <script src="js/core/config.js"></script>
+  <script src="js/core/auth.js"></script>
+  <script src="js/core/router.js"></script>
+  <script src="js/ui/toast.js"></script>
+  <script src="js/ui/modal.js"></script>
+  <script src="js/pages/student.js"></script>
+  <script src="js/pages/teacher.js"></script>
+  <script src="js/pages/dekanat.js"></script>
+  <script src="js/pages/investor.js"></script>
+  <script src="js/features/assignments.js"></script>
+  <script src="js/features/grades.js"></script>
+  <script src="js/features/schedule.js"></script>
+  <script src="js/features/ai-chat.js"></script>
+  <script src="js/features/exams.js"></script>
+  <script src="js/features/games.js"></script>
+  <script src="js/features/reports.js"></script>
+  <script src="js/features/notifications.js"></script>
+  <script src="js/main.js"></script>
+</html>
