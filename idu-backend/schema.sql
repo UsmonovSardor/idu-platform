@@ -312,3 +312,25 @@ ON CONFLICT (login) DO UPDATE SET
   role = EXCLUDED.role,
   is_active = TRUE,
   updated_at = NOW();
+
+-- ══════════════════════════════════════════════════════════
+
+-- ══════════════════════════════════════════════════════════
+-- DEFAULT USERS (seed data — agar yo'q bo'lsa qo'shish)
+-- ══════════════════════════════════════════════════════════
+INSERT INTO users (full_name, login, password_hash, role, is_active, phone)
+VALUES
+  ('Dekanat Admin',    'dekanat',   '$2a$10$8svs6lc7MQY.MJOrRLRxT.OJ3KgMD7G4VUCbyoRagcQQ5W/tqI3O.', 'dekanat', true, '+998712345678'),
+  ('Karimov Alisher',  'karimov',   '$2a$10$3Xh0fXWUaHuTAPCw5hL3C.GzaHs9XcHlPJQB6vshVNyjdBZ.t4pDi', 'teacher', true, '+998901234599'),
+  ('Alisher Azimov',   'alisher',   '$2a$10$sEQZZmq.1qEdKpxM5A7mKuFzfFya/mU4fNL9DL/eLwBrrYfk3s3Be', 'student', true, '+998901234567'),
+  ('Bekzod Yusupov',   'invest1',   '$2a$10$g./y0vLZnNsD1MlCZrxSTuxXB1k97brGb3faPoJaEwCvhQqc/XCAu', 'investor', true, '+998901122334'),
+  ('Nilufar Karimova', 'nilufar',   '$2a$10$ZXG.E8FAjJUAabtGrmoRo.6CYaC.EQaIhVMAxuQbcyd.G54c4Q1Zm', 'student', true, '+998907654321'),
+  ('Toshmatov Bobur',  'toshmatov', '$2a$10$HFOtqZ4qNHnkVCjyDHHqJ.u9uA7h/92gDEJ3JtuNvi98CegMaI8oK', 'teacher', true, '+998909988776')
+ON CONFLICT (login) DO NOTHING;
+
+INSERT INTO students (user_id, student_id_number, faculty, department, year_of_study, gpa)
+SELECT u.id, 'IDU-' || LPAD(u.id::text, 4, '0'),
+       'Raqamli texnologiyalar', 'Kompyuter fanlari', 2, 3.7
+FROM users u
+WHERE u.login IN ('alisher', 'nilufar')
+  AND NOT EXISTS (SELECT 1 FROM students s WHERE s.user_id = u.id);
