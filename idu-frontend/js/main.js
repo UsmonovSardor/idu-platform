@@ -442,9 +442,9 @@ let quizIdx = 0, quizScore = 0, quizAnswered = false;
 let ideaFormVisible = false;
 let currentTTGroup = 'CS-2301';
 let currentDekScheduleGroup = 'CS-2301';
-// ── Backend URL (Python server manzili) ──────────────────────
-// Agar server boshqa portda ishlasa, shu yerda o'zgartiring
-const BACKEND_URL = 'http://localhost:8000';
+// ── Backend URL (Railway production server) ──────────────────
+// Eski: 'http://localhost:8000' → Railway deployga o'zgartirildi
+const BACKEND_URL = 'https://idu-platform-production.up.railway.app';
 
 // ── Xavfsiz storage (sandbox va private rejimda ham ishlaydi) ──
 const _mem = {};
@@ -760,7 +760,8 @@ const NAV_TABS = {
     {id:'dekanat-applications',icon:'📬',label:'Arizalar',labelRu:'Заявки',badge:0,badgeId:'dekAppBadge'},
     {id:'dekanat-questions',icon:'📝',label:'Savollar',labelRu:'Вопросы'},
     {id:'dekanat-report',icon:'📈',label:'Hisobotlar',labelRu:'Отчёты'},
-    {id:'dekanat-sesiya',icon:'🗝️',label:'Sesiya Boshqaruvi',labelRu:'Управление сессией'},
+    // Sesiya Boshqaruvi olib tashlandi — bu funksiya Proktor roli uchun
+    // {id:'dekanat-sesiya',icon:'🗝️',label:'Sesiya Boshqaruvi',labelRu:'Управление сессией'},
   ],
   investor: [
     {id:'investor-dashboard',icon:'💼',label:'Dashboard',labelRu:'Дашборд'},

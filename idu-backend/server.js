@@ -46,14 +46,18 @@ app.use(helmet({
 }));
 
 // ?? CORS ??????????????????????????????????????????????????????????????????????
-const allowedOrigins = (process.env.CORS_ORIGIN || 'http://localhost:5500')
+const allowedOrigins = (process.env.CORS_ORIGIN || 'http://localhost:5500,https://idu-platform.vercel.app')
   .split(',')
   .map(o => o.trim());
 
 app.use(cors({
   origin: (origin, callback) => {
     // Allow no-origin requests (e.g. same-origin file:// for dev, Postman)
-    if (!origin || allowedOrigins.includes(origin)) return callback(null, true);
+    if (!origin) return callback(null, true);
+    // Allow any vercel.app subdomain for preview deployments
+    if (allowedOrigins.includes(origin) || /\.vercel\.app$/.test(origin)) {
+      return callback(null, true);
+    }
     callback(new Error(`CORS: origin ${origin} not allowed`));
   },
   credentials: true,

@@ -177,11 +177,11 @@ body{font-family:'Outfit',sans-serif;background:var(--bg);color:var(--text);min-
 .login-error-box.show{display:flex}
 .demo-section{margin-top:18px;padding:14px;background:#F8FAFB;border-radius:10px;border:1px solid #EEF2FF}
 .demo-section-title{font-size:10px;font-weight:700;color:#94A3B8;text-transform:uppercase;letter-spacing:1.2px;margin-bottom:10px}
-.demo-grid{display:grid;grid-template-columns:1fr 1fr;gap:6px}
+.demo-grid{display:grid;grid-template-columns:repeat(5,1fr);gap:6px}
 .demo-card{background:#fff;border:1.5px solid #EEF2FF;border-radius:8px;padding:8px 10px;cursor:pointer;transition:all 0.15s}
 .demo-card:hover{border-color:#1B4FD8;background:#EEF3FF;transform:translateY(-1px)}
-.demo-card-role{font-size:9px;font-weight:700;text-transform:uppercase;letter-spacing:0.8px;margin-bottom:4px;display:flex;align-items:center;gap:4px}
-.dc-s{color:#1B4FD8}.dc-t{color:#16A34A}.dc-d{color:#7C3AED}.dc-i{color:#EA580C}
+.demo-card-role{font-size:9px;font-weight:700;text-transform:uppercase;letter-spacing:0.8px;margin-bottom:4px;display:flex;align-items:center;gap:4px;padding:2px 6px;border-radius:4px}
+.dc-s{color:#1B4FD8;background:#EEF3FF}.dc-t{color:#16A34A;background:#DCFCE7}.dc-d{color:#7C3AED;background:#EDE9FE}.dc-i{color:#EA580C;background:#FEF3C7}
 .demo-card-login{font-size:12px;font-weight:700;color:#0F172A;font-family:'DM Mono',monospace}
 .demo-card-pass{font-size:11px;color:#94A3B8;font-family:'DM Mono',monospace;margin-top:1px}
 /* Legacy classes kept for other places */
