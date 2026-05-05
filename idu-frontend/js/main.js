@@ -87,31 +87,8 @@ window.realAutoLogin = async function realAutoLogin() {
     else if (role === 'investor') showPage('investor-dashboard');
     stopLoading();
     return;
-  } catch (e) {
-    const roles = ['student', 'teacher', 'dekanat', 'investor'];
-    for (const role of roles) {
-      const list = USERS[role] || [];
-      const user = list.find(x => x.login === login && x.pass === pass);
-      if (user) {
-        currentUser = user;
-        currentRole = role;
-        _ssSet('idu_active_role', ROLE_TOKENS[role]);
-        saveSession(role, user);
-        setupSidebar(role);
-        setupChip(role, user);
-        closeLoginModalForce();
-        document.getElementById('authScreen').style.display = 'none';
-        const app = document.getElementById('appScreen');
-        app.style.display = 'flex';
-        app.classList.add('visible');
-        if (role === 'student') showPage('dashboard');
-        else if (role === 'teacher') showPage('teacher-dashboard');
-        else if (role === 'dekanat') showPage('dekanat-dashboard');
-        else if (role === 'investor') showPage('investor-dashboard');
-        stopLoading();
-        return;
-      }
-    }
+ 
+     } catch (e) {
     showErr(e.message || 'Login yoki parol noto‘g‘ri');
   }
 };
