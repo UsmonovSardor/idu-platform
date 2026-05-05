@@ -13,8 +13,7 @@ var _apiToken = null;
   try {
      var saved =
   localStorage.getItem('idu_jwt') ||
-  localStorage.getItem('idu_token') ||
-  localStorage.getItem('token');
+  
 
   if (saved) _apiToken = saved;
   } catch(e) {}
@@ -26,8 +25,7 @@ function saveAuthToken(token) {
   _apiToken = token;
 
   localStorage.setItem('idu_jwt', token);
-  localStorage.setItem('idu_token', token);
-  localStorage.setItem('token', token);
+  
 
   if (typeof setToken === 'function') {
     setToken(token);
@@ -70,7 +68,7 @@ window.realAutoLogin = async function realAutoLogin() {
   try {
     const user = await loginWithBackend('auto', login, pass);
     const role = user.role || 'student';
-    currentUser = { login: user.login || login, name: user.name || user.full_name || login, role: role, group: 'AI-2301', gpa: 0, phone: user.phone || '' };
+    currentUser = { login: user.login || login, name: user.name || user.full_name || login, role: role, group: user.group || 'AI-2301', gpa: 0, phone: user.phone || '' };
     currentRole = role;
     _ssSet('idu_active_role', ROLE_TOKENS[role]);
     saveSession(role, currentUser);
@@ -3563,13 +3561,76 @@ function renderSesiyaReal() {
 }
 
 function startRealWithSubject(subj) {
-  launchSecureExam('real', subj)
-    .catch(function(e) {
-      console.error(e);
-      alert('Imtihonni boshlashda xatolik');
-    });
-}
+  try {
+    _currentRealSubject = subj;
 
+    var baseQs = TEST_QUESTIONS_DB[subj] || TEST_QUESTIONS_DB.algo || [];
+    _currentRealQuestions = [];
+
+    for (var i = 0; i < 30; i++) {
+      _currentRealQuestions.push(baseQs[i % baseQs.length]);
+    }
+
+    _realAnswers = {};
+
+    var icons = {algo:'💻', ai:'🤖', math:'📐', db:'🗄️', web:'🌐'};
+    var names = {
+      algo:'Algoritmlar va Dasturlash',
+      ai:"Sun'iy Intellekt",
+      math:'Matematika (AI uchun)',
+      db:"Ma'lumotlar Bazasi",
+      web:'Web Dasturlash'
+    };
+
+    document.getElementById('realSubjectIcon').textContent = icons[subj] || '📝';
+    document.getElementById('realSubjectName').textContent = names[subj] || subj;
+    document.getElementById('realProgressLabel').textContent = '0/30';
+    document.getElementById('realProgressBar').style.width = '0%';
+    document.getElementById('realPageSub').textContent = (names[subj] || subj) + ' · Rasmiy imtihon';
+
+    var container = document.getElementById('realQuestionsContainer');
+    var html = '';
+
+    _currentRealQuestions.forEach(function(q, i) {
+      html += _buildTestQHtml(q, i, 'real');
+    });
+
+    container.innerHTML = html;
+
+    document.getElementById('sreal-instructions').style.display = 'none';
+    document.getElementById('sreal-active').style.display = 'block';
+    document.getElementById('sreal-results').style.display = 'none';
+
+    if (_realTimer) clearInterval(_realTimer);
+
+    _realSec = 90 * 60;
+    document.getElementById('realTimerDisplay').textContent = '90:00';
+
+    _realTimer = setInterval(function() {
+      _realSec--;
+
+      var m = Math.floor(_realSec / 60).toString().padStart(2, '0');
+      var s = (_realSec % 60).toString().padStart(2, '0');
+      var el = document.getElementById('realTimerDisplay');
+
+      if (el) {
+        el.textContent = m + ':' + s;
+        el.style.color = _realSec < 600 ? '#B91C1C' : '#DC2626';
+      }
+
+      if (_realSec <= 0) {
+        clearInterval(_realTimer);
+        _realTimer = null;
+        submitRealExam();
+      }
+    }, 1000);
+
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  } catch (e) {
+    console.error(e);
+    alert('Imtihonni boshlashda xatolik');
+  }
+}
 function onRealAnswer(qi, optIdx) {
   _realAnswers[qi] = optIdx;
   var hidden = document.getElementById('rq' + qi + 'ans');
