@@ -9,15 +9,17 @@ var API_BASE = 'https://idu-platform-production.up.railway.app/api';
 var _apiToken = null;
 
 // Load saved JWT on page load
+// Load saved JWT on page load
 (function() {
   try {
-     var saved =
-  localStorage.getItem('idu_jwt') ||
-  
+    var saved = localStorage.getItem('idu_jwt');
 
-  if (saved) _apiToken = saved;
+    if (saved) {
+      _apiToken = saved;
+    }
   } catch(e) {}
 })();
+
 // 🔥 TOKEN SAVE (REAL LOGIN)
 function saveAuthToken(token) {
   if (!token) return;
