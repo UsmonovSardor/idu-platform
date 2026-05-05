@@ -685,42 +685,39 @@
   }
 }
 
-/* ===== MOBILE SCROLL + PROFESSIONAL COMPACT PATCH ===== */
+/* ===== MOBILE APP SCROLL FIX — SAFE ===== */
 @media (max-width:768px){
 
-  html,
-  body{
-    height:auto!important;
-    min-height:100%!important;
-    overflow-x:hidden!important;
-    overflow-y:auto!important;
+  body:has(#appScreen.visible) #authScreen{
+    display:none!important;
   }
 
-  #appScreen,
   #appScreen.visible{
-    height:auto!important;
-    min-height:100svh!important;
-    overflow:visible!important;
+    height:100svh!important;
+    overflow:hidden!important;
     display:flex!important;
     flex-direction:column!important;
   }
 
   .app-body{
-    height:auto!important;
+    flex:1!important;
     min-height:0!important;
-    overflow:visible!important;
-    display:block!important;
+    overflow:hidden!important;
+    display:flex!important;
   }
 
   .main-content{
+    flex:1!important;
+    min-height:0!important;
     height:auto!important;
-    min-height:calc(100svh - 54px)!important;
-    overflow:visible!important;
+    overflow-y:auto!important;
+    overflow-x:hidden!important;
+    -webkit-overflow-scrolling:touch!important;
     padding-bottom:110px!important;
   }
 
   .page{
-    padding:18px 14px 120px!important;
+    padding:16px 14px 120px!important;
     overflow:visible!important;
   }
 
@@ -737,26 +734,22 @@
 
   .hemis-banner{
     margin:14px 0 18px!important;
-    padding:22px 16px!important;
-    border-radius:22px!important;
+    padding:20px 16px!important;
+    border-radius:20px!important;
   }
 
   .hb-stats{
     display:grid!important;
     grid-template-columns:repeat(4,1fr)!important;
-    gap:10px!important;
+    gap:8px!important;
     width:100%!important;
   }
 
   .hb-stat-val{
-    font-size:22px!important;
+    font-size:20px!important;
   }
 
   .hb-stat-key{
-    font-size:11px!important;
-  }
-
-  .card{
-    margin-bottom:14px!important;
+    font-size:10px!important;
   }
 }
