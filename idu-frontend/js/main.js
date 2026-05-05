@@ -3456,7 +3456,7 @@ function startTestWithSubject(subj) {
     document.getElementById('stest-active').style.display = 'block';
     document.getElementById('stest-results').style.display = 'none';
 
-    renderTestQuestions();
+    renderActiveTestQuestions();
   } catch (e) {
     console.error(e);
     alert('Testni boshlashda xatolik');
