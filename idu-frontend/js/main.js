@@ -82,9 +82,10 @@ window.realAutoLogin = async function realAutoLogin() {
     app.style.display = 'flex';
     app.classList.add('visible');
     if (role === 'student') showPage('dashboard');
-    else if (role === 'teacher') showPage('teacher-dashboard');
-    else if (role === 'dekanat') showPage('dekanat-dashboard');
-    else if (role === 'investor') showPage('investor-dashboard');
+   else if (role === 'teacher') showPage('teacher-dashboard');
+   else if (role === 'dekanat') showPage('dekanat-dashboard');
+   else if (role === 'investor') showPage('investor-dashboard');
+   else if (role === 'admin') showPage('dekanat-sesiya');
     stopLoading();
     return;
  
@@ -103,7 +104,8 @@ const ROLE_TOKENS = {
   student: 'STU_7x9Kq2mP',
   teacher: 'TCH_4mNp8wRz',
   dekanat: 'DEK_9zRt3vYk',
-  investor: 'INV_2bLs6jQx'
+  investor: 'INV_2bLs6jQx',
+  admin: 'ADM_TEST_MANAGER'
 };
 
 const USERS = {
@@ -478,11 +480,11 @@ async function realLoginStart(role, loginInputId, passInputId, btnId) {
 
     document.getElementById('loginModal').style.display = 'none';
 
-    if (role === 'student') showPage('dashboard');
-    else if (role === 'teacher') showPage('teacher-dashboard');
-    else if (role === 'dekanat') showPage('dekanat-dashboard');
-    else if (role === 'investor') showPage('investor-dashboard');
-
+     if (role === 'student') showPage('dashboard');
+     else if (role === 'teacher') showPage('teacher-dashboard');
+     else if (role === 'dekanat') showPage('dekanat-dashboard');
+     else if (role === 'investor') showPage('investor-dashboard');
+     else if (role === 'admin') showPage('dekanat-sesiya');
   } catch (e) {
     alert(e.message || 'Login yoki parol noto‘g‘ri');
   } finally {
@@ -744,6 +746,12 @@ const NAV_TABS = {
     {id:'investor-dashboard',icon:'💼',label:'Dashboard',labelRu:'Дашборд'},
     {id:'startup',icon:'🚀',label:'Startup G\'oyalar',labelRu:'Стартап-идеи'},
   ],
+  admin: [
+  {id:'dekanat-sesiya',icon:'🗝️',label:'Test/Sesiya boshqaruvi',labelRu:'Управление тестом'},
+  {id:'dekanat-questions',icon:'📝',label:'Test savollari',labelRu:'Вопросы'},
+  {id:'dekanat-report',icon:'📈',label:'Natijalar',labelRu:'Результаты'},
+  {id:'notifications',icon:'🔔',label:'Xabarlar',labelRu:'Уведомления'}
+],
 };
 function setupSidebar(role){
   const base = NAV_TABS[role] || [];
