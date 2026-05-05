@@ -3438,11 +3438,29 @@ function showTestInstructions() {
 }
 
 function startTestWithSubject(subj) {
-  launchSecureExam('test', subj)
-    .catch(function(e) {
-      console.error(e);
-      alert('Testni boshlashda xatolik');
-    });
+  try {
+    _currentTestSubject = subj;
+    _currentTestQuestions = TEST_QUESTIONS_DB[subj] || [];
+
+    if (!_currentTestQuestions.length) {
+      alert('Bu fan uchun test savollari topilmadi');
+      return;
+    }
+
+    _testAnswers = {};
+    quizIdx = 0;
+    quizScore = 0;
+    quizAnswered = false;
+
+    document.getElementById('stest-instructions').style.display = 'none';
+    document.getElementById('stest-active').style.display = 'block';
+    document.getElementById('stest-results').style.display = 'none';
+
+    renderTestQuestions();
+  } catch (e) {
+    console.error(e);
+    alert('Testni boshlashda xatolik');
+  }
 }
 
 function onTestAnswer(qi, optIdx) {
