@@ -528,3 +528,159 @@
     margin:12px auto!important;
   }
 }
+
+/* ===== MOBILE COMPACT UI PATCH ===== */
+@media (max-width:768px){
+
+  .topnav{
+    height:48px!important;
+    padding:0 10px!important;
+    gap:6px!important;
+  }
+
+  .topnav-logo-icon,
+  .nav-icon-btn{
+    width:34px!important;
+    height:34px!important;
+    border-radius:10px!important;
+  }
+
+  .user-chip{
+    padding:4px 7px 4px 4px!important;
+    gap:7px!important;
+    max-width:150px!important;
+  }
+
+  .uc-avatar{
+    width:30px!important;
+    height:30px!important;
+    border-radius:9px!important;
+  }
+
+  .uc-info .uc-name{
+    font-size:12px!important;
+    max-width:82px!important;
+    white-space:nowrap!important;
+    overflow:hidden!important;
+    text-overflow:ellipsis!important;
+  }
+
+  .uc-info .uc-role{
+    font-size:10px!important;
+  }
+
+  .logout-btn{
+    padding:8px 10px!important;
+    font-size:12px!important;
+    border-radius:10px!important;
+  }
+
+  .page{
+    padding:14px 12px 90px!important;
+  }
+
+  .page-header{
+    margin-bottom:12px!important;
+    gap:4px!important;
+  }
+
+  .page-header-left .ph-title,
+  .page-header h2,
+  .page-header-title{
+    font-size:24px!important;
+    line-height:1.15!important;
+  }
+
+  .page-header-left .ph-sub{
+    font-size:14px!important;
+    line-height:1.3!important;
+  }
+
+  .card{
+    padding:14px!important;
+    border-radius:16px!important;
+  }
+
+  .btn{
+    height:44px!important;
+    padding:0 14px!important;
+    border-radius:13px!important;
+    font-size:14px!important;
+  }
+
+  .page-header-right .btn{
+    width:100%!important;
+    flex:none!important;
+  }
+
+  .notif-item{
+    gap:10px!important;
+    padding:14px 0!important;
+  }
+
+  .notif-icon-wrap{
+    width:44px!important;
+    height:44px!important;
+    border-radius:12px!important;
+    font-size:18px!important;
+  }
+
+  .notif-text{
+    font-size:15px!important;
+    line-height:1.45!important;
+  }
+
+  .notif-time{
+    font-size:12px!important;
+  }
+
+  .week-grid{
+    grid-template-columns:repeat(5,1fr)!important;
+    gap:8px!important;
+  }
+
+  .week-cell{
+    padding:10px 4px!important;
+    border-radius:12px!important;
+  }
+
+  .wc-num{
+    font-size:22px!important;
+  }
+
+  .wc-day{
+    font-size:10px!important;
+  }
+
+  .timetable-wrap{
+    border-radius:16px!important;
+    overflow-x:auto!important;
+  }
+
+  .timetable{
+    min-width:760px!important;
+  }
+
+  .timetable th{
+    padding:9px 10px!important;
+    font-size:12px!important;
+  }
+
+  .timetable td{
+    padding:5px!important;
+  }
+
+  .tt-cell{
+    min-height:58px!important;
+    padding:8px!important;
+  }
+
+  .tt-cell-subject{
+    font-size:12px!important;
+  }
+
+  .tt-cell-teacher,
+  .tt-cell-room{
+    font-size:10px!important;
+  }
+}
