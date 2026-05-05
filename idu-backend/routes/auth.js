@@ -31,11 +31,23 @@ router.post(
 
     const user = rows[0];
 
-    const dummyHash = '$2a$12$invalidhashfortimingprotectiononly000000000000000000000';
-    const hashToCheck = user ? user.password_hash : dummyHash;
-    const isValid = await bcrypt.compare(password, hashToCheck);
+    if (!user) {
+      return res.status(401).json({ error: 'Login yoki parol noto‘g‘ri' });
+    }
 
-    if (!user || !isValid) {
+    let isValid = false;
+
+    // 1) Test/demo uchun: password_hash ichida oddiy parol bo‘lsa
+    if (user.password_hash === password) {
+      isValid = true;
+    }
+
+    // 2) Production uchun: password_hash bcrypt hash bo‘lsa
+    if (!isValid && user.password_hash && user.password_hash.startsWith('$2')) {
+      isValid = await bcrypt.compare(password, user.password_hash);
+    }
+
+    if (!isValid) {
       return res.status(401).json({ error: 'Login yoki parol noto‘g‘ri' });
     }
 
@@ -47,7 +59,7 @@ router.post(
 
     const token = jwt.sign(
       { sub: user.id, role: user.role },
-      process.env.JWT_SECRET,
+      process.env.JWT_SECRET || 'dev_secret_change_me',
       { expiresIn: process.env.JWT_EXPIRES_IN || '8h' }
     );
 
@@ -84,7 +96,16 @@ router.post(
       return res.status(404).json({ error: 'User not found' });
     }
 
-    const isCorrect = await bcrypt.compare(currentPassword, rows[0].password_hash);
+    const savedPassword = rows[0].password_hash;
+    let isCorrect = false;
+
+    if (savedPassword === currentPassword) {
+      isCorrect = true;
+    }
+
+    if (!isCorrect && savedPassword && savedPassword.startsWith('$2')) {
+      isCorrect = await bcrypt.compare(currentPassword, savedPassword);
+    }
 
     if (!isCorrect) {
       return res.status(401).json({ error: 'Wrong password' });
