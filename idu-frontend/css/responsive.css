@@ -684,3 +684,79 @@
     font-size:10px!important;
   }
 }
+
+/* ===== MOBILE SCROLL + PROFESSIONAL COMPACT PATCH ===== */
+@media (max-width:768px){
+
+  html,
+  body{
+    height:auto!important;
+    min-height:100%!important;
+    overflow-x:hidden!important;
+    overflow-y:auto!important;
+  }
+
+  #appScreen,
+  #appScreen.visible{
+    height:auto!important;
+    min-height:100svh!important;
+    overflow:visible!important;
+    display:flex!important;
+    flex-direction:column!important;
+  }
+
+  .app-body{
+    height:auto!important;
+    min-height:0!important;
+    overflow:visible!important;
+    display:block!important;
+  }
+
+  .main-content{
+    height:auto!important;
+    min-height:calc(100svh - 54px)!important;
+    overflow:visible!important;
+    padding-bottom:110px!important;
+  }
+
+  .page{
+    padding:18px 14px 120px!important;
+    overflow:visible!important;
+  }
+
+  .stats-grid,
+  .stats-grid-3{
+    grid-template-columns:1fr!important;
+    gap:12px!important;
+  }
+
+  .stat-card{
+    min-height:auto!important;
+    padding:18px!important;
+  }
+
+  .hemis-banner{
+    margin:14px 0 18px!important;
+    padding:22px 16px!important;
+    border-radius:22px!important;
+  }
+
+  .hb-stats{
+    display:grid!important;
+    grid-template-columns:repeat(4,1fr)!important;
+    gap:10px!important;
+    width:100%!important;
+  }
+
+  .hb-stat-val{
+    font-size:22px!important;
+  }
+
+  .hb-stat-key{
+    font-size:11px!important;
+  }
+
+  .card{
+    margin-bottom:14px!important;
+  }
+}
