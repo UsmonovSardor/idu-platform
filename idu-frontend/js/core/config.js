@@ -52,9 +52,8 @@ async function apiLogin(role, login, password, remember) {
     if (err.status === 401 || err.status === 403) {
       return { ok: false, error: err.message };
     }
-    // Server unreachable — fall back to local demo mode
-    console.warn('[IDU] Backend unreachable, using demo mode:', err.message);
-    return { ok: false, error: null, offline: true };
+    console.warn('[IDU] Backend unreachable:', err.message);
+    return { ok: false, error: 'Server bilan aloqa yo‘q. Keyinroq urinib ko‘ring.' };
   }
 }
 
