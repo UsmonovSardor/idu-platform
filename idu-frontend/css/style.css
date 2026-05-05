@@ -1,4 +1,10 @@
 *,*::before,*::after{margin:0;padding:0;box-sizing:border-box}
+
+html,body{
+  width:100%;
+  max-width:100%;
+  overflow-x:hidden;
+}
 :root{
   --primary:#1B4FD8;--primary-light:#EEF3FF;--primary-mid:#DBEAFE;--primary-hover:#1743C0;
   --accent:#0EA5E9;--green:#16A34A;--green-light:#DCFCE7;--red:#DC2626;--red-light:#FEE2E2;
