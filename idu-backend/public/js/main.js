@@ -3488,11 +3488,37 @@ async function enterExamFullscreen() {
 
 async function startTestWithSubject(subj) {
   await enterExamFullscreen();
-  launchSecureExam('test', subj)
-    .catch(function(e) {
-      console.error(e);
-      alert('Testni boshlashda xatolik');
-    });
+
+  _currentTestSubject = subj;
+  _currentTestQuestions = (TEST_QUESTIONS_DB[subj] || []).slice(0, 20);
+  _testAnswers = {};
+
+  document.getElementById('stest-instructions').style.display = 'none';
+  document.getElementById('stest-active').style.display = 'block';
+  document.getElementById('stest-results').style.display = 'none';
+
+  document.getElementById('testProgressLabel').textContent = '0/' + _currentTestQuestions.length;
+  document.getElementById('testProgressBar').style.width = '0%';
+  document.getElementById('testAnsweredCount').textContent = '0 ta savol javob berildi';
+
+  renderActiveTestQuestions();
+
+  if (_testTimer) clearInterval(_testTimer);
+  _testSec = 30 * 60;
+  document.getElementById('testTimerDisplay').textContent = '30:00';
+
+  _testTimer = setInterval(function() {
+    _testSec--;
+    var m = Math.floor(_testSec / 60).toString().padStart(2, '0');
+    var s = (_testSec % 60).toString().padStart(2, '0');
+    document.getElementById('testTimerDisplay').textContent = m + ':' + s;
+
+    if (_testSec <= 0) {
+      clearInterval(_testTimer);
+      _testTimer = null;
+      submitTestExam();
+    }
+  }, 1000);
 }
 function onTestAnswer(qi, optIdx) {
   _testAnswers[qi] = optIdx;
