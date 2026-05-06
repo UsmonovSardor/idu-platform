@@ -109,6 +109,7 @@ window.realAutoLogin = async function realAutoLogin() {
         else if (role === 'teacher') showPage('teacher-dashboard');
         else if (role === 'dekanat') showPage('dekanat-dashboard');
         else if (role === 'investor') showPage('investor-dashboard');
+        else if (role === 'admin') showPage('dekanat-sesiya');
         stopLoading();
         return;
       }
@@ -3476,11 +3477,7 @@ async function enterExamFullscreen() {
 
 async function startTestWithSubject(subj) {
   await enterExamFullscreen();
-  launchSecureExam('test', subj)
-    .catch(function(e) {
-      console.error(e);
-      alert('Testni boshlashda xatolik');
-    });
+  startLocalTest(subj);
 }
 function onTestAnswer(qi, optIdx) {
   _testAnswers[qi] = optIdx;
@@ -3583,11 +3580,7 @@ function renderSesiyaReal() {
 
 async function startRealWithSubject(subj) {
   await enterExamFullscreen();
-  launchSecureExam('real', subj)
-    .catch(function(e) {
-      console.error(e);
-      alert('Imtihonni boshlashda xatolik');
-    });
+  startLocalReal(subj);
 }
 
 function onRealAnswer(qi, optIdx) {
