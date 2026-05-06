@@ -1074,8 +1074,12 @@ function closeQuiz() {
 function startTestWithSubject(subject, questions, duration) {
   if (!questions || !questions.length) return;
   var el = document.documentElement;
-  if (el.requestFullscreen) el.requestFullscreen().catch(function() {});
-  else if (el.webkitRequestFullscreen) el.webkitRequestFullscreen();
+  if (el.requestFullscreen) {
+  el.requestFullscreen().catch(function() {
+    alert('⚠️ Fullscreen rejim talab qilinadi! Ruxsat bering.');
+    return; // test boshlanmasin
+  });
+} else if (el.webkitRequestFullscreen) el.webkitRequestFullscreen();
 
   openRealExam({
     id: 'test_' + (subject || 'subject') + '_' + Date.now(),
@@ -1106,8 +1110,8 @@ async function launchSecureExam(examType, subject) {
       return { id: q.id, q: q.text, opts: q.options || [] };
     }),
     duration: (started.durationMin || (normalizedType === 'test' ? 30 : 60)) * 60,
-    maxWarnings: normalizedType === 'test' ? 3 : 2,
-    maxSuspicion: normalizedType === 'test' ? 100 : 80,
+    maxWarnings: normalizedType === 'test' ? 2 : 1,
+    maxSuspicion: normalizedType === 'test' ? 80 : 60,
   });
 
   return started;
