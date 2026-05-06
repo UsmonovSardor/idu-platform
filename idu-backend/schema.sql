@@ -174,15 +174,15 @@ CREATE TABLE IF NOT EXISTS exam_attempts (
                                CHECK (status IN ('active','completed','expired','cancelled')),
     started_at     TIMESTAMPTZ NOT NULL DEFAULT NOW(),
     expires_at     TIMESTAMPTZ NOT NULL,
-    submitted_at   TIMESTAMPTZ
-);
+    submitted_at   TIMESTAMPTZ,
+
     warning_count INT NOT NULL DEFAULT 0,
     suspicion_score INT NOT NULL DEFAULT 0,
     integrity_hash TEXT,
     force_submit_reason TEXT,
     saved_answers_json JSONB,
     last_heartbeat_at TIMESTAMPTZ,
-    heartbeat_count INT NOT NULL DEFAULT 0
+    heartbeat_count INT NOT NULL DEFAULT 0 );
 
     CREATE TABLE IF NOT EXISTS exam_security_logs (
     id SERIAL PRIMARY KEY,
