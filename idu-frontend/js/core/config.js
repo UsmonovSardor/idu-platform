@@ -1,7 +1,7 @@
 'use strict';
 // IDU - core/config.js
 // API konfiguratsiya
-var API_BASE='https://idu-platform-production.up.railway.app/api';
+var API_BASE = '/api';
 var _apiToken=null;
 
 function safeHTML(str) {
