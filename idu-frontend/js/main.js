@@ -3,7 +3,7 @@
 // ══════════════════════════════════════════════════════════════════
 
 // Backend base URL — change to your deployed server URL in production
-var API_BASE = 'https://idu-platform-production.up.railway.app/api';
+var API_BASE = window.location.origin + '/api';
 
 // JWT token storage (memory-first, localStorage fallback for "remember me")
 var _apiToken = null;
