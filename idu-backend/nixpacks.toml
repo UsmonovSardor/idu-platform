@@ -5,7 +5,7 @@ nixPkgs = ["nodejs_20", "npm-9_x"]
 cmds = ["npm ci --omit=dev"]
 
 [phases.build]
-cmds = ["cp -r ../idu-frontend ./public"]
+cmds = ["echo 'No build needed'"]
 
 [start]
 cmd = "node server.js"
