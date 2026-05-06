@@ -2,7 +2,7 @@
 // API CLIENT
 // =============================================
 
-var API_BASE = 'https://idu-platform-production.up.railway.app/api';
+var API_BASE = '/api';
 var _apiToken = null;
 
 function setToken(token) {
