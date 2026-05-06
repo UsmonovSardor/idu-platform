@@ -29,7 +29,7 @@ router.get('/session-state', async (req, res) => {
 // Dekanat: open or close test/sesiya
 router.post(
   '/session-state',
-  authorize('dekanat', 'admin'),
+  authorize('admin'),
   [
     body('examType').isIn(VALID_EXAM_TYPES),
     body('isOpen').isBoolean().toBoolean(),
@@ -55,6 +55,7 @@ router.post(
 // Student starts an exam -- returns shuffled questions (no answers)
 router.post(
   '/start',
+  authorize('student'),
   [
     body('examType').isIn(VALID_EXAM_TYPES),
     body('subject').isIn(VALID_SUBJECTS),
