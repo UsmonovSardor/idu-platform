@@ -38,8 +38,8 @@ router.post(
     let isValid = false;
 
     // 1) Test/demo uchun: password_hash ichida oddiy parol bo‘lsa
-    if (user.password_hash === password) {
-      isValid = true;
+    if (process.env.NODE_ENV !== 'production' && user.password_hash === password) {
+       isValid = true; // faqat development'da
     }
 
     // 2) Production uchun: password_hash bcrypt hash bo‘lsa
