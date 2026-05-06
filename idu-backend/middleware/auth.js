@@ -37,6 +37,11 @@ async function authenticate(req, res, next) {
       email:    rows[0].email,
       role:     rows[0].role,
     };
+    // IP manzilini saqlash (audit uchun)
+  await db.query(
+  'UPDATE users SET last_login = NOW() WHERE id = $1',
+  [rows[0].id]
+);
     next();
   } catch (err) {
     next(err);
