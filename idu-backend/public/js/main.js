@@ -3746,47 +3746,7 @@ var _editingQId = null;
 var _currentQFilter = 'all';
 loadDekanatQuestions();
 
-// Override question sources: use dekanat questions when available
-var _origStartTestWithSubject = startTestWithSubject;
-startTestWithSubject = async function(subj) {
-  var dekQs = DEKANAT_QUESTIONS.filter(function(q) { return q.subject === subj && (q.type === 'test' || q.type === 'both'); });
-  if (dekQs.length >= 20) {
-     await enterExamFullscreen();
-    _currentTestSubject = subj;
-    _currentTestQuestions = dekQs.slice(0, 20);
-    _testAnswers = {};
-    var icons = {algo:'💻', ai:'🤖', math:'📐', db:'🗄️', web:'🌐'};
-    var names = {algo:'Algoritmlar va Dasturlash', ai:"Sun'iy Intellekt", math:'Matematika (AI uchun)', db:"Ma'lumotlar Bazasi", web:'Web Dasturlash'};
-    document.getElementById('testSubjectIcon').textContent = icons[subj] || '📝';
-    document.getElementById('testSubjectName').textContent = names[subj] || subj;
-    document.getElementById('testProgressLabel').textContent = '0/20';
-    document.getElementById('testProgressBar').style.width = '0%';
-    document.getElementById('testPageSub').textContent = names[subj] + ' · Dekanat savollari';
-    var container = document.getElementById('testQuestionsContainer');
-    var html = '';
-    _currentTestQuestions.forEach(function(q, i) {
-      html += _buildTestQHtml(q, i, 'test');
-    });
-    container.innerHTML = html;
-    document.getElementById('stest-instructions').style.display = 'none';
-    document.getElementById('stest-active').style.display = 'block';
-    document.getElementById('stest-results').style.display = 'none';
-    if (_testTimer) clearInterval(_testTimer);
-    _testSec = 30 * 60;
-    document.getElementById('testTimerDisplay').textContent = '30:00';
-    _testTimer = setInterval(function() {
-      _testSec--;
-      var m = Math.floor(_testSec/60).toString().padStart(2,'0');
-      var s = (_testSec%60).toString().padStart(2,'0');
-      var el = document.getElementById('testTimerDisplay');
-      if (el) { el.textContent = m + ':' + s; el.style.color = _testSec < 300 ? '#DC2626' : '#1B4FD8'; }
-      if (_testSec <= 0) { clearInterval(_testTimer); _testTimer = null; submitTestExam(); }
-    }, 1000);
-    window.scrollTo({top: 0, behavior: 'smooth'});
-  } else {
-    _origStartTestWithSubject(subj);
-  }
-};
+
 
 var _origStartRealWithSubject = startRealWithSubject;
 startRealWithSubject = async function(subj) {
