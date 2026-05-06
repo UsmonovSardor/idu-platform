@@ -423,7 +423,7 @@ let currentTTGroup = 'CS-2301';
 let currentDekScheduleGroup = 'CS-2301';
 // ── Backend URL (Railway production server) ──────────────────
 // Eski: 'http://localhost:8000' → Railway deployga o'zgartirildi
-const BACKEND_URL = 'https://idu-platform-production.up.railway.app';
+const BACKEND_URL = window.location.origin;
 
 // ── Xavfsiz storage (sandbox va private rejimda ham ishlaydi) ──
 const _mem = {};
