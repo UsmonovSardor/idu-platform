@@ -3477,14 +3477,14 @@ async function enterExamFullscreen() {
 
 async function startTestWithSubject(subj) {
   await enterExamFullscreen();
-  startLocalTest(subj);
+  _origStartTestWithSubject(subj);
 }
 function onTestAnswer(qi, optIdx) {
   _testAnswers[qi] = optIdx;
   var hidden = document.getElementById('tq' + qi + 'ans');
   if (hidden) hidden.value = optIdx;
   // Style the selected option
-  var qs = TEST_QUESTIONS_DB[_currentTestSubject][qi];
+  var qs = _currentTestQuestions[qi];
   qs.opts.forEach(function(_, j) {
     var lbl = document.getElementById('tq-' + qi + '-opt-' + j);
     if (lbl) {
@@ -3580,7 +3580,7 @@ function renderSesiyaReal() {
 
 async function startRealWithSubject(subj) {
   await enterExamFullscreen();
-  startLocalReal(subj);
+  _origStartRealWithSubject(subj);
 }
 
 function onRealAnswer(qi, optIdx) {
@@ -3707,9 +3707,10 @@ loadDekanatQuestions();
 
 // Override question sources: use dekanat questions when available
 var _origStartTestWithSubject = startTestWithSubject;
-startTestWithSubject = function(subj) {
+startTestWithSubject = async function(subj) {
   var dekQs = DEKANAT_QUESTIONS.filter(function(q) { return q.subject === subj && (q.type === 'test' || q.type === 'both'); });
   if (dekQs.length >= 20) {
+     await enterExamFullscreen();
     _currentTestSubject = subj;
     _currentTestQuestions = dekQs.slice(0, 20);
     _testAnswers = {};
@@ -3747,9 +3748,10 @@ startTestWithSubject = function(subj) {
 };
 
 var _origStartRealWithSubject = startRealWithSubject;
-startRealWithSubject = function(subj) {
+startRealWithSubject = async function(subj) {
   var dekQs = DEKANAT_QUESTIONS.filter(function(q) { return q.subject === subj && (q.type === 'real' || q.type === 'both'); });
   if (dekQs.length >= 30) {
+     await enterExamFullscreen();
     _currentRealSubject = subj;
     _currentRealQuestions = dekQs.slice(0, 30);
     _realAnswers = {};
