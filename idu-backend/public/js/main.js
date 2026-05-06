@@ -85,10 +85,11 @@ window.realAutoLogin = async function realAutoLogin() {
     else if (role === 'teacher') showPage('teacher-dashboard');
     else if (role === 'dekanat') showPage('dekanat-dashboard');
     else if (role === 'investor') showPage('investor-dashboard');
+    else if (role === 'admin') showPage('dekanat-sesiya');
     stopLoading();
     return;
   } catch (e) {
-    const roles = ['student', 'teacher', 'dekanat', 'investor'];
+    const roles = ['student', 'teacher', 'dekanat', 'investor', 'admin'];
     for (const role of roles) {
       const list = USERS[role] || [];
       const user = list.find(x => x.login === login && x.pass === pass);
@@ -126,7 +127,8 @@ const ROLE_TOKENS = {
   student: 'STU_7x9Kq2mP',
   teacher: 'TCH_4mNp8wRz',
   dekanat: 'DEK_9zRt3vYk',
-  investor: 'INV_2bLs6jQx'
+  investor: 'INV_2bLs6jQx',
+  admin: 'ADM_8xTestSessionOnly'
 };
 
 const USERS = {
@@ -142,6 +144,8 @@ const USERS = {
   ],
   dekanat: [{login:'dekanat',pass:'admin123',name:'Dekanat Admin',role:'Dekan yordamchisi',phone:'998712345678'}],
   investor: [{login:'invest1',pass:'inv123',name:'Bekzod Yusupov',company:'TechVentures UZ',phone:'998901122334'}],
+  admin: [{login:'admin',pass:'admin123',name:'Test Admin',role:'Test va Sesiya Admin',phone:'998900000000'}],
+  
 };
 loadExtraUsers();
 
@@ -767,6 +771,9 @@ const NAV_TABS = {
     {id:'investor-dashboard',icon:'💼',label:'Dashboard',labelRu:'Дашборд'},
     {id:'startup',icon:'🚀',label:'Startup G\'oyalar',labelRu:'Стартап-идеи'},
   ],
+  admin: [
+  {id:'dekanat-sesiya',icon:'🗝️',label:'Test va Sesiya',labelRu:'Тест и сессия'},
+],
 };
 function setupSidebar(role){
   const base = NAV_TABS[role] || [];
@@ -3451,15 +3458,30 @@ function showTestInstructions() {
   document.getElementById('stest-results').style.display = 'none';
   document.getElementById('testPageSub').textContent = 'Fan tanlang va testni boshlang';
 }
+async function enterExamFullscreen() {
+  try {
+    const el = document.documentElement;
+    if (el.requestFullscreen) await el.requestFullscreen();
+    document.body.classList.add('exam-active', 'secure-exam-mode');
+    anticheatActive = true;
+    warnCount = 0;
+    window.onbeforeunload = function () {
+      return 'Test davom etmoqda. Chiqsangiz ogohlantirish yoziladi.';
+    };
+  } catch (e) {
+    alert('Testni boshlash uchun Full Screen ruxsat bering.');
+    throw e;
+  }
+}
 
-function startTestWithSubject(subj) {
+async function startTestWithSubject(subj) {
+  await enterExamFullscreen();
   launchSecureExam('test', subj)
     .catch(function(e) {
       console.error(e);
       alert('Testni boshlashda xatolik');
     });
 }
-
 function onTestAnswer(qi, optIdx) {
   _testAnswers[qi] = optIdx;
   var hidden = document.getElementById('tq' + qi + 'ans');
@@ -3559,7 +3581,8 @@ function renderSesiyaReal() {
   }
 }
 
-function startRealWithSubject(subj) {
+async function startRealWithSubject(subj) {
+  await enterExamFullscreen();
   launchSecureExam('real', subj)
     .catch(function(e) {
       console.error(e);
