@@ -1514,6 +1514,26 @@ function initAntiCheat(){
   document.addEventListener('copy',(e)=>{
     if(anticheatActive){e.preventDefault();showToast('🚫','Bloklandi','Test vaqtida nusxa olish mumkin emas!');}
   });
+  // Copy path va drag-drop bloklash
+document.addEventListener('dragover', function(e){ e.preventDefault(); });
+document.addEventListener('drop', function(e){ e.preventDefault(); });
+
+// Yangi oynaga ochishni bloklash (middle-click, Ctrl+click)
+document.addEventListener('auxclick', function(e){
+  if(e.button === 1) e.preventDefault(); // middle click
+});
+document.addEventListener('keydown', function(e){
+  // Ctrl+N — yangi oyna bloklash
+  if(e.ctrlKey && (e.key==='n'||e.key==='N')){
+    e.preventDefault();
+    return false;
+  }
+  // Ctrl+T — yangi tab bloklash  
+  if(e.ctrlKey && (e.key==='t'||e.key==='T')){
+    e.preventDefault();
+    return false;
+  }
+});
   document.addEventListener('keydown',(e)=>{
     if(!anticheatActive)return;
     // Block F12, Ctrl+Shift+I, Ctrl+U, Ctrl+C
