@@ -3459,6 +3459,17 @@ function showTestInstructions() {
   document.getElementById('stest-results').style.display = 'none';
   document.getElementById('testPageSub').textContent = 'Fan tanlang va testni boshlang';
 }
+function renderActiveTestQuestions() {
+  var container = document.getElementById('testQuestionsContainer');
+  if (!container) return;
+
+  var html = '';
+  (_currentTestQuestions || []).forEach(function(q, i) {
+    html += _buildTestQHtml(q, i, 'test');
+  });
+
+  container.innerHTML = html;
+}
 async function enterExamFullscreen() {
   try {
     const el = document.documentElement;
@@ -3477,7 +3488,11 @@ async function enterExamFullscreen() {
 
 async function startTestWithSubject(subj) {
   await enterExamFullscreen();
-  _origStartTestWithSubject(subj);
+  launchSecureExam('test', subj)
+    .catch(function(e) {
+      console.error(e);
+      alert('Testni boshlashda xatolik');
+    });
 }
 function onTestAnswer(qi, optIdx) {
   _testAnswers[qi] = optIdx;
