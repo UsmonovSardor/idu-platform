@@ -3,7 +3,7 @@
 // ══════════════════════════════════════════════════════════════════
 
 // Backend base URL — change to your deployed server URL in production
-var API_BASE = window.location.origin + '/api';
+var API_BASE = 'https://idu-platform-production.up.railway.app/api';
 
 // JWT token storage (memory-first, localStorage fallback for "remember me")
 var _apiToken = null;
@@ -423,7 +423,7 @@ let currentTTGroup = 'CS-2301';
 let currentDekScheduleGroup = 'CS-2301';
 // ── Backend URL (Railway production server) ──────────────────
 // Eski: 'http://localhost:8000' → Railway deployga o'zgartirildi
-const BACKEND_URL = window.location.origin;
+const BACKEND_URL = 'https://idu-platform-production.up.railway.app';
 
 // ── Xavfsiz storage (sandbox va private rejimda ham ishlaydi) ──
 const _mem = {};
