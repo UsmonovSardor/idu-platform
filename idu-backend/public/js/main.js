@@ -146,7 +146,7 @@ const USERS = {
   dekanat: [{login:'dekanat',pass:'admin123',name:'Dekanat Admin',role:'Dekan yordamchisi',phone:'998712345678'}],
   investor: [{login:'invest1',pass:'inv123',name:'Bekzod Yusupov',company:'TechVentures UZ',phone:'998901122334'}],
   admin: [{login:'admin',pass:'admin123',name:'Test Admin',role:'Test va Sesiya Admin',phone:'998900000000'}],
-  
+  proktor: [{login:'proktor',pass:'proktor123',name:'Proktor Admin',role:'proktor',phone:'998900000001'}],
 };
 loadExtraUsers();
 
@@ -1540,9 +1540,39 @@ function initAntiCheat(){
   document.addEventListener('keydown',(e)=>{
     if(!anticheatActive)return;
     // Block F12, Ctrl+Shift+I, Ctrl+U, Ctrl+C
-    if(e.key==='F12'||(e.ctrlKey&&e.shiftKey&&e.key==='I')||(e.ctrlKey&&e.key==='u')){
+    if(
+      e.key==='F12' ||
+      (e.ctrlKey && e.shiftKey && e.key==='I') ||
+      (e.ctrlKey && e.shiftKey && e.key==='J') ||
+      (e.ctrlKey && e.key==='u') ||
+      (e.ctrlKey && e.key==='U') ||
+      (e.ctrlKey && e.key==='l') ||
+      (e.ctrlKey && e.key==='L') ||
+      (e.ctrlKey && e.key==='t') ||
+      (e.ctrlKey && e.key==='T') ||
+      (e.ctrlKey && e.key==='n') ||
+      (e.ctrlKey && e.key==='N') ||
+      (e.ctrlKey && e.key==='w') ||
+      (e.ctrlKey && e.key==='W') ||
+      (e.altKey && e.key==='F4') ||
+      (e.ctrlKey && e.key==='c') ||
+      (e.ctrlKey && e.key==='C') ||
+      (e.key==='PrintScreen')
+    ){
       e.preventDefault();
-      triggerWarning('🔒 DevTools ochish taqiqlangan! Bu harakat qayd etildi.');
+      if(e.key==='F12'||(e.ctrlKey&&e.shiftKey&&['I','J'].includes(e.key))||(e.ctrlKey&&['u','U'].includes(e.key))){
+        triggerWarning('🔒 DevTools ochish taqiqlangan! Bu harakat qayd etildi.');
+      } else if(e.ctrlKey&&['l','L'].includes(e.key)){
+        triggerWarning('🚫 Manzil satrini ochish test vaqtida taqiqlangan!');
+      } else if(e.ctrlKey&&['t','T','n','N'].includes(e.key)){
+        triggerWarning('🚫 Yangi tab/oyna ochish test vaqtida taqiqlangan!');
+      } else if(e.ctrlKey&&['w','W'].includes(e.key)){
+        triggerWarning('🚫 Tabni yopish test vaqtida taqiqlangan!');
+      } else if(e.ctrlKey&&['c','C'].includes(e.key)){
+        triggerWarning('🚫 Nusxa olish test vaqtida taqiqlangan!');
+      } else {
+        triggerWarning('🚫 Bu harakat test vaqtida taqiqlangan!');
+      }
     }
   });
   // DevTools size detection
@@ -3474,16 +3504,19 @@ async function enterExamFullscreen() {
   try {
     const el = document.documentElement;
     if (el.requestFullscreen) await el.requestFullscreen();
-    document.body.classList.add('exam-active', 'secure-exam-mode');
-    anticheatActive = true;
-    warnCount = 0;
-    window.onbeforeunload = function () {
-      return 'Test davom etmoqda. Chiqsangiz ogohlantirish yoziladi.';
-    };
+    else if (el.webkitRequestFullscreen) el.webkitRequestFullscreen();
+    else if (el.mozRequestFullScreen) el.mozRequestFullScreen();
   } catch (e) {
-    alert('Testni boshlash uchun Full Screen ruxsat bering.');
-    throw e;
+    // Fullscreen rad etildi — test baribir davom etadi
+    console.warn('[IDU] Fullscreen rad etildi:', e.message);
   }
+  // Har doim anticheat yoqiladi (fullscreen muvaffaqiyatli bolmasa ham)
+  document.body.classList.add('exam-active', 'secure-exam-mode');
+  anticheatActive = true;
+  warnCount = 0;
+  window.onbeforeunload = function () {
+    return 'Test davom etmoqda. Chiqsangiz ogohlantirish yoziladi.';
+  };
 }
 
 async function startTestWithSubject(subj) {
