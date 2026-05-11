@@ -25,45 +25,76 @@ router.post(
     const { login, password } = req.body;
 
     const { rows } = await db.query(
-      'SELECT id, full_name, login, password_hash, role, is_active FROM users WHERE login = $1',
+      `
+      SELECT 
+        id,
+        full_name,
+        login,
+        password_hash,
+        role,
+        is_active
+      FROM users
+      WHERE login = $1
+      `,
       [login]
     );
 
     const user = rows[0];
 
     if (!user) {
-      return res.status(401).json({ error: `Login yoki parol noto'g'ri` });
+      return res.status(401).json({
+        error: "Login yoki parol noto'g'ri"
+      });
     }
 
     let isValid = false;
 
-    // 1) Test/demo uchun: password_hash ichida oddiy parol bo‘lsa
-    if (process.env.NODE_ENV !== 'production' && user.password_hash === password) {
-       isValid = true; // faqat development'da
+    // 1) Oddiy text password bo‘lsa
+    if (user.password_hash === password) {
+      isValid = true;
     }
 
-    // 2) Production uchun: password_hash bcrypt hash bo‘lsa
-    if (!isValid && user.password_hash && user.password_hash.startsWith('$2')) {
-      isValid = await bcrypt.compare(password, user.password_hash);
+    // 2) Bcrypt hash bo‘lsa
+    if (
+      !isValid &&
+      user.password_hash &&
+      user.password_hash.startsWith('$2')
+    ) {
+      isValid = await bcrypt.compare(
+        password,
+        user.password_hash
+      );
     }
 
     if (!isValid) {
-      return res.status(401).json({ error: `Login yoki parol noto'g'ri` });
+      return res.status(401).json({
+        error: "Login yoki parol noto'g'ri"
+      });
     }
 
     if (!user.is_active) {
-      return res.status(403).json({ error: 'Account deactivated' });
+      return res.status(403).json({
+        error: 'Account deactivated'
+      });
     }
 
-    await db.query('UPDATE users SET last_login = NOW() WHERE id = $1', [user.id]);
-
-    const token = jwt.sign(
-      { sub: user.id, role: user.role },
-      process.env.JWT_SECRET || 'dev_secret_change_me',
-      { expiresIn: process.env.JWT_EXPIRES_IN || '8h' }
+    await db.query(
+      'UPDATE users SET last_login = NOW() WHERE id = $1',
+      [user.id]
     );
 
-    res.json({
+    const token = jwt.sign(
+      {
+        sub: user.id,
+        role: user.role
+      },
+      process.env.JWT_SECRET || 'dev_secret_change_me',
+      {
+        expiresIn: process.env.JWT_EXPIRES_IN || '8h'
+      }
+    );
+
+    return res.json({
       token,
       user: {
         id: user.id,
@@ -81,7 +112,10 @@ router.post(
   authenticate,
   [
     body('currentPassword').notEmpty(),
-    body('newPassword').isLength({ min: 8 }).matches(/[A-Z]/).matches(/[0-9]/),
+    body('newPassword')
+      .isLength({ min: 8 })
+      .matches(/[A-Z]/)
+      .matches(/[0-9]/),
   ],
   validate,
   async (req, res) => {
@@ -93,63 +127,96 @@ router.post(
     );
 
     if (!rows.length) {
-      return res.status(404).json({ error: 'User not found' });
+      return res.status(404).json({
+        error: 'User not found'
+      });
     }
 
     const savedPassword = rows[0].password_hash;
+
     let isCorrect = false;
 
+    // Oddiy text password
     if (savedPassword === currentPassword) {
       isCorrect = true;
     }
 
-    if (!isCorrect && savedPassword && savedPassword.startsWith('$2')) {
-      isCorrect = await bcrypt.compare(currentPassword, savedPassword);
+    // Bcrypt password
+    if (
+      !isCorrect &&
+      savedPassword &&
+      savedPassword.startsWith('$2')
+    ) {
+      isCorrect = await bcrypt.compare(
+        currentPassword,
+        savedPassword
+      );
     }
 
     if (!isCorrect) {
-      return res.status(401).json({ error: 'Wrong password' });
+      return res.status(401).json({
+        error: 'Wrong password'
+      });
     }
 
-    await db.query(
-      'UPDATE users SET password_hash = $1, updated_at = NOW() WHERE id = $2',
-      [await bcrypt.hash(newPassword, 12), req.user.id]
+    const hashedPassword = await bcrypt.hash(
+      newPassword,
+      12
     );
 
-    res.json({ message: 'Password updated' });
+    await db.query(
+      `
+      UPDATE users
+      SET password_hash = $1,
+          updated_at = NOW()
+      WHERE id = $2
+      `,
+      [hashedPassword, req.user.id]
+    );
+
+    return res.json({
+      message: 'Password updated'
+    });
   }
 );
 
 // GET /api/auth/me
-router.get('/me', authenticate, async (req, res) => {
-  const { rows } = await db.query(
-    `
-    SELECT 
-      u.id,
-      u.full_name,
-      u.login,
-      u.role,
-      u.phone,
-      u.avatar_url,
-      u.created_at,
-      u.last_login,
-      s.student_id_number,
-      s.faculty,
-      s.department,
-      s.year_of_study,
-      s.gpa
-    FROM users u
-    LEFT JOIN students s ON s.user_id = u.id
-    WHERE u.id = $1
-    `,
-    [req.user.id]
-  );
+router.get(
+  '/me',
+  authenticate,
+  async (req, res) => {
+    const { rows } = await db.query(
+      `
+      SELECT 
+        u.id,
+        u.full_name,
+        u.login,
+        u.role,
+        u.phone,
+        u.avatar_url,
+        u.created_at,
+        u.last_login,
+        s.student_id_number,
+        s.faculty,
+        s.department,
+        s.year_of_study,
+        s.gpa
+      FROM users u
+      LEFT JOIN students s 
+        ON s.user_id = u.id
+      WHERE u.id = $1
+      `,
+      [req.user.id]
+    );
 
-  if (!rows.length) {
-    return res.status(404).json({ error: 'User not found' });
+    if (!rows.length) {
+      return res.status(404).json({
+        error: 'User not found'
+      });
+    }
+
+    return res.json(rows[0]);
   }
-
-  res.json(rows[0]);
-});
+);
 
 module.exports = router;
