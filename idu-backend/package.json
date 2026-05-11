@@ -6,7 +6,7 @@
   "scripts": {
     "start": "node server.js",
     "dev": "nodemon server.js",
-    "db:migrate": "node migrate.js"
+    "db:migrate": "node migrate.js",
     "db:seed": "node scripts/seed.js"
   },
   "dependencies": {
