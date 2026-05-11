@@ -3519,12 +3519,23 @@ async function enterExamFullscreen() {
   };
 }
 
+// main.js — 3522-qatordan boshlab shu funksiyani ALMASHTIRAMIZ:
 async function startTestWithSubject(subj) {
-  await enterExamFullscreen();
+  var allQs = TEST_QUESTIONS_DB[subj] || [];
+  // 200 ta savoldan tasodifiy 20 tasi
+  var shuffled = allQs.slice().sort(function(){ return Math.random()-0.5; });
+  var questions = shuffled.slice(0, Math.min(20, shuffled.length));
 
-  _currentTestSubject = subj;
-  _currentTestQuestions = (TEST_QUESTIONS_DB[subj] || []).slice(0, 20);
-  _testAnswers = {};
+  // exams.js dagi openRealExam orqali professional fullscreen exam ocha
+  var names = {algo:'Algoritmlar va Dasturlash', ai:"Sun'iy Intellekt", math:'Matematika (AI uchun)', db:"Ma'lumotlar Bazasi", web:'Web Dasturlash'};
+  openRealExam({
+    id: 'test_' + subj + '_' + Date.now(),
+    questions: questions,
+    duration: 30 * 60,   // 30 daqiqa
+    maxWarnings: 3,
+    maxSuspicion: 100,
+  });
+}
 
   document.getElementById('stest-instructions').style.display = 'none';
   document.getElementById('stest-active').style.display = 'block';
