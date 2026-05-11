@@ -32,7 +32,7 @@ router.post(
     const user = rows[0];
 
     if (!user) {
-      return res.status(401).json({ error: 'Login yoki parol noto‘g‘ri' });
+      return res.status(401).json({ error: `Login yoki parol noto'g'ri` });
     }
 
     let isValid = false;
@@ -48,7 +48,7 @@ router.post(
     }
 
     if (!isValid) {
-      return res.status(401).json({ error: 'Login yoki parol noto‘g‘ri' });
+      return res.status(401).json({ error: `Login yoki parol noto'g'ri` });
     }
 
     if (!user.is_active) {
