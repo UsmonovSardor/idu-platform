@@ -1056,3 +1056,19 @@ body{font-family:'Outfit',sans-serif;background:var(--bg);color:var(--text);min-
   background:rgba(0,0,0,0.35);backdrop-filter:blur(2px)
 }
 .sidebar-backdrop.active{display:block}
+
+/* ═══ EXAM FULLSCREEN MODE ═══ */
+body.exam-active .sidebar,
+body.exam-active .topnav,
+body.exam-active .datetime-bar,
+body.exam-active #hemis-nav {
+  display: none !important;
+}
+body.exam-active .main-content {
+  margin-left: 0 !important;
+  width: 100% !important;
+}
+body.exam-active #page-sesiya-test,
+body.exam-active #page-sesiya-real {
+  padding: 0 !important;
+}
