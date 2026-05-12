@@ -595,7 +595,7 @@ async function resendOTP() {
       body: JSON.stringify({
         phone: fullPhone,
         purpose: 'login'
-      })a
+      })
     });
 
     const data = await res.json().catch(() => ({}));
@@ -712,9 +712,7 @@ async function sendForgotOTP() {
       document.getElementById('fpOtpDemo').style.display = 'block';
     }
 
-    f (data.demo && data.demo_code) {
-      _fpOtp = data.demo_code;
-    }
+    
   } catch(e) {
     _fpOtp = null;
     showToast('⚠️', 'SMS', 'Server bilan aloqa yo‘q');
