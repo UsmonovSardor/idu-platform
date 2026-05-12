@@ -81,11 +81,13 @@ router.post(
         });
       }
 
-      if (!user.password_hash || !user.password_hash.startsWith('$2')) {
-        return res.status(401).json({
-          error: "Login yoki parol noto'g'ri",
-        });
-      }
+      let isValid = false;
+
+      if (user.password_hash && user.password_hash.startsWith('$2')) {
+      isValid = await bcrypt.compare(password, user.password_hash);
+   } else {
+    isValid = password === user.password_hash;
+  }
 
       const isValid = await bcrypt.compare(password, user.password_hash);
 
