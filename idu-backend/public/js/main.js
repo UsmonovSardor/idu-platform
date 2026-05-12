@@ -723,38 +723,61 @@ async function sendForgotOTP() {
   const rawPhone = document.getElementById('fpPhone').value.trim().replace(/\D/g,'');
   const fullPhone = '998' + rawPhone;
 
-  // Foydalanuvchini topish (lokal)
   let found = null, foundRole = _fpRole;
   const searchRoles = _fpRole ? [_fpRole] : Object.keys(USERS);
+
   for (const r of searchRoles) {
-    const u = (USERS[r]||[]).find(x => {
+    const u = (USERS[r] || []).find(x => {
       const stored = _lsGet('idu_phone_' + r + ':' + x.login);
       return (x.phone === fullPhone) || (stored === fullPhone);
     });
-    if (u) { found = u; foundRole = r; break; }
+
+    if (u) {
+      found = u;
+      foundRole = r;
+      break;
+    }
   }
-  if (!found) { document.getElementById('fpError').style.display = 'flex'; return; }
+
+  if (!found) {
+    document.getElementById('fpError').style.display = 'flex';
+    return;
+  }
+
   document.getElementById('fpError').style.display = 'none';
-  _fpUser = found; _fpRole = foundRole;
+  _fpUser = found;
+  _fpRole = foundRole;
 
   const masked = '+998 ' + rawPhone.slice(0,2) + ' *** ** ' + rawPhone.slice(-2);
   document.getElementById('fpPhoneDisplay').textContent = masked;
   document.getElementById('fpOtpDemo').style.display = 'none';
 
-  // Backend ga OTP so'rovi
   try {
     const res = await fetch(BACKEND_URL + '/api/forgot-send', {
       method: 'POST',
       headers: {'Content-Type': 'application/json'},
       body: JSON.stringify({ phone: fullPhone, role: foundRole, login: found.login })
     });
+
     const data = await res.json();
+
     if (!res.ok) throw new Error(data.detail || 'Xato');
-    
+
+    if (data.demo && data.demo_code) {
+      _fpOtp = data.demo_code;
+      document.getElementById('fpOtpDemo').textContent = _fpOtp;
+      document.getElementById('fpOtpDemo').style.display = 'block';
+    }
+
+    ['fp-step1','fp-step2','fp-step3','fp-step4'].forEach(id => {
+      document.getElementById(id).style.display = 'none';
+    });
+    document.getElementById('fp-step2').style.display = 'block';
+
   } catch(e) {
-    
-  ['fp-step1','fp-step2','fp-step3','fp-step4'].forEach(id => document.getElementById(id).style.display='none');
-  document.getElementById('fp-step2').style.display = 'block';
+    _fpOtp = null;
+    showToast('⚠️', 'SMS', 'Server bilan aloqa yo‘q');
+  }
 }
 
 async function verifyOTP() {
