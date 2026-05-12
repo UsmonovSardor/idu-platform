@@ -49,25 +49,7 @@ var _PROKTOR = {
   phone: ''
 };
 
-// ── 4. DOMContentLoaded: login modal, URL rol hint ───────────────
-window.addEventListener('DOMContentLoaded', function() {
-  setTimeout(function() {
-    var hasSaved = false;
-    try {
-      var raw = typeof _lsGet === 'function'
-        ? _lsGet('idu_session')
-        : localStorage.getItem('idu_session');
-      hasSaved = !!raw;
-    } catch(e) {}
 
-    if (!hasSaved) {
-      if (typeof openLoginModal === 'function') openLoginModal();
-      if (window._IDU_URL_ROLE) {
-        setTimeout(function() { _applyUrlRoleHint(window._IDU_URL_ROLE); }, 180);
-      }
-    }
-  }, 380);
-});
 
 function _applyUrlRoleHint(role) {
   var names = {
