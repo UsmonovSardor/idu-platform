@@ -23,13 +23,7 @@
 })();
 
 // ── 1. Landing page yashirish ────────────────────────────────────
-(function hideLanding() {
-  var hero = document.querySelector('.hemis-hero');
-  if (hero) hero.style.display = 'none';
-  // Nav linklar (kirish tugmasidan boshqasi)
-  var links = document.querySelectorAll('.hn-link, .hn-drop');
-  links.forEach(function(el) { el.style.display = 'none'; });
-})();
+
 
 // ── 2. URL-based routing ─────────────────────────────────────────
 (function urlRouting() {
