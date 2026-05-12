@@ -109,18 +109,11 @@ const ROLE_TOKENS = {
 };
 
 const USERS = {
-  student: [
-    {login:'alisher',pass:'1234',name:'Alisher Azimov',group:'AI-2301',course:2,gpa:3.7,avg:82.4,att:94,phone:'998901234567'},
-    {login:'nilufar',pass:'2025',name:'Nilufar Karimova',group:'CS-2301',course:2,gpa:3.5,avg:79.1,att:98,phone:'998907654321'},
-    {login:'jasur',pass:'pass1',name:'Jasur Toshpulatov',group:'IT-2301',course:3,gpa:3.2,avg:74.3,att:88,phone:'998931112233'},
-  ],
-  teacher: [
-    {login:'karimov',pass:'admin',name:'Karimov Alisher',dept:'Matematika',subjects:['Matematika','Algebra'],phone:'998901234599'},
-    {login:'toshmatov',pass:'teach1',name:'Toshmatov Bobur',dept:'Kompyuter Fanlari',subjects:['Dasturlash','Algoritmlar'],phone:'998909988776'},
-    {login:'rahimova',pass:'teach2',name:'Rahimova Nodira',dept:'Ingliz tili',subjects:['Ingliz tili','Ingliz aloqasi'],phone:'998935544332'},
-  ],
-  dekanat: [{login:'dekanat',pass:'admin123',name:'Dekanat Admin',role:'Dekan yordamchisi',phone:'998712345678'}],
-  investor: [{login:'invest1',pass:'inv123',name:'Bekzod Yusupov',company:'TechVentures UZ',phone:'998901122334'}],
+  student: [],
+  teacher: [],
+  dekanat: [],
+  investor: [],
+  admin: []
 };
 loadExtraUsers();
 
