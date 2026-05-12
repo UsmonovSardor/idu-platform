@@ -70,7 +70,7 @@ router.get(
               g.letter_grade, g.semester, g.academic_year
        FROM grades g
        JOIN users u    ON u.id = g.student_id
-       JOI students s ON s.user_id = g.student_id
+       JOIN students s ON s.user_id = g.student_id
        JOIN courses c  ON c.id = g.course_id
        ${where}
        ORDER BY u.full_name, g.academic_year DESC, g.semester DESC`,
