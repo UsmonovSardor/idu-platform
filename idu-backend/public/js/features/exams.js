@@ -1129,7 +1129,9 @@ function clearAllDekanatQuestions() {}
 function saveQuestionModal() {}
 function closeQuestionModal() {}
 function startExamSession() {}
-function submitTestExam() {}
+function submitTestExam() {
+  if (typeof _finishTestExam === 'function') _finishTestExam();
+}
 
 
 
