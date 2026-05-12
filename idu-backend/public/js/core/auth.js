@@ -403,7 +403,7 @@ function logout(){
   document.getElementById('appScreen').style.display='none';
   document.getElementById('authScreen').style.display='flex';
   selectedRole=null;
-  openLoginModal();
+  
 }
 
 function showForgotPassword(role) {
