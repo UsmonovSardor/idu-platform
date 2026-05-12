@@ -253,3 +253,47 @@ BEGIN
   END LOOP;
 END;
 $$;
+
+
+-- =============================================================================
+-- ASSIGNMENTS & SUBMISSIONS (vazifalar va javoblar)
+-- =============================================================================
+
+CREATE TABLE IF NOT EXISTS assignments (
+  id           SERIAL PRIMARY KEY,
+  title        VARCHAR(300) NOT NULL,
+  description  TEXT,
+  subject      VARCHAR(100),
+  deadline     TIMESTAMPTZ NOT NULL,
+  group_name   VARCHAR(50) NOT NULL DEFAULT 'ALL',
+  max_score    INT NOT NULL DEFAULT 100,
+  teacher_id   INT REFERENCES users(id) ON DELETE SET NULL,
+  is_active    BOOLEAN NOT NULL DEFAULT TRUE,
+  created_at   TIMESTAMPTZ NOT NULL DEFAULT NOW()
+);
+CREATE INDEX IF NOT EXISTS idx_assignments_teacher ON assignments(teacher_id);
+CREATE INDEX IF NOT EXISTS idx_assignments_group ON assignments(group_name);
+
+CREATE TABLE IF NOT EXISTS submissions (
+  id             SERIAL PRIMARY KEY,
+  assignment_id  INT NOT NULL REFERENCES assignments(id) ON DELETE CASCADE,
+  student_id     INT NOT NULL REFERENCES users(id) ON DELETE CASCADE,
+  content        TEXT NOT NULL,
+  ai_ball        NUMERIC(5,2),
+  ai_xatolar     TEXT,
+  ai_ijobiy      TEXT,
+  ai_tavsiyalar  TEXT,
+  teacher_score  NUMERIC(5,2),
+  teacher_comment TEXT,
+  submitted_at   TIMESTAMPTZ NOT NULL DEFAULT NOW(),
+  updated_at     TIMESTAMPTZ NOT NULL DEFAULT NOW(),
+  UNIQUE(assignment_id, student_id)
+);
+CREATE INDEX IF NOT EXISTS idx_submissions_assignment ON submissions(assignment_id);
+CREATE INDEX IF NOT EXISTS idx_submissions_student ON submissions(student_id);
+
+DO $$ BEGIN
+  IF NOT EXISTS (SELECT 1 FROM information_schema.columns WHERE table_name='students' AND column_name='group_name') THEN
+    ALTER TABLE students ADD COLUMN group_name VARCHAR(50);
+  END IF;
+END$$;
