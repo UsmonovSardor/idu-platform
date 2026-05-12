@@ -3522,40 +3522,79 @@ async function enterExamFullscreen() {
 // main.js — 3522-qatordan boshlab shu funksiyani ALMASHTIRAMIZ:
 async function startTestWithSubject(subj) {
   var allQs = TEST_QUESTIONS_DB[subj] || [];
-
   if (!allQs.length) {
-    showToast('⚠️', 'Savol yo‘q', 'Bu fan uchun savollar topilmadi');
+    showToast('⚠️', 'Savol yo\'q', 'Bu fan uchun savollar topilmadi');
     return;
   }
-
-  var shuffled = allQs.slice().sort(function () {
-    return Math.random() - 0.5;
-  });
-
+  var shuffled = allQs.slice().sort(function () { return Math.random() - 0.5; });
   _currentTestSubject = subj;
   _currentTestQuestions = shuffled.slice(0, Math.min(20, shuffled.length));
   _testAnswers = {};
-  _testStartTime = Date.now();
-  _testDuration = 30 * 60;
 
+  if (typeof openRealExam === 'function') {
+    openRealExam({
+      id: 'test_' + subj + '_' + Date.now(),
+      questions: _currentTestQuestions,
+      duration: 30 * 60,
+      maxWarnings: 3,
+      maxSuspicion: 100
+    });
+    return;
+  }
+
+  await enterExamFullscreen();
   document.getElementById('stest-instructions').style.display = 'none';
   document.getElementById('stest-active').style.display = 'block';
   document.getElementById('stest-results').style.display = 'none';
 
-  var names = {
-    algo: 'Algoritmlar va Dasturlash',
-    ai: "Sun'iy Intellekt",
-    math: 'Matematika (AI uchun)',
-    db: "Ma'lumotlar Bazasi",
-    web: 'Web Dasturlash'
-  };
-
-  document.getElementById('testPageSub').textContent =
-    names[subj] || subj || 'Test';
+  if (_testTimer) clearInterval(_testTimer);
+  _testSec = 30 * 60;
+  var timerEl = document.getElementById('testTimerDisplay');
+  if (timerEl) timerEl.textContent = '30:00';
 
   renderActiveTestQuestions();
-  startTestTimer();
-  enterExamFullscreen();
+
+  _testTimer = setInterval(function () {
+    _testSec--;
+    var m = Math.floor(_testSec / 60).toString().padStart(2, '0');
+    var s = (_testSec % 60).toString().padStart(2, '0');
+    var el = document.getElementById('testTimerDisplay');
+    if (el) { el.textContent = m + ':' + s; el.style.color = _testSec < 300 ? '#B91C1C' : ''; }
+    if (_testSec <= 0) { clearInterval(_testTimer); _testTimer = null; _finishTestExam(); }
+  }, 1000);
+}
+
+function _finishTestExam() {
+  if (_testTimer) { clearInterval(_testTimer); _testTimer = null; }
+  anticheatActive = false;
+  window.onbeforeunload = null;
+  try { document.exitFullscreen(); } catch (e) {}
+  document.body.classList.remove('exam-active', 'secure-exam-mode');
+  var nav = document.getElementById('hemis-nav');
+  if (nav) nav.style.display = '';
+  var mc = document.getElementById('mainContent');
+  if (mc) { mc.style.marginLeft = ''; mc.style.width = ''; }
+
+  var correct = 0;
+  _currentTestQuestions.forEach(function (q, i) { if (_testAnswers[i] === q.ans) correct++; });
+  var total = _currentTestQuestions.length;
+  var pct = Math.round((correct / total) * 100);
+  var grade = pct >= 86 ? "A'lo (5)" : pct >= 71 ? 'Yaxshi (4)' : pct >= 56 ? "Qoniqarli (3)" : "Qoniqarsiz (2)";
+
+  document.getElementById('stest-instructions').style.display = 'none';
+  document.getElementById('stest-active').style.display = 'none';
+  document.getElementById('stest-results').style.display = 'block';
+
+  var resEl = document.getElementById('testResultContent');
+  if (resEl) {
+    resEl.innerHTML = '<div style="text-align:center;padding:30px">' +
+      '<div style="font-size:56px;margin-bottom:12px">' + (pct >= 56 ? '🎉' : '😔') + '</div>' +
+      '<div style="font-size:32px;font-weight:900;color:' + (pct >= 56 ? '#16A34A' : '#DC2626') + '">' + pct + '%</div>' +
+      '<div style="font-size:18px;font-weight:700;margin:8px 0">' + grade + '</div>' +
+      '<div style="font-size:14px;color:#64748B">' + correct + ' / ' + total + " to'g'ri javob</div>" +
+      '<button onclick="showTestInstructions()" style="margin-top:20px;padding:12px 28px;background:#1B4FD8;color:white;border:none;border-radius:10px;font-size:15px;font-weight:700;cursor:pointer">🔄 Qayta urinish</button>' +
+      '</div>';
+  }
 }
 function onTestAnswer(qi, optIdx) {
   _testAnswers[qi] = optIdx;
