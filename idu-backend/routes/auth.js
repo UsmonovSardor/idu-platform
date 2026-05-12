@@ -89,7 +89,7 @@ router.post(
     isValid = password === user.password_hash;
   }
 
-      const isValid = await bcrypt.compare(password, user.password_hash);
+     
 
       if (!isValid) {
         return res.status(401).json({
