@@ -446,6 +446,7 @@ let _resendInterval = null;
 function generateOTP() {
   return String(Math.floor(100000 + Math.random() * 900000));
 }
+
 async function realLoginStart(role, loginInputId, passInputId, btnId) {
   const loginEl = document.getElementById(loginInputId);
   const passEl = document.getElementById(passInputId);
@@ -463,21 +464,46 @@ async function realLoginStart(role, loginInputId, passInputId, btnId) {
 
     const user = await loginWithBackend(role, login, pass);
 
-    currentUser = user;
-    currentRole = role;
+    const realRole = user.role || role;
 
-    _ssSet('idu_active_role', ROLE_TOKENS[role]);
+    currentUser = {
+      login: user.login || login,
+      name: user.name || user.full_name || login,
+      role: realRole,
+      group: user.group || 'AI-2301',
+      gpa: user.gpa || 0,
+      phone: user.phone || ''
+    };
 
-    setupSidebar(role);
-    setupChip(role, user);
+    currentRole = realRole;
 
-    document.getElementById('loginModal').style.display = 'none';
+    _ssSet('idu_active_role', ROLE_TOKENS[realRole]);
 
-     if (role === 'student') showPage('dashboard');
-     else if (role === 'teacher') showPage('teacher-dashboard');
-     else if (role === 'dekanat') showPage('dekanat-dashboard');
-     else if (role === 'investor') showPage('investor-dashboard');
-     else if (role === 'admin') showPage('dekanat-sesiya');
+    if (typeof saveSession === 'function') {
+      saveSession(realRole, currentUser);
+    }
+
+    setupSidebar(realRole);
+    setupChip(realRole, currentUser);
+
+    const loginModal = document.getElementById('loginModal');
+    if (loginModal) loginModal.style.display = 'none';
+
+    const authScreen = document.getElementById('authScreen');
+    if (authScreen) authScreen.style.display = 'none';
+
+    const app = document.getElementById('appScreen');
+    if (app) {
+      app.style.display = 'flex';
+      app.classList.add('visible');
+    }
+
+    if (realRole === 'student') showPage('dashboard');
+    else if (realRole === 'teacher') showPage('teacher-dashboard');
+    else if (realRole === 'dekanat') showPage('dekanat-dashboard');
+    else if (realRole === 'investor') showPage('investor-dashboard');
+    else if (realRole === 'admin') showPage('dekanat-sesiya');
+
   } catch (e) {
     alert(e.message || 'Login yoki parol noto‘g‘ri');
   } finally {
@@ -486,78 +512,109 @@ async function realLoginStart(role, loginInputId, passInputId, btnId) {
 }
 
 async function showOTPStep(role, user, phone, remember) {
-  _otpRole = role; _otpUser = user; _otpRemember = remember; _otpPhone = phone;
+  _otpRole = role;
+  _otpUser = user;
+  _otpRemember = remember;
+  _otpPhone = phone;
+  _otpCode = null;
 
-  // Telefon raqamni saqlash
   if (phone) {
     user.phone = '998' + phone;
     _lsSet('idu_phone_' + role + ':' + user.login, '998' + phone);
   }
 
   const fullPhone = '998' + phone;
-  const masked = '+998 ' + phone.slice(0,2) + ' *** ** ' + phone.slice(-2);
-  document.getElementById('otpPhoneShow').textContent = masked;
-  document.getElementById('otpDemoBox').style.display = 'none';
-  document.getElementById('otpInput').value = '';
-  document.getElementById('otpError').classList.remove('show');
+  const masked = '+998 ' + phone.slice(0, 2) + ' *** ** ' + phone.slice(-2);
+
+  const phoneShow = document.getElementById('otpPhoneShow');
+  const demoBox = document.getElementById('otpDemoBox');
+  const otpInput = document.getElementById('otpInput');
+  const otpError = document.getElementById('otpError');
+
+  if (phoneShow) phoneShow.textContent = masked;
+  if (demoBox) demoBox.style.display = 'none';
+  if (otpInput) otpInput.value = '';
+  if (otpError) otpError.classList.remove('show');
+
   showStep('step-otp');
 
-  // Backend ga OTP so'rovi
   try {
     const res = await fetch(BACKEND_URL + '/api/send-otp', {
       method: 'POST',
-      headers: {'Content-Type': 'application/json'},
-      body: JSON.stringify({ phone: fullPhone, purpose: 'login' })
+      headers: {
+        'Content-Type': 'application/json'
+      },
+      body: JSON.stringify({
+        phone: fullPhone,
+        purpose: 'login'
+      })
     });
-    const data = await res.json();
-    if (!res.ok) throw new Error(data.detail || 'Xato');
-    // Demo rejim: kodni ko'rsatish
-    if (data.demo && data.demo_code) {
-      document.getElementById('otpDemoCode').textContent = data.demo_code;
-      document.getElementById('otpDemoBox').style.display = 'flex';
-      _otpCode = data.demo_code; // demo uchun lokal ham saqlanadi
-    }
-  } catch(e) {
-    // Backend ulana olmasa — lokal demo rejim
-    _otpCode = generateOTP();
-    document.getElementById('otpDemoCode').textContent = _otpCode;
-    document.getElementById('otpDemoBox').style.display = 'flex';
-  }
 
-  startResendTimer();
-  setTimeout(() => document.getElementById('otpInput').focus(), 300);
+    const data = await res.json().catch(() => ({}));
+
+    if (!res.ok) {
+      throw new Error(data.detail || data.error || 'OTP yuborishda xato');
+    }
+
+    if (data.demo && data.demo_code) {
+      _otpCode = data.demo_code;
+    }
+
+  } catch (e) {
+    _otpCode = null;
+    showToast('⚠️', 'SMS', 'Server bilan aloqa yo‘q');
+  }
 }
 
 async function resendOTP() {
+  if (!_otpPhone) {
+    showToast('⚠️', 'SMS', 'Telefon raqam topilmadi');
+    return;
+  }
+
   const fullPhone = '998' + _otpPhone;
-  document.getElementById('otpInput').value = '';
-  document.getElementById('otpError').classList.remove('show');
-  startResendTimer();
+
+  const otpInput = document.getElementById('otpInput');
+  const otpError = document.getElementById('otpError');
+  const demoBox = document.getElementById('otpDemoBox');
+
+  if (otpInput) otpInput.value = '';
+  if (otpError) otpError.classList.remove('show');
+  if (demoBox) demoBox.style.display = 'none';
+
+  if (typeof startResendTimer === 'function') {
+    startResendTimer();
+  }
+
   try {
     const res = await fetch(BACKEND_URL + '/api/send-otp', {
       method: 'POST',
-      headers: {'Content-Type': 'application/json'},
-      body: JSON.stringify({ phone: fullPhone, purpose: 'login' })
+      headers: {
+        'Content-Type': 'application/json'
+      },
+      body: JSON.stringify({
+        phone: fullPhone,
+        purpose: 'login'
+      })a
     });
-    const data = await res.json();
+
+    const data = await res.json().catch(() => ({}));
+
+    if (!res.ok) {
+      throw new Error(data.detail || data.error || 'OTP yuborishda xato');
+    }
+
     if (data.demo && data.demo_code) {
       _otpCode = data.demo_code;
-      document.getElementById('otpDemoCode').textContent = _otpCode;
-      document.getElementById('otpDemoBox').style.display = 'flex';
     }
-  } catch(e) {
-    _otpCode = generateOTP();
-    document.getElementById('otpDemoCode').textContent = _otpCode;
-    document.getElementById('otpDemoBox').style.display = 'flex';
+
+    showToast('✅', 'SMS', 'Kod qayta yuborildi');
+
+  } catch (e) {
+    _otpCode = null;
+    showToast('⚠️', 'SMS', 'Server bilan aloqa yo‘q');
   }
-  showToast('📨', 'SMS', 'Yangi kod yuborildi!');
 }
-
-function backFromOTP() {
-  clearInterval(_resendInterval);
-  showStep('step-' + _otpRole);
-}
-
 // ── v18: API-first login with local USERS fallback ────────────────────────────
 
 function _setLoginLoading(btnId, loading) {
@@ -654,21 +711,14 @@ async function sendForgotOTP() {
       document.getElementById('fpOtpDemo').textContent = _fpOtp;
       document.getElementById('fpOtpDemo').style.display = 'block';
     }
+
+    f (data.demo && data.demo_code) {
+      _fpOtp = data.demo_code;
+    }
   } catch(e) {
-    // Fallback: lokal demo
-    _fpOtp = String(Math.floor(100000 + Math.random() * 900000));
-    document.getElementById('fpOtpDemo').textContent = _fpOtp;
-    document.getElementById('fpOtpDemo').style.display = 'block';
+    _fpOtp = null;
+    showToast('⚠️', 'SMS', 'Server bilan aloqa yo‘q');
   }
-
-  ['fp-step1','fp-step2','fp-step3','fp-step4'].forEach(id => document.getElementById(id).style.display='none');
-  document.getElementById('fp-step2').style.display = 'block';
-}
-
-async function verifyOTP() {
-  const entered = document.getElementById('fpOtpInput').value.trim();
-  document.getElementById('fpOtpError').style.display = 'none';
-
   try {
     const fullPhone = '998' + document.getElementById('fpPhone').value.trim().replace(/\D/g,'');
     const res = await fetch(BACKEND_URL + '/api/forgot-verify', {
