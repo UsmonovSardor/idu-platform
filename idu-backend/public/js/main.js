@@ -3522,47 +3522,40 @@ async function enterExamFullscreen() {
 // main.js — 3522-qatordan boshlab shu funksiyani ALMASHTIRAMIZ:
 async function startTestWithSubject(subj) {
   var allQs = TEST_QUESTIONS_DB[subj] || [];
-  // 200 ta savoldan tasodifiy 20 tasi
-  var shuffled = allQs.slice().sort(function(){ return Math.random()-0.5; });
-  var questions = shuffled.slice(0, Math.min(20, shuffled.length));
 
-  // exams.js dagi openRealExam orqali professional fullscreen exam ocha
-  var names = {algo:'Algoritmlar va Dasturlash', ai:"Sun'iy Intellekt", math:'Matematika (AI uchun)', db:"Ma'lumotlar Bazasi", web:'Web Dasturlash'};
-  openRealExam({
-    id: 'test_' + subj + '_' + Date.now(),
-    questions: questions,
-    duration: 30 * 60,   // 30 daqiqa
-    maxWarnings: 3,
-    maxSuspicion: 100,
+  if (!allQs.length) {
+    showToast('⚠️', 'Savol yo‘q', 'Bu fan uchun savollar topilmadi');
+    return;
+  }
+
+  var shuffled = allQs.slice().sort(function () {
+    return Math.random() - 0.5;
   });
-}
+
+  _currentTestSubject = subj;
+  _currentTestQuestions = shuffled.slice(0, Math.min(20, shuffled.length));
+  _testAnswers = {};
+  _testStartTime = Date.now();
+  _testDuration = 30 * 60;
 
   document.getElementById('stest-instructions').style.display = 'none';
   document.getElementById('stest-active').style.display = 'block';
   document.getElementById('stest-results').style.display = 'none';
 
-  document.getElementById('testProgressLabel').textContent = '0/' + _currentTestQuestions.length;
-  document.getElementById('testProgressBar').style.width = '0%';
-  document.getElementById('testAnsweredCount').textContent = '0 ta savol javob berildi';
+  var names = {
+    algo: 'Algoritmlar va Dasturlash',
+    ai: "Sun'iy Intellekt",
+    math: 'Matematika (AI uchun)',
+    db: "Ma'lumotlar Bazasi",
+    web: 'Web Dasturlash'
+  };
+
+  document.getElementById('testPageSub').textContent =
+    names[subj] || subj || 'Test';
 
   renderActiveTestQuestions();
-
-  if (_testTimer) clearInterval(_testTimer);
-  _testSec = 30 * 60;
-  document.getElementById('testTimerDisplay').textContent = '30:00';
-
-  _testTimer = setInterval(function() {
-    _testSec--;
-    var m = Math.floor(_testSec / 60).toString().padStart(2, '0');
-    var s = (_testSec % 60).toString().padStart(2, '0');
-    document.getElementById('testTimerDisplay').textContent = m + ':' + s;
-
-    if (_testSec <= 0) {
-      clearInterval(_testTimer);
-      _testTimer = null;
-      submitTestExam();
-    }
-  }, 1000);
+  startTestTimer();
+  enterExamFullscreen();
 }
 function onTestAnswer(qi, optIdx) {
   _testAnswers[qi] = optIdx;
