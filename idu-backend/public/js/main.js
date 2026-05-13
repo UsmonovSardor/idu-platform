@@ -866,7 +866,8 @@ function showPage(id){
   const si=document.getElementById('si-'+id);
   if(si) si.classList.add('active');
   // Lazy render — original pages
-  if(id==='timetable') renderTimetable();
+  if(id==='dashboard') { renderDashboardSchedule(); if(currentRole==='student') renderStudentDashboardFromAPI(); }
+  else if(id==='timetable') renderTimetable();
   else if(id==='teacher-timetable') renderTeacherTimetable();
   else if(id==='grades') renderGrades();
   else if(id==='tasks') renderTasks();
@@ -4001,3 +4002,87 @@ setTimeout(function() {
   var origJobDirect = window.applyJobDirect;
   if (origJobDirect) window.applyJobDirect = function() { origJobDirect.apply(this, arguments); saveApplications(); };
 }, 500);
+
+// ════════════════════════════════════
+// DASHBOARD — API DAN REAL MA'LUMOT
+// ════════════════════════════════════
+async function renderStudentDashboardFromAPI() {
+  try {
+    // 1. Foydalanuvchi ma'lumotlari
+    const me = await api('GET', '/auth/me');
+    if (!me) return;
+
+    // GPA
+    const gpaEl = document.getElementById('dashGPA');
+    if (gpaEl) gpaEl.textContent = me.gpa ? parseFloat(me.gpa).toFixed(2) : '0.00';
+
+    // 2. Baholar
+    const grades = await api('GET', '/students/' + me.id + '/grades');
+    if (Array.isArray(grades) && grades.length) {
+      let totalSum = 0;
+      let excellent = 0, failed = 0;
+      grades.forEach(g => {
+        const t = parseFloat(g.total) || 0;
+        totalSum += t;
+        if (g.letter_grade === 'A') excellent++;
+        if (g.letter_grade === 'F') failed++;
+      });
+      const avgTotal = (totalSum / grades.length).toFixed(1);
+      const totalScoreEl = document.getElementById('dashTotalScore');
+      if (totalScoreEl) totalScoreEl.textContent = avgTotal;
+
+      // Baholar sahifasi stat cardlari
+      const avgEl = document.getElementById('avgScore');
+      if (avgEl) avgEl.textContent = avgTotal;
+      const excEl = document.getElementById('excellentCount');
+      if (excEl) excEl.textContent = excellent;
+      const failEl = document.getElementById('failCount');
+      if (failEl) failEl.textContent = failed;
+    } else {
+      const totalScoreEl = document.getElementById('dashTotalScore');
+      if (totalScoreEl) totalScoreEl.textContent = '0';
+    }
+
+    // 3. Reyting (barcha studentlar orasida)
+    const ratingEl = document.getElementById('dashRating');
+    if (ratingEl) ratingEl.textContent = '—';
+
+    // 4. Davomat (hozircha statik — attendance API yo'q)
+    const davomatEl = document.getElementById('dashDavomat');
+    if (davomatEl) davomatEl.textContent = '—%';
+
+    // 5. Sidebar GPA yangilash
+    const sidebarGpaEl = document.getElementById('sidebarLevel');
+    if (sidebarGpaEl && me.gpa) {
+      const level = me.gpa >= 3.5 ? 5 : me.gpa >= 3.0 ? 4 : me.gpa >= 2.5 ? 3 : me.gpa >= 2.0 ? 2 : 1;
+      sidebarGpaEl.textContent = level;
+    }
+
+    // 6. So'nggi baholar jadvalini render
+    renderGradesFromAPI(grades);
+
+  } catch(e) {
+    console.error('Dashboard API xatosi:', e);
+  }
+}
+
+function renderGradesFromAPI(grades) {
+  const tbody = document.querySelector('#page-grades table tbody') ||
+                document.querySelector('.grade-table tbody');
+  if (!tbody || !grades || !grades.length) return;
+
+  tbody.innerHTML = grades.slice(0, 10).map(g => {
+    const total = parseFloat(g.total) || 0;
+    const letter = g.letter_grade || (total>=86?'A':total>=71?'B':total>=56?'C':total>=41?'D':'F');
+    const cls = {A:'gc-a',B:'gc-b',C:'gc-c',D:'gc-d',F:'gc-f'}[letter] || 'gc-f';
+    return `<tr>
+      <td>${g.course_name || g.course_code || '—'}</td>
+      <td>${g.jn || 0}</td>
+      <td>${g.on_score || 0}</td>
+      <td>${g.yn || 0}</td>
+      <td>${g.mi || 0}</td>
+      <td><strong>${total}</strong></td>
+      <td><span class="grade-chip ${cls}">${letter}</span></td>
+    </tr>`;
+  }).join('');
+}

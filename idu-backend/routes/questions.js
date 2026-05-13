@@ -312,7 +312,7 @@ router.post(
 function parsePdfQuestions(text) {
   const questions = [];
   // Har bir savol raqam bilan boshlanadi: "1." yoki "1)"
-  const blocks = text.split(/\n(?=\s*\d+[.)]/);
+  const blocks = (() => { const result = []; text.split('\n').forEach(line => { if (/^\s*\d+[.)]/.test(line)) result.push(line); else if (result.length) result[result.length-1] += '\n' + line; }); return result; })();
 
   for (const block of blocks) {
     const lines = block.split('\n').map(l => l.trim()).filter(Boolean);
