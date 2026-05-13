@@ -115,7 +115,7 @@ const USERS = {
   investor: [],
   admin: []
 };
-loadExtraUsers();
+
 
 const DAYS_UZ_WEEK = ['Dushanba','Seshanba','Chorshanba','Payshanba','Juma'];
 const DAYS_RU_WEEK = ['Понедельник','Вторник','Среда','Четверг','Пятница'];
