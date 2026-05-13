@@ -260,7 +260,7 @@ function closeLoginModalForce(){
   var lEl=document.getElementById('mainLogin'); if(lEl) lEl.value='';
   var pEl=document.getElementById('mainPass'); if(pEl){pEl.value='';pEl.type='password';}
   var errEl=document.getElementById('mainLoginError'); if(errEl) errEl.classList.remove('show');
-  selectedRole=null;
+ if (typeof selectedRole !== 'undefined') selectedRole = null;
 }
 
 function closeLangOnOutside(e){
