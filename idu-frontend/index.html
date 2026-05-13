@@ -2722,6 +2722,7 @@
     </div>
     <div class="page-header-right">
       <button class="btn btn-primary" onclick="openAddQuestionModal()">➕ Savol qo'shish</button>
+      <button class="btn btn-secondary" onclick="openPdfUploadModal()" style="margin-left:8px">📄 PDF yuklash</button>
     </div>
   </div>
 
@@ -2772,6 +2773,48 @@
   <!-- Info box -->
   <div style="margin-top:16px;background:#EEF3FF;border:1.5px solid #93C5FD;border-radius:12px;padding:14px 18px;font-size:13px;color:#1E40AF">
     💡 <strong>Eslatma:</strong> Dekanat kiritgan savollar tizim savollaridan <strong>ustun turadi</strong>. Test uchun kamida 20 ta, Sesiya uchun kamida 30 ta savol kiritish tavsiya etiladi.
+  </div>
+</div>
+
+
+<!-- MODAL: PDF savollar yuklash -->
+<div id="pdfUploadModal" style="display:none;position:fixed;top:0;left:0;width:100%;height:100%;background:rgba(0,0,0,0.5);z-index:3000;overflow:auto" onclick="if(event.target===this)closePdfUploadModal()">
+  <div style="background:white;border-radius:18px;padding:28px;max-width:500px;margin:60px auto;position:relative">
+    <div style="font-size:18px;font-weight:800;color:#0F172A;margin-bottom:6px">📄 PDF orqali savollar yuklash</div>
+    <div style="font-size:12.5px;color:#64748B;margin-bottom:20px">PDF fayl quyidagi formatda bo'lishi kerak:<br>
+    <code style="background:#F1F5F9;padding:2px 6px;border-radius:4px;font-size:11px">1. Savol matni?<br>A) Javob A<br>B) Javob B<br>C) Javob C<br>D) Javob D<br>To'g'ri: A<br>Izoh: (ixtiyoriy)</code></div>
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:16px">
+      <div>
+        <div style="font-size:12px;font-weight:700;color:#64748B;margin-bottom:6px">Fan</div>
+        <select id="pdfSubject" style="width:100%;padding:10px 12px;border:1.5px solid #E2E8F0;border-radius:8px;font-family:'Outfit',sans-serif;font-size:13px;outline:none">
+          <option value="algo">💻 Algoritmlar</option>
+          <option value="ai">🤖 Sun'iy Intellekt</option>
+          <option value="math">📐 Matematika</option>
+          <option value="db">🗄️ Ma'lumotlar Bazasi</option>
+          <option value="web">🌐 Web Dasturlash</option>
+        </select>
+      </div>
+      <div>
+        <div style="font-size:12px;font-weight:700;color:#64748B;margin-bottom:6px">Tur</div>
+        <select id="pdfType" style="width:100%;padding:10px 12px;border:1.5px solid #E2E8F0;border-radius:8px;font-family:'Outfit',sans-serif;font-size:13px;outline:none">
+          <option value="test">🧪 Test</option>
+          <option value="real">📋 Sesiya</option>
+          <option value="both">📝 Ikkalasi</option>
+        </select>
+      </div>
+    </div>
+    <div style="border:2px dashed #CBD5E1;border-radius:12px;padding:24px;text-align:center;margin-bottom:16px;background:#F8FAFC">
+      <div style="font-size:32px;margin-bottom:8px">📄</div>
+      <div style="font-size:14px;font-weight:600;margin-bottom:4px">PDF fayl tanlang</div>
+      <div style="font-size:12px;color:#94A3B8;margin-bottom:12px">Maksimal 10 MB</div>
+      <input type="file" id="pdfFileInput" accept=".pdf" style="display:none" onchange="document.getElementById('pdfFileName').textContent=this.files[0]?.name||'Fayl tanlanmagan'">
+      <button onclick="document.getElementById('pdfFileInput').click()" style="padding:8px 20px;background:#EEF3FF;border:1.5px solid #93C5FD;border-radius:8px;color:#1B4FD8;font-family:'Outfit',sans-serif;font-size:13px;font-weight:600;cursor:pointer">Fayl tanlash</button>
+      <div id="pdfFileName" style="margin-top:8px;font-size:12px;color:#1B4FD8;font-weight:600"></div>
+    </div>
+    <div style="display:flex;gap:10px">
+      <button id="pdfUploadBtn" onclick="uploadQuestionsPDF()" style="flex:1;padding:12px;background:linear-gradient(135deg,#1B4FD8,#3B82F6);color:white;border:none;border-radius:10px;font-family:'Outfit',sans-serif;font-size:14px;font-weight:700;cursor:pointer">📤 Yuklash</button>
+      <button onclick="closePdfUploadModal()" style="padding:12px 20px;background:white;border:2px solid #E2E8F0;border-radius:10px;font-family:'Outfit',sans-serif;font-size:14px;cursor:pointer">Bekor</button>
+    </div>
   </div>
 </div>
 
@@ -2854,11 +2897,11 @@
         📋 Talabalar sesiyadan oldin mashq qilishi uchun. Baholar <strong>hisoblanmaydi</strong>. Xotirjam muhit.
       </div>
       <div style="display:flex;gap:10px">
-        <button id="btnUnlockTest" onclick="setSesiyaState('test', true)"
+        <button id="btnUnlockTest" onclick="toggleExamSession('test', true)"
           style="flex:1;padding:11px;background:linear-gradient(135deg,#16A34A,#22C55E);color:white;border:none;border-radius:9px;font-family:'Outfit',sans-serif;font-size:13.5px;font-weight:700;cursor:pointer;transition:all 0.2s">
           ✅ Faollashtirish
         </button>
-        <button id="btnLockTest" onclick="setSesiyaState('test', false)"
+        <button id="btnLockTest" onclick="toggleExamSession('test', false)"
           style="flex:1;padding:11px;background:linear-gradient(135deg,#DC2626,#EF4444);color:white;border:none;border-radius:9px;font-family:'Outfit',sans-serif;font-size:13.5px;font-weight:700;cursor:pointer;transition:all 0.2s;display:none">
           🔒 Bloklash
         </button>
@@ -2881,11 +2924,11 @@
         ⚠️ Rasmiy imtihon. Talabalar javoblari <strong>baholanadi</strong> va saqlanadi. Ehtiyotkorlik bilan yoqing.
       </div>
       <div style="display:flex;gap:10px">
-        <button id="btnUnlockReal" onclick="setSesiyaState('real', true)"
+        <button id="btnUnlockReal" onclick="toggleExamSession('sesiya', true)"
           style="flex:1;padding:11px;background:linear-gradient(135deg,#DC2626,#EF4444);color:white;border:none;border-radius:9px;font-family:'Outfit',sans-serif;font-size:13.5px;font-weight:700;cursor:pointer;transition:all 0.2s">
           🚀 Imtihonni boshlash
         </button>
-        <button id="btnLockReal" onclick="setSesiyaState('real', false)"
+        <button id="btnLockReal" onclick="toggleExamSession('sesiya', false)"
           style="flex:1;padding:11px;background:linear-gradient(135deg,#475569,#64748B);color:white;border:none;border-radius:9px;font-family:'Outfit',sans-serif;font-size:13.5px;font-weight:700;cursor:pointer;transition:all 0.2s;display:none">
           🔒 Imtihonni yopish
         </button>
