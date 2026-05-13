@@ -1,171 +1,164 @@
 'use strict';
-// IDU - features/schedule.js
+// IDU - features/schedule.js — Real API
 
-function _daysWeek(){ return currentLang==='ru'?DAYS_RU_WEEK:DAYS_UZ_WEEK; }
+const TIMES = ['08:30–10:00','10:15–11:45','12:30–14:00','14:15–15:45','16:00–17:30'];
+const DAYS_UZ_WEEK = ['Dushanba','Seshanba','Chorshanba','Payshanba','Juma'];
+const DAYS_RU_WEEK = ['Понедельник','Вторник','Среда','Четверг','Пятница'];
+const DAYS_SHORT_UZ = ['Du','Se','Ch','Pa','Ju'];
+const DAYS_SHORT_RU = ['Пн','Вт','Ср','Чт','Пт'];
 
-function _daysShort(){ return currentLang==='ru'?DAYS_SHORT_RU:DAYS_SHORT_UZ; }
+let _scheduleCache = null;
+let ttWeekOffset = 0;
 
-function _type(t){ return currentLang==='ru'?(TYPE_RU[t]||t):t; }
+function _daysWeek() { return currentLang === 'ru' ? DAYS_RU_WEEK : DAYS_UZ_WEEK; }
+function _daysShort() { return currentLang === 'ru' ? DAYS_SHORT_RU : DAYS_SHORT_UZ; }
+function _type(t) { const ru = {"Ma'ruza":'Лекция','Laboratoriya':'Лаборатория','Amaliyot':'Практика','Seminar':'Семинар'}; return currentLang === 'ru' ? (ru[t] || t) : t; }
+function getDotColor(sub) {
+  const colors = ['#3B82F6','#7C3AED','#16A34A','#EA580C','#DC2626','#0D9488','#8B5CF6','#F59E0B'];
+  let hash = 0; for (let c of (sub||'')) hash = ((hash << 5) - hash) + c.charCodeAt(0);
+  return colors[Math.abs(hash) % colors.length];
+}
+function highlightDay(i) {}
 
-function renderWeekNav(){
-  const d=new Date(); const dow=d.getDay();
-  const offset=ttWeekOffset||0;
-  const monday=new Date(d); monday.setDate(d.getDate()-(dow===0?6:dow-1)+offset*7);
-  const months=currentLang==='ru'?['Янв','Фев','Мар','Апр','Май','Июн','Июл','Авг','Сен','Окт','Ноя','Дек']:['Yan','Fev','Mar','Apr','May','Iyn','Iyl','Avg','Sen','Okt','Noy','Dek'];
-  const daysW=_daysWeek(); const daysS=_daysShort();
-  const el=document.getElementById('ttWeekNav');if(!el)return;
-  el.innerHTML=daysW.map((day,i)=>{
-    const dd=new Date(monday);dd.setDate(monday.getDate()+i);
-    const isToday=dd.toDateString()===d.toDateString();
-    return `<div class="week-cell${isToday?' today':''}" onclick="highlightDay(${i})">
-      <div class="wc-day">${daysS[i]}</div>
+async function loadSchedule() {
+  if (_scheduleCache) return _scheduleCache;
+  try {
+    const data = await api('GET', '/schedule?limit=200');
+    _scheduleCache = Array.isArray(data) ? data : [];
+    return _scheduleCache;
+  } catch (e) { return []; }
+}
+
+async function renderTimetable() {
+  const grp = currentUser?.group || '';
+  if (!grp) return;
+  renderWeekNav([]);
+  const rows = await loadSchedule();
+  const filtered = rows.filter(r =>
+    r.faculty === grp || r.group_name === grp || !r.faculty
+  );
+  buildTTTableFromData('ttHead', 'ttBody', filtered, false);
+  renderWeekNav(filtered);
+}
+
+async function renderTeacherTimetable() {
+  if (!currentUser) return;
+  const rows = await loadSchedule();
+  const filtered = rows.filter(r => r.teacher_id == currentUser.id || r.teacher_name === currentUser.name);
+  buildTTTableFromData('teacherTTHead', 'teacherTTBody', filtered, false);
+}
+
+function buildTTTableFromData(headId, bodyId, rows, editable) {
+  const head = document.getElementById(headId);
+  const body = document.getElementById(bodyId);
+  if (!head || !body) return;
+  const days = _daysWeek();
+  head.innerHTML = '<tr><th>Vaqt / Para</th>' + days.map((d,i) => {
+    const today = new Date().getDay(); // 1=Mon
+    const isToday = (today === i + 1);
+    return `<th style="${isToday ? 'background:#EEF3FF;color:#1B4FD8' : ''}">${d}</th>`;
+  }).join('') + '</tr>';
+
+  // Group by weekday and time
+  const grid = {};
+  TIMES.forEach((t, ti) => {
+    grid[ti] = {};
+    days.forEach((_, di) => { grid[ti][di] = null; });
+  });
+  rows.forEach(r => {
+    const di = (r.weekday !== undefined ? r.weekday : 0);
+    // Match time
+    let ti = TIMES.findIndex(t => {
+      const [s] = t.split('–');
+      return (r.start_time || '').startsWith(s.substring(0,5));
+    });
+    if (ti < 0) ti = 0;
+    if (di >= 0 && di < 5) grid[ti][di] = r;
+  });
+
+  body.innerHTML = TIMES.map((time, ti) => `
+    <tr>
+      <td style="font-size:11px;font-weight:700;color:#64748b;white-space:nowrap">${time}</td>
+      ${days.map((_, di) => {
+        const r = grid[ti][di];
+        const today = new Date().getDay();
+        const isToday = (today === di + 1);
+        if (!r) return `<td style="${isToday ? 'background:#F8FBFF' : ''}"></td>`;
+        const color = getDotColor(r.course_name || r.subject || '');
+        return `<td style="${isToday ? 'background:#F8FBFF' : ''}">
+          <div style="border-left:3px solid ${color};padding:6px 8px;border-radius:4px;background:white;font-size:12px">
+            <div style="font-weight:700;color:#0f172a">${r.course_name || r.subject || '—'}</div>
+            <div style="color:#64748b;font-size:11px">${r.room || ''}</div>
+            <div style="color:#94a3b8;font-size:10px">${r.type ? _type(r.type) : ''}</div>
+          </div>
+        </td>`;
+      }).join('')}
+    </tr>`).join('');
+
+  if (!rows.length) {
+    body.innerHTML = `<tr><td colspan="6" style="text-align:center;padding:40px;color:#94a3b8">
+      <div style="font-size:36px;margin-bottom:10px">📅</div>
+      <div>Jadval hali kiritilmagan</div>
+    </td></tr>`;
+  }
+}
+
+// Legacy wrapper
+function buildTTTable(headId, bodyId, grp, editable) {
+  loadSchedule().then(rows => {
+    const filtered = rows.filter(r => r.faculty === grp || !r.faculty);
+    buildTTTableFromData(headId, bodyId, filtered, editable);
+  });
+}
+
+function renderWeekNav(rows) {
+  const el = document.getElementById('ttWeekNav');
+  if (!el) return;
+  const d = new Date(); const dow = d.getDay();
+  const monday = new Date(d);
+  monday.setDate(d.getDate() - (dow === 0 ? 6 : dow - 1) + (ttWeekOffset || 0) * 7);
+  el.innerHTML = _daysWeek().map((day, i) => {
+    const dd = new Date(monday); dd.setDate(monday.getDate() + i);
+    const isToday = dd.toDateString() === d.toDateString();
+    const hasLessons = rows && rows.some(r => r.weekday === i);
+    return `<div class="week-cell${isToday ? ' today' : ''}" onclick="highlightDay(${i})">
+      <div class="wc-day">${_daysShort()[i]}</div>
       <div class="wc-num">${dd.getDate()}</div>
-      <div class="wc-dots">
-        ${(SCHEDULE[currentTTGroup]?.[i]||[]).filter(Boolean).map(l=>`<div class="wc-dot" style="background:${getDotColor(l.sub)}"></div>`).join('')}
-      </div>
+      <div class="wc-dots">${hasLessons ? '<div class="wc-dot" style="background:#3B82F6"></div>' : ''}</div>
     </div>`;
   }).join('');
 }
 
-function getDotColor(sub){
-  const map={'Matematika':'#3B82F6','Dasturlash':'#7C3AED','Ingliz tili':'#EA580C','Fizika':'#16A34A','Algoritmlar':'#DC2626','Algebra':'#0D9488'};
-  return map[sub]||'#94A3B8';
-}
-
-function highlightDay(i){/* visual only */}
-
-function buildTTTable(headId,bodyId,grp,editable){
-  const today=new Date().getDay(); // 0=Sun,1=Mon...
-  const head=document.getElementById(headId);
-  const body=document.getElementById(bodyId);
-  if(!head||!body)return;
-  // Week offset for week display label
-  const weekOffset = ttWeekOffset || 0;
-  const baseDate = new Date();
-  const dow = baseDate.getDay();
-  const monday = new Date(baseDate);
-  monday.setDate(baseDate.getDate() - (dow===0?6:dow-1) + weekOffset*7);
-  const months=currentLang==='ru'?['Янв','Фев','Мар','Апр','Май','Июн','Июл','Авг','Сен','Окт','Ноя','Дек']:['Yan','Fev','Mar','Apr','May','Iyn','Iyl','Avg','Sen','Okt','Noy','Dek'];
-  const daysW=_daysWeek();
-  const vaqtPara=currentLang==='ru'?'Время / Пара':'Vaqt / Para';
-  const paraWord=currentLang==='ru'?'-пара':'-para';
-  head.innerHTML=`<tr>
-    <th style="min-width:90px">${vaqtPara}</th>
-    ${daysW.map((d,i)=>{
-      const dd=new Date(monday);dd.setDate(monday.getDate()+i);
-      const isToday=dd.toDateString()===baseDate.toDateString();
-      return`<th class="${isToday?'tt-today-header':''}">${d}<div style="font-size:10px;font-weight:400;opacity:0.8;margin-top:2px">${dd.getDate()} ${months[dd.getMonth()]}</div></th>`;
-    }).join('')}
-  </tr>`;
-  const sched=SCHEDULE[grp]||SCHEDULE['AI-2301']||[];
-  body.innerHTML=TIMES.map((time,ti)=>`
-    <tr>
-      <td class="time-col"><div style="font-weight:700;font-size:12px">${ti+1}${paraWord}</div>${time}</td>
-      ${DAYS.map((_,di)=>{
-        const lesson=sched[ti]?.[di];
-        if(editable){
-          if(!lesson)return`<td><div class="tt-empty" onclick="openAddLessonModal(${di},${ti})" style="cursor:pointer;display:flex;align-items:center;justify-content:center;color:var(--text4);font-size:20px;transition:all 0.15s" onmouseover="this.style.background='var(--primary-light)';this.style.color='var(--primary)'" onmouseout="this.style.background='';this.style.color='var(--text4)'">+</div></td>`;
-          const cls=SUBJECTS_COLORS[lesson.sub]||'tt-blue';
-          return`<td><div class="tt-cell ${cls}" onclick="openEditLessonModal(${di},${ti})" style="cursor:pointer;position:relative" title="Tahrirlash uchun bosing">
-            <div class="tt-cell-subject">${lesson.sub}</div>
-            <div class="tt-cell-teacher">👨‍🏫 ${lesson.teacher}</div>
-            <div class="tt-cell-room">🚪 ${lesson.room}</div>
-            <div style="font-size:9px;opacity:0.7;margin-top:2px">${_type(lesson.type)}</div>
-            <div style="position:absolute;top:4px;right:4px;font-size:11px;opacity:0.6">✏️</div>
-          </div></td>`;
-        }
-        if(!lesson)return`<td><div class="tt-empty"></div></td>`;
-        const cls=SUBJECTS_COLORS[lesson.sub]||'tt-blue';
-        return`<td><div class="tt-cell ${cls}" title="${lesson.sub} — ${lesson.teacher} — ${lesson.room}">
-          <div class="tt-cell-subject">${lesson.sub}</div>
-          <div class="tt-cell-teacher">👨‍🏫 ${lesson.teacher}</div>
-          <div class="tt-cell-room">🚪 ${lesson.room}</div>
-          <div style="font-size:9px;opacity:0.7;margin-top:2px">${lesson.type}</div>
-        </div></td>`;
-      }).join('')}
-    </tr>`).join('');
-}
-
-function buildTTLegend(grp){
-  const el=document.getElementById('ttLegend');if(!el)return;
-  const sched=SCHEDULE[grp]||[];
-  const seen={};
-  sched.flat().filter(Boolean).forEach(l=>{if(!seen[l.sub])seen[l.sub]=l.sub});
-  el.innerHTML=Object.keys(seen).map(sub=>{
-    const cls=SUBJECTS_COLORS[sub]||'tt-blue';
-    return`<div class="tt-cell ${cls}" style="min-height:auto;padding:4px 10px;font-size:12px;font-weight:700">${sub}</div>`;
-  }).join('');
-}
-
-function setTTView(v,el){
-  document.querySelectorAll('.filter-chip').forEach(c=>c.classList.remove('active'));
-  el.classList.add('active');
-}
-
-function changeWeek(delta){
-  if(delta===0){ ttWeekOffset=0; }
-  else { ttWeekOffset += delta; }
-  renderTimetable();
-}
-
-function saveNewLesson(){
-  const grp = document.getElementById('dekScheduleGroup')?.value || 'AI-2301';
-  const dayIdx = parseInt(document.getElementById('lessonDay').value);
-  const timeIdx = parseInt(document.getElementById('lessonTime').value);
-  const sub = document.getElementById('lessonSubject').value;
-  const teacher = document.getElementById('lessonTeacher').value;
-  const room = document.getElementById('lessonRoom').value;
-  const type = document.getElementById('lessonType').value;
-  if(!SCHEDULE[grp]) SCHEDULE[grp] = Array(5).fill(null).map(()=>Array(5).fill(null));
-  if(!SCHEDULE[grp][timeIdx]) SCHEDULE[grp][timeIdx] = Array(5).fill(null);
-  SCHEDULE[grp][timeIdx][dayIdx] = {sub, teacher, room, type};
-  closeAddLessonModal();
-  showToast('✅','Saqlandi',`${sub} darsi jadvalga qo'shildi`);
-  setTimeout(()=>renderDekanatSchedule(), 200);
-}
-
-function deleteLesson(){
-  const grp = document.getElementById('dekScheduleGroup')?.value || 'AI-2301';
-  const dayIdx = parseInt(document.getElementById('editLessonDay').value);
-  const timeIdx = parseInt(document.getElementById('editLessonTime').value);
-  if(SCHEDULE[grp]?.[timeIdx]) SCHEDULE[grp][timeIdx][dayIdx] = null;
-  closeAddLessonModal();
-  showToast('🗑️','O\'chirildi','Dars jadvaldan o\'chirildi');
-  setTimeout(()=>renderDekanatSchedule(), 200);
-}
-
-function renderTeacherTimetable(){
-  // Show schedule for all groups where this teacher teaches
-  buildTTTable('teacherTTHead','teacherTTBody','CS-2301');
-}
-
-function renderTeacherTodayFull(){
-  const el=document.getElementById('teacherTodayFull');if(!el)return;
-  const todayIdx=Math.max(0,Math.min(new Date().getDay()-1,4));
-  let lessons=[];
-  Object.keys(SCHEDULE).forEach(grp=>{
-    (SCHEDULE[grp][todayIdx]||[]).forEach((l,i)=>{
-      if(l&&l.teacher.startsWith('Toshmatov'))lessons.push({...l,para:i,grp});
-    });
-  });
-  if(!lessons.length){el.innerHTML=`<div style="color:var(--text3);font-size:13px">${currentLang==='ru'?'Сегодня нет занятий':'Bugun dars yo\'q yoki bu o\'qituvchiga dars tayinlanmagan'}</div>`;return;}
-  el.innerHTML=lessons.map(l=>`
-    <div class="sched-item" style="margin-bottom:8px">
-      <div class="sched-stripe" style="background:${getDotColor(l.sub)}"></div>
-      <div class="sched-time">${TIMES[l.para]}</div>
-      <div class="sched-body">
-        <div class="sched-name">${l.sub} — <span style="color:var(--primary);font-size:13px">${l.grp}</span></div>
-        <div class="sched-meta">
-          <span class="sched-room-tag">🚪 ${l.room}</span>
-          <span style="font-size:10.5px;color:var(--text3)">${_type(l.type)}</span>
+async function renderDashboardSchedule() {
+  const el = document.getElementById('todaySchedule');
+  if (!el || !currentUser) return;
+  try {
+    const rows = await loadSchedule();
+    const today = new Date().getDay() - 1; // 0=Mon
+    if (today < 0 || today > 4) {
+      el.innerHTML = '<div class="empty-state"><div class="empty-state-icon">😴</div><div>Bugun dars yo\'q</div></div>';
+      return;
+    }
+    const todayLessons = rows.filter(r => r.weekday === today);
+    if (!todayLessons.length) {
+      el.innerHTML = '<div class="empty-state"><div class="empty-state-icon">😴</div><div>Bugun dars yo\'q</div></div>';
+      return;
+    }
+    el.innerHTML = todayLessons.map((l, i) => {
+      const color = getDotColor(l.course_name || '');
+      return `<div class="sched-item${i === 0 ? ' now' : ''}">
+        ${i === 0 ? '<div class="sched-now-label">HOZIR</div>' : ''}
+        <div class="sched-stripe" style="background:${color}"></div>
+        <div class="sched-time">${l.start_time || TIMES[i] || ''}</div>
+        <div class="sched-body">
+          <div class="sched-name">${l.course_name || '—'}</div>
+          <div class="sched-meta">
+            <span>🚪 ${l.room || '—'}</span>
+          </div>
         </div>
-      </div>
-    </div>`).join('');
-}
-
-function renderDekanatSchedule(){
-  const grp=document.getElementById('dekScheduleGroup')?.value||'AI-2301';
-  currentDekScheduleGroup=grp;
-  buildTTTable('dekTTHead','dekTTBody',grp,true); // editable=true
-  renderRoomStatus(grp);
+      </div>`;
+    }).join('');
+  } catch (e) {
+    el.innerHTML = '<div class="empty-state"><div class="empty-state-icon">📅</div><div>Jadval yuklanmadi</div></div>';
+  }
 }

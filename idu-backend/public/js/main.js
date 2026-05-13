@@ -129,279 +129,16 @@ const TIMES = [
   '08:30–10:00','10:15–11:45','12:30–14:00','14:15–15:45','16:00–17:30'
 ];
 
-const SUBJECTS_COLORS = {
-  // AI yo'nalishi
-  'Machine Learning':'tt-purple','Python for AI':'tt-blue','Deep Learning':'tt-purple',
-  'Matematika (AI uchun)':'tt-blue','Data Science':'tt-teal','Computer Vision':'tt-green',
-  'Neural Networks':'tt-purple','Natural Language Processing':'tt-teal',
-  // Cybersecurity yo'nalishi
-  'Network Security':'tt-red','Ethical Hacking':'tt-red','Web Application Security':'tt-orange',
-  'Kriptografiya':'tt-teal','Digital Forensics':'tt-orange','Cloud Security':'tt-blue',
-  'IDS/IPS Tizimlari':'tt-red','Incident Response':'tt-orange',
-  // Computing & IT yo'nalishi
-  'Dasturlash Asoslari':'tt-purple',"Ma'lumotlar Tuzilmasi":'tt-blue','Algoritmlar':'tt-red',
-  'Web Dasturlash':'tt-green',"Ma'lumotlar Bazasi":'tt-teal',
-  'Kompyuter Tarmoqlari':'tt-blue','Operatsion Tizimlar':'tt-orange',
-  'Software Engineering':'tt-purple','Cloud Computing':'tt-teal',
-  // Digital Business yo'nalishi
-  'Raqamli Marketing':'tt-orange','E-Tijorat':'tt-green','Biznes Analitika':'tt-blue',
-  'Raqamli Transformatsiya':'tt-purple','Loyiha Boshqaruvi':'tt-teal',
-  'Moliyaviy Texnologiyalar':'tt-orange','Tadbirkorlik':'tt-green',
-  // Umumiy fanlar
-  'Ingliz tili (Tech)':'tt-orange','Ingliz tili':'tt-orange',
-  'Matematika':'tt-blue','Fizika':'tt-green','Algoritmlar va Dasturlash':'tt-red'
-};
-
-// Schedule data (EduPage style)
-const SCHEDULE = {
-  'AI-2301': [
-    [
-      {sub:'Machine Learning',teacher:'Prof. Rahimov J.',room:'Lab-AI',type:"Ma'ruza"},
-      null,
-      {sub:'Python for AI',teacher:'Prof. Rahimov J.',room:'Lab-AI',type:'Laboratoriya'},
-      {sub:"Matematika (AI uchun)",teacher:'Prof. Yusupova M.',room:'A-201',type:'Seminar'},
-      {sub:'Ingliz tili (Tech)',teacher:'Prof. Rahimova N.',room:'A-102',type:"Amaliyot"}
-    ],
-    [
-      {sub:'Deep Learning',teacher:'Prof. Ergashev T.',room:'Lab-AI',type:"Ma'ruza"},
-      {sub:'Data Science',teacher:'Prof. Yusupova M.',room:'A-201',type:"Ma'ruza"},
-      null,
-      {sub:'Machine Learning',teacher:'Prof. Rahimov J.',room:'Lab-AI',type:'Laboratoriya'},
-      {sub:"Matematika (AI uchun)",teacher:'Prof. Yusupova M.',room:'A-201',type:"Ma'ruza"}
-    ],
-    [
-      null,
-      {sub:'Python for AI',teacher:'Prof. Rahimov J.',room:'Lab-AI',type:'Laboratoriya'},
-      {sub:'Computer Vision',teacher:'Prof. Ergashev T.',room:'Lab-AI',type:"Ma'ruza"},
-      {sub:'Ingliz tili (Tech)',teacher:'Prof. Rahimova N.',room:'A-102',type:"Amaliyot"},
-      null
-    ],
-    [
-      {sub:'Neural Networks',teacher:'Prof. Rahimov J.',room:'Lab-AI',type:"Ma'ruza"},
-      null,
-      {sub:'Data Science',teacher:'Prof. Yusupova M.',room:'A-201',type:'Laboratoriya'},
-      {sub:'Deep Learning',teacher:'Prof. Ergashev T.',room:'Lab-AI',type:'Seminar'},
-      {sub:'Computer Vision',teacher:'Prof. Ergashev T.',room:'Lab-AI',type:'Laboratoriya'}
-    ],
-    [
-      {sub:"Matematika (AI uchun)",teacher:'Prof. Yusupova M.',room:'A-201',type:"Ma'ruza"},
-      {sub:'Neural Networks',teacher:'Prof. Rahimov J.',room:'Lab-AI',type:'Amaliyot'},
-      null,
-      {sub:'Machine Learning',teacher:'Prof. Rahimov J.',room:'Lab-AI',type:'Seminar'},
-      null
-    ]
-  ],
-  'CS-2301': [
-    [
-      {sub:'Network Security',teacher:'Prof. Toshmatov A.',room:'Lab-CS',type:"Ma'ruza"},
-      null,
-      {sub:'Ethical Hacking',teacher:'Prof. Toshmatov A.',room:'Lab-CS',type:'Laboratoriya'},
-      {sub:'Kriptografiya',teacher:'Prof. Nazarov B.',room:'A-301',type:"Ma'ruza"},
-      {sub:'Ingliz tili (Tech)',teacher:'Prof. Rahimova N.',room:'A-102',type:"Amaliyot"}
-    ],
-    [
-      {sub:'Web Application Security',teacher:'Prof. Toshmatov A.',room:'Lab-CS',type:"Ma'ruza"},
-      {sub:'Digital Forensics',teacher:'Prof. Nazarov B.',room:'Lab-CS',type:"Ma'ruza"},
-      null,
-      {sub:'Network Security',teacher:'Prof. Toshmatov A.',room:'Lab-CS',type:'Laboratoriya'},
-      {sub:'Kriptografiya',teacher:'Prof. Nazarov B.',room:'A-301',type:"Ma'ruza"}
-    ],
-    [
-      null,
-      {sub:'Ethical Hacking',teacher:'Prof. Toshmatov A.',room:'Lab-CS',type:'Amaliyot'},
-      {sub:'Cloud Security',teacher:'Prof. Nazarov B.',room:'A-301',type:"Ma'ruza"},
-      {sub:'Ingliz tili (Tech)',teacher:'Prof. Rahimova N.',room:'A-102',type:"Amaliyot"},
-      null
-    ],
-    [
-      {sub:'IDS/IPS Tizimlari',teacher:'Prof. Toshmatov A.',room:'Lab-CS',type:"Ma'ruza"},
-      null,
-      {sub:'Digital Forensics',teacher:'Prof. Nazarov B.',room:'Lab-CS',type:'Laboratoriya'},
-      {sub:'Web Application Security',teacher:'Prof. Toshmatov A.',room:'Lab-CS',type:'Seminar'},
-      {sub:'Cloud Security',teacher:'Prof. Nazarov B.',room:'A-301',type:'Laboratoriya'}
-    ],
-    [
-      {sub:'Kriptografiya',teacher:'Prof. Nazarov B.',room:'A-301',type:"Ma'ruza"},
-      {sub:'IDS/IPS Tizimlari',teacher:'Prof. Toshmatov A.',room:'Lab-CS',type:'Amaliyot'},
-      null,
-      {sub:'Network Security',teacher:'Prof. Toshmatov A.',room:'Lab-CS',type:'Seminar'},
-      null
-    ]
-  ],
-  'IT-2301': [
-    [
-      {sub:'Dasturlash Asoslari',teacher:'Prof. Rahimov Sh.',room:'Lab-IT',type:"Ma'ruza"},
-      null,
-      {sub:"Ma'lumotlar Tuzilmasi",teacher:'Prof. Rahimov Sh.',room:'Lab-IT',type:'Laboratoriya'},
-      {sub:'Algoritmlar',teacher:'Prof. Rahimov Sh.',room:'A-202',type:"Ma'ruza"},
-      {sub:'Ingliz tili (Tech)',teacher:'Prof. Rahimova N.',room:'A-102',type:"Amaliyot"}
-    ],
-    [
-      {sub:'Web Dasturlash',teacher:'Prof. Ergashev T.',room:'Lab-IT',type:"Ma'ruza"},
-      {sub:"Ma'lumotlar Bazasi",teacher:'Prof. Yusupova M.',room:'A-201',type:"Ma'ruza"},
-      null,
-      {sub:'Dasturlash Asoslari',teacher:'Prof. Rahimov Sh.',room:'Lab-IT',type:'Laboratoriya'},
-      {sub:'Algoritmlar',teacher:'Prof. Rahimov Sh.',room:'A-202',type:"Ma'ruza"}
-    ],
-    [
-      null,
-      {sub:"Ma'lumotlar Tuzilmasi",teacher:'Prof. Rahimov Sh.',room:'Lab-IT',type:'Amaliyot'},
-      {sub:'Kompyuter Tarmoqlari',teacher:'Prof. Ergashev T.',room:'A-202',type:"Ma'ruza"},
-      {sub:'Ingliz tili (Tech)',teacher:'Prof. Rahimova N.',room:'A-102',type:"Amaliyot"},
-      null
-    ],
-    [
-      {sub:'Operatsion Tizimlar',teacher:'Prof. Ergashev T.',room:'Lab-IT',type:"Ma'ruza"},
-      null,
-      {sub:"Ma'lumotlar Bazasi",teacher:'Prof. Yusupova M.',room:'A-201',type:'Laboratoriya'},
-      {sub:'Web Dasturlash',teacher:'Prof. Ergashev T.',room:'Lab-IT',type:'Seminar'},
-      {sub:'Kompyuter Tarmoqlari',teacher:'Prof. Ergashev T.',room:'A-202',type:'Laboratoriya'}
-    ],
-    [
-      {sub:'Algoritmlar',teacher:'Prof. Rahimov Sh.',room:'A-202',type:"Ma'ruza"},
-      {sub:'Operatsion Tizimlar',teacher:'Prof. Ergashev T.',room:'Lab-IT',type:'Amaliyot'},
-      null,
-      {sub:"Ma'lumotlar Tuzilmasi",teacher:'Prof. Rahimov Sh.',room:'Lab-IT',type:'Seminar'},
-      null
-    ]
-  ],
-  'DB-2301': [
-    [
-      {sub:'Raqamli Marketing',teacher:'Prof. Nazarov B.',room:'A-301',type:"Ma'ruza"},
-      null,
-      {sub:'E-Tijorat',teacher:'Prof. Nazarov B.',room:'A-301',type:'Amaliyot'},
-      {sub:'Biznes Analitika',teacher:'Prof. Yusupova M.',room:'A-201',type:"Ma'ruza"},
-      {sub:'Ingliz tili (Tech)',teacher:'Prof. Rahimova N.',room:'A-102',type:"Amaliyot"}
-    ],
-    [
-      {sub:'Raqamli Transformatsiya',teacher:'Prof. Nazarov B.',room:'A-301',type:"Ma'ruza"},
-      {sub:'Loyiha Boshqaruvi',teacher:'Prof. Ergashev T.',room:'A-202',type:"Ma'ruza"},
-      null,
-      {sub:'Raqamli Marketing',teacher:'Prof. Nazarov B.',room:'A-301',type:'Amaliyot'},
-      {sub:'Biznes Analitika',teacher:'Prof. Yusupova M.',room:'A-201',type:"Ma'ruza"}
-    ],
-    [
-      null,
-      {sub:'E-Tijorat',teacher:'Prof. Nazarov B.',room:'A-301',type:"Ma'ruza"},
-      {sub:'Moliyaviy Texnologiyalar',teacher:'Prof. Yusupova M.',room:'A-201',type:"Ma'ruza"},
-      {sub:'Ingliz tili (Tech)',teacher:'Prof. Rahimova N.',room:'A-102',type:"Amaliyot"},
-      null
-    ],
-    [
-      {sub:'Tadbirkorlik',teacher:'Prof. Nazarov B.',room:'A-301',type:"Ma'ruza"},
-      null,
-      {sub:'Loyiha Boshqaruvi',teacher:'Prof. Ergashev T.',room:'A-202',type:'Seminar'},
-      {sub:'Raqamli Transformatsiya',teacher:'Prof. Nazarov B.',room:'A-301',type:'Amaliyot'},
-      {sub:'Moliyaviy Texnologiyalar',teacher:'Prof. Yusupova M.',room:'A-201',type:'Laboratoriya'}
-    ],
-    [
-      {sub:'Biznes Analitika',teacher:'Prof. Yusupova M.',room:'A-201',type:"Ma'ruza"},
-      {sub:'Tadbirkorlik',teacher:'Prof. Nazarov B.',room:'A-301',type:'Amaliyot'},
-      null,
-      {sub:'E-Tijorat',teacher:'Prof. Nazarov B.',room:'A-301',type:'Seminar'},
-      null
-    ]
-  ]
-};
-const GRADES_DATA = [
-  {sub:'Machine Learning',teacher:'Prof. Rahimov J.',jn:27,on:18,yn:26,mi:19},
-  {sub:'Python for AI',teacher:'Prof. Rahimov J.',jn:29,on:19,yn:28,mi:19},
-  {sub:'Deep Learning',teacher:'Prof. Ergashev T.',jn:25,on:17,yn:24,mi:17},
-  {sub:'Matematika (AI uchun)',teacher:'Prof. Yusupova M.',jn:24,on:16,yn:22,mi:16},
-  {sub:'Data Science',teacher:'Prof. Yusupova M.',jn:26,on:18,yn:25,mi:18},
-  {sub:'Ingliz tili (Tech)',teacher:'Prof. Rahimova N.',jn:22,on:15,yn:21,mi:15},
-  {sub:'Natural Language Processing',teacher:'Prof. Rahimov J.',jn:24,on:16,yn:23,mi:17},
-  {sub:'Computer Vision',teacher:'Prof. Ergashev T.',jn:23,on:16,yn:22,mi:16},
-];
-
-const STUDENTS_DATA = [
-  {id:1,name:'Azimov Alisher',group:'AI-2301',course:1,avg:87,att:96,gpa:3.9},
-  {id:2,name:'Karimova Nilufar',group:'AI-2301',course:1,avg:82,att:98,gpa:3.7},
-  {id:3,name:'Toshev Jasur',group:'AI-2301',course:1,avg:74,att:89,gpa:3.3},
-  {id:4,name:'Mirzayeva Dilnoza',group:'AI-2301',course:1,avg:91,att:100,gpa:4.0},
-  {id:5,name:'Umarov Sardor',group:'CS-2301',course:1,avg:79,att:93,gpa:3.5},
-  {id:6,name:'Hasanova Mohira',group:'CS-2301',course:1,avg:85,att:97,gpa:3.8},
-  {id:7,name:'Raimov Sherzod',group:'CS-2301',course:1,avg:68,att:81,gpa:3.0},
-  {id:8,name:'Nazarova Zulfiya',group:'CS-2301',course:1,avg:76,att:92,gpa:3.4},
-  {id:9,name:'Tursunov Bobur',group:'IT-2301',course:1,avg:72,att:85,gpa:3.2},
-  {id:10,name:'Sobirov Farrux',group:'IT-2301',course:1,avg:80,att:94,gpa:3.6},
-  {id:11,name:'Eshmatov Ulugbek',group:'DB-2301',course:1,avg:78,att:91,gpa:3.5},
-  {id:12,name:'Toshpulatova Kamola',group:'DB-2301',course:1,avg:84,att:96,gpa:3.7},
-  {id:13,name:'Mirzaev Otabek',group:'AI-2301',course:1,avg:65,att:78,gpa:2.9},
-  {id:14,name:'Yusupova Feruza',group:'CS-2301',course:1,avg:88,att:99,gpa:3.9},
-  {id:15,name:'Normatov Behruz',group:'IT-2301',course:1,avg:77,att:90,gpa:3.4},
-  {id:16,name:'Qodirov Mansur',group:'DB-2301',course:1,avg:83,att:95,gpa:3.7},
-];
-
-const TEACHERS_DATA = [
-  {id:1,name:"Prof. Rahimov Jasur",dept:"Sun'iy Intellekt",subjects:['Machine Learning','Deep Learning','Neural Networks','Python for AI'],groups:['AI-2301'],hours:24,rating:4.9},
-  {id:2,name:'Prof. Toshmatov Alisher',dept:'Kiberxavfsizlik',subjects:['Network Security','Ethical Hacking','Web Application Security','IDS/IPS Tizimlari'],groups:['CS-2301'],hours:22,rating:4.8},
-  {id:3,name:'Prof. Yusupova Malika',dept:"Matematika & Data Science",subjects:["Matematika (AI uchun)",'Data Science','Biznes Analitika','Moliyaviy Texnologiyalar'],groups:['AI-2301','DB-2301'],hours:20,rating:4.7},
-  {id:4,name:'Prof. Rahimova Nodira',dept:'Ingliz tili',subjects:['Ingliz tili (Tech)'],groups:['AI-2301','CS-2301','IT-2301','DB-2301'],hours:16,rating:4.6},
-  {id:5,name:'Prof. Nazarov Bobur',dept:'Digital Business',subjects:['Raqamli Marketing','E-Tijorat','Raqamli Transformatsiya','Tadbirkorlik','Kriptografiya','Digital Forensics','Cloud Security'],groups:['DB-2301','CS-2301'],hours:20,rating:4.8},
-  {id:6,name:'Prof. Ergashev Timur',dept:'Computing & Networks',subjects:['Computer Vision','Kompyuter Tarmoqlari','Web Dasturlash','Operatsion Tizimlar','Loyiha Boshqaruvi'],groups:['AI-2301','IT-2301','DB-2301'],hours:22,rating:4.7},
-  {id:7,name:'Prof. Rahimov Sherzod',dept:'Computing/IT',subjects:["Dasturlash Asoslari","Ma'lumotlar Tuzilmasi","Algoritmlar"],groups:['IT-2301'],hours:18,rating:4.8},
-];
-
-const TASKS_DATA = [
-  {id:1,sub:'Machine Learning',name:'Linear Regression modeli yaratish',type:'project',due:'2026-03-10',pts:25},
-  {id:2,sub:'Python for AI',name:'NumPy va Pandas bilan ishlash',type:'lab',due:'2026-03-07',pts:20},
-  {id:3,sub:'Deep Learning',name:'CNN arxitekturasi testi',type:'test',due:'2026-03-12',pts:15},
-  {id:4,sub:'Ingliz tili (Tech)',name:'Tech essay: AI in Uzbekistan (400 words)',type:'hw',due:'2026-03-08',pts:10},
-  {id:5,sub:'Data Science',name:'EDA: real dataset tahlili',type:'project',due:'2026-03-14',pts:30},
-  {id:6,sub:'Matematika (AI uchun)',name:'Chiziqli algebra testi',type:'test',due:'2026-03-11',pts:15},
-];
-
-const NOTIFS = [
-  {icon:'📊',color:'var(--primary-light)',title:'Yangi baho kiritildi',text:'Machine Learning fanidan ON bahosi: 18/20 — Prof. Rahimov J.',time:'10 daqiqa oldin',unread:true},
-  {icon:'📅',color:'var(--orange-light)',title:'Dars o\'zgardi',text:"Ertangi Deep Learning darsi Lab-AI dan A-201 xonaga ko\'chirildi",time:'1 soat oldin',unread:true},
-  {icon:'⚠️',color:'var(--red-light)',title:'Davomat ogohlantirishi',text:'Python for AI darsiga 2 marta kelmadingiz — diqqat!',time:'Kecha',unread:true},
-  {icon:'🎉',color:'var(--green-light)',title:'Reyting yangilandi',text:'AI-2301 guruhi reytingida #3 o\'ringa ko\'tarildingiz! 🏆',time:'2 kun oldin',unread:false},
-  {icon:'📝',color:'var(--purple-light)',title:'Yangi vazifa',text:'Data Science: EDA loyihasi — muddati 14-mart',time:'3 kun oldin',unread:false},
-  {icon:'🏫',color:'var(--purple-light)',title:"IDU xabarnomasi",text:"Wolverhampton universiteti bilan hamkorlik dasturi boshlandi — ariza qabul qilinmoqda",time:'4 kun oldin',unread:false},
-];
-
-let IDEAS = [
-  {
-    id:1,title:'EduBot — AI O\'qituvchi',category:'edu',
-    desc:'Sun\'iy intellekt asosida ishlaydi va har bir talabaga shaxsiy o\'quv rejasi tuzib beradi. Zaif tomonlarini aniqlaydi va maxsus mashqlar taklif qiladi.',
-    team:['Alisher Azimov','Nilufar Karimova','Sardor Umarov'],
-    investment:'30,000$',likes:24,stars:4,comments:[
-      {author:'Bobur T.',text:'Juda yaxshi g\'oya! AI qismi qanday ishlaydi?',time:'1 kun oldin'},
-      {author:'Investor (TechVentures)',text:'Bu g\'oya biz izlayotgan narsaga o\'xshaydi. Aloqaga chiqamiz!',time:'12 soat oldin'},
-    ],investorRating:4
-  },
-  {
-    id:2,title:'MedConnect — Shifoxona platformasi',category:'health',
-    desc:'Bemorlar va shifokorlarni ulaydi. Online navbat, tibbiy tarix, retseptlar — hammasi bitta ilovada. O\'zbekiston sharoitiga moslashtrilgan.',
-    team:['Dilnoza Tosheva','Jasur Toshpulatov','Kamola Mirzayeva','Sherzod Raimov'],
-    investment:'80,000$',likes:31,stars:5,comments:[
-      {author:'Mohira X.',text:'Bu g\'oya juda dolzarb! O\'zbekistonda shifokorga navbat olish qiyin.',time:'2 kun oldin'},
-    ],investorRating:5
-  },
-  {
-    id:3,title:'AgriTech UZ — Qishloq xo\'jaligi AI',category:'tech',
-    desc:'Fermerlar uchun AI yordamchi: tuproq tahlili, ob-havo bashorati, hosil optimizatsiyasi va bozor narxlari. Drone bilan integratsiya.',
-    team:['Ulugbek Eshmatov','Feruza Sobirov','Zulfiya Nazarova'],
-    investment:'120,000$',likes:18,stars:3,comments:[],investorRating:0
-  },
-  {
-    id:4,title:'PayEasy — To\'lov agregatori',category:'fintech',
-    desc:'Barcha to\'lov tizimlarini birlashtiradi: Click, Payme, Uzcard. QR kod bilan tezkor to\'lov va SME biznes uchun kassa tizimi.',
-    team:['Bobur Tursunov','Mohira Xasanova','Alisher Azimov'],
-    investment:'50,000$',likes:42,stars:4,comments:[
-      {author:'Sardor U.',text:'Raqobat kuchli, lekin UX jihatdan farqlanish mumkin.',time:'3 kun oldin'},
-    ],investorRating:4
-  },
-];
-
-const QUIZ_QUESTIONS = [
-  {q:'Python dasturlash tilida list nima?',opts:['O\'zgarmas to\'plam','O\'zgaruvchan tartibli to\'plam','Kalit-qiymat juftligi','Butun sonlar to\'plami'],ans:1},
-  {q:'Big O notation nima uchun ishlatiladi?',opts:['Dizayn uchun','Algoritmning samaradorligini o\'lchash uchun','Ma\'lumotlar saqlash uchun','Tarmoq tezligini o\'lchash uchun'],ans:1},
-  {q:'SQL da SELECT operatori nima qiladi?',opts:['Ma\'lumot o\'chiradi','Jadval yaratadi','Ma\'lumotlarni tanlaydi','Ma\'lumot qo\'shadi'],ans:2},
-  {q:'HTTP va HTTPS farqi nima?',opts:['Tezlikda farq bor','HTTPS shifrlangan xavfsiz protokol','HTTP yangroq versiya','Hech qanday farq yo\'q'],ans:1},
-  {q:'Git repository nima?',opts:['Faqat kod fayllar papkasi','Versiya nazorat tizimidagi loyiha', 'Internet sayt','Kompilator'],ans:1},
-];
+// Soxta ma'lumotlar o'chirildi - barcha ma'lumotlar API dan olinadi
+const SUBJECTS_COLORS = {}; // API dan yuklanadi
+const SCHEDULE = {};        // API dan yuklanadi  
+const GRADES_DATA = [];     // API dan yuklanadi
+const STUDENTS_DATA = [];   // API dan yuklanadi
+const TEACHERS_DATA = [];   // API dan yuklanadi
+const TASKS_DATA = [];      // API dan yuklanadi
+const NOTIFS = [];          // API dan yuklanadi
+let IDEAS = [];             // API dan yuklanadi
+const QUIZ_QUESTIONS = [];  // API dan yuklanadi
 
 // ════════════════════════════════════
 //  STATE
@@ -629,11 +366,12 @@ let _pendingLaunchRole = null, _pendingLaunchUser = null;
 
 // XAVFSIZLIK: Sahifaga kirish tekshiruvi (talaba dekanat oynasini ochishga urinsa)
 function secureShowPage(pageId) {
-  const dekanatPages = ['dekanat-dashboard','dekanat-schedule','dekanat-students','dekanat-teachers','dekanat-grades','dekanat-attendance','dekanat-applications','dekanat-questions','dekanat-report'];
+  const dekanatPages = ['dekanat-dashboard','dekanat-schedule','dekanat-students','dekanat-teachers',
+    'dekanat-grades','dekanat-attendance','dekanat-applications','dekanat-questions','dekanat-report','dekanat-sesiya'];
   if (dekanatPages.includes(pageId)) {
     const token = _ssGet('idu_active_role');
-    if (token !== ROLE_TOKENS['dekanat']) {
-      // Toast xabar: original showToast(icon, title, msg) formatida
+    // Dekanat yoki Admin kira oladi
+    if (token !== ROLE_TOKENS['dekanat'] && token !== ROLE_TOKENS['admin']) {
       showSecurityToast('Sizda bu bo\'limga kirish huquqi yo\'q!');
       return false;
     }
@@ -866,13 +604,20 @@ function showPage(id){
   const si=document.getElementById('si-'+id);
   if(si) si.classList.add('active');
   // Lazy render — original pages
-  if(id==='dashboard') { renderDashboardSchedule(); if(currentRole==='student') renderStudentDashboardFromAPI(); }
+  if(id==='dashboard') {
+    loadDashboardStats();
+    if(currentRole==='student') renderStudentDashboardFromAPI();
+    else if(currentRole==='teacher') {}
+    else if(currentRole==='dekanat' || currentRole==='admin') renderDekanatDashboard && renderDekanatDashboard();
+    else if(currentRole==='investor') renderInvestorDashboard && renderInvestorDashboard();
+  }
+  else if(id==='grades') renderGrades();
   else if(id==='timetable') renderTimetable();
   else if(id==='teacher-timetable') renderTeacherTimetable();
   else if(id==='grades') renderGrades();
   else if(id==='tasks') renderTasks();
   else if(id==='materials') renderMaterials();
-  else if(id==='rating') renderRating();
+  else if(id==='rating') { if(typeof renderRating==='function') renderRating(); }
   else if(id==='notifications') renderNotifications();
   else if(id==='startup') renderIdeas();
   else if(id==='teacher-students') renderStudentList();
@@ -983,14 +728,6 @@ let _stGradeFilter='all';
 // ════════════════════════════════════
 //  MATERIALS
 // ════════════════════════════════════
-const MATERIALS=[
-  {sub:'Dasturlash',title:'Python OOP — 6-ma\'ruza',type:'lecture',icon:'📄',size:'2.4 MB'},
-  {sub:'Matematika',title:'Integral hisoblash video',type:'video',icon:'🎥',size:'145 MB'},
-  {sub:'Ingliz tili',title:'Business English — PDF',type:'pdf',icon:'📑',size:'1.8 MB'},
-  {sub:'Fizika',title:'Elektromagnetizm — ma\'ruza',type:'lecture',icon:'📄',size:'3.1 MB'},
-  {sub:'Algoritmlar',title:'Sorting algoritmlar video',type:'video',icon:'🎥',size:'98 MB'},
-  {sub:'Matematika',title:'Algebra formulalar jadvali',type:'pdf',icon:'📑',size:'0.5 MB'},
-];
 const SAVED_GRADES={};
 let _curSub='Machine Learning';
 let _curGrp='AI-2301';
@@ -1622,98 +1359,12 @@ initAntiCheat();
 // ════════════════════════════════════
 //  GAME ENGINE
 // ════════════════════════════════════
-const GAME_CONFIGS = {
-  math:   {title:'🔢 Matematika챔피온', time:60, coins:50,  xp:80,  questions:10},
-  prog:   {title:'💻 Kod to\'ldirish',  time:90, coins:70,  xp:100, questions:8},
-  english:{title:'🌍 So\'z juftlash',   time:45, coins:40,  xp:60,  questions:1},
-  physics:{title:'⚛️ Formula izlash',   time:60, coins:60,  xp:90,  questions:8},
-  algo:   {title:'📊 Tartiblash o\'yini',time:30, coins:80,  xp:120, questions:5},
-  logic:  {title:'🧩 Mantiq masalasi',  time:120,coins:90,  xp:130, questions:6},
-};
-
-const MATH_QUESTIONS = [
-  {expr:'12 × 8 = ?',   answer:96,  opts:[84,96,98,104]},
-  {expr:'√144 = ?',     answer:12,  opts:[11,12,13,14]},
-  {expr:'15² = ?',      answer:225, opts:[200,215,225,230]},
-  {expr:'2⁸ = ?',       answer:256, opts:[128,256,512,264]},
-  {expr:'∫x dx = ?',    answer:'x²/2',opts:['x²','x²/2','2x','x/2']},
-  {expr:'log₂(64) = ?', answer:6,   opts:[4,5,6,8]},
-  {expr:'3! + 2! = ?',  answer:8,   opts:[6,7,8,10]},
-  {expr:'sin(90°) = ?', answer:1,   opts:['0','1','√2/2','√3/2']},
-  {expr:'GCD(48, 18) = ?',answer:6, opts:[3,6,9,12]},
-  {expr:'47 + 58 = ?',  answer:105, opts:[95,105,115,100]},
-];
-
-const CODE_QUESTIONS = [
-  {
-    code:`<span class="kw-purple">def</span> <span class="kw-blue">factorial</span>(n):\n    <span class="kw-purple">if</span> n <span class="kw-blue">==</span> ___:\n        <span class="kw-purple">return</span> <span class="kw-green">1</span>\n    <span class="kw-purple">return</span> n <span class="kw-blue">*</span> factorial(n <span class="kw-blue">-</span> <span class="kw-green">1</span>)`,
-    blank:'0',opts:['0','1','n','None'],answer:'0',
-    hint:'Rekursiya asosi: 0! = 1'
-  },
-  {
-    code:`<span class="kw-purple">for</span> i <span class="kw-purple">in</span> <span class="kw-blue">range</span>(<span class="kw-orange">___</span>):\n    <span class="kw-blue">print</span>(i)`,
-    blank:'10',opts:['5','10','range(10)','len()'],answer:'10',
-    hint:'0 dan 9 gacha chiqarish uchun range(10)'
-  },
-  {
-    code:`my_list = [<span class="kw-green">3</span>, <span class="kw-green">1</span>, <span class="kw-green">4</span>, <span class="kw-green">1</span>, <span class="kw-green">5</span>]\nmy_list.<span class="kw-orange">___</span>()`,
-    blank:'sort',opts:['sort','order','arrange','sorted'],answer:'sort',
-    hint:'Ro\'yxatni joyida tartiblash metodi'
-  },
-  {
-    code:`<span class="kw-purple">class</span> <span class="kw-blue">Animal</span>:\n    <span class="kw-purple">def</span> <span class="kw-blue">__init__</span>(<span class="kw-orange">___</span>, name):\n        self.name = name`,
-    blank:'self',opts:['self','this','cls','obj'],answer:'self',
-    hint:'Python klasslarida birinchi parametr'
-  },
-  {
-    code:`numbers = [<span class="kw-green">1</span>,<span class="kw-green">2</span>,<span class="kw-green">3</span>,<span class="kw-green">4</span>,<span class="kw-green">5</span>]\nresult = ___(<span class="kw-purple">lambda</span> x: x%<span class="kw-green">2</span>==<span class="kw-green">0</span>, numbers)`,
-    blank:'filter',opts:['filter','map','reduce','list'],answer:'filter',
-    hint:'Shartga mos elementlarni filtrlovchi funksiya'
-  },
-  {
-    code:`d = {<span class="kw-red">"a"</span>: <span class="kw-green">1</span>, <span class="kw-red">"b"</span>: <span class="kw-green">2</span>}\nkeys = list(d.___())`,
-    blank:'keys',opts:['keys','values','items','get'],answer:'keys',
-    hint:'Lug\'atning kalitlarini olish'
-  },
-  {
-    code:`<span class="kw-purple">try</span>:\n    x = <span class="kw-green">1</span> / <span class="kw-green">0</span>\n<span class="kw-orange">___</span> ZeroDivisionError:\n    <span class="kw-blue">print</span>(<span class="kw-red">"Xato!"</span>)`,
-    blank:'except',opts:['except','catch','error','handle'],answer:'except',
-    hint:'Python da xatolarni ushlash kalit so\'zi'
-  },
-  {
-    code:`import ___\nnum = math.sqrt(<span class="kw-green">16</span>)`,
-    blank:'math',opts:['math','cmath','numpy','calc'],answer:'math',
-    hint:'Python ning matematik modul nomi'
-  },
-];
-
-const ENGLISH_PAIRS = [
-  ['Algorithm','Algoritm'],['Variable','O\'zgaruvchi'],['Function','Funksiya'],
-  ['Database','Ma\'lumotlar bazasi'],['Network','Tarmoq'],['Security','Xavfsizlik'],
-  ['Interface','Interfeys'],['Software','Dasturiy ta\'minot'],['Hardware','Apparat ta\'minot'],
-  ['Compiler','Kompilyator'],['Debugger','Disk\'yuger'],['Framework','Freymvork'],
-];
-
-const PHYSICS_FORMULAS = [
-  {expr:'F = ma',      name:'Nyuton 2-qonuni'},
-  {expr:'E = mc²',     name:'Ekvivalentlik (Einstein)'},
-  {expr:'V = IR',      name:'Om qonuni'},
-  {expr:'P = mv',      name:'Impuls'},
-  {expr:'W = Fd',      name:'Ish'},
-  {expr:'KE = ½mv²',   name:'Kinetik energiya'},
-  {expr:'λf = v',      name:'To\'lqin tenglamasi'},
-  {expr:'PV = nRT',    name:'Ideal gaz qonuni'},
-];
-
-const LOGIC_QUESTIONS = [
-  {q:'Bir qutida 3 ta qizil, 5 ta ko\'k shar bor. 2 ta shar tasodifiy olinsa, ikkalasi ham qizil bo\'lish ehtimoli qancha?', opts:['1/28','3/28','6/28','1/8'], ans:1},
-  {q:'ABCDE harflaridan nechta 3 harfli kombinatsiya tuzish mumkin (takrorsiz)?', opts:['60','120','20','30'], ans:0},
-  {q:'Agar barcha mushuklar hayvon bo\'lsa, va ba\'zi hayvonlar uy bilan yashasa, demak...', opts:['Ba\'zi mushuklar uy bilan yashaydi','Barcha mushuklar uy bilan yashaydi','Uy bilan yashaydigan hech narsa mushuk emas','Hech qaysi mushuk uy bilan yashamaydi'], ans:0},
-  {q:'1, 1, 2, 3, 5, 8, 13, ... Keyingi son qaysi?', opts:['18','20','21','22'], ans:2},
-  {q:'Agar n juft son bo\'lsa, n² ham juft bo\'ladi. 36 juft son. Demak...', opts:['36² juft','36 toq','36 juft emas','Hech narsa aniq emas'], ans:0},
-  {q:'3 ta quti bor: A(2 olma), B(2 apelsin), C(1 olma+1 apelsin). Barchasiga noto\'g\'ri yorliq yopishtirilgan. A qutidan bitta olinsa — olma. A qutidagi nima?', opts:['2 olma','2 apelsin','1 olma+1 apelsin','Noma\'lum'], ans:0},
-];
-
+const GAME_CONFIGS = {}; // API dan yuklanadi
+const MATH_QUESTIONS = []; // API dan yuklanadi
+const CODE_QUESTIONS = []; // API dan yuklanadi
+const ENGLISH_PAIRS = []; // API dan yuklanadi
+const PHYSICS_FORMULAS = []; // API dan yuklanadi
+const LOGIC_QUESTIONS = []; // API dan yuklanadi
 let currentGameData = {};
 function onCorrect(pts=10){
   gameScore += pts + (gameStreak>=3?5:0);
@@ -1965,31 +1616,6 @@ function setMood(val,el){
 // ════════════════════════════════════
 //  GAMIFICATION PAGE
 // ════════════════════════════════════
-const ACHIEVEMENTS=[
-  {icon:'🎮',name:'Birinchi o\'yin',desc:'Birinchi o\'yinni o\'ynadi',earned:false},
-  {icon:'🔥',name:'3 kunlik streak',desc:'3 kun ketma-ket o\'qish',earned:false},
-  {icon:'🧠',name:'Matematik daho',desc:'Matematika o\'yinida 90%+',earned:false},
-  {icon:'💻',name:'Dasturchi',desc:'Kod o\'yinida 5 marta to\'g\'ri',earned:false},
-  {icon:'🏆',name:'Top 10',desc:'Guruh reytingida Top 10',earned:true},
-  {icon:'🌟',name:'100 ta o\'yin',desc:'100 ta o\'yin o\'ynaldi',earned:false},
-  {icon:'🪙',name:'Millioner',desc:'1000 IDU Coin to\'plansin',earned:false},
-  {icon:'⚡',name:'5-daraja',desc:'5-darajaga yeting',earned:false},
-];
-const REWARDS=[
-  {emoji:'📜',name:'Sertifikat shabloni',cost:200},
-  {emoji:'🎨',name:'Maxsus profil rasmi',cost:150},
-  {emoji:'🏷️',name:'Noyob nishon',cost:300},
-  {emoji:'⏰',name:'Ekstra Pomodoro',cost:50},
-  {emoji:'🔓',name:'Qo\'shimcha test urinish',cost:100},
-  {emoji:'🎭',name:'Animatsiyali avatar',cost:500},
-];
-const LB_DATA=[
-  {name:'Dilnoza Tosheva',xp:1840,coins:342,games:28},
-  {name:'Mohira Xasanova',xp:1620,coins:298,games:24},
-  {name:'Sherzod Raimov',xp:1480,coins:265,games:22},
-  {name:'Feruza Sobirov',xp:1350,coins:240,games:20},
-  {name:'Alisher Azimov',xp:playerXP||980,coins:playerCoins||180,games:gamesPlayed||15},
-];
 function renderGamification(){
   updateXPDisplays();
   renderAchievements();
@@ -2031,17 +1657,7 @@ let appIdCounter = 1;
 // ════════════════════════════════════
 //  PROFESSORS DATA
 // ════════════════════════════════════
-const PROFESSORS_DATA = [
-  {id:1, name:'Prof. Rahimov J.',   short:'RJ', subject:'Machine Learning, Python for AI', dept:"Kompyuter fanlari", color:'#1B4FD8', tags:['ML','Python','AI'], totalReviews:0, ratings:[]},
-  {id:2, name:'Prof. Yusupova M.',  short:'YM', subject:'Matematika (AI uchun), Data Science', dept:"Raqamli matematika", color:'#7C3AED', tags:['Matematika','Data Science'], totalReviews:0, ratings:[]},
-  {id:3, name:'Prof. Ergashev T.',  short:'ET', subject:'Deep Learning, Computer Vision', dept:"Sun'iy intellekt", color:'#16A34A', tags:['Deep Learning','CV','TensorFlow'], totalReviews:0, ratings:[]},
-  {id:4, name:'Prof. Rahimova N.',  short:'RN', subject:"Ingliz tili (Tech), Academic Writing", dept:"Chet tillar", color:'#EA580C', tags:['English','Tech Writing'], totalReviews:0, ratings:[]},
-  {id:5, name:'Prof. Toshmatov S.', short:'TS', subject:'Neural Networks, NLP', dept:"Sun'iy intellekt", color:'#0D9488', tags:['NLP','Neural Networks'], totalReviews:0, ratings:[]},
-  {id:6, name:'Prof. Karimova D.',  short:'KD', subject:'Cybersecurity, Network Security', dept:"Axborot xavfsizligi", color:'#DC2626', tags:['Cybersecurity','Networking'], totalReviews:0, ratings:[]},
-  {id:7, name:'Prof. Nazarov B.',   short:'NB', subject:'Web Development, React, Node.js', dept:"Dasturlash texnologiyalari", color:'#0EA5E9', tags:['React','Node.js','Web'], totalReviews:0, ratings:[]},
-  {id:8, name:'Prof. Holiqova S.',  short:'HS', subject:'Database Systems, PostgreSQL', dept:"Ma'lumotlar bazasi", color:'#A21CAF', tags:['SQL','Database','PostgreSQL'], totalReviews:0, ratings:[]},
-];
-
+const PROFESSORS_DATA = []; // API dan yuklanadi
 // Seed some demo reviews
 const PROF_REVIEWS_INIT = [
   {profId:1, overall:5, cats:[5,4,5,4], comment:"Juda yaxshi tushuntiradi, savollarimga har doim javob beradi!", time:'2 kun oldin'},
@@ -2249,74 +1865,6 @@ function submitProfReview(){
   showToast('✅',isRu?'Отзыв отправлен!':'Sharh yuborildi!',isRu?'Fikringiz anonim saqlanadi':'Fikringiz anonim saqlanadi');
   renderProfessorsPage();
 }
-
-const PARTNERS=[
-  {
-    id:1, logo:'🛒', name:'Uzum Market', type:'IT kompaniya', color:'#F97316',
-    desc:'O\'zbekistonning yetakchi e-commerce platformasi. 10M+ mijoz, 50M+ mahsulot.',
-    website:'uzum.uz', location:'Toshkent', employees:'1000+',
-    vacancies:[
-      {id:101,title:'Junior Frontend Developer',salary:'3,000,000 – 5,000,000',stype:'Full-time',tags:['React','JavaScript','CSS'],desc:'React asosida foydalanuvchi interfeyslari yaratish va qo\'llab-quvvatlash.',requirements:['JavaScript va React bilimi','Git tajribasi','GPA 3.0+','Jamoa bilan ishlash qobiliyati']},
-      {id:102,title:'Data Analyst',salary:'4,000,000 – 7,000,000',stype:'Full-time',tags:['Python','SQL','Tableau'],desc:'Sotuvlar va foydalanuvchi xulqini tahlil qilish, dashboard yaratish.',requirements:['Python va SQL bilimi','Statistika asoslari','Vizualizatsiya tajribasi']},
-      {id:103,title:'QA Engineer',salary:'2,500,000 – 4,500,000',stype:'Full-time',tags:['Testing','Selenium','Manual'],desc:'Mobil va web ilovalarni manual va avtomatik testlash.',requirements:['Testing metodologiyasi','E\'tibor va aniqlik','JIRA bilan ishlash']},
-    ]
-  },
-  {
-    id:2, logo:'🚀', name:'EPAM Uzbekistan', type:'Global Software', color:'#1B4FD8',
-    desc:'50+ mamlakatda faoliyat yurituvchi global IT xizmatlar kompaniyasi.',
-    website:'epam.com', location:'Toshkent / Remote', employees:'58,000+',
-    vacancies:[
-      {id:201,title:'Software Engineer Trainee',salary:'2,000,000 – 4,000,000',stype:'Amaliyot',tags:['Java','Python','OOP'],desc:'EPAM Learning Lab dasturi — amaliyot va professional o\'sish imkoniyati.',requirements:['OOP bilimi','Ingliz tili B1+','Loyiha tajribasi yoki portfolio']},
-      {id:202,title:'DevOps Engineer',salary:'8,000,000 – 15,000,000',stype:'Full-time',tags:['Docker','Kubernetes','CI/CD'],desc:'Infratuzilma avtomatlashtirish va deployment pipeline yaratish.',requirements:['Linux tajribasi 2+ yil','Docker va Kubernetes','CI/CD amaliyoti']},
-      {id:203,title:'Business Analyst',salary:'5,000,000 – 9,000,000',stype:'Full-time',tags:['BPMN','Jira','Requirements'],desc:'Biznes talablarini texnik spesifikatsiyaga aylantirish va jamoani yo\'naltirish.',requirements:['BA asoslari','BPMN modellash','Ingliz tili B2+']},
-      {id:204,title:'QA Automation Engineer',salary:'6,000,000 – 10,000,000',stype:'Full-time',tags:['Selenium','Java','TestNG'],desc:'Avtomatik test skriptlari yozish va test framework qurish.',requirements:['Java yoki Python','Selenium tajribasi','TestNG/JUnit bilimi']},
-      {id:205,title:'Project Manager',salary:'7,000,000 – 12,000,000',stype:'Full-time',tags:['Agile','Scrum','PMP'],desc:'IT loyihalarni boshqarish, jamoani koordinatsiya qilish.',requirements:['PM tajribasi 2+ yil','Scrum/Kanban','Ingliz tili C1']},
-    ]
-  },
-  {
-    id:3, logo:'💻', name:'IT Park',type:'Texnopark', color:'#0D9488',
-    desc:'O\'zbekistondagi IT ekotizimini rivojlantiruvchi davlat texnoparkasi.',
-    website:'itpark.uz', location:'Toshkent', employees:'200+',
-    vacancies:[
-      {id:301,title:'Startup Coordinator',salary:'3,500,000 – 5,500,000',stype:'Full-time',tags:['Startup','Mentoring','Events'],desc:'Startap jamoalarini qo\'llab-quvvatlash va akselerator dasturlarini boshqarish.',requirements:['Startap ekotizimi bilimlari','Kommunikatsiya ko\'nikmalari','Loyiha boshqaruvi']},
-      {id:302,title:'IT Specialist',salary:'4,000,000 – 6,000,000',stype:'Full-time',tags:['Network','Windows','Linux'],desc:'IT Park infratuzilmasini saqlash va texnik yordam ko\'rsatish.',requirements:['Tarmoq asoslari','Windows/Linux admin','Muammoni tezkor hal qilish']},
-      {id:303,title:'Marketing Manager',salary:'4,500,000 – 7,000,000',stype:'Full-time',tags:['SMM','Content','Analytics'],desc:'IT Park ijtimoiy tarmoqlar, PR va brending strategiyasi.',requirements:['SMM tajribasi','Ijodiy yozish','Ingliz tili B1+']},
-      {id:304,title:'Community Manager',salary:'3,000,000 – 4,500,000',stype:'Part-time',tags:['Events','Networking','Community'],desc:'IT hamjamiyat tadbirlarini tashkil etish va a\'zolar bilan muloqot.',requirements:['Tashkilotchilik','Ijtimoiy ko\'nikmalar','Telegram/Discord']},
-      {id:305,title:'Grant Manager',salary:'5,000,000 – 8,000,000',stype:'Full-time',tags:['Grants','Finance','Reporting'],desc:'IT kompaniyalarga grant va subsidiya dasturlarini boshqarish.',requirements:['Moliya asoslari','Grant yozish','Ingliz tili B2+']},
-      {id:306,title:'HR Specialist',salary:'3,500,000 – 5,000,000',stype:'Full-time',tags:['Recruitment','HR','Training'],desc:'IT Park xodimlari ishga qabul va o\'qitish dasturlari.',requirements:['HR asoslari','Intervyu o\'tkazish','Kuchli kommunikatsiya']},
-    ]
-  },
-  {
-    id:4, logo:'📡', name:'Beeline Uzbekistan', type:'Telekommunikatsiya', color:'#FBBF24',
-    desc:'O\'zbekistondagi yetakchi telekommunikatsiya operatori. 10M+ abonent.',
-    website:'beeline.uz', location:'Toshkent', employees:'3000+',
-    vacancies:[
-      {id:401,title:'Network Engineer',salary:'6,000,000 – 10,000,000',stype:'Full-time',tags:['Cisco','5G','Networking'],desc:'Tarmoq infratuzilmasini rejalashtirish va optimallashtirish.',requirements:['CCNA/CCNP sertifikati','3+ yil tajriba','5G texnologiyalari']},
-      {id:402,title:'IT Support Specialist',salary:'3,000,000 – 5,000,000',stype:'Full-time',tags:['Helpdesk','Windows','Hardware'],desc:'Korporativ foydalanuvchilarga texnik yordam ko\'rsatish.',requirements:['IT asoslari','Muloqotchanlik','Stressga chidamlilik']},
-    ]
-  },
-  {
-    id:5, logo:'💳', name:'Humans.uz', type:'Fintech', color:'#7C3AED',
-    desc:'O\'zbekistondagi fintech yetakchisi — to\'lov, kredit va bank xizmatlari.',
-    website:'humans.uz', location:'Toshkent', employees:'500+',
-    vacancies:[
-      {id:501,title:'Mobile Developer (Flutter)',salary:'7,000,000 – 12,000,000',stype:'Full-time',tags:['Flutter','Dart','iOS/Android'],desc:'Humans super-app mobil ilovasi funksionallarini ishlab chiqish.',requirements:['Flutter/Dart 2+ yil','REST API integratsiya','iOS/Android publish tajribasi']},
-      {id:502,title:'Backend Developer',salary:'8,000,000 – 14,000,000',stype:'Full-time',tags:['Python','Django','PostgreSQL'],desc:'To\'lov tizimi va API backend ishlab chiqish va qo\'llab-quvvatlash.',requirements:['Python/Django 2+ yil','PostgreSQL/Redis','Fintech bilimi + bonus']},
-      {id:503,title:'Product Manager',salary:'9,000,000 – 16,000,000',stype:'Full-time',tags:['Product','Roadmap','Analytics'],desc:'Mahsulot strategiyasini belgilash va rivojlantirish yo\'nalishini boshqarish.',requirements:['PM tajribasi 3+ yil','Fintech tushunish','Ma\'lumotlarga asoslangan qaror']},
-      {id:504,title:'UI/UX Designer',salary:'5,000,000 – 9,000,000',stype:'Full-time',tags:['Figma','UX','Design System'],desc:'Humans ilovasi dizayn tizimini rivojlantirish va yangi funksiyalar prototiplash.',requirements:['Figma/Adobe XD','UX tadqiqot metodlari','Portfolio talab qilinadi']},
-    ]
-  },
-  {
-    id:6, logo:'🏗️', name:'Texnoservis', type:'IT Outsourcing', color:'#059669',
-    desc:'O\'rta Osiyo bo\'yicha IT outsourcing va digital transformation xizmatlari.',
-    website:'texnoservis.uz', location:'Toshkent / Samarqand', employees:'150+',
-    vacancies:[
-      {id:601,title:'Full Stack Developer',salary:'5,000,000 – 10,000,000',stype:'Full-time',tags:['Node.js','React','MongoDB'],desc:'Mijozlar uchun web ilovalar yaratish — frontenddan backendgacha.',requirements:['Node.js va React bilimi','MongoDB/PostgreSQL','API dizayn tajribasi']},
-      {id:602,title:'Python Developer (Intern)',salary:'1,500,000 – 2,500,000',stype:'Amaliyot',tags:['Python','Django','REST'],desc:'Boshlang\'ich darajadagi Python dasturchilarga amaliyot imkoniyati.',requirements:['Python asoslari','Django/Flask kirish darajasi','Ishlash va o\'rganish istagi']},
-      {id:603,title:'System Administrator',salary:'4,500,000 – 7,500,000',stype:'Full-time',tags:['Linux','VMware','Backup'],desc:'Server va virtual infratuzilmani boshqarish va monitoring.',requirements:['Linux 2+ yil','VMware/HyperV','Zabbix/Nagios monitoring']},
-    ]
-  },
-];
 
 // ── Hamkorlar state ─────────────────────────────────
 let _activeJobFilter = 'all';
@@ -4003,9 +3551,6 @@ setTimeout(function() {
   if (origJobDirect) window.applyJobDirect = function() { origJobDirect.apply(this, arguments); saveApplications(); };
 }, 500);
 
-// ════════════════════════════════════
-// DASHBOARD — API DAN REAL MA'LUMOT
-// ════════════════════════════════════
 async function renderStudentDashboardFromAPI() {
   try {
     // 1. Foydalanuvchi ma'lumotlari
@@ -4085,4 +3630,85 @@ function renderGradesFromAPI(grades) {
       <td><span class="grade-chip ${cls}">${letter}</span></td>
     </tr>`;
   }).join('');
+}
+
+
+// ════════════════════════════════════
+// DASHBOARD — BARCHA ROLLAR UCHUN
+// ════════════════════════════════════
+async function loadDashboardStats() {
+  try {
+    // Studentlar soni
+    api('GET', '/students?limit=1').then(d => {
+      const el = document.getElementById('bannerStudents');
+      if (el) el.textContent = d.total || 0;
+      const dekEl = document.getElementById('dekStatStudents');
+      if (dekEl) dekEl.textContent = d.total || 0;
+    }).catch(() => {});
+
+    // Teacher soni
+    api('GET', '/teachers?limit=1').then(d => {
+      const el = document.getElementById('bannerTeachers');
+      if (el) el.textContent = Array.isArray(d) ? d.length : (d.total || 0);
+    }).catch(() => {});
+
+    // Kurslar
+    api('GET', '/grades?limit=1').then(d => {
+      const el = document.getElementById('bannerCourses');
+      if (el) el.textContent = '—';
+    }).catch(() => {});
+
+  } catch(e) {}
+}
+
+// ════════════════════════════════════
+// STUDENT DASHBOARD — REAL DATA
+// ════════════════════════════════════
+async function renderStudentDashboardFromAPI() {
+  if (!currentUser || !currentUser.id) return;
+  try {
+    // GPA va ma'lumotlar
+    const me = await api('GET', '/auth/me').catch(() => null);
+    if (me) {
+      const gpaEl = document.getElementById('dashGPA');
+      if (gpaEl) gpaEl.textContent = me.gpa ? parseFloat(me.gpa).toFixed(2) : '0.00';
+
+      // Sidebar da ham yangilash
+      const sidebarGPA = document.getElementById('sidebarLevel');
+      if (sidebarGPA && me.gpa) {
+        const gpa = parseFloat(me.gpa);
+        const level = gpa >= 3.8 ? 5 : gpa >= 3.5 ? 4 : gpa >= 3.0 ? 3 : gpa >= 2.5 ? 2 : 1;
+        sidebarGPA.textContent = level;
+        const xpEl = document.getElementById('sidebarXP');
+        if (xpEl) xpEl.textContent = Math.round(gpa * 100) + ' XP';
+      }
+    }
+
+    // Baholar
+    const grades = await api('GET', '/students/' + currentUser.id + '/grades').catch(() => []);
+    if (Array.isArray(grades) && grades.length) {
+      let sum = 0;
+      grades.forEach(g => sum += parseFloat(g.total) || 0);
+      const avg = (sum / grades.length).toFixed(0);
+      const totalEl = document.getElementById('dashTotalScore');
+      if (totalEl) totalEl.textContent = avg;
+      // Dashboard baholar jadvalini render
+      if (typeof renderDashboardGrades === 'function') renderDashboardGrades();
+    } else {
+      const totalEl = document.getElementById('dashTotalScore');
+      if (totalEl) totalEl.textContent = '0';
+    }
+
+    // Reyting
+    const ratingEl = document.getElementById('dashRating');
+    if (ratingEl) ratingEl.textContent = '—';
+    const davEl = document.getElementById('dashDavomat');
+    if (davEl) davEl.textContent = '—%';
+
+    // Bugungi darslar
+    if (typeof renderDashboardSchedule === 'function') renderDashboardSchedule();
+
+  } catch(e) {
+    console.error('Dashboard error:', e);
+  }
 }

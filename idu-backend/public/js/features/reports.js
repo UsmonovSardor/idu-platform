@@ -1,136 +1,107 @@
 'use strict';
-// IDU - features/reports.js
+// IDU - features/reports.js — Real API
 
-function exportStudentGrades(){
-  let csv="Fan nomi,O'qituvchi,JN/30,ON/20,YN/30,MI/20,Jami/100,Baho\n";
-  GRADES_DATA.forEach(g=>{
-    const t=g.jn+g.on+g.yn+g.mi;
-    csv+='"'+g.sub+'","'+g.teacher+'",'+g.jn+','+g.on+','+g.yn+','+g.mi+','+t+',"'+getGrade(t).letter+'"\n';
-  });
-  const blob=new Blob(['\uFEFF'+csv],{type:'text/csv;charset=utf-8'});
-  const a=document.createElement('a');a.href=URL.createObjectURL(blob);a.download='baholar.csv';a.click();
-  showToast('📥','Excel','Yuklab olindi');
+async function renderFullReport() {
+  try {
+    renderGroupAvgChart();
+    renderSubjectAvgTable();
+  } catch(e) {}
 }
 
-function exportGrades(){
-  var students=STUDENTS_DATA.filter(function(s){return s.group===_curGrp;});
-  var csv='Fan,Guruh,Talaba,JN/30,ON/20,YN/30,MI/20,Jami/100,Baho\n';
-  students.forEach(function(s){
-    var jn=parseInt(document.getElementById('jn-'+s.id)?.value)||0;
-    var on=parseInt(document.getElementById('on-'+s.id)?.value)||0;
-    var yn=parseInt(document.getElementById('yn-'+s.id)?.value)||0;
-    var mi=parseInt(document.getElementById('mi-'+s.id)?.value)||0;
-    var t=jn+on+yn+mi;
-    csv+='"'+_curSub+'","'+_curGrp+'","'+s.name+'",'+jn+','+on+','+yn+','+mi+','+t+',"'+getGrade(t).letter+'"\n';
-  });
-  var blob=new Blob(['\uFEFF'+csv],{type:'text/csv;charset=utf-8'});
-  var a=document.createElement('a');a.href=URL.createObjectURL(blob);
-  a.download=_curSub.replace(/ /g,'_')+'_'+_curGrp+'.csv';a.click();
-  showToast('📥','Excel','Yuklab olindi');
-}
-
-function exportDekanatGrades(){
-  var grp=document.getElementById('dekGradeGroup')?.value||'AI-2301';
-  var students=STUDENTS_DATA.filter(function(s){return s.group===grp;});
-  var csv='Talaba,Guruh,Fan,JN/30,ON/20,YN/30,MI/20,Jami/100,Baho\n';
-  students.forEach(function(s){
-    GRADES_DATA.forEach(function(g){
-      var key=s.id+'_'+g.sub;var sv=SAVED_GRADES[key];
-      var jn=sv?sv.jn:g.jn,on=sv?sv.on:g.on,yn=sv?sv.yn:g.yn,mi=sv?sv.mi:g.mi;
-      var t=jn+on+yn+mi;
-      csv+='"'+s.name+'","'+grp+'","'+g.sub+'",'+jn+','+on+','+yn+','+mi+','+t+',"'+getGrade(t).letter+'"\n';
+async function renderGroupAvgChart() {
+  const el = document.getElementById('groupAvgChart');
+  if (!el) return;
+  try {
+    const data = await api('GET', '/exams/history');
+    if (!Array.isArray(data) || !data.length) {
+      el.innerHTML = '<div style="text-align:center;padding:20px;color:#94a3b8">Ma\'lumot yo\'q</div>';
+      return;
+    }
+    // Group by subject
+    const bySubject = {};
+    data.forEach(r => {
+      if (!bySubject[r.subject]) bySubject[r.subject] = [];
+      bySubject[r.subject].push(parseFloat(r.score) || 0);
     });
-  });
-  var blob=new Blob(['\uFEFF'+csv],{type:'text/csv;charset=utf-8'});
-  var a=document.createElement('a');a.href=URL.createObjectURL(blob);a.download=grp+'_baholar.csv';a.click();
-  showToast('📥','Excel','Yuklab olindi');
+    const subjects = Object.keys(bySubject);
+    const avgs = subjects.map(s => (bySubject[s].reduce((a,b)=>a+b,0)/bySubject[s].length).toFixed(1));
+    const maxV = Math.max(...avgs.map(Number)) + 5;
+    const colors = ['#1B4FD8','#7C3AED','#16A34A','#EA580C','#0D9488'];
+    el.innerHTML = '<div style="display:flex;align-items:flex-end;gap:10px;height:120px;padding:0 8px;margin-bottom:8px">' +
+      subjects.map((s, i) => {
+        const h = Math.round((avgs[i] / maxV) * 95);
+        const c = colors[i % colors.length];
+        return `<div style="flex:1;display:flex;flex-direction:column;align-items:center;gap:4px">
+          <span style="font-size:11px;font-weight:800;color:${c}">${avgs[i]}%</span>
+          <div style="width:100%;background:${c};border-radius:6px 6px 0 0;height:${h}px;opacity:0.88"></div>
+          <div style="font-size:9px;color:#94A3B8;text-align:center">${s}</div>
+        </div>`;
+      }).join('') + '</div>';
+  } catch(e) {
+    el.innerHTML = '<div style="text-align:center;padding:20px;color:#94a3b8">—</div>';
+  }
 }
 
-function exportAttendance(){
-  showToast('📤','Export','Davomat hisoboti Excel formatida yuklanmoqda...');
-}
-
-function renderFullReport(){
-  renderGradeDistribution();
-  renderGroupAvgChart();
-  renderSubjectAvgTable();
-}
-
-function renderGroupDetailReport(){
-  var el=document.getElementById('groupDetailReport');if(!el)return;
-  var groups=['AI-2301','CS-2301','IT-2301','DB-2301'];
-  var colors=['#1B4FD8','#7C3AED','#16A34A','#EA580C'];
-  var html='<div style="display:grid;grid-template-columns:1fr 1fr;gap:14px">';
-  groups.forEach(function(grp,gi){
-    var ss=STUDENTS_DATA.filter(function(s){return s.group===grp;});
-    if(!ss.length){ ss=[{id:99,name:'Demo',gpa:3.2,avg:75,att:92}]; }
-    var avgs=ss.map(function(s){
-      return GRADES_DATA.reduce(function(acc,g){
-        var key=s.id+'_'+g.sub;var sv=SAVED_GRADES[key];
-        return acc+(sv?sv.jn:g.jn)+(sv?sv.on:g.on)+(sv?sv.yn:g.yn)+(sv?sv.mi:g.mi);
-      },0)/Math.max(GRADES_DATA.length,1);
+async function renderSubjectAvgTable() {
+  const el = document.getElementById('subjectAvgTable');
+  if (!el) return;
+  el.innerHTML = '<div style="text-align:center;padding:20px;color:#94a3b8">⏳</div>';
+  try {
+    const data = await api('GET', '/exams/history');
+    if (!Array.isArray(data) || !data.length) {
+      el.innerHTML = '<div style="text-align:center;padding:20px;color:#94a3b8">Ma\'lumot yo\'q</div>';
+      return;
+    }
+    const bySubject = {};
+    data.forEach(r => {
+      if (!bySubject[r.subject]) bySubject[r.subject] = { scores: [], alo: 0, fail: 0 };
+      const s = parseFloat(r.score) || 0;
+      bySubject[r.subject].scores.push(s);
+      if (r.letter_grade === 'A') bySubject[r.subject].alo++;
+      if (r.letter_grade === 'F') bySubject[r.subject].fail++;
     });
-    var avg=avgs.length?(avgs.reduce(function(a,b){return a+b;},0)/avgs.length).toFixed(1):75;
-    var alo=ss.filter(function(s){return s.avg>=86;}).length;
-    var fail=ss.filter(function(s){return s.avg<56;}).length;
-    var attAvg=(ss.reduce(function(a,s){return a+s.att;},0)/ss.length).toFixed(1);
-    var gpaAvg=(ss.reduce(function(a,s){return a+(parseFloat(s.gpa)||3);},0)/ss.length).toFixed(2);
-    var c=colors[gi];
-    html+='<div class="card" style="border-top:3px solid '+c+'">'
-      +'<div class="card-header">'
-        +'<div class="card-title" style="color:'+c+'">'+grp+'</div>'
-        +'<div class="card-badge" style="background:'+c+'22;color:'+c+'">'+ss.length+' talaba</div>'
-      +'</div>'
-      +'<div style="display:grid;grid-template-columns:1fr 1fr 1fr 1fr;gap:8px;margin-bottom:12px">'
-        +'<div style="text-align:center;padding:10px 4px;background:#F8FAFC;border-radius:8px">'
-          +'<div style="font-size:18px;font-weight:900;color:'+c+';font-family:\'DM Mono\',monospace">'+avg+'</div>'
-          +'<div style="font-size:9px;color:#94A3B8;font-weight:600;margin-top:2px">ORT. BALL</div>'
-        +'</div>'
-        +'<div style="text-align:center;padding:10px 4px;background:#F8FAFC;border-radius:8px">'
-          +'<div style="font-size:18px;font-weight:900;color:#16A34A;font-family:\'DM Mono\',monospace">'+alo+'</div>'
-          +'<div style="font-size:9px;color:#94A3B8;font-weight:600;margin-top:2px">A\'LOCHILAR</div>'
-        +'</div>'
-        +'<div style="text-align:center;padding:10px 4px;background:#F8FAFC;border-radius:8px">'
-          +'<div style="font-size:18px;font-weight:900;color:#D97706;font-family:\'DM Mono\',monospace">'+attAvg+'%</div>'
-          +'<div style="font-size:9px;color:#94A3B8;font-weight:600;margin-top:2px">DAVOMAT</div>'
-        +'</div>'
-        +'<div style="text-align:center;padding:10px 4px;background:#F8FAFC;border-radius:8px">'
-          +'<div style="font-size:18px;font-weight:900;color:#7C3AED;font-family:\'DM Mono\',monospace">'+gpaAvg+'</div>'
-          +'<div style="font-size:9px;color:#94A3B8;font-weight:600;margin-top:2px">GPA</div>'
-        +'</div>'
-      +'</div>'
-      +(fail>0?'<div style="background:#FFF5F5;border:1px solid #FCA5A5;border-radius:8px;padding:8px 12px;font-size:12.5px;color:#DC2626;display:flex;align-items:center;gap:6px">⚠️ '+fail+' talaba qoniqarsiz baho olgan — nazorat tavsiya etiladi</div>':'<div style="background:#F0FDF4;border:1px solid #86EFAC;border-radius:8px;padding:8px 12px;font-size:12.5px;color:#16A34A;display:flex;align-items:center;gap:6px">✅ Guruh barqaror ko\'rsatkichda</div>')
-    +'</div>';
-  });
-  html+='</div>';
-  el.innerHTML=html;
+    const rows = Object.entries(bySubject).map(([sub, d]) => ({
+      sub,
+      avg: (d.scores.reduce((a,b)=>a+b,0)/d.scores.length).toFixed(1),
+      alo: d.alo, fail: d.fail
+    })).sort((a,b) => b.avg - a.avg);
+    el.innerHTML = `<table style="width:100%;border-collapse:collapse;font-size:13px">
+      <thead><tr>
+        <th style="text-align:left;padding:8px 12px;border-bottom:1.5px solid #E2E8F0;color:#94A3B8;font-size:11px">#</th>
+        <th style="text-align:left;padding:8px 12px;border-bottom:1.5px solid #E2E8F0;color:#94A3B8;font-size:11px">Fan</th>
+        <th style="text-align:center;padding:8px 12px;border-bottom:1.5px solid #E2E8F0;color:#94A3B8;font-size:11px">O'rt. ball</th>
+        <th style="text-align:center;padding:8px 12px;border-bottom:1.5px solid #E2E8F0;color:#94A3B8;font-size:11px">A'lochilar</th>
+        <th style="text-align:center;padding:8px 12px;border-bottom:1.5px solid #E2E8F0;color:#94A3B8;font-size:11px">Qoniqarsiz</th>
+      </tr></thead>
+      <tbody>${rows.map((r,i) => {
+        const tc = r.avg >= 80 ? '#166534' : r.avg >= 65 ? '#1E40AF' : '#991B1B';
+        const tb = r.avg >= 80 ? '#DCFCE7' : r.avg >= 65 ? '#DBEAFE' : '#FEE2E2';
+        return `<tr>
+          <td style="padding:10px 12px;border-bottom:1px solid #F8FAFC;color:#94A3B8">${i+1}</td>
+          <td style="padding:10px 12px;border-bottom:1px solid #F8FAFC;font-weight:600">${r.sub}</td>
+          <td style="padding:10px 12px;border-bottom:1px solid #F8FAFC;text-align:center">
+            <span style="background:${tb};color:${tc};padding:3px 11px;border-radius:7px;font-weight:800">${r.avg}%</span>
+          </td>
+          <td style="padding:10px 12px;border-bottom:1px solid #F8FAFC;text-align:center;color:#16A34A;font-weight:700">${r.alo}</td>
+          <td style="padding:10px 12px;border-bottom:1px solid #F8FAFC;text-align:center;color:${r.fail>0?'#DC2626':'#94A3B8'};font-weight:700">${r.fail}</td>
+        </tr>`;
+      }).join('')}</tbody>
+    </table>`;
+  } catch(e) {
+    el.innerHTML = `<div style="text-align:center;padding:20px;color:#ef4444">Xato: ${e.message}</div>`;
+  }
 }
 
-function exportReportCSV(){
-  var groups=['AI-2301','CS-2301','IT-2301','DB-2301'];
-  var csv='Guruh,Talabalar soni,Ort. ball,A\'lo (86+),Yaxshi (71-85),Qoniqarsiz (<56),GPA\n';
-  groups.forEach(function(grp){
-    var ss=STUDENTS_DATA.filter(function(s){return s.group===grp;});
-    if(!ss.length) return;
-    var avgs=ss.map(function(s){
-      return GRADES_DATA.reduce(function(acc,g){
-        var key=s.id+'_'+g.sub;var sv=SAVED_GRADES[key];
-        return acc+(sv?sv.jn:g.jn)+(sv?sv.on:g.on)+(sv?sv.yn:g.yn)+(sv?sv.mi:g.mi);
-      },0)/Math.max(GRADES_DATA.length,1);
-    });
-    var avg=(avgs.reduce(function(a,b){return a+b;},0)/avgs.length).toFixed(1);
-    var alo=avgs.filter(function(a){return a>=86;}).length;
-    var yax=avgs.filter(function(a){return a>=71&&a<86;}).length;
-    var fail=avgs.filter(function(a){return a<56;}).length;
-    var gpaAvg=(ss.reduce(function(a,s){return a+(parseFloat(s.gpa)||3);},0)/ss.length).toFixed(2);
-    csv+='"'+grp+'",'+ss.length+','+avg+','+alo+','+yax+','+fail+','+gpaAvg+'\n';
-  });
-  var blob=new Blob(['\uFEFF'+csv],{type:'text/csv;charset=utf-8'});
-  var a=document.createElement('a');a.href=URL.createObjectURL(blob);a.download='IDU_hisobot_'+new Date().toISOString().slice(0,10)+'.csv';a.click();
-  showToast('📊','CSV export','Hisobot fayli yuklab olindi');
-}
-
-function printReport(){
-  window.print();
-  showToast('🖨️','Chop etish','Chop etish oynasi ochildi');
+function renderGroupDetailReport() { renderFullReport(); }
+function renderTeacherPerformance() {}
+function renderRiskStudents() { if (typeof renderAtRiskFromApi === 'function') renderAtRiskFromApi(); }
+function renderSemesterCompare() {}
+function switchRTab(name, btn) {
+  document.querySelectorAll('.rtab').forEach(t => t.classList.remove('active'));
+  document.querySelectorAll('.report-panel').forEach(p => p.classList.remove('active'));
+  if (btn) btn.classList.add('active');
+  const panel = document.getElementById('rpanel-' + name);
+  if (panel) panel.classList.add('active');
+  if (name === 'overview') renderFullReport();
+  else if (name === 'risk') renderRiskStudents();
 }
