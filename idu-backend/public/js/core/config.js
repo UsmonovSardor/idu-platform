@@ -1,25 +1,8 @@
 'use strict';
-// IDU Platform v3.0 - Railway Edition
-// API_BASE: relative path (frontend va backend bitta serverda)
-
-var API_BASE = '/api';  // Railway: bitta URL, relative path
-
-// Agar alohida serverda bo'lsa (local dev):
-if (typeof window !== 'undefined' && window.location.hostname === 'localhost') {
-  API_BASE = 'http://localhost:3000/api';
-}
-
-var _apiToken = null;
-
-// Saqlangan JWT ni yuklab olish
-(function() {
-  try {
-    var saved = localStorage.getItem('idu_jwt') ||
-                localStorage.getItem('idu_token') ||
-                localStorage.getItem('token');
-    if (saved) _apiToken = saved;
-  } catch(e) {}
-})();
+// IDU - core/config.js
+// API konfiguratsiya
+var API_BASE = '/api';
+var _apiToken=null;
 
 function safeHTML(str) {
   if (typeof DOMPurify !== 'undefined') {
@@ -33,16 +16,8 @@ function safeHTML(str) {
                      'rowspan','colspan','for','aria-label','title'],
     });
   }
+  // Fallback: escape HTML
   return String(str || '').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
-}
-
-function setToken(token) {
-  _apiToken = token;
-  try {
-    localStorage.setItem('idu_jwt', token);
-    localStorage.setItem('idu_token', token);
-    localStorage.setItem('token', token);
-  } catch(e) {}
 }
 
 async function api(method, path, body) {
@@ -60,6 +35,7 @@ async function api(method, path, body) {
     }
     return data;
   } catch (err) {
+    // Network error → re-throw so callers can handle or fall back
     throw err;
   }
 }
@@ -68,19 +44,16 @@ async function apiLogin(role, login, password, remember) {
   try {
     var result = await api('POST', '/auth/login', { login: login, password: password });
     _apiToken = result.token;
-    if (remember || true) {  // har doim saqlaymiz
+    if (remember) {
       try { localStorage.setItem('idu_jwt', result.token); } catch(e) {}
-      try { localStorage.setItem('idu_token', result.token); } catch(e) {}
-      try { localStorage.setItem('token', result.token); } catch(e) {}
     }
     return { ok: true, user: result.user };
   } catch (err) {
     if (err.status === 401 || err.status === 403) {
       return { ok: false, error: err.message };
     }
-    // Server bilan bog'lana olmasa — lokal demo mode
-    console.warn('[IDU] Backend ulanmadi, demo mode:', err.message);
-    return { ok: false, error: null, offline: true };
+    console.warn('[IDU] Backend unreachable:', err.message);
+    return { ok: false, error: 'Server bilan aloqa yo‘q. Keyinroq urinib ko‘ring.' };
   }
 }
 
@@ -90,7 +63,7 @@ async function apiSubmitApplication(data) {
     await api('POST', '/applications', data);
     return true;
   } catch(e) {
-    return false;
+    return false; // silently fall back to localStorage version
   }
 }
 

@@ -2,7 +2,7 @@
 // API CLIENT
 // =============================================
 
-var API_BASE = '/api';
+var API_BASE = window.location.origin + '/api';
 var _apiToken = null;
 
 function setToken(token) {

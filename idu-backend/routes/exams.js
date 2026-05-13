@@ -29,7 +29,7 @@ router.get('/session-state', async (req, res) => {
 // Dekanat: open or close test/sesiya
 router.post(
   '/session-state',
-  authorize('admin'),
+  authorize('admin', 'dekanat'),
   [
     body('examType').isIn(VALID_EXAM_TYPES),
     body('isOpen').isBoolean().toBoolean(),

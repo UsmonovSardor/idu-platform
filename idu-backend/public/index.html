@@ -212,7 +212,7 @@
 
 <!-- LOGIN MODAL -->
 <div class="login-modal-bg" id="loginModalBg" onclick="closeLoginModal(event)">
-  <div class="login-modal" id="loginModal" style="max-width:600px;border-radius:20px;overflow:hidden;padding:0;position:relative">
+  <div class="login-modal" id="loginModal">
     <button class="lm-close" onclick="closeLoginModalForce()" style="position:absolute;top:14px;right:14px;z-index:10;width:32px;height:32px;border-radius:50%;background:rgba(255,255,255,0.18);border:none;cursor:pointer;font-size:16px;display:flex;align-items:center;justify-content:center;color:white">&#x2715;</button>
     <div class="login-split">
       <!-- LEFT PANEL -->
@@ -254,16 +254,18 @@
             <span>Kirish</span><span style="font-size:16px">&#8594;</span>
           </button>
         </div>
+        <div class="login-note" style="margin-top:16px;padding:13px 14px;background:#F8FAFC;border:1px solid #E2E8F0;border-radius:12px;color:#64748B;font-size:12px;line-height:1.5;text-align:center">
+          Login va parol universitet administratsiyasi tomonidan beriladi.
+       </div>
       </div>
     </div>
   </div>
 </div>
-       
 
 <!-- hidden stubs kept for OTP/forgot flows that reference these IDs -->
 <div id="step-otp" style="display:none">
   <div id="otpPhoneShow"></div>
-  <div id="otpDemoBox"><strong id="otpDemoCode"></strong></div>
+  <div id="otpDemoBox" style="display:none"><strong id="otpDemoCode"></strong></div>
   <div class="form-error" id="otpError"><span>Kod noto'g'ri.</span></div>
   <input id="otpInput" type="text" style="display:none">
   <a id="resendLink" style="display:none"></a>
@@ -314,7 +316,7 @@
         <span style="font-size:18px">📱</span>
         <div>
           <div style="font-weight:700;margin-bottom:2px">Tasdiqlash kodi yuborildi</div>
-          <div style="font-size:12px;color:#16A34A">Sinov rejimi: <span id="fpOtpDemo" style="font-family:monospace;font-weight:800;letter-spacing:3px;color:#0F172A"></span></div>
+          <div style="font-size:12px;color:#16A34A">Tasdiqlash kodi yuborildi.</div>
         </div>
       </div>
       <div class="form-error" id="fpOtpError" style="display:none;background:#FFF5F5;border:1px solid #FCA5A5;color:#DC2626;border-radius:8px;padding:9px 13px;font-size:13px;font-weight:500;margin-bottom:14px">⚠️ Kod noto'g'ri. Qayta urinib ko'ring.</div>
@@ -336,7 +338,7 @@
       <div style="font-size:13.5px;color:#64748B;margin-bottom:16px;line-height:1.6">Quyidagi yangi kirish ma'lumotlarini eslab qoling.</div>
       <!-- SMS-style box -->
       <div style="background:linear-gradient(135deg,#EEF3FF,#DBEAFE);border:1.5px solid #BFDBFE;border-radius:14px;padding:16px 18px;text-align:left;margin-bottom:18px">
-        <div style="font-size:11px;font-weight:700;color:#1B4FD8;text-transform:uppercase;letter-spacing:0.5px;margin-bottom:10px">📱 Demo SMS xabari</div>
+        <div style="font-size:11px;font-weight:700;color:#1B4FD8;text-transform:uppercase;letter-spacing:0.5px;margin-bottom:10px">📱 SMS xabari</div>
         <div style="font-size:13.5px;color:#1E3A8A;line-height:2">
           IDU tizimiga kirish ma'lumotlari:<br>
           🔐 Login: <strong id="fpNewLogin" style="font-size:15px;letter-spacing:1px;color:#1B4FD8;font-family:monospace"></strong><br>
@@ -370,7 +372,7 @@
 
 <!-- ════════ APP SCREEN ════════ -->
 
-<div id="appScreen" style="display:none">
+<div id="appScreen">
   <!-- DATE TIME BAR -->
   <div class="datetime-bar" id="datetimeBar">
     <div class="dtb-left">
@@ -2720,6 +2722,7 @@
     </div>
     <div class="page-header-right">
       <button class="btn btn-primary" onclick="openAddQuestionModal()">➕ Savol qo'shish</button>
+      <button class="btn btn-secondary" onclick="openPdfUploadModal()" style="margin-left:8px">📄 PDF yuklash</button>
     </div>
   </div>
 
@@ -2770,6 +2773,48 @@
   <!-- Info box -->
   <div style="margin-top:16px;background:#EEF3FF;border:1.5px solid #93C5FD;border-radius:12px;padding:14px 18px;font-size:13px;color:#1E40AF">
     💡 <strong>Eslatma:</strong> Dekanat kiritgan savollar tizim savollaridan <strong>ustun turadi</strong>. Test uchun kamida 20 ta, Sesiya uchun kamida 30 ta savol kiritish tavsiya etiladi.
+  </div>
+</div>
+
+
+<!-- MODAL: PDF savollar yuklash -->
+<div id="pdfUploadModal" style="display:none;position:fixed;top:0;left:0;width:100%;height:100%;background:rgba(0,0,0,0.5);z-index:3000;overflow:auto" onclick="if(event.target===this)closePdfUploadModal()">
+  <div style="background:white;border-radius:18px;padding:28px;max-width:500px;margin:60px auto;position:relative">
+    <div style="font-size:18px;font-weight:800;color:#0F172A;margin-bottom:6px">📄 PDF orqali savollar yuklash</div>
+    <div style="font-size:12.5px;color:#64748B;margin-bottom:20px">PDF fayl quyidagi formatda bo'lishi kerak:<br>
+    <code style="background:#F1F5F9;padding:2px 6px;border-radius:4px;font-size:11px">1. Savol matni?<br>A) Javob A<br>B) Javob B<br>C) Javob C<br>D) Javob D<br>To'g'ri: A<br>Izoh: (ixtiyoriy)</code></div>
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:16px">
+      <div>
+        <div style="font-size:12px;font-weight:700;color:#64748B;margin-bottom:6px">Fan</div>
+        <select id="pdfSubject" style="width:100%;padding:10px 12px;border:1.5px solid #E2E8F0;border-radius:8px;font-family:'Outfit',sans-serif;font-size:13px;outline:none">
+          <option value="algo">💻 Algoritmlar</option>
+          <option value="ai">🤖 Sun'iy Intellekt</option>
+          <option value="math">📐 Matematika</option>
+          <option value="db">🗄️ Ma'lumotlar Bazasi</option>
+          <option value="web">🌐 Web Dasturlash</option>
+        </select>
+      </div>
+      <div>
+        <div style="font-size:12px;font-weight:700;color:#64748B;margin-bottom:6px">Tur</div>
+        <select id="pdfType" style="width:100%;padding:10px 12px;border:1.5px solid #E2E8F0;border-radius:8px;font-family:'Outfit',sans-serif;font-size:13px;outline:none">
+          <option value="test">🧪 Test</option>
+          <option value="real">📋 Sesiya</option>
+          <option value="both">📝 Ikkalasi</option>
+        </select>
+      </div>
+    </div>
+    <div style="border:2px dashed #CBD5E1;border-radius:12px;padding:24px;text-align:center;margin-bottom:16px;background:#F8FAFC">
+      <div style="font-size:32px;margin-bottom:8px">📄</div>
+      <div style="font-size:14px;font-weight:600;margin-bottom:4px">PDF fayl tanlang</div>
+      <div style="font-size:12px;color:#94A3B8;margin-bottom:12px">Maksimal 10 MB</div>
+      <input type="file" id="pdfFileInput" accept=".pdf" style="display:none" onchange="document.getElementById('pdfFileName').textContent=this.files[0]?.name||'Fayl tanlanmagan'">
+      <button onclick="document.getElementById('pdfFileInput').click()" style="padding:8px 20px;background:#EEF3FF;border:1.5px solid #93C5FD;border-radius:8px;color:#1B4FD8;font-family:'Outfit',sans-serif;font-size:13px;font-weight:600;cursor:pointer">Fayl tanlash</button>
+      <div id="pdfFileName" style="margin-top:8px;font-size:12px;color:#1B4FD8;font-weight:600"></div>
+    </div>
+    <div style="display:flex;gap:10px">
+      <button id="pdfUploadBtn" onclick="uploadQuestionsPDF()" style="flex:1;padding:12px;background:linear-gradient(135deg,#1B4FD8,#3B82F6);color:white;border:none;border-radius:10px;font-family:'Outfit',sans-serif;font-size:14px;font-weight:700;cursor:pointer">📤 Yuklash</button>
+      <button onclick="closePdfUploadModal()" style="padding:12px 20px;background:white;border:2px solid #E2E8F0;border-radius:10px;font-family:'Outfit',sans-serif;font-size:14px;cursor:pointer">Bekor</button>
+    </div>
   </div>
 </div>
 
@@ -2824,12 +2869,12 @@
   </div>
 </div>
 
-<!-- ═══ ADMIN: TEST VA SESIYA BOSHQARUVI ═══ -->
+<!-- ═══ DEKANAT: SESIYA BOSHQARUVI ═══ -->
 <div class="page" id="page-dekanat-sesiya">
   <div class="page-header">
     <div class="page-header-left">
-      <div class="ph-title">🗝️ Test va Sesiya Admin Paneli</div>
-      <div class="ph-sub">Faqat admin test rejim va sesiyani faollashtiradi, yopadi va natijalarni ko‘radi</div>
+      <div class="ph-title">🗝️ Sesiya Boshqaruvi</div>
+      <div class="ph-sub">Test rejim va haqiqiy sesiyani faollashtirish / bloklash</div>
     </div>
   </div>
 
@@ -2852,11 +2897,11 @@
         📋 Talabalar sesiyadan oldin mashq qilishi uchun. Baholar <strong>hisoblanmaydi</strong>. Xotirjam muhit.
       </div>
       <div style="display:flex;gap:10px">
-        <button id="btnUnlockTest" onclick="setSesiyaState('test', true)"
+        <button id="btnUnlockTest" onclick="toggleExamSession('test', true)"
           style="flex:1;padding:11px;background:linear-gradient(135deg,#16A34A,#22C55E);color:white;border:none;border-radius:9px;font-family:'Outfit',sans-serif;font-size:13.5px;font-weight:700;cursor:pointer;transition:all 0.2s">
           ✅ Faollashtirish
         </button>
-        <button id="btnLockTest" onclick="setSesiyaState('test', false)"
+        <button id="btnLockTest" onclick="toggleExamSession('test', false)"
           style="flex:1;padding:11px;background:linear-gradient(135deg,#DC2626,#EF4444);color:white;border:none;border-radius:9px;font-family:'Outfit',sans-serif;font-size:13.5px;font-weight:700;cursor:pointer;transition:all 0.2s;display:none">
           🔒 Bloklash
         </button>
@@ -2879,11 +2924,11 @@
         ⚠️ Rasmiy imtihon. Talabalar javoblari <strong>baholanadi</strong> va saqlanadi. Ehtiyotkorlik bilan yoqing.
       </div>
       <div style="display:flex;gap:10px">
-        <button id="btnUnlockReal" onclick="setSesiyaState('real', true)"
+        <button id="btnUnlockReal" onclick="toggleExamSession('sesiya', true)"
           style="flex:1;padding:11px;background:linear-gradient(135deg,#DC2626,#EF4444);color:white;border:none;border-radius:9px;font-family:'Outfit',sans-serif;font-size:13.5px;font-weight:700;cursor:pointer;transition:all 0.2s">
           🚀 Imtihonni boshlash
         </button>
-        <button id="btnLockReal" onclick="setSesiyaState('real', false)"
+        <button id="btnLockReal" onclick="toggleExamSession('sesiya', false)"
           style="flex:1;padding:11px;background:linear-gradient(135deg,#475569,#64748B);color:white;border:none;border-radius:9px;font-family:'Outfit',sans-serif;font-size:13.5px;font-weight:700;cursor:pointer;transition:all 0.2s;display:none">
           🔒 Imtihonni yopish
         </button>
@@ -2923,7 +2968,6 @@
   <script src="js/features/games.js"></script>
   <script src="js/features/reports.js"></script>
   <script src="js/features/notifications.js"></script>
-  <script src="js/main.js"></script>
+  <script src="js/main.js?v=20260511"></script>
   <script src="js/enhancements.js"></script>
-  </body>
 </html>

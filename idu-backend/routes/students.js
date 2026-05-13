@@ -81,7 +81,7 @@ router.get(
     );
 
     const { rows } = await db.query(
-      `SELECT u.id, u.full_name, u.email, u.phone, u.avatar_url,
+      `SELECT u.id, u.full_name, u.phone, u.avatar_url,
               s.student_id_number, s.faculty, s.department, s.year_of_study, s.gpa
        FROM users u
        LEFT JOIN students s ON s.user_id = u.id
@@ -112,7 +112,7 @@ router.get(
     }
 
     const { rows } = await db.query(
-      `SELECT u.id, u.full_name, u.email, u.phone, u.avatar_url, u.created_at,
+      `SELECT u.id, u.full_name, u.phone, u.avatar_url, u.created_at,
               s.student_id_number, s.faculty, s.department, s.year_of_study, s.gpa,
               s.enrollment_date, s.graduation_date
        FROM users u

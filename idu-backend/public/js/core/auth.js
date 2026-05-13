@@ -160,43 +160,24 @@ function doAutoLogin() {
       const u = { login: l, name: res.user.name, role: role,
                   group: 'CS-2301', gpa: 0, phone: res.user.phone || '' };
       launchApp(role, u);
-    } else {
-      // Offline or wrong password — fall back to local
-      const roles = ['student','teacher','dekanat','investor'];
-      var found = false;
-      for (var i = 0; i < roles.length; i++) {
-        const role = roles[i];
-        const list = USERS[role] || [];
-        const u = list.find(function(x){ return x.login === l && x.pass === p; });
-        if (u) {
-          found = true;
-          errEl.classList.remove('show');
-          if (btn) { btn.innerHTML = '<span>Kirish</span><span style="font-size:16px">&rarr;</span>'; btn.disabled = false; }
-          launchApp(role, u);
-          break;
-        }
+       } else {
+      if (btn) {
+        btn.innerHTML = '<span>Kirish</span><span style="font-size:16px">&rarr;</span>';
+        btn.disabled = false;
       }
-      if (!found) {
-        if (btn) { btn.innerHTML = '<span>Kirish</span><span style="font-size:16px">&rarr;</span>'; btn.disabled = false; }
-        errMsg.textContent = res.error || "Login yoki parol noto'g'ri";
-        errEl.classList.add('show');
-        document.getElementById('mainLogin').select();
-      }
+
+      errMsg.textContent = res.error || "Login yoki parol noto'g'ri";
+      errEl.classList.add('show');
+      document.getElementById('mainLogin').select();
     }
   }).catch(function() {
-    if (btn) { btn.innerHTML = '<span>Kirish</span><span style="font-size:16px">&rarr;</span>'; btn.disabled = false; }
-    const roles = ['student','teacher','dekanat','investor'];
-    var found = false;
-    for (var i = 0; i < roles.length; i++) {
-      const role = roles[i];
-      const list = USERS[role] || [];
-      const u = list.find(function(x){ return x.login === l && x.pass === p; });
-      if (u) { found = true; errEl.classList.remove('show'); launchApp(role, u); break; }
+    if (btn) {
+      btn.innerHTML = '<span>Kirish</span><span style="font-size:16px">&rarr;</span>';
+      btn.disabled = false;
     }
-    if (!found) {
-      errMsg.textContent = "Login yoki parol noto'g'ri";
-      errEl.classList.add('show');
-    }
+
+    errMsg.textContent = "Server bilan aloqa yo'q";
+    errEl.classList.add('show');
   });
 }
 
@@ -403,7 +384,7 @@ function logout(){
   document.getElementById('appScreen').style.display='none';
   document.getElementById('authScreen').style.display='flex';
   selectedRole=null;
-  
+  openLoginModal();
 }
 
 function showForgotPassword(role) {

@@ -201,4 +201,153 @@ router.post(
   }
 );
 
+// ?? POST /api/questions/upload-pdf ???????????????????????????????????????????????
+// Fan o'qituvchisi PDF fayl yuklaydi — test/sesiya uchun savollar
+// PDF formatida savollar:
+//   1. Savol matni?
+//   A) Javob A
+//   B) Javob B
+//   C) Javob C
+//   D) Javob D
+//   To'g'ri: A
+//   Izoh: (ixtiyoriy)
+router.post(
+  '/upload-pdf',
+  authorize('dekanat', 'admin', 'teacher'),
+  (req, res, next) => {
+    const multer = require('multer');
+    const storage = multer.memoryStorage();
+    const upload = multer({
+      storage,
+      limits: { fileSize: 10 * 1024 * 1024 }, // 10MB
+      fileFilter: (req, file, cb) => {
+        if (file.mimetype === 'application/pdf') {
+          cb(null, true);
+        } else {
+          cb(new Error('Faqat PDF fayl yuklanishi mumkin'));
+        }
+      }
+    }).single('pdf');
+    upload(req, res, next);
+  },
+  [
+    require('express-validator').body('subject').isIn(VALID_SUBJECTS).withMessage('Noto\'g\'ri fan'),
+    require('express-validator').body('type').isIn(VALID_TYPES).withMessage('Noto\'g\'ri tur'),
+  ],
+  validate,
+  async (req, res) => {
+    if (!req.file) return res.status(400).json({ error: 'PDF fayl yuklanmadi' });
+
+    const { subject, type } = req.body;
+
+    let pdfText = '';
+    try {
+      const pdfParse = require('pdf-parse');
+      const data = await pdfParse(req.file.buffer);
+      pdfText = data.text;
+    } catch (err) {
+      return res.status(422).json({ error: 'PDFni o\'qib bo\'lmadi: ' + err.message });
+    }
+
+    // PDF savollarni parse qilish
+    // Format:
+    // 1. Savol matni?
+    // A) Javob
+    // B) Javob
+    // C) Javob
+    // D) Javob
+    // To'g'ri: A
+    // Izoh: (ixtiyoriy)
+    const questions = parsePdfQuestions(pdfText);
+
+    if (!questions.length) {
+      return res.status(422).json({
+        error: 'PDFda savol topilmadi. Format: 1. Savol? A) B) C) D) To\'g\'ri: A'
+      });
+    }
+
+    // Savollarni bazaga kiritish
+    const client = await db.getClient();
+    const inserted = [];
+    const errors = [];
+
+    try {
+      await client.query('BEGIN');
+      for (const q of questions) {
+        try {
+          const { rows } = await client.query(
+            `INSERT INTO questions
+               (subject, type, question_text, option_a, option_b, option_c, option_d,
+                correct_option, explanation, created_by)
+             VALUES ($1,$2,$3,$4,$5,$6,$7,$8,$9,$10)
+             RETURNING id`,
+            [subject, type, q.text, q.a, q.b, q.c, q.d,
+             q.correct, q.explanation || null, req.user.id]
+          );
+          inserted.push(rows[0].id);
+        } catch (e) {
+          errors.push({ question: q.text.substring(0, 60), error: e.message });
+        }
+      }
+      await client.query('COMMIT');
+    } catch (err) {
+      await client.query('ROLLBACK');
+      throw err;
+    } finally {
+      client.release();
+    }
+
+    res.status(201).json({
+      message: `PDF muvaffaqiyatli qayta ishlandi`,
+      parsed: questions.length,
+      inserted: inserted.length,
+      failed: errors.length,
+      insertedIds: inserted,
+      errors: errors.length ? errors : undefined
+    });
+  }
+);
+
+// PDF savollarni parse qilish funksiyasi
+function parsePdfQuestions(text) {
+  const questions = [];
+  // Har bir savol raqam bilan boshlanadi: "1." yoki "1)"
+  const blocks = text.split(/\n(?=\s*\d+[.)]/);
+
+  for (const block of blocks) {
+    const lines = block.split('\n').map(l => l.trim()).filter(Boolean);
+    if (lines.length < 6) continue;
+
+    // Savol matni (raqamdan keyin)
+    const qLine = lines[0].replace(/^\d+[.)\s]+/, '').trim();
+    if (!qLine || qLine.length < 10) continue;
+
+    // Javoblar A), B), C), D)
+    let a, b, c, d, correct, explanation;
+    for (const line of lines.slice(1)) {
+      const aMatch = line.match(/^[Aa][.)\s]+(.+)/);
+      const bMatch = line.match(/^[Bb][.)\s]+(.+)/);
+      const cMatch = line.match(/^[Cc][.)\s]+(.+)/);
+      const dMatch = line.match(/^[Dd][.)\s]+(.+)/);
+      const corrMatch = line.match(/to['']?g['']?ri[:\s]+([ABCD])/i) ||
+                        line.match(/answer[:\s]+([ABCD])/i) ||
+                        line.match(/correct[:\s]+([ABCD])/i);
+      const izohMatch = line.match(/izoh[:\s]+(.+)/i) ||
+                        line.match(/explanation[:\s]+(.+)/i);
+
+      if (aMatch) a = aMatch[1].trim();
+      if (bMatch) b = bMatch[1].trim();
+      if (cMatch) c = cMatch[1].trim();
+      if (dMatch) d = dMatch[1].trim();
+      if (corrMatch) correct = corrMatch[1].toUpperCase();
+      if (izohMatch) explanation = izohMatch[1].trim();
+    }
+
+    if (a && b && c && d && correct && ['A','B','C','D'].includes(correct)) {
+      questions.push({ text: qLine, a, b, c, d, correct, explanation });
+    }
+  }
+  return questions;
+}
+
 module.exports = router;

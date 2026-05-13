@@ -3,22 +3,23 @@
 // ══════════════════════════════════════════════════════════════════
 
 // Backend base URL — change to your deployed server URL in production
-var API_BASE = '/api';
+var API_BASE = 'https://idu-platform-production.up.railway.app/api';
 
 // JWT token storage (memory-first, localStorage fallback for "remember me")
 var _apiToken = null;
 
 // Load saved JWT on page load
+// Load saved JWT on page load
 (function() {
   try {
-     var saved =
-  localStorage.getItem('idu_jwt') ||
-  localStorage.getItem('idu_token') ||
-  localStorage.getItem('token');
+    var saved = localStorage.getItem('idu_jwt');
 
-  if (saved) _apiToken = saved;
+    if (saved) {
+      _apiToken = saved;
+    }
   } catch(e) {}
 })();
+
 // 🔥 TOKEN SAVE (REAL LOGIN)
 function saveAuthToken(token) {
   if (!token) return;
@@ -26,8 +27,7 @@ function saveAuthToken(token) {
   _apiToken = token;
 
   localStorage.setItem('idu_jwt', token);
-  localStorage.setItem('idu_token', token);
-  localStorage.setItem('token', token);
+  
 
   if (typeof setToken === 'function') {
     setToken(token);
@@ -70,7 +70,7 @@ window.realAutoLogin = async function realAutoLogin() {
   try {
     const user = await loginWithBackend('auto', login, pass);
     const role = user.role || 'student';
-    currentUser = { login: user.login || login, name: user.name || user.full_name || login, role: role, group: 'AI-2301', gpa: 0, phone: user.phone || '' };
+    currentUser = { login: user.login || login, name: user.name || user.full_name || login, role: role, group: user.group || 'AI-2301', gpa: 0, phone: user.phone || '' };
     currentRole = role;
     _ssSet('idu_active_role', ROLE_TOKENS[role]);
     saveSession(role, currentUser);
@@ -82,15 +82,16 @@ window.realAutoLogin = async function realAutoLogin() {
     app.style.display = 'flex';
     app.classList.add('visible');
     if (role === 'student') showPage('dashboard');
-    else if (role === 'teacher') showPage('teacher-dashboard');
-    else if (role === 'dekanat') showPage('dekanat-dashboard');
-    else if (role === 'investor') showPage('investor-dashboard');
-    else if (role === 'admin') showPage('dekanat-sesiya');
+   else if (role === 'teacher') showPage('teacher-dashboard');
+   else if (role === 'dekanat') showPage('dekanat-dashboard');
+   else if (role === 'investor') showPage('investor-dashboard');
+   else if (role === 'admin') showPage('dekanat-sesiya');
     stopLoading();
     return;
- } catch (e) {
-  showErr(e.message || 'Login yoki parol noto‘g‘ri');
-}
+ 
+     } catch (e) {
+    showErr(e.message || 'Login yoki parol noto‘g‘ri');
+  }
 };
 
 // ════════════════════════════════════
@@ -104,7 +105,7 @@ const ROLE_TOKENS = {
   teacher: 'TCH_4mNp8wRz',
   dekanat: 'DEK_9zRt3vYk',
   investor: 'INV_2bLs6jQx',
-  admin: 'ADM_8xTestSessionOnly'
+  admin: 'ADM_TEST_MANAGER'
 };
 
 const USERS = {
@@ -112,8 +113,7 @@ const USERS = {
   teacher: [],
   dekanat: [],
   investor: [],
-  admin: [],
-  proktor: []
+  admin: []
 };
 loadExtraUsers();
 
@@ -416,7 +416,7 @@ let currentTTGroup = 'CS-2301';
 let currentDekScheduleGroup = 'CS-2301';
 // ── Backend URL (Railway production server) ──────────────────
 // Eski: 'http://localhost:8000' → Railway deployga o'zgartirildi
-const BACKEND_URL = '';
+const BACKEND_URL = 'https://idu-platform-production.up.railway.app';
 
 // ── Xavfsiz storage (sandbox va private rejimda ham ishlaydi) ──
 const _mem = {};
@@ -493,23 +493,16 @@ async function realLoginStart(role, loginInputId, passInputId, btnId) {
     if (authScreen) authScreen.style.display = 'none';
 
     const app = document.getElementById('appScreen');
-
     if (app) {
       app.style.display = 'flex';
       app.classList.add('visible');
     }
 
-    if (realRole === 'student') {
-      showPage('dashboard');
-    } else if (realRole === 'teacher') {
-      showPage('teacher-dashboard');
-    } else if (realRole === 'dekanat') {
-      showPage('dekanat-dashboard');
-    } else if (realRole === 'investor') {
-      showPage('investor-dashboard');
-    } else if (realRole === 'admin') {
-      showPage('dekanat-sesiya');
-    }
+    if (realRole === 'student') showPage('dashboard');
+    else if (realRole === 'teacher') showPage('teacher-dashboard');
+    else if (realRole === 'dekanat') showPage('dekanat-dashboard');
+    else if (realRole === 'investor') showPage('investor-dashboard');
+    else if (realRole === 'admin') showPage('dekanat-sesiya');
 
   } catch (e) {
     alert(e.message || 'Login yoki parol noto‘g‘ri');
@@ -531,12 +524,7 @@ async function showOTPStep(role, user, phone, remember) {
   }
 
   const fullPhone = '998' + phone;
-
-  const masked =
-    '+998 ' +
-    phone.slice(0, 2) +
-    ' *** ** ' +
-    phone.slice(-2);
+  const masked = '+998 ' + phone.slice(0, 2) + ' *** ** ' + phone.slice(-2);
 
   const phoneShow = document.getElementById('otpPhoneShow');
   const demoBox = document.getElementById('otpDemoBox');
@@ -565,11 +553,7 @@ async function showOTPStep(role, user, phone, remember) {
     const data = await res.json().catch(() => ({}));
 
     if (!res.ok) {
-      throw new Error(
-        data.detail ||
-        data.error ||
-        'OTP yuborishda xato'
-      );
+      throw new Error(data.detail || data.error || 'OTP yuborishda xato');
     }
 
     if (data.demo && data.demo_code) {
@@ -578,22 +562,13 @@ async function showOTPStep(role, user, phone, remember) {
 
   } catch (e) {
     _otpCode = null;
-
-    showToast(
-      '⚠️',
-      'SMS',
-      'Server bilan aloqa yo‘q'
-    );
+    showToast('⚠️', 'SMS', 'Server bilan aloqa yo‘q');
   }
 }
 
 async function resendOTP() {
   if (!_otpPhone) {
-    showToast(
-      '⚠️',
-      'SMS',
-      'Telefon raqam topilmadi'
-    );
+    showToast('⚠️', 'SMS', 'Telefon raqam topilmadi');
     return;
   }
 
@@ -626,39 +601,20 @@ async function resendOTP() {
     const data = await res.json().catch(() => ({}));
 
     if (!res.ok) {
-      throw new Error(
-        data.detail ||
-        data.error ||
-        'OTP yuborishda xato'
-      );
+      throw new Error(data.detail || data.error || 'OTP yuborishda xato');
     }
 
     if (data.demo && data.demo_code) {
       _otpCode = data.demo_code;
     }
 
-    showToast(
-      '✅',
-      'SMS',
-      'Kod qayta yuborildi'
-    );
+    showToast('✅', 'SMS', 'Kod qayta yuborildi');
 
   } catch (e) {
     _otpCode = null;
-
-    showToast(
-      '⚠️',
-      'SMS',
-      'Server bilan aloqa yo‘q'
-    );
+    showToast('⚠️', 'SMS', 'Server bilan aloqa yo‘q');
   }
 }
-
-function backFromOTP() {
-  clearInterval(_resendInterval);
-  showStep('step-' + _otpRole);
-}
-
 // ── v18: API-first login with local USERS fallback ────────────────────────────
 
 function _setLoginLoading(btnId, loading) {
@@ -723,67 +679,44 @@ async function sendForgotOTP() {
   const rawPhone = document.getElementById('fpPhone').value.trim().replace(/\D/g,'');
   const fullPhone = '998' + rawPhone;
 
+  // Foydalanuvchini topish (lokal)
   let found = null, foundRole = _fpRole;
   const searchRoles = _fpRole ? [_fpRole] : Object.keys(USERS);
-
   for (const r of searchRoles) {
-    const u = (USERS[r] || []).find(x => {
+    const u = (USERS[r]||[]).find(x => {
       const stored = _lsGet('idu_phone_' + r + ':' + x.login);
       return (x.phone === fullPhone) || (stored === fullPhone);
     });
-
-    if (u) {
-      found = u;
-      foundRole = r;
-      break;
-    }
+    if (u) { found = u; foundRole = r; break; }
   }
-
-  if (!found) {
-    document.getElementById('fpError').style.display = 'flex';
-    return;
-  }
-
+  if (!found) { document.getElementById('fpError').style.display = 'flex'; return; }
   document.getElementById('fpError').style.display = 'none';
-  _fpUser = found;
-  _fpRole = foundRole;
+  _fpUser = found; _fpRole = foundRole;
 
   const masked = '+998 ' + rawPhone.slice(0,2) + ' *** ** ' + rawPhone.slice(-2);
   document.getElementById('fpPhoneDisplay').textContent = masked;
   document.getElementById('fpOtpDemo').style.display = 'none';
 
+  // Backend ga OTP so'rovi
   try {
     const res = await fetch(BACKEND_URL + '/api/forgot-send', {
       method: 'POST',
       headers: {'Content-Type': 'application/json'},
       body: JSON.stringify({ phone: fullPhone, role: foundRole, login: found.login })
     });
-
     const data = await res.json();
-
     if (!res.ok) throw new Error(data.detail || 'Xato');
-
     if (data.demo && data.demo_code) {
       _fpOtp = data.demo_code;
       document.getElementById('fpOtpDemo').textContent = _fpOtp;
       document.getElementById('fpOtpDemo').style.display = 'block';
     }
 
-    ['fp-step1','fp-step2','fp-step3','fp-step4'].forEach(id => {
-      document.getElementById(id).style.display = 'none';
-    });
-    document.getElementById('fp-step2').style.display = 'block';
-
+    
   } catch(e) {
     _fpOtp = null;
     showToast('⚠️', 'SMS', 'Server bilan aloqa yo‘q');
   }
-}
-
-async function verifyOTP() {
-  const entered = document.getElementById('fpOtpInput').value.trim();
-  document.getElementById('fpOtpError').style.display = 'none';
-
   try {
     const fullPhone = '998' + document.getElementById('fpPhone').value.trim().replace(/\D/g,'');
     const res = await fetch(BACKEND_URL + '/api/forgot-verify', {
@@ -855,7 +788,10 @@ const NAV_TABS = {
     {id:'startup',icon:'🚀',label:'Startup G\'oyalar',labelRu:'Стартап-идеи'},
   ],
   admin: [
-  {id:'dekanat-sesiya',icon:'🗝️',label:'Test va Sesiya',labelRu:'Тест и сессия'},
+  {id:'dekanat-sesiya',icon:'🗝️',label:'Test/Sesiya boshqaruvi',labelRu:'Управление тестом'},
+  {id:'dekanat-questions',icon:'📝',label:'Test savollari',labelRu:'Вопросы'},
+  {id:'dekanat-report',icon:'📈',label:'Natijalar',labelRu:'Результаты'},
+  {id:'notifications',icon:'🔔',label:'Xabarlar',labelRu:'Уведомления'}
 ],
 };
 function setupSidebar(role){
@@ -1619,42 +1555,32 @@ function initAntiCheat(){
   document.addEventListener('copy',(e)=>{
     if(anticheatActive){e.preventDefault();showToast('🚫','Bloklandi','Test vaqtida nusxa olish mumkin emas!');}
   });
+  // Copy path va drag-drop bloklash
+document.addEventListener('dragover', function(e){ e.preventDefault(); });
+document.addEventListener('drop', function(e){ e.preventDefault(); });
+
+// Yangi oynaga ochishni bloklash (middle-click, Ctrl+click)
+document.addEventListener('auxclick', function(e){
+  if(e.button === 1) e.preventDefault(); // middle click
+});
+document.addEventListener('keydown', function(e){
+  // Ctrl+N — yangi oyna bloklash
+  if(e.ctrlKey && (e.key==='n'||e.key==='N')){
+    e.preventDefault();
+    return false;
+  }
+  // Ctrl+T — yangi tab bloklash  
+  if(e.ctrlKey && (e.key==='t'||e.key==='T')){
+    e.preventDefault();
+    return false;
+  }
+});
   document.addEventListener('keydown',(e)=>{
     if(!anticheatActive)return;
     // Block F12, Ctrl+Shift+I, Ctrl+U, Ctrl+C
-    if(
-      e.key==='F12' ||
-      (e.ctrlKey && e.shiftKey && e.key==='I') ||
-      (e.ctrlKey && e.shiftKey && e.key==='J') ||
-      (e.ctrlKey && e.key==='u') ||
-      (e.ctrlKey && e.key==='U') ||
-      (e.ctrlKey && e.key==='l') ||
-      (e.ctrlKey && e.key==='L') ||
-      (e.ctrlKey && e.key==='t') ||
-      (e.ctrlKey && e.key==='T') ||
-      (e.ctrlKey && e.key==='n') ||
-      (e.ctrlKey && e.key==='N') ||
-      (e.ctrlKey && e.key==='w') ||
-      (e.ctrlKey && e.key==='W') ||
-      (e.altKey && e.key==='F4') ||
-      (e.ctrlKey && e.key==='c') ||
-      (e.ctrlKey && e.key==='C') ||
-      (e.key==='PrintScreen')
-    ){
+    if(e.key==='F12'||(e.ctrlKey&&e.shiftKey&&e.key==='I')||(e.ctrlKey&&e.key==='u')){
       e.preventDefault();
-      if(e.key==='F12'||(e.ctrlKey&&e.shiftKey&&['I','J'].includes(e.key))||(e.ctrlKey&&['u','U'].includes(e.key))){
-        triggerWarning('🔒 DevTools ochish taqiqlangan! Bu harakat qayd etildi.');
-      } else if(e.ctrlKey&&['l','L'].includes(e.key)){
-        triggerWarning('🚫 Manzil satrini ochish test vaqtida taqiqlangan!');
-      } else if(e.ctrlKey&&['t','T','n','N'].includes(e.key)){
-        triggerWarning('🚫 Yangi tab/oyna ochish test vaqtida taqiqlangan!');
-      } else if(e.ctrlKey&&['w','W'].includes(e.key)){
-        triggerWarning('🚫 Tabni yopish test vaqtida taqiqlangan!');
-      } else if(e.ctrlKey&&['c','C'].includes(e.key)){
-        triggerWarning('🚫 Nusxa olish test vaqtida taqiqlangan!');
-      } else {
-        triggerWarning('🚫 Bu harakat test vaqtida taqiqlangan!');
-      }
+      triggerWarning('🔒 DevTools ochish taqiqlangan! Bu harakat qayd etildi.');
     }
   });
   // DevTools size detection
@@ -3571,119 +3497,39 @@ function showTestInstructions() {
   document.getElementById('stest-results').style.display = 'none';
   document.getElementById('testPageSub').textContent = 'Fan tanlang va testni boshlang';
 }
-function renderActiveTestQuestions() {
-  var container = document.getElementById('testQuestionsContainer');
-  if (!container) return;
 
-  var html = '';
-  (_currentTestQuestions || []).forEach(function(q, i) {
-    html += _buildTestQHtml(q, i, 'test');
-  });
-
-  container.innerHTML = html;
-}
-async function enterExamFullscreen() {
+function startTestWithSubject(subj) {
   try {
-    const el = document.documentElement;
-    if (el.requestFullscreen) await el.requestFullscreen();
-    else if (el.webkitRequestFullscreen) el.webkitRequestFullscreen();
-    else if (el.mozRequestFullScreen) el.mozRequestFullScreen();
+    _currentTestSubject = subj;
+    _currentTestQuestions = TEST_QUESTIONS_DB[subj] || [];
+
+    if (!_currentTestQuestions.length) {
+      alert('Bu fan uchun test savollari topilmadi');
+      return;
+    }
+
+    _testAnswers = {};
+    quizIdx = 0;
+    quizScore = 0;
+    quizAnswered = false;
+
+    document.getElementById('stest-instructions').style.display = 'none';
+    document.getElementById('stest-active').style.display = 'block';
+    document.getElementById('stest-results').style.display = 'none';
+
+    renderActiveTestQuestions();
   } catch (e) {
-    // Fullscreen rad etildi — test baribir davom etadi
-    console.warn('[IDU] Fullscreen rad etildi:', e.message);
-  }
-  // Har doim anticheat yoqiladi (fullscreen muvaffaqiyatli bolmasa ham)
-  document.body.classList.add('exam-active', 'secure-exam-mode');
-  anticheatActive = true;
-  warnCount = 0;
-  window.onbeforeunload = function () {
-    return 'Test davom etmoqda. Chiqsangiz ogohlantirish yoziladi.';
-  };
-}
-
-// main.js — 3522-qatordan boshlab shu funksiyani ALMASHTIRAMIZ:
-async function startTestWithSubject(subj) {
-  var allQs = TEST_QUESTIONS_DB[subj] || [];
-  if (!allQs.length) {
-    showToast('⚠️', 'Savol yo\'q', 'Bu fan uchun savollar topilmadi');
-    return;
-  }
-  var shuffled = allQs.slice().sort(function () { return Math.random() - 0.5; });
-  _currentTestSubject = subj;
-  _currentTestQuestions = shuffled.slice(0, Math.min(20, shuffled.length));
-  _testAnswers = {};
-
-  if (typeof openRealExam === 'function') {
-    openRealExam({
-      id: 'test_' + subj + '_' + Date.now(),
-      questions: _currentTestQuestions,
-      duration: 30 * 60,
-      maxWarnings: 3,
-      maxSuspicion: 100
-    });
-    return;
-  }
-
-  await enterExamFullscreen();
-  document.getElementById('stest-instructions').style.display = 'none';
-  document.getElementById('stest-active').style.display = 'block';
-  document.getElementById('stest-results').style.display = 'none';
-
-  if (_testTimer) clearInterval(_testTimer);
-  _testSec = 30 * 60;
-  var timerEl = document.getElementById('testTimerDisplay');
-  if (timerEl) timerEl.textContent = '30:00';
-
-  renderActiveTestQuestions();
-
-  _testTimer = setInterval(function () {
-    _testSec--;
-    var m = Math.floor(_testSec / 60).toString().padStart(2, '0');
-    var s = (_testSec % 60).toString().padStart(2, '0');
-    var el = document.getElementById('testTimerDisplay');
-    if (el) { el.textContent = m + ':' + s; el.style.color = _testSec < 300 ? '#B91C1C' : ''; }
-    if (_testSec <= 0) { clearInterval(_testTimer); _testTimer = null; _finishTestExam(); }
-  }, 1000);
-}
-
-function _finishTestExam() {
-  if (_testTimer) { clearInterval(_testTimer); _testTimer = null; }
-  anticheatActive = false;
-  window.onbeforeunload = null;
-  try { document.exitFullscreen(); } catch (e) {}
-  document.body.classList.remove('exam-active', 'secure-exam-mode');
-  var nav = document.getElementById('hemis-nav');
-  if (nav) nav.style.display = '';
-  var mc = document.getElementById('mainContent');
-  if (mc) { mc.style.marginLeft = ''; mc.style.width = ''; }
-
-  var correct = 0;
-  _currentTestQuestions.forEach(function (q, i) { if (_testAnswers[i] === q.ans) correct++; });
-  var total = _currentTestQuestions.length;
-  var pct = Math.round((correct / total) * 100);
-  var grade = pct >= 86 ? "A'lo (5)" : pct >= 71 ? 'Yaxshi (4)' : pct >= 56 ? "Qoniqarli (3)" : "Qoniqarsiz (2)";
-
-  document.getElementById('stest-instructions').style.display = 'none';
-  document.getElementById('stest-active').style.display = 'none';
-  document.getElementById('stest-results').style.display = 'block';
-
-  var resEl = document.getElementById('testResultContent');
-  if (resEl) {
-    resEl.innerHTML = '<div style="text-align:center;padding:30px">' +
-      '<div style="font-size:56px;margin-bottom:12px">' + (pct >= 56 ? '🎉' : '😔') + '</div>' +
-      '<div style="font-size:32px;font-weight:900;color:' + (pct >= 56 ? '#16A34A' : '#DC2626') + '">' + pct + '%</div>' +
-      '<div style="font-size:18px;font-weight:700;margin:8px 0">' + grade + '</div>' +
-      '<div style="font-size:14px;color:#64748B">' + correct + ' / ' + total + " to'g'ri javob</div>" +
-      '<button onclick="showTestInstructions()" style="margin-top:20px;padding:12px 28px;background:#1B4FD8;color:white;border:none;border-radius:10px;font-size:15px;font-weight:700;cursor:pointer">🔄 Qayta urinish</button>' +
-      '</div>';
+    console.error(e);
+    alert('Testni boshlashda xatolik');
   }
 }
+
 function onTestAnswer(qi, optIdx) {
   _testAnswers[qi] = optIdx;
   var hidden = document.getElementById('tq' + qi + 'ans');
   if (hidden) hidden.value = optIdx;
   // Style the selected option
-  var qs = _currentTestQuestions[qi];
+  var qs = TEST_QUESTIONS_DB[_currentTestSubject][qi];
   qs.opts.forEach(function(_, j) {
     var lbl = document.getElementById('tq-' + qi + '-opt-' + j);
     if (lbl) {
@@ -3777,11 +3623,77 @@ function renderSesiyaReal() {
   }
 }
 
-async function startRealWithSubject(subj) {
-  await enterExamFullscreen();
-  _origStartRealWithSubject(subj);
-}
+function startRealWithSubject(subj) {
+  try {
+    _currentRealSubject = subj;
 
+    var baseQs = TEST_QUESTIONS_DB[subj] || TEST_QUESTIONS_DB.algo || [];
+    _currentRealQuestions = [];
+
+    for (var i = 0; i < 30; i++) {
+      _currentRealQuestions.push(baseQs[i % baseQs.length]);
+    }
+
+    _realAnswers = {};
+
+    var icons = {algo:'💻', ai:'🤖', math:'📐', db:'🗄️', web:'🌐'};
+    var names = {
+      algo:'Algoritmlar va Dasturlash',
+      ai:"Sun'iy Intellekt",
+      math:'Matematika (AI uchun)',
+      db:"Ma'lumotlar Bazasi",
+      web:'Web Dasturlash'
+    };
+
+    document.getElementById('realSubjectIcon').textContent = icons[subj] || '📝';
+    document.getElementById('realSubjectName').textContent = names[subj] || subj;
+    document.getElementById('realProgressLabel').textContent = '0/30';
+    document.getElementById('realProgressBar').style.width = '0%';
+    document.getElementById('realPageSub').textContent = (names[subj] || subj) + ' · Rasmiy imtihon';
+
+    var container = document.getElementById('realQuestionsContainer');
+    var html = '';
+
+    _currentRealQuestions.forEach(function(q, i) {
+      html += _buildTestQHtml(q, i, 'real');
+    });
+
+    container.innerHTML = html;
+
+    document.getElementById('sreal-instructions').style.display = 'none';
+    document.getElementById('sreal-active').style.display = 'block';
+    document.getElementById('sreal-results').style.display = 'none';
+
+    if (_realTimer) clearInterval(_realTimer);
+
+    _realSec = 90 * 60;
+    document.getElementById('realTimerDisplay').textContent = '90:00';
+
+    _realTimer = setInterval(function() {
+      _realSec--;
+
+      var m = Math.floor(_realSec / 60).toString().padStart(2, '0');
+      var s = (_realSec % 60).toString().padStart(2, '0');
+      var el = document.getElementById('realTimerDisplay');
+
+      if (el) {
+        el.textContent = m + ':' + s;
+        el.style.color = _realSec < 600 ? '#B91C1C' : '#DC2626';
+      }
+
+      if (_realSec <= 0) {
+        clearInterval(_realTimer);
+        _realTimer = null;
+        submitRealExam();
+      }
+    }, 1000);
+
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  } catch (e) {
+    console.error(e);
+    alert('Imtihonni boshlashda xatolik');
+  }
+}
 function onRealAnswer(qi, optIdx) {
   _realAnswers[qi] = optIdx;
   var hidden = document.getElementById('rq' + qi + 'ans');
@@ -3904,13 +3816,51 @@ var _editingQId = null;
 var _currentQFilter = 'all';
 loadDekanatQuestions();
 
-
+// Override question sources: use dekanat questions when available
+var _origStartTestWithSubject = startTestWithSubject;
+startTestWithSubject = function(subj) {
+  var dekQs = DEKANAT_QUESTIONS.filter(function(q) { return q.subject === subj && (q.type === 'test' || q.type === 'both'); });
+  if (dekQs.length >= 20) {
+    _currentTestSubject = subj;
+    _currentTestQuestions = dekQs.slice(0, 20);
+    _testAnswers = {};
+    var icons = {algo:'💻', ai:'🤖', math:'📐', db:'🗄️', web:'🌐'};
+    var names = {algo:'Algoritmlar va Dasturlash', ai:"Sun'iy Intellekt", math:'Matematika (AI uchun)', db:"Ma'lumotlar Bazasi", web:'Web Dasturlash'};
+    document.getElementById('testSubjectIcon').textContent = icons[subj] || '📝';
+    document.getElementById('testSubjectName').textContent = names[subj] || subj;
+    document.getElementById('testProgressLabel').textContent = '0/20';
+    document.getElementById('testProgressBar').style.width = '0%';
+    document.getElementById('testPageSub').textContent = names[subj] + ' · Dekanat savollari';
+    var container = document.getElementById('testQuestionsContainer');
+    var html = '';
+    _currentTestQuestions.forEach(function(q, i) {
+      html += _buildTestQHtml(q, i, 'test');
+    });
+    container.innerHTML = html;
+    document.getElementById('stest-instructions').style.display = 'none';
+    document.getElementById('stest-active').style.display = 'block';
+    document.getElementById('stest-results').style.display = 'none';
+    if (_testTimer) clearInterval(_testTimer);
+    _testSec = 30 * 60;
+    document.getElementById('testTimerDisplay').textContent = '30:00';
+    _testTimer = setInterval(function() {
+      _testSec--;
+      var m = Math.floor(_testSec/60).toString().padStart(2,'0');
+      var s = (_testSec%60).toString().padStart(2,'0');
+      var el = document.getElementById('testTimerDisplay');
+      if (el) { el.textContent = m + ':' + s; el.style.color = _testSec < 300 ? '#DC2626' : '#1B4FD8'; }
+      if (_testSec <= 0) { clearInterval(_testTimer); _testTimer = null; submitTestExam(); }
+    }, 1000);
+    window.scrollTo({top: 0, behavior: 'smooth'});
+  } else {
+    _origStartTestWithSubject(subj);
+  }
+};
 
 var _origStartRealWithSubject = startRealWithSubject;
-startRealWithSubject = async function(subj) {
+startRealWithSubject = function(subj) {
   var dekQs = DEKANAT_QUESTIONS.filter(function(q) { return q.subject === subj && (q.type === 'real' || q.type === 'both'); });
   if (dekQs.length >= 30) {
-     await enterExamFullscreen();
     _currentRealSubject = subj;
     _currentRealQuestions = dekQs.slice(0, 30);
     _realAnswers = {};
