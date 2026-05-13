@@ -217,8 +217,8 @@ body{font-family:'Outfit',sans-serif;background:var(--bg);color:var(--text);min-
 .idu-f-sep{opacity:0.4}
 /* ═══ APP ═══ */
 
-#appScreen{display:none;height:100vh;overflow:hidden}
-#appScreen.visible{display:flex;flex-direction:column}
+#appScreen{display:none;height:100dvh;overflow:hidden}
+#appScreen.visible{display:flex;flex-direction:column;height:100dvh}
 .topnav{background:var(--white);border-bottom:1px solid var(--border);height:58px;display:flex;align-items:center;padding:0 24px;box-shadow:var(--shadow-sm);flex-shrink:0;z-index:100;position:sticky;top:0}
 .topnav-logo{display:flex;align-items:center;gap:10px;margin-right:24px;text-decoration:none}
 .topnav-logo-icon{width:34px;height:34px;border-radius:9px;background:linear-gradient(135deg,var(--primary),#3B82F6);display:flex;align-items:center;justify-content:center;font-weight:800;font-size:14px;color:white}
@@ -256,11 +256,11 @@ body{font-family:'Outfit',sans-serif;background:var(--bg);color:var(--text);min-
 .si-badge.blue{background:var(--primary-light);color:var(--primary)}
 .si-badge.purple{background:var(--purple-light);color:var(--purple)}
 .sidebar-divider{height:1px;background:var(--border);margin:10px 0}
-.main-content{flex:1;overflow-y:auto;background:var(--bg)}
+.main-content{flex:1;overflow-y:auto;overflow-x:hidden;background:var(--bg);padding:24px 28px 40px;-webkit-overflow-scrolling:touch;scroll-behavior:smooth;min-height:0}
 .main-content::-webkit-scrollbar{width:5px}
 .main-content::-webkit-scrollbar-track{background:transparent}
 .main-content::-webkit-scrollbar-thumb{background:var(--border2);border-radius:3px}
-.page{display:none !important;padding:26px}
+.page{display:none !important;padding:26px;max-width:1400px}
 .page.active{display:block !important;animation:pgIn 0.22s ease}
 @keyframes pgIn{from{opacity:0;transform:translateY(5px)}to{opacity:1;transform:none}}
 .page-header{display:flex;align-items:center;justify-content:space-between;margin-bottom:22px;flex-wrap:wrap;gap:10px}

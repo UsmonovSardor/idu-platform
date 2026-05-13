@@ -732,13 +732,7 @@ const SAVED_GRADES={};
 let _curSub='Machine Learning';
 let _curGrp='AI-2301';
 // Dynamic groups list (starts with defaults, dekanat can add more)
-let GROUPS_LIST = [
-  {name:'AI-2301', dir:"Sun'iy Intellekt", course:1, count:25},
-  {name:'CS-2301', dir:'Kiberxavfsizlik', course:1, count:28},
-  {name:'IT-2301', dir:'Computing & IT', course:1, count:27},
-  {name:'DB-2301', dir:'Digital Business', course:1, count:26},
-];
-
+let GROUPS_LIST = []; // API dan yuklanadi
 function getGroupNames(){ return GROUPS_LIST.map(g=>g.name); }
 
 // ── GROUPS PAGE ──
@@ -961,13 +955,7 @@ function renderTeacherPerformance(){
   var tLoad=document.getElementById('teacherLoadChart');
   var tBody=document.getElementById('teacherDetailBody');
   if(!tList||!tLoad||!tBody) return;
-  var teachers=TEACHERS_DATA.length?TEACHERS_DATA:[
-    {name:'Prof. Karimov J.',dept:'Sun\'iy intellekt',subjects:['Machine Learning','Deep Learning'],groups:['AI-2301','CS-2301'],hours:14,rating:4.8},
-    {name:'Prof. Ergashev T.',dept:'Dasturlash',subjects:['Python for AI','Data Science'],groups:['AI-2301','IT-2301'],hours:12,rating:4.6},
-    {name:'Prof. Yusupova M.',dept:'Matematika',subjects:['Matematika (AI)','Algoritmlar'],groups:['AI-2301','DB-2301'],hours:16,rating:4.4},
-    {name:'Prof. Rahimova N.',dept:'Ingliz tili',subjects:['Ingliz tili (Tech)'],groups:['AI-2301','CS-2301','IT-2301'],hours:18,rating:4.7},
-    {name:'Prof. Toshmatov A.',dept:'Computer Vision',subjects:['Computer Vision','NLP'],groups:['AI-2301'],hours:10,rating:4.2},
-  ];
+  var teachers=TEACHERS_DATA;
   var bgPalette=['#1B4FD8','#7C3AED','#16A34A','#EA580C','#0D9488'];
   // Performance list
   var sorted=[...teachers].sort(function(a,b){return b.rating-a.rating;});
@@ -1659,29 +1647,7 @@ let appIdCounter = 1;
 // ════════════════════════════════════
 const PROFESSORS_DATA = []; // API dan yuklanadi
 // Seed some demo reviews
-const PROF_REVIEWS_INIT = [
-  {profId:1, overall:5, cats:[5,4,5,4], comment:"Juda yaxshi tushuntiradi, savollarimga har doim javob beradi!", time:'2 kun oldin'},
-  {profId:1, overall:4, cats:[4,5,4,5], comment:"Darslar qiziqarli, lekin vazifalar ko'p. Umuman olganda yaxshi ustoz.", time:'5 kun oldin'},
-  {profId:1, overall:5, cats:[5,5,5,4], comment:"ML bo'yicha eng yaxshi profil! Amaliy misollar juda foydali.", time:'1 hafta oldin'},
-  {profId:2, overall:4, cats:[4,4,5,3], comment:"Matematikani juda chuqur o'rgatadi. Ba'zan tushunish qiyin.", time:'3 kun oldin'},
-  {profId:2, overall:5, cats:[5,5,4,5], comment:"Data Science kursida eng yaxshi professor! Loyiha topshiriqlari real hayotga mos.", time:'1 hafta oldin'},
-  {profId:3, overall:3, cats:[3,4,3,3], comment:"Mavzular qiyin lekin tushuntirish yetarli emas ba'zida.", time:'4 kun oldin'},
-  {profId:3, overall:5, cats:[5,5,5,5], comment:"Computer Vision bo'yicha bilimi ajoyib! Har bir darsdan ilhom olaman.", time:'2 hafta oldin'},
-  {profId:4, overall:5, cats:[5,5,5,5], comment:"Ingliz tilini o'rgatish uslubi juda samarali. Har darsdan yangi narsa o'rganaman.", time:'1 kun oldin'},
-  {profId:4, overall:4, cats:[4,5,4,4], comment:"Yaxshi o'qituvchi, lekin ba'zan test savollari juda qiyin.", time:'3 kun oldin'},
-  {profId:5, overall:4, cats:[4,4,5,4], comment:"NLP bo'yicha ko'p material beradi. Eng yaxshi tomonlari: amaliy loyihalar.", time:'5 kun oldin'},
-  {profId:6, overall:5, cats:[5,5,5,4], comment:"Cybersecurity sohasida juda tajribali! Haqiqiy zaifliklarni ko'rsatadi.", time:'1 hafta oldin'},
-  {profId:7, overall:4, cats:[4,4,4,5], comment:"React va Node.js juda yaxshi o'rgatadi. Portfolio loyihalari foydali.", time:'2 kun oldin'},
-  {profId:8, overall:3, cats:[3,4,3,4], comment:"Database darslari tushunish oson, lekin chuqurlik yetishmaydi.", time:'3 kun oldin'},
-];
-
-// Initialize ratings from demo data
-(function initProfRatings(){
-  PROF_REVIEWS_INIT.forEach(r=>{
-    const p = PROFESSORS_DATA.find(x=>x.id===r.profId);
-    if(p){ p.ratings.push(r); p.totalReviews++; }
-  });
-})();
+// Ustoz sharhlari faqat real API dan yuklanadi
 
 let _profReviewTarget = null; // professor being reviewed
 let _prmStarVal = 0;
@@ -1710,116 +1676,80 @@ function getRatingDist(prof){
   return dist;
 }
 
-function renderProfessorsPage(){
-  const isRu = currentLang==='ru';
-  // update page title
-  const ptEl=document.getElementById('prof-page-title');
-  if(ptEl) ptEl.textContent=isRu?'⭐ Оценки преподавателей':'⭐ Ustozlarni baholash';
-  const psEl=document.getElementById('prof-page-sub');
-  if(psEl) psEl.textContent=isRu?'Анонимные отзывы — ваше имя никогда не будет показано':'Anonim sharh va reyting — faqat siz ko\'rsatasiz, ism ko\'rinmaydi';
 
-  const query=(document.getElementById('profSearchInput')?.value||'').toLowerCase();
-  let profs = PROFESSORS_DATA.filter(p=>{
-    const matchQ = !query || p.name.toLowerCase().includes(query) || p.subject.toLowerCase().includes(query) || p.tags.some(t=>t.toLowerCase().includes(query));
-    const matchF = _profFilterDept==='all' || p.dept===_profFilterDept;
-    return matchQ && matchF;
-  });
-  // Sort by avg rating desc
-  profs.sort((a,b)=>getProfAvgRating(b)-getProfAvgRating(a));
+// ════════════════════════════════════
+// PROFESSORS — API DAN REAL DATA
+// ════════════════════════════════════
+async function renderProfessorsPage() {
+  const gridEl = document.getElementById('profGrid');
+  const statsEl = document.getElementById('profStatsRow');
+  if (!gridEl) return;
+  gridEl.innerHTML = '<div style="grid-column:1/-1;text-align:center;padding:40px;color:#94a3b8">⏳ Yuklanmoqda...</div>';
 
-  // Stats row
-  const totalReviews = PROFESSORS_DATA.reduce((s,p)=>s+p.ratings.length,0);
-  const allRatings = PROFESSORS_DATA.flatMap(p=>p.ratings.map(r=>r.overall));
-  const globalAvg = allRatings.length ? (allRatings.reduce((s,r)=>s+r,0)/allRatings.length).toFixed(1) : '—';
-  const statsEl=document.getElementById('profStatsRow');
-  if(statsEl) statsEl.innerHTML=`
-    <div class="prof-stat-card"><div class="prof-stat-val">${PROFESSORS_DATA.length}</div><div class="prof-stat-lbl">${isRu?'Преподавателей':'Ustozlar'}</div></div>
-    <div class="prof-stat-card"><div class="prof-stat-val">${totalReviews}</div><div class="prof-stat-lbl">${isRu?'Отзывов':'Sharhlar'}</div></div>
-    <div class="prof-stat-card"><div class="prof-stat-val">${globalAvg}★</div><div class="prof-stat-lbl">${isRu?'Средний рейтинг':'O\'rtacha reyting'}</div></div>
-  `;
+  try {
+    const teachers = await api('GET', '/teachers');
+    if (!Array.isArray(teachers) || !teachers.length) {
+      gridEl.innerHTML = `<div style="grid-column:1/-1;text-align:center;padding:40px;color:#94a3b8"><div style="font-size:40px;margin-bottom:12px">👨‍🏫</div><div>O'qituvchilar hali qo'shilmagan</div></div>`;
+      if (statsEl) statsEl.innerHTML = '<div class="prof-stat-card"><div class="prof-stat-val">0</div><div class="prof-stat-lbl">Ustozlar</div></div><div class="prof-stat-card"><div class="prof-stat-val">0</div><div class="prof-stat-lbl">Sharhlar</div></div><div class="prof-stat-card"><div class="prof-stat-val">—</div><div class="prof-stat-lbl">Reyting</div></div>';
+      return;
+    }
 
-  // Filter row
-  const depts = ['all',...new Set(PROFESSORS_DATA.map(p=>p.dept))];
-  const filterEl=document.getElementById('profFilterRow');
-  if(filterEl) filterEl.innerHTML=depts.map(d=>`
-    <button class="filter-chip${_profFilterDept===d?' active':''}" onclick="_profFilterDept='${d}';renderProfessorsPage()">
-      ${d==='all'?(isRu?'Все':'Barchasi'):d}
-    </button>`).join('');
+    if (statsEl) {
+      statsEl.innerHTML = `
+        <div class="prof-stat-card"><div class="prof-stat-val">${teachers.length}</div><div class="prof-stat-lbl">Ustozlar</div></div>
+        <div class="prof-stat-card"><div class="prof-stat-val">0</div><div class="prof-stat-lbl">Sharhlar</div></div>
+        <div class="prof-stat-card"><div class="prof-stat-val">—★</div><div class="prof-stat-lbl">O'rtacha reyting</div></div>`;
+    }
 
-  // Professor grid
-  const gridEl=document.getElementById('profGrid');
-  if(!gridEl) return;
-  if(!profs.length){
-    gridEl.innerHTML=`<div style="grid-column:1/-1;text-align:center;padding:40px;color:#64748B">${isRu?'Преподаватели не найдены':'Ustoz topilmadi'}</div>`;
-    return;
+    const colors = ['#1B4FD8','#7C3AED','#16A34A','#EA580C','#0D9488','#DC2626','#0EA5E9','#A21CAF'];
+    gridEl.innerHTML = teachers.map((t, i) => {
+      const initials = (t.full_name || '?').split(' ').map(x => x[0]).join('').substring(0, 2).toUpperCase();
+      const color = colors[i % colors.length];
+      return `
+      <div class="prof-card">
+        <div class="prof-card-head">
+          <div class="prof-avatar" style="background:${color}">${initials}</div>
+          <div style="flex:1;min-width:0">
+            <div class="prof-name">${t.full_name || '—'}</div>
+            <div class="prof-subject" style="font-size:12px;color:#64748b">${t.title || ''} ${t.department ? '· ' + t.department : ''}</div>
+            ${t.course_count ? `<div style="font-size:11px;color:#94a3b8;margin-top:2px">📚 ${t.course_count} ta fan</div>` : ''}
+          </div>
+        </div>
+        ${t.bio ? `<div style="font-size:12.5px;color:#475569;margin-bottom:10px;line-height:1.5">${t.bio}</div>` : ''}
+        <div style="margin-bottom:10px">
+          <div style="display:flex;align-items:center;gap:6px;margin-bottom:6px">
+            <span style="font-size:13px;color:#94a3b8">★★★★★</span>
+            <span style="font-size:12px;color:#94a3b8">— / 5</span>
+          </div>
+          <div class="prof-rating-bar-wrap"><div class="prof-rating-bar-fill" style="width:0%"></div></div>
+        </div>
+        <div class="prof-reviews-preview">
+          <div style="font-size:12px;color:#94a3b8;text-align:center;padding:8px">Hali sharh yo'q</div>
+        </div>
+        <button class="prof-btn-rate" onclick="openProfReview(${t.id}, '${(t.full_name||'').replace(/'/g,'\'')}')">
+          ⭐ Ustozni baholash
+        </button>
+      </div>`;
+    }).join('');
+
+  } catch(e) {
+    gridEl.innerHTML = `<div style="grid-column:1/-1;text-align:center;padding:30px;color:#ef4444">Xato: ${e.message}</div>`;
   }
-  gridEl.innerHTML=profs.map(p=>{
-    const avg=getProfAvgRating(p);
-    const dist=getRatingDist(p);
-    const recentReviews=p.ratings.slice(-2).reverse();
-    const cats=[
-      isRu?'📚 Объяснение':'📚 Tushuntirish',
-      isRu?'⏰ Пунктуальность':'⏰ Vaqtinchalik',
-      isRu?'🤝 Отношение':'🤝 Munosabat',
-      isRu?'📝 Задания':'📝 Vazifalar'
-    ];
-    return `
-    <div class="prof-card" id="profcard-${p.id}">
-      <div class="prof-card-head">
-        <div class="prof-avatar" style="background:${p.color}">${p.short}</div>
-        <div style="flex:1">
-          <div class="prof-name">${p.name}</div>
-          <div class="prof-subject" style="font-size:11.5px">${p.subject}</div>
-          <div style="font-size:10px;color:#94A3B8;margin-top:2px">🏛️ ${p.dept}</div>
-        </div>
-        <div style="text-align:right">
-          <div style="font-size:20px;font-weight:900;color:#0F172A;line-height:1">${avg>0?avg.toFixed(1):'—'}</div>
-          <div style="font-size:10px;color:#64748B">${isRu?`${p.ratings.length} отзывов`:`${p.ratings.length} sharh`}</div>
-        </div>
-      </div>
-      <!-- Rating bar -->
-      <div style="margin-bottom:10px">
-        <div style="display:flex;align-items:center;gap:8px;margin-bottom:6px">
-          <div>${starsHtml(avg,15)}</div>
-          <div style="font-size:11px;color:#94A3B8">${avg>0?avg.toFixed(1)+'/5':'—'}</div>
-        </div>
-        <div class="prof-rating-bar-wrap"><div class="prof-rating-bar-fill" style="width:${avg/5*100}%"></div></div>
-      </div>
-      <!-- Distribution (compact) -->
-      ${p.ratings.length>0?`<div style="margin-bottom:10px">${[5,4,3,2,1].map(n=>`
-        <div class="rating-dist-row">
-          <div class="rating-dist-label">${n}★</div>
-          <div class="rating-dist-bar"><div class="rating-dist-fill" style="width:${p.ratings.length?(dist[n]/p.ratings.length*100):0}%"></div></div>
-          <div class="rating-dist-count">${dist[n]}</div>
-        </div>`).join('')}</div>`:''}
-      <!-- Tags -->
-      <div class="prof-tags">${p.tags.map(t=>`<span class="prof-tag">${t}</span>`).join('')}</div>
-      <!-- Category averages -->
-      ${p.ratings.length>0?`<div style="display:grid;grid-template-columns:1fr 1fr;gap:6px;margin-bottom:10px">
-        ${cats.map((cat,ci)=>{
-          const catAvg=getProfCatAvg(p,ci);
-          return `<div style="background:#F8FAFC;border-radius:8px;padding:7px 10px">
-            <div style="font-size:10px;color:#64748B;margin-bottom:3px">${cat}</div>
-            <div style="font-size:12px;font-weight:700;color:#0F172A">${catAvg>0?catAvg.toFixed(1)+'★':'—'}</div>
-          </div>`;
-        }).join('')}
-      </div>`:''}
-      <!-- Recent reviews -->
-      ${recentReviews.length?`<div class="prof-reviews-preview">
-        <div style="font-size:11px;font-weight:700;color:#0F172A;margin-bottom:5px">${isRu?'Последние отзывы:':'So\'nggi sharhlar:'}</div>
-        ${recentReviews.map(r=>`
-          <div class="prof-review-item">
-            <div class="prof-anon-badge">🔒 ${isRu?'Анонимно':'Anonim'} · ${r.time} · ${'★'.repeat(r.overall)}</div>
-            ${r.comment?`<div>${r.comment}</div>`:''}
-          </div>`).join('')}
-      </div>`:'<div style="font-size:12px;color:#94A3B8;text-align:center;padding:8px">'+(isRu?'Ещё нет отзывов':'Hali sharh yo\'q')+'</div>'}
-      <!-- Rate button -->
-      <button class="prof-btn-rate" onclick="openProfReview(${p.id})">
-        ⭐ ${isRu?'Оценить преподавателя':'Ustozni baholash'}
-      </button>
-    </div>`;
-  }).join('');
 }
+
+function openProfReview(teacherId, teacherName) {
+  const modal = document.getElementById('profReviewModal');
+  if (modal) {
+    document.getElementById('prmTeacherName') && (document.getElementById('prmTeacherName').textContent = teacherName);
+    modal.style.display = 'flex';
+    modal._teacherId = teacherId;
+    _profReviewTarget = {id: teacherId, name: teacherName};
+    _prmStarVal = 0;
+    _prmCatVals = [0,0,0,0];
+    updatePrmStarsUI();
+  }
+}
+
 function setPrmStar(n){
   _prmStarVal=n;
   updatePrmStarsUI();
@@ -3550,116 +3480,6 @@ setTimeout(function() {
   var origJobDirect = window.applyJobDirect;
   if (origJobDirect) window.applyJobDirect = function() { origJobDirect.apply(this, arguments); saveApplications(); };
 }, 500);
-
-async function renderStudentDashboardFromAPI() {
-  try {
-    // 1. Foydalanuvchi ma'lumotlari
-    const me = await api('GET', '/auth/me');
-    if (!me) return;
-
-    // GPA
-    const gpaEl = document.getElementById('dashGPA');
-    if (gpaEl) gpaEl.textContent = me.gpa ? parseFloat(me.gpa).toFixed(2) : '0.00';
-
-    // 2. Baholar
-    const grades = await api('GET', '/students/' + me.id + '/grades');
-    if (Array.isArray(grades) && grades.length) {
-      let totalSum = 0;
-      let excellent = 0, failed = 0;
-      grades.forEach(g => {
-        const t = parseFloat(g.total) || 0;
-        totalSum += t;
-        if (g.letter_grade === 'A') excellent++;
-        if (g.letter_grade === 'F') failed++;
-      });
-      const avgTotal = (totalSum / grades.length).toFixed(1);
-      const totalScoreEl = document.getElementById('dashTotalScore');
-      if (totalScoreEl) totalScoreEl.textContent = avgTotal;
-
-      // Baholar sahifasi stat cardlari
-      const avgEl = document.getElementById('avgScore');
-      if (avgEl) avgEl.textContent = avgTotal;
-      const excEl = document.getElementById('excellentCount');
-      if (excEl) excEl.textContent = excellent;
-      const failEl = document.getElementById('failCount');
-      if (failEl) failEl.textContent = failed;
-    } else {
-      const totalScoreEl = document.getElementById('dashTotalScore');
-      if (totalScoreEl) totalScoreEl.textContent = '0';
-    }
-
-    // 3. Reyting (barcha studentlar orasida)
-    const ratingEl = document.getElementById('dashRating');
-    if (ratingEl) ratingEl.textContent = '—';
-
-    // 4. Davomat (hozircha statik — attendance API yo'q)
-    const davomatEl = document.getElementById('dashDavomat');
-    if (davomatEl) davomatEl.textContent = '—%';
-
-    // 5. Sidebar GPA yangilash
-    const sidebarGpaEl = document.getElementById('sidebarLevel');
-    if (sidebarGpaEl && me.gpa) {
-      const level = me.gpa >= 3.5 ? 5 : me.gpa >= 3.0 ? 4 : me.gpa >= 2.5 ? 3 : me.gpa >= 2.0 ? 2 : 1;
-      sidebarGpaEl.textContent = level;
-    }
-
-    // 6. So'nggi baholar jadvalini render
-    renderGradesFromAPI(grades);
-
-  } catch(e) {
-    console.error('Dashboard API xatosi:', e);
-  }
-}
-
-function renderGradesFromAPI(grades) {
-  const tbody = document.querySelector('#page-grades table tbody') ||
-                document.querySelector('.grade-table tbody');
-  if (!tbody || !grades || !grades.length) return;
-
-  tbody.innerHTML = grades.slice(0, 10).map(g => {
-    const total = parseFloat(g.total) || 0;
-    const letter = g.letter_grade || (total>=86?'A':total>=71?'B':total>=56?'C':total>=41?'D':'F');
-    const cls = {A:'gc-a',B:'gc-b',C:'gc-c',D:'gc-d',F:'gc-f'}[letter] || 'gc-f';
-    return `<tr>
-      <td>${g.course_name || g.course_code || '—'}</td>
-      <td>${g.jn || 0}</td>
-      <td>${g.on_score || 0}</td>
-      <td>${g.yn || 0}</td>
-      <td>${g.mi || 0}</td>
-      <td><strong>${total}</strong></td>
-      <td><span class="grade-chip ${cls}">${letter}</span></td>
-    </tr>`;
-  }).join('');
-}
-
-
-// ════════════════════════════════════
-// DASHBOARD — BARCHA ROLLAR UCHUN
-// ════════════════════════════════════
-async function loadDashboardStats() {
-  try {
-    // Studentlar soni
-    api('GET', '/students?limit=1').then(d => {
-      const el = document.getElementById('bannerStudents');
-      if (el) el.textContent = d.total || 0;
-      const dekEl = document.getElementById('dekStatStudents');
-      if (dekEl) dekEl.textContent = d.total || 0;
-    }).catch(() => {});
-
-    // Teacher soni
-    api('GET', '/teachers?limit=1').then(d => {
-      const el = document.getElementById('bannerTeachers');
-      if (el) el.textContent = Array.isArray(d) ? d.length : (d.total || 0);
-    }).catch(() => {});
-
-    // Kurslar
-    api('GET', '/grades?limit=1').then(d => {
-      const el = document.getElementById('bannerCourses');
-      if (el) el.textContent = '—';
-    }).catch(() => {});
-
-  } catch(e) {}
-}
 
 // ════════════════════════════════════
 // STUDENT DASHBOARD — REAL DATA

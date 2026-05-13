@@ -2,7 +2,7 @@
 <html lang="uz">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
 <title>IDU — International Digital University</title>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/dompurify/3.0.8/purify.min.js"></script>
 <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -14,7 +14,7 @@
 <body>
 <div class="toast-container" id="toastContainer"></div>
 <!-- ════════ AUTH SCREEN ════════ -->
-<div id="authScreen">
+<div id="authScreen" style="min-height:100dvh;overflow-y:auto;-webkit-overflow-scrolling:touch;">
   <nav class="hemis-nav" id="hemis-nav">
     <div class="hemis-nav-logo"><div class="hn-dot">IDU</div><span class="hn-name">IDU</span></div>
     <div class="hemis-nav-links">
@@ -372,7 +372,7 @@
 
 <!-- ════════ APP SCREEN ════════ -->
 
-<div id="appScreen">
+<div id="appScreen" style="display:none;flex-direction:row;height:100dvh;overflow:hidden;">
   <!-- DATE TIME BAR -->
   <div class="datetime-bar" id="datetimeBar">
     <div class="dtb-left">
@@ -400,7 +400,7 @@
     <div class="topnav-right">
       <div class="nav-icon-btn" title="Yangilash" onclick="syncData()">↻</div>
       <div class="nav-icon-btn" id="notifBtn" onclick="showPage('notifications')">
-        🔔<div class="notif-badge" id="notifCount">3</div>
+        🔔<div class="notif-badge" id="notifCount" style="display:none">0</div>
       </div>
       <div class="user-chip" id="userChip">
         <div class="uc-avatar" id="chipAvatar"></div>
@@ -973,7 +973,7 @@
     <div class="hb-stats">
       <div><div class="hb-stat-val">312</div><div class="hb-stat-key">Talabalar</div></div>
       <div><div class="hb-stat-val">18</div><div class="hb-stat-key">O'qituvchilar</div></div>
-      <div><div class="hb-stat-val">24</div><div class="hb-stat-key">Fanlar</div></div>
+      <div><div class="hb-stat-val" id="bannerSubjects">—</div><div class="hb-stat-key">Fanlar</div></div>
       <div><div class="hb-stat-val">96%</div><div class="hb-stat-key">Davomat</div></div>
     </div>
   </div>
