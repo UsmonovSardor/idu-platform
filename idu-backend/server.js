@@ -104,15 +104,13 @@ if (!frontendDir) {
   console.log('Frontend dir: ' + frontendDir);
 
   app.use(express.static(frontendDir, {
-    maxAge: '1h',
-    etag: true,
-    setHeaders: function (res, filePath) {
-      if (filePath.endsWith('.html')) {
-        res.setHeader('Cache-Control', 'no-cache, no-store, must-revalidate');
-      }
-      if (filePath.endsWith('.js') || filePath.endsWith('.css')) {
-        res.setHeader('Cache-Control', 'no-cache');
-      }
+    maxAge: 0,
+    etag: false,
+    lastModified: false,
+    setHeaders: function (res) {
+      res.setHeader('Cache-Control', 'no-store, no-cache, must-revalidate, proxy-revalidate');
+      res.setHeader('Pragma', 'no-cache');
+      res.setHeader('Expires', '0');
     }
   }));
 }

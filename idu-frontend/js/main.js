@@ -639,9 +639,10 @@ function showPage(id){
   const si=document.getElementById('si-'+id);
   if(si) si.classList.add('active');
   // Lazy render — original pages
-  if(id==='timetable') renderTimetable();
+  if(id==='dashboard') renderStudentDashboard();
+  else if(id==='timetable') renderTimetable();
   else if(id==='teacher-timetable') renderTeacherTimetable();
-  else if(id==='grades') renderGrades();
+  else if(id==='grades') { renderGrades(); }
   else if(id==='tasks') renderTasks();
   else if(id==='materials') renderMaterials();
   else if(id==='rating') renderRating();
@@ -721,6 +722,165 @@ function renderRoomStatus(grp){
       <div style="font-size:12px;font-weight:700;color:${busy?'var(--green)':'var(--text2)'}">${room}</div>
       <div style="font-size:10px;margin-top:3px;color:${busy?'var(--green)':'var(--text3)'}">${busy?'🔴 Band':'🟢 Bo\'sh'}</div>
     </div>`;
+  }).join('');
+}
+
+// ════════════════════════════════════
+//  STUDENT DASHBOARD — API-driven
+// ════════════════════════════════════
+var _dashLoaded = false;
+
+async function renderStudentDashboard() {
+  // Skeleton ko'rsatish
+  _setDashSkeleton();
+
+  // Bugungi sana
+  var dateEl = document.getElementById('dashDate');
+  if (dateEl) {
+    var now = new Date();
+    var days = ['Yakshanba','Dushanba','Seshanba','Chorshanba','Payshanba','Juma','Shanba'];
+    var months = ['Yanvar','Fevral','Mart','Aprel','May','Iyun','Iyul','Avgust','Sentabr','Oktabr','Noyabr','Dekabr'];
+    dateEl.textContent = days[now.getDay()] + ', ' + now.getDate() + ' ' + months[now.getMonth()] + ' ' + now.getFullYear();
+  }
+
+  // Jadval va vazifalar (lokal)
+  renderDashboardSchedule();
+  renderDashboardTasks();
+
+  // API dan baholar va statistika
+  try {
+    var stats = await api('GET', '/grades/my-stats');
+    _updateDashStats(stats);
+    _dashLoaded = true;
+  } catch(e) {
+    _updateDashStats(null);
+  }
+
+  // So'nggi baholar
+  try {
+    var data = await api('GET', '/grades/my');
+    _renderRecentGrades(data.grades || []);
+    if (data.gpa) {
+      var gpaEl = document.querySelector('#page-dashboard .stat-card-val');
+      if (gpaEl) {
+        gpaEl.textContent = parseFloat(data.gpa).toFixed(2);
+        gpaEl.style.color = data.gpa >= 3.5 ? 'var(--green)' : data.gpa >= 2.5 ? 'var(--primary)' : 'var(--orange)';
+      }
+    }
+  } catch(e) {
+    _renderRecentGrades([]);
+  }
+}
+
+function _setDashSkeleton() {
+  // Stat kartlar — skeleton
+  document.querySelectorAll('#page-dashboard .stat-card-val').forEach(function(el) {
+    el.innerHTML = '<span class="skel skel-line" style="width:60px;height:28px;display:inline-block"></span>';
+  });
+  // Jadval — skeleton
+  var ts = document.getElementById('todaySchedule');
+  if (ts) ts.innerHTML = [1,2,3].map(function() {
+    return '<div style="display:flex;gap:10px;margin-bottom:10px">' +
+      '<div class="skel" style="width:4px;height:60px;border-radius:4px"></div>' +
+      '<div style="flex:1"><div class="skel skel-line" style="width:70%;margin-bottom:6px"></div>' +
+      '<div class="skel skel-line" style="width:50%"></div></div></div>';
+  }).join('');
+  // Grades — skeleton
+  var gb = document.getElementById('recentGradesBody');
+  if (gb) gb.innerHTML = [1,2,3].map(function() {
+    return '<tr>' + [1,2,3,4,5,6,7].map(function() {
+      return '<td><div class="skel skel-line" style="width:' + (Math.random()*30+40).toFixed(0) + 'px"></div></td>';
+    }).join('') + '</tr>';
+  }).join('');
+}
+
+function _updateDashStats(stats) {
+  var cards = document.querySelectorAll('#page-dashboard .stat-card');
+  if (!cards.length) return;
+
+  // GPA card (index 0) — from grades/my endpoint
+  // Umumiy ball card (index 1)
+  var totalCard = cards[1] ? cards[1].querySelector('.stat-card-val') : null;
+  if (totalCard) {
+    if (stats && stats.total_courses > 0) {
+      totalCard.textContent = stats.avg_total ? Math.round(stats.avg_total) : '—';
+      totalCard.style.color = 'var(--green)';
+    } else {
+      totalCard.innerHTML = '<span style="font-size:14px;color:var(--text3)">Ma\'lumot yo\'q</span>';
+    }
+  }
+  var totalChange = cards[1] ? cards[1].querySelector('.stat-card-change') : null;
+  if (totalChange && stats) {
+    totalChange.textContent = (stats.total_courses || 0) + ' ta fan';
+    totalChange.className = 'stat-card-change sc-flat';
+  }
+
+  // A'lo baholar (reyting o'rni o'rniga)
+  var ratingCard = cards[2] ? cards[2].querySelector('.stat-card-val') : null;
+  var ratingLabel = cards[2] ? cards[2].querySelector('.stat-card-label') : null;
+  if (ratingLabel) ratingLabel.textContent = 'A\'lo baholar';
+  if (ratingCard) {
+    if (stats && stats.a_count > 0) {
+      ratingCard.textContent = stats.a_count + ' ta';
+      ratingCard.style.color = 'var(--green)';
+    } else {
+      ratingCard.textContent = '0 ta';
+      ratingCard.style.color = 'var(--text3)';
+    }
+  }
+  var ratingChange = cards[2] ? cards[2].querySelector('.stat-card-change') : null;
+  if (ratingChange) {
+    ratingChange.textContent = '86+ ball';
+    ratingChange.className = 'stat-card-change sc-flat';
+  }
+}
+
+function _renderRecentGrades(grades) {
+  var tbody = document.getElementById('recentGradesBody');
+  if (!tbody) return;
+  if (!grades.length) {
+    tbody.innerHTML = '<tr><td colspan="7" style="text-align:center;padding:20px;color:var(--text3)">' +
+      '<div style="font-size:28px;margin-bottom:6px">📊</div>' +
+      '<div style="font-size:13px">Hali baholar kiritilmagan</div>' +
+      '<div style="font-size:11px;color:var(--text3);margin-top:4px">O\'qituvchi baholarni kiritganda bu yerda ko\'rinadi</div>' +
+    '</td></tr>';
+    return;
+  }
+  var recent = grades.slice(0, 5);
+  tbody.innerHTML = recent.map(function(g) {
+    var total = Number(g.total) || 0;
+    var grade = total >= 86 ? {l:'A',c:'var(--green)'} : total >= 71 ? {l:'B',c:'var(--primary)'} :
+                total >= 56 ? {l:'C',c:'var(--orange)'} : {l:'F',c:'var(--red)'};
+    return '<tr>' +
+      '<td style="font-weight:600;max-width:160px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">' + (g.course_name || '—') + '</td>' +
+      '<td style="text-align:center">' + (g.jn || 0) + '</td>' +
+      '<td style="text-align:center">' + (g.on_score || 0) + '</td>' +
+      '<td style="text-align:center">' + (g.yn || 0) + '</td>' +
+      '<td style="text-align:center">' + (g.mi || 0) + '</td>' +
+      '<td style="text-align:center;font-weight:700">' + total + '</td>' +
+      '<td style="text-align:center"><span style="padding:2px 8px;border-radius:6px;font-weight:800;font-size:12px;background:' + grade.c + '20;color:' + grade.c + '">' + grade.l + '</span></td>' +
+    '</tr>';
+  }).join('');
+}
+
+function renderDashboardTasks() {
+  var el = document.getElementById('upcomingTasks');
+  if (!el) return;
+  if (!TASKS_DATA.length) {
+    el.innerHTML = '<div style="padding:20px;text-align:center;color:var(--text3)">' +
+      '<div style="font-size:24px;margin-bottom:6px">✅</div>' +
+      '<div style="font-size:13px">Vazifalar yo\'q</div>' +
+      '<div style="font-size:11px;margin-top:4px">O\'qituvchi vazifa berganda bu yerda ko\'rinadi</div>' +
+    '</div>';
+    return;
+  }
+  var urgent = TASKS_DATA.filter(function(t) { return t.urgent || t.status === 'pending'; }).slice(0, 4);
+  el.innerHTML = urgent.map(function(t) {
+    return '<div style="padding:10px 0;border-bottom:1px solid var(--border);display:flex;align-items:center;gap:10px">' +
+      '<div style="width:8px;height:8px;border-radius:50%;background:' + (t.urgent ? 'var(--red)' : 'var(--orange)') + ';flex-shrink:0"></div>' +
+      '<div style="flex:1"><div style="font-size:13px;font-weight:600;color:var(--text1)">' + (t.title || t.name) + '</div>' +
+      '<div style="font-size:11px;color:var(--text3)">' + (t.due || t.subject || '') + '</div></div>' +
+      '</div>';
   }).join('');
 }
 

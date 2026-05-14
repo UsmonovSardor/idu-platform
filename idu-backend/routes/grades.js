@@ -81,6 +81,42 @@ router.get(
   }
 );
 
+// GET /api/grades/my — student o'z baholarini ko'radi
+router.get('/my', authorize('student'), async (req, res) => {
+  const { rows } = await db.query(
+    `SELECT c.name AS course_name, c.code AS course_code,
+            g.jn, g.on_score, g.yn, g.mi,
+            ROUND(g.jn + g.on_score + g.yn + g.mi) AS total,
+            g.letter_grade, g.semester, g.academic_year,
+            u2.full_name AS teacher_name
+     FROM grades g
+     JOIN courses c  ON c.id = g.course_id
+     LEFT JOIN users u2 ON u2.id = c.teacher_id
+     WHERE g.student_id = $1
+     ORDER BY g.academic_year DESC, g.semester DESC, c.name`,
+    [req.user.id]
+  );
+  // Compute GPA
+  const finished = rows.filter(r => r.total !== null);
+  const gpa = finished.length
+    ? (finished.reduce((s, r) => s + Number(r.total), 0) / finished.length / 25).toFixed(2)
+    : null;
+  res.json({ grades: rows, gpa });
+});
+
+// GET /api/grades/my-stats — dashboard uchun qisqa statistika
+router.get('/my-stats', authorize('student'), async (req, res) => {
+  const { rows } = await db.query(
+    `SELECT ROUND(AVG(g.jn + g.on_score + g.yn + g.mi), 1) AS avg_total,
+            COUNT(*) AS total_courses,
+            COUNT(CASE WHEN g.letter_grade = 'A' THEN 1 END) AS a_count,
+            COUNT(CASE WHEN g.letter_grade = 'F' THEN 1 END) AS f_count
+     FROM grades g WHERE g.student_id = $1`,
+    [req.user.id]
+  );
+  res.json(rows[0] || { avg_total: null, total_courses: 0, a_count: 0, f_count: 0 });
+});
+
 // ?? POST /api/grades ?????????????????????????????????????????????????????????
 // Teacher/dekanat: create or update a grade
 router.post(

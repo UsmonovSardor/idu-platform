@@ -47,50 +47,99 @@ function filterGradesSt(f,btn){
   renderGrades();
 }
 
-function renderGrades(){
-  const el=document.getElementById('gradesBody');if(!el)return;
-  const q=(document.getElementById('gradesSearch')?.value||'').toLowerCase();
-  let sum=0,alo=0,good=0,fail=0,cnt=0;
-  const data=GRADES_DATA.filter(g=>{
-    if(q&&!g.sub.toLowerCase().includes(q))return false;
-    const t=g.jn+g.on+g.yn+g.mi;
-    if(_stGradeFilter==='alo')return t>=86;
-    if(_stGradeFilter==='yaxshi')return t>=71&&t<86;
-    if(_stGradeFilter==='qoniq')return t<71;
+var _gradesCache = [];
+
+async function renderGrades() {
+  const el = document.getElementById('gradesBody'); if (!el) return;
+
+  // Skeleton
+  el.innerHTML = [1,2,3,4].map(() =>
+    '<tr>' + [1,2,3,4,5,6,7,8,9].map(() =>
+      '<td><div class="skel skel-line" style="width:' + (Math.random()*30+30).toFixed(0) + 'px"></div></td>'
+    ).join('') + '</tr>'
+  ).join('');
+
+  try {
+    const data = await api('GET', '/grades/my');
+    _gradesCache = data.grades || [];
+  } catch(e) {
+    // API ishlamasa — bo'sh holat
+    _gradesCache = [];
+  }
+  _renderGradesTable();
+}
+
+function _renderGradesTable() {
+  const el = document.getElementById('gradesBody'); if (!el) return;
+  const q = (document.getElementById('gradesSearch')?.value || '').toLowerCase();
+
+  let filtered = _gradesCache.filter(g => {
+    if (q && !g.course_name.toLowerCase().includes(q)) return false;
+    const t = Number(g.total) || 0;
+    if (_stGradeFilter === 'alo')   return t >= 86;
+    if (_stGradeFilter === 'yaxshi') return t >= 71 && t < 86;
+    if (_stGradeFilter === 'qoniq') return t < 71;
     return true;
   });
-  el.innerHTML=data.map((g,idx)=>{
-    const total=g.jn+g.on+g.yn+g.mi;
-    sum+=total;cnt++;
-    if(total>=86)alo++;else if(total>=71)good++;else if(total<55)fail++;
-    const{letter,cls}=getGrade(total);
-    const tc=total>=86?'#166534':total>=71?'#1E40AF':total>=56?'#92400E':'#991B1B';
-    const tb=total>=86?'#DCFCE7':total>=71?'#DBEAFE':total>=56?'#FEF3C7':'#FEE2E2';
-    const st=total>=86?'st-active':total>=56?'st-ok':total<55?'st-warning':'st-neutral';
-    const stl=total>=86?"A'lo":total>=71?'Yaxshi':total>=56?'Qoniqarli':'Qoniqarsiz';
-    const jb=g.jn>=25?'#D1FAE5':g.jn>=18?'#FEF9C3':'#FEE2E2';
-    const ob=g.on>=17?'#D1FAE5':g.on>=12?'#FEF9C3':'#FEE2E2';
-    const yb=g.yn>=25?'#D1FAE5':g.yn>=18?'#FEF9C3':'#FEE2E2';
-    const mb=g.mi>=17?'#D1FAE5':g.mi>=12?'#FEF9C3':'#FEE2E2';
+
+  if (!filtered.length) {
+    el.innerHTML = '<tr><td colspan="9" style="text-align:center;padding:40px 20px">' +
+      '<div style="font-size:40px;margin-bottom:10px">📊</div>' +
+      '<div style="font-size:14px;font-weight:700;color:var(--text1);margin-bottom:6px">' +
+        (q || _stGradeFilter !== 'all' ? 'Natija topilmadi' : 'Hali baholar kiritilmagan') +
+      '</div>' +
+      '<div style="font-size:12px;color:var(--text3)">' +
+        (q || _stGradeFilter !== 'all' ? 'Qidiruv yoki filtrni o\'zgartiring' : 'O\'qituvchi baholarni kiritganda bu yerda ko\'rinadi') +
+      '</div>' +
+    '</td></tr>';
+    _updateGradeStats([], 0, 0, 0, 0);
+    return;
+  }
+
+  let sum = 0, alo = 0, good = 0, fail = 0;
+  el.innerHTML = filtered.map((g, idx) => {
+    const total = Number(g.total) || 0;
+    const jn = Number(g.jn) || 0, on = Number(g.on_score) || 0;
+    const yn = Number(g.yn) || 0, mi = Number(g.mi) || 0;
+    sum += total;
+    if (total >= 86) alo++; else if (total >= 71) good++; else if (total < 55) fail++;
+    const {letter, cls} = getGrade(total);
+    const tc = total>=86?'#166534':total>=71?'#1E40AF':total>=56?'#92400E':'#991B1B';
+    const tb = total>=86?'#DCFCE7':total>=71?'#DBEAFE':total>=56?'#FEF3C7':'#FEE2E2';
+    const st = total>=86?'st-active':total>=56?'st-ok':total<55?'st-warning':'st-neutral';
+    const stl = total>=86?"A'lo":total>=71?'Yaxshi':total>=56?'Qoniqarli':'Qoniqarsiz';
+    const cb = v => v>=0?`style="background:${v>=Math.round(v*0.85)?'#D1FAE5':v>=Math.round(v*0.6)?'#FEF9C3':'#FEE2E2'};padding:2px 9px;border-radius:5px;font-weight:700"`: '';
     return '<tr>'
-      +'<td>'+(idx+1)+'</td>'
-      +'<td class="xl-td-sub">'+g.sub+'</td>'
-      +'<td class="xl-td-teacher">'+g.teacher+'</td>'
-      +'<td class="xl-td-num"><span style="background:'+jb+';padding:2px 9px;border-radius:5px;font-weight:700">'+g.jn+'</span><span style="color:#9CA3AF;font-size:10px"> /30</span></td>'
-      +'<td class="xl-td-num"><span style="background:'+ob+';padding:2px 9px;border-radius:5px;font-weight:700">'+g.on+'</span><span style="color:#9CA3AF;font-size:10px"> /20</span></td>'
-      +'<td class="xl-td-num"><span style="background:'+yb+';padding:2px 9px;border-radius:5px;font-weight:700">'+g.yn+'</span><span style="color:#9CA3AF;font-size:10px"> /30</span></td>'
-      +'<td class="xl-td-num"><span style="background:'+mb+';padding:2px 9px;border-radius:5px;font-weight:700">'+g.mi+'</span><span style="color:#9CA3AF;font-size:10px"> /20</span></td>'
-      +'<td class="xl-td-total"><span style="background:'+tb+';color:'+tc+';padding:3px 10px;border-radius:6px;font-size:15px">'+total+'</span>'
-        +'<div style="height:3px;background:#E5E7EB;border-radius:2px;margin-top:3px"><div style="height:3px;background:'+tc+';width:'+total+'%;border-radius:2px"></div></div></td>'
-      +'<td class="xl-td-baho"><span class="grade-chip '+cls+'">'+letter+'</span></td>'
-      +'<td class="xl-td-status"><span class="status-tag '+st+'">'+stl+'</span></td>'
-      +'</tr>';
+      + '<td>' + (idx+1) + '</td>'
+      + '<td class="xl-td-sub">' + (g.course_name || '—') + '</td>'
+      + '<td class="xl-td-teacher">' + (g.teacher_name || '—') + '</td>'
+      + '<td class="xl-td-num"><span style="background:' + (jn>=25?'#D1FAE5':jn>=18?'#FEF9C3':'#FEE2E2') + ';padding:2px 9px;border-radius:5px;font-weight:700">' + jn + '</span><span style="color:#9CA3AF;font-size:10px"> /30</span></td>'
+      + '<td class="xl-td-num"><span style="background:' + (on>=17?'#D1FAE5':on>=12?'#FEF9C3':'#FEE2E2') + ';padding:2px 9px;border-radius:5px;font-weight:700">' + on + '</span><span style="color:#9CA3AF;font-size:10px"> /20</span></td>'
+      + '<td class="xl-td-num"><span style="background:' + (yn>=25?'#D1FAE5':yn>=18?'#FEF9C3':'#FEE2E2') + ';padding:2px 9px;border-radius:5px;font-weight:700">' + yn + '</span><span style="color:#9CA3AF;font-size:10px"> /30</span></td>'
+      + '<td class="xl-td-num"><span style="background:' + (mi>=17?'#D1FAE5':mi>=12?'#FEF9C3':'#FEE2E2') + ';padding:2px 9px;border-radius:5px;font-weight:700">' + mi + '</span><span style="color:#9CA3AF;font-size:10px"> /20</span></td>'
+      + '<td class="xl-td-total"><span style="background:' + tb + ';color:' + tc + ';padding:3px 10px;border-radius:6px;font-size:15px">' + total + '</span>'
+        + '<div style="height:3px;background:#E5E7EB;border-radius:2px;margin-top:3px"><div style="height:3px;background:' + tc + ';width:' + total + '%;border-radius:2px"></div></div></td>'
+      + '<td class="xl-td-baho"><span class="grade-chip ' + cls + '">' + letter + '</span></td>'
+      + '<td class="xl-td-status"><span class="status-tag ' + st + '">' + stl + '</span></td>'
+      + '</tr>';
   }).join('');
-  const avg=cnt?(sum/cnt).toFixed(1):'—';
-  const ae=document.getElementById('avgScore');if(ae)ae.textContent=avg;
-  const ec=document.getElementById('excellentCount');if(ec)ec.textContent=alo;
-  const gc=document.getElementById('goodCountSt');if(gc)gc.textContent=good;
-  const fc=document.getElementById('failCount');if(fc)fc.textContent=fail;
+
+  _updateGradeStats(filtered, sum, alo, good, fail);
+}
+
+function _updateGradeStats(data, sum, alo, good, fail) {
+  const avg = data.length ? (sum/data.length).toFixed(1) : '—';
+  const ae = document.getElementById('avgScore'); if (ae) ae.textContent = avg;
+  const ec = document.getElementById('excellentCount'); if (ec) ec.textContent = alo;
+  const gc = document.getElementById('goodCountSt'); if (gc) gc.textContent = good;
+  const fc = document.getElementById('failCount'); if (fc) fc.textContent = fail;
+}
+
+function filterGradesSt(f, btn) {
+  _stGradeFilter = f;
+  document.querySelectorAll('#page-grades .xl-filter-chip').forEach(c => c.classList.remove('active'));
+  if (btn) btn.classList.add('active');
+  _renderGradesTable();
 }
 
 function exportStudentGrades(){
