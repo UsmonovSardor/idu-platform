@@ -396,9 +396,17 @@ let _pendingLaunchRole = null, _pendingLaunchUser = null;
 function secureShowPage(pageId) {
   const dekanatPages = ['dekanat-dashboard','dekanat-schedule','dekanat-students','dekanat-teachers','dekanat-grades','dekanat-attendance','dekanat-applications','dekanat-questions','dekanat-report'];
   if (dekanatPages.includes(pageId)) {
-    const token = _ssGet('idu_active_role');
-    if (token !== ROLE_TOKENS['dekanat']) {
-      // Toast xabar: original showToast(icon, title, msg) formatida
+    const role = currentUser && currentUser.role;
+    // admin va dekanat dekanat sahifalarini ko'rishi mumkin
+    if (role !== 'dekanat' && role !== 'admin') {
+      showSecurityToast('Sizda bu bo\'limga kirish huquqi yo\'q!');
+      return false;
+    }
+  }
+  // dekanat-sesiya: faqat admin va proktor
+  if (pageId === 'dekanat-sesiya') {
+    const role = currentUser && currentUser.role;
+    if (role !== 'admin' && role !== 'proktor' && role !== 'dekanat') {
       showSecurityToast('Sizda bu bo\'limga kirish huquqi yo\'q!');
       return false;
     }
