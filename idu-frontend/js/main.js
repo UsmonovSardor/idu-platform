@@ -4223,6 +4223,7 @@ startRealWithSubject = async function(subj) {
           maxSuspicion: 80,
           isTestMode: false,
           isRealSesiya: true,
+          subject: subj,
           subjectName: _examSubjectNames[subj] || subj,
         });
         return;
@@ -4251,6 +4252,7 @@ startRealWithSubject = async function(subj) {
     maxSuspicion: 80,
     isTestMode: true,
     isRealSesiya: true,
+    subject: subj,
     subjectName: (_examSubjectNames[subj] || subj) + ' — Mashq sesiyasi',
   });
 };

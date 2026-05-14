@@ -812,51 +812,125 @@ _examSecurityOff();
     });
     var pct = qs.length ? Math.round(correct / qs.length * 100) : 0;
     var grade = pct >= 86 ? 5 : pct >= 71 ? 4 : pct >= 56 ? 3 : 2;
+    var letterGrade = pct >= 86 ? 'A' : pct >= 71 ? 'B' : pct >= 56 ? 'C' : pct >= 41 ? 'D' : 'F';
     var gradeColor = grade === 5 ? '#16A34A' : grade === 4 ? '#2563EB' : grade === 3 ? '#D97706' : '#DC2626';
     var gradeEmoji = grade === 5 ? '🏆' : grade === 4 ? '✅' : grade === 3 ? '📊' : '❌';
+
+    // Natijani serverga saqlash (sesiya yoki real imtihon bo'lsa)
+    if (typeof api !== 'undefined' && (_examState.isRealSesiya || !_examState.isTestMode)) {
+      var subj = _examState.subject || (typeof _currentRealSubject !== 'undefined' ? _currentRealSubject : '');
+      if (subj) {
+        api('POST', '/exams/record-result', {
+          subject: subj,
+          examType: _examState.isRealSesiya ? 'sesiya' : 'real',
+          score: pct,
+          correct_count: correct,
+          total_count: qs.length
+        }).catch(function() {});
+      }
+    }
 
     setTimeout(function() {
       if (ov.parentNode) ov.remove();
       closeRealExam();
 
-      // Show results modal
+      // Show beautiful results modal
       var res = document.createElement('div');
       res.id = 'testResultsModal';
       res.style.cssText = 'position:fixed;inset:0;z-index:9500;background:#f1f5f9;overflow-y:auto;font-family:inherit';
+
+      var skipped = qs.length - Object.keys(answers).length;
+      var wrong = qs.length - correct - skipped;
+      var subjectName = _examState.subjectName || '';
+      var isReal = _examState.isRealSesiya;
+      var examLabel = isReal ? '🎓 Sesiya imtihoni' : '🧪 Mashq imtihoni';
+      var savedNote = isReal ? '<div style="font-size:12px;color:#16A34A;margin-top:8px;font-weight:600">✅ Natija serverga saqlandi</div>' : '';
+
       var reviewHtml = qs.map(function(q, i) {
         var userAns = answers[i];
         var rightIdx = (typeof q.ans !== 'undefined') ? q.ans : q.correct;
         var isRight = userAns !== undefined && userAns === rightIdx;
         var bg = isRight ? '#F0FDF4' : userAns !== undefined ? '#FFF5F5' : '#FFFBEB';
         var border = isRight ? '#86EFAC' : userAns !== undefined ? '#FCA5A5' : '#FDE68A';
-        var icon = isRight ? '✅' : userAns !== undefined ? '❌' : '⚠️';
-        var html2 = '<div style="background:' + bg + ';border:1.5px solid ' + border + ';border-radius:12px;padding:16px 18px;margin-bottom:12px">';
-        html2 += '<div style="font-size:13px;font-weight:700;color:#0F172A;margin-bottom:10px"><span style="color:#94A3B8;margin-right:6px">' + (i+1) + '.</span>' + icon + ' ' + q.q + '</div>';
+        var statusIcon = isRight ? '✅' : userAns !== undefined ? '❌' : '⚠️';
+        var statusLabel = isRight ? 'To\'g\'ri' : userAns !== undefined ? 'Noto\'g\'ri' : 'Javob berilmagan';
+        var statusColor = isRight ? '#16A34A' : userAns !== undefined ? '#DC2626' : '#D97706';
+        var html2 = '<div style="background:' + bg + ';border:1.5px solid ' + border + ';border-radius:14px;padding:16px 18px;margin-bottom:10px">';
+        html2 += '<div style="display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:10px">';
+        html2 += '<div style="font-size:13.5px;font-weight:700;color:#0F172A;flex:1;padding-right:10px"><span style="color:#94A3B8;margin-right:6px;font-weight:600">' + (i+1) + '.</span>' + q.q + '</div>';
+        html2 += '<span style="font-size:11px;font-weight:700;color:' + statusColor + ';background:' + statusColor + '18;padding:3px 9px;border-radius:20px;white-space:nowrap">' + statusIcon + ' ' + statusLabel + '</span>';
+        html2 += '</div>';
         q.opts.forEach(function(opt, j) {
           var isCorrect = j === rightIdx;
           var isUser = j === userAns;
           var optBg = isCorrect ? '#DCFCE7' : isUser && !isRight ? '#FEE2E2' : 'transparent';
           var optBorder = isCorrect ? '#16A34A' : isUser && !isRight ? '#DC2626' : '#E2E8F0';
           var optColor = isCorrect ? '#15803D' : isUser && !isRight ? '#B91C1C' : '#374151';
-          html2 += '<div style="padding:8px 12px;border:1.5px solid ' + optBorder + ';border-radius:8px;margin-bottom:6px;font-size:12.5px;background:' + optBg + ';color:' + optColor + '">';
-          html2 += (isCorrect ? '✓ ' : isUser && !isRight ? '✗ ' : '') + opt + '</div>';
+          var optLabel = ['A', 'B', 'C', 'D'][j];
+          html2 += '<div style="padding:8px 12px;border:1.5px solid ' + optBorder + ';border-radius:8px;margin-bottom:5px;font-size:12.5px;background:' + optBg + ';color:' + optColor + ';display:flex;align-items:center;gap:8px">';
+          html2 += '<span style="font-weight:800;min-width:18px">' + optLabel + ')</span> ' + opt;
+          if (isCorrect) html2 += ' <span style="margin-left:auto;font-size:11px;font-weight:700">✓ To\'g\'ri</span>';
+          if (isUser && !isRight) html2 += ' <span style="margin-left:auto;font-size:11px;font-weight:700">← Sizning</span>';
+          html2 += '</div>';
         });
+        if (q.explanation) {
+          html2 += '<div style="margin-top:8px;padding:8px 12px;background:#EFF6FF;border-left:3px solid #3B82F6;border-radius:0 8px 8px 0;font-size:12px;color:#1E40AF">💡 ' + q.explanation + '</div>';
+        }
         html2 += '</div>';
         return html2;
       }).join('');
 
-      res.innerHTML = '<div style="max-width:680px;margin:0 auto;padding:24px 16px">' +
-        '<div style="text-align:center;padding:32px 0 20px">' +
-          '<div style="font-size:56px;margin-bottom:10px">' + gradeEmoji + '</div>' +
-          '<div style="font-size:30px;font-weight:900;color:' + gradeColor + '">' + pct + '%</div>' +
-          '<div style="font-size:15px;color:#64748B;margin-top:6px">' + correct + ' / ' + qs.length + ' ta to\'g\'ri javob</div>' +
-          '<div style="display:inline-block;margin-top:12px;padding:8px 24px;background:' + gradeColor + '20;border:2px solid ' + gradeColor + ';border-radius:12px;font-size:20px;font-weight:800;color:' + gradeColor + '">' + grade + '-baho</div>' +
-        '</div>' +
-        '<div style="margin-bottom:16px">' + reviewHtml + '</div>' +
-        '<div style="text-align:center;padding:12px 0 32px">' +
-          '<button onclick="document.getElementById(\'testResultsModal\').remove()" style="padding:14px 36px;background:linear-gradient(135deg,#1e3a8a,#1e40af);color:#fff;border:none;border-radius:12px;font-size:15px;font-weight:700;cursor:pointer;box-shadow:0 4px 12px rgba(30,58,138,.3)">Yopish</button>' +
-        '</div>' +
-      '</div>';
+      // Progress bar
+      var pctBar = '<div style="background:#E2E8F0;border-radius:8px;height:10px;overflow:hidden;margin:16px 0 4px">' +
+        '<div style="height:100%;width:' + pct + '%;background:linear-gradient(90deg,' + gradeColor + ',' + gradeColor + 'aa);border-radius:8px;transition:width .8s ease"></div></div>';
+
+      res.innerHTML =
+        '<div style="max-width:700px;margin:0 auto;padding:20px 16px 40px">' +
+          // Header card
+          '<div style="background:linear-gradient(135deg,' + gradeColor + 'ee,' + gradeColor + ');border-radius:20px;padding:28px 24px 24px;text-align:center;color:#fff;margin-bottom:20px;box-shadow:0 8px 32px ' + gradeColor + '40">' +
+            '<div style="font-size:64px;margin-bottom:8px;filter:drop-shadow(0 2px 8px rgba(0,0,0,.2))">' + gradeEmoji + '</div>' +
+            '<div style="font-size:13px;font-weight:700;opacity:.85;letter-spacing:.5px;text-transform:uppercase;margin-bottom:4px">' + examLabel + (subjectName ? ' · ' + subjectName : '') + '</div>' +
+            '<div style="font-size:52px;font-weight:900;line-height:1">' + pct + '<span style="font-size:24px">%</span></div>' +
+            '<div style="font-size:18px;font-weight:800;margin-top:6px;background:rgba(255,255,255,.2);display:inline-block;padding:6px 20px;border-radius:10px">' + letterGrade + ' — ' + grade + '-baho</div>' +
+            savedNote +
+          '</div>' +
+
+          // Stats row
+          '<div style="display:grid;grid-template-columns:repeat(3,1fr);gap:12px;margin-bottom:20px">' +
+            '<div style="background:#fff;border-radius:14px;padding:16px 12px;text-align:center;box-shadow:0 2px 8px rgba(0,0,0,.06)">' +
+              '<div style="font-size:28px;font-weight:900;color:#16A34A">' + correct + '</div>' +
+              '<div style="font-size:12px;color:#64748B;font-weight:600;margin-top:2px">✅ To\'g\'ri</div>' +
+            '</div>' +
+            '<div style="background:#fff;border-radius:14px;padding:16px 12px;text-align:center;box-shadow:0 2px 8px rgba(0,0,0,.06)">' +
+              '<div style="font-size:28px;font-weight:900;color:#DC2626">' + wrong + '</div>' +
+              '<div style="font-size:12px;color:#64748B;font-weight:600;margin-top:2px">❌ Noto\'g\'ri</div>' +
+            '</div>' +
+            '<div style="background:#fff;border-radius:14px;padding:16px 12px;text-align:center;box-shadow:0 2px 8px rgba(0,0,0,.06)">' +
+              '<div style="font-size:28px;font-weight:900;color:#D97706">' + skipped + '</div>' +
+              '<div style="font-size:12px;color:#64748B;font-weight:600;margin-top:2px">⚠️ O\'tkazildi</div>' +
+            '</div>' +
+          '</div>' +
+
+          // Progress
+          '<div style="background:#fff;border-radius:14px;padding:16px 18px;margin-bottom:20px;box-shadow:0 2px 8px rgba(0,0,0,.06)">' +
+            '<div style="font-size:13px;font-weight:700;color:#475569;margin-bottom:4px">Umumiy natija</div>' +
+            pctBar +
+            '<div style="display:flex;justify-content:space-between;font-size:12px;color:#94A3B8;font-weight:600">' +
+              '<span>0%</span><span>' + correct + ' / ' + qs.length + ' ta to\'g\'ri</span><span>100%</span>' +
+            '</div>' +
+          '</div>' +
+
+          // Review header
+          '<div style="font-size:14px;font-weight:800;color:#0F172A;margin-bottom:12px;display:flex;align-items:center;gap:8px">' +
+            '<span style="background:#EFF6FF;color:#1D4ED8;padding:4px 10px;border-radius:8px;font-size:12px">📋 Savollar tahlili</span>' +
+          '</div>' +
+
+          '<div style="margin-bottom:16px">' + reviewHtml + '</div>' +
+
+          '<div style="text-align:center;padding:4px 0 8px">' +
+            '<button onclick="document.getElementById(\'testResultsModal\').remove()" style="padding:14px 40px;background:linear-gradient(135deg,#1e3a8a,#1e40af);color:#fff;border:none;border-radius:14px;font-size:15px;font-weight:700;cursor:pointer;box-shadow:0 4px 16px rgba(30,58,138,.35)">Yopish</button>' +
+          '</div>' +
+        '</div>';
       document.body.appendChild(res);
     }, 1500);
   }
@@ -916,6 +990,7 @@ function openRealExam(exam) {
     _origWindowOpen: null,
     isTestMode: !!exam.isTestMode,
     isRealSesiya: !!exam.isRealSesiya,
+    subject: exam.subject || '',
     subjectName: exam.subjectName || '',
   };
   _examLogs = [];

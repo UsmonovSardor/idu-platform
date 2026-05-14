@@ -390,4 +390,41 @@ router.post('/:attemptId/log', async (req, res) => {
   res.json({ ok: true });
 });
 
+// POST /api/exams/record-result — local fallback rejimida natijani saqlash
+router.post('/record-result', async (req, res) => {
+  const { subject, examType, score, correct_count, total_count } = req.body;
+
+  const VALID_SUBJECTS = ['algo', 'ai', 'math', 'db', 'web'];
+  const VALID_TYPES    = ['test', 'real', 'sesiya'];
+
+  if (!VALID_SUBJECTS.includes(subject)) return res.status(400).json({ error: 'Noto\'g\'ri fan' });
+  if (!VALID_TYPES.includes(examType))   return res.status(400).json({ error: 'Noto\'g\'ri tur' });
+
+  const pct         = Math.min(100, Math.max(0, Number(score) || 0));
+  const letterGrade = pct >= 86 ? 'A' : pct >= 71 ? 'B' : pct >= 56 ? 'C' : pct >= 41 ? 'D' : 'F';
+  const correct     = Number(correct_count) || 0;
+  const total       = Number(total_count)   || 0;
+
+  const { rows } = await db.query(
+    `INSERT INTO exam_attempts
+       (student_id, exam_type, subject, question_ids, status,
+        score, letter_grade, correct_count, total_count, submitted_at, expires_at)
+     VALUES ($1,$2,$3,'[]','completed',$4,$5,$6,$7,NOW(),NOW())
+     RETURNING id`,
+    [req.user.id, examType, subject, pct, letterGrade, correct, total]
+  );
+
+  // Natijani grades jadvaliga ham yoz
+  try {
+    await db.query(
+      `INSERT INTO exam_results_log (attempt_id, student_id, exam_type, subject, score, letter_grade)
+       VALUES ($1,$2,$3,$4,$5,$6)
+       ON CONFLICT DO NOTHING`,
+      [rows[0].id, req.user.id, examType, subject, pct, letterGrade]
+    );
+  } catch (_) { /* optional table, ignore if not exists */ }
+
+  res.status(201).json({ saved: true, attemptId: rows[0].id, letterGrade, score: pct });
+});
+
 module.exports = router;

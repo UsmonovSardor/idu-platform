@@ -231,22 +231,72 @@ async function toggleExamSession(examType, isOpen) {
 }
 
 async function renderExamResults() {
-  const el=document.getElementById('examResultsBody');
-  if(!el)return;
-  el.innerHTML='<tr><td colspan="7" style="text-align:center;padding:20px">⏳ Yuklanmoqda...</td></tr>';
+  const el = document.getElementById('examResultsBody');
+  if (!el) return;
+  el.innerHTML = '<tr><td colspan="8" style="text-align:center;padding:24px">⏳ Yuklanmoqda...</td></tr>';
   try {
-    const examType=document.getElementById('examResultFilter')?.value||'';
-    const subject=document.getElementById('examSubjectFilter')?.value||'';
-    let url='/exams/history?';
-    if(examType)url+='examType='+examType+'&';
-    if(subject)url+='subject='+subject;
-    const results=await api('GET',url);
-    if(!Array.isArray(results)||!results.length){el.innerHTML='<tr><td colspan="7" style="text-align:center;color:var(--text3);padding:20px">Natijalar yoq</td></tr>';return;}
-    el.innerHTML=results.map((r,i)=>{
-      const gc=r.letter_grade==='A'?'#16A34A':r.letter_grade==='B'?'#2563EB':r.letter_grade==='C'?'#D97706':r.letter_grade==='D'?'#EA580C':'#DC2626';
-      return '<tr><td><strong>'+(i+1)+'</strong></td><td>'+(r.student_name||'—')+'</td><td><span style="font-size:11px;background:#EEF3FF;padding:2px 8px;border-radius:5px;font-weight:700;color:#1B4FD8">'+r.exam_type+'</span></td><td>'+r.subject+'</td><td><strong style="font-family:monospace">'+(r.score||0)+'%</strong></td><td><span style="font-weight:800;color:'+gc+'">'+(r.letter_grade||'—')+'</span></td><td style="font-size:11px;color:var(--text3)">'+(r.submitted_at?new Date(r.submitted_at).toLocaleDateString('uz-UZ'):'—')+'</td></tr>';
+    const examType = document.getElementById('examResultFilter')?.value || '';
+    const subject  = document.getElementById('examSubjectFilter')?.value || '';
+    let url = '/exams/history?limit=100&';
+    if (examType) url += 'examType=' + examType + '&';
+    if (subject)  url += 'subject=' + subject;
+    const results = await api('GET', url);
+
+    // Summary stats
+    const statsEl = document.getElementById('examResultsStats');
+    if (statsEl && Array.isArray(results) && results.length) {
+      const avg    = Math.round(results.reduce((s, r) => s + (r.score || 0), 0) / results.length);
+      const passed = results.filter(r => r.letter_grade && r.letter_grade !== 'F').length;
+      const gradeCount = { A:0, B:0, C:0, D:0, F:0 };
+      results.forEach(r => { if (r.letter_grade && gradeCount[r.letter_grade] !== undefined) gradeCount[r.letter_grade]++; });
+      statsEl.innerHTML =
+        '<div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(120px,1fr));gap:10px;margin-bottom:16px">' +
+          _statCard('📊', 'Jami', results.length, '#2563EB') +
+          _statCard('✅', 'O\'tdi', passed, '#16A34A') +
+          _statCard('❌', 'Qoldi', results.length - passed, '#DC2626') +
+          _statCard('📈', "O'rtacha", avg + '%', '#7C3AED') +
+          _statCard('🏆', 'A-baho', gradeCount.A, '#16A34A') +
+          _statCard('🥈', 'B-baho', gradeCount.B, '#2563EB') +
+          _statCard('🥉', 'C-baho', gradeCount.C, '#D97706') +
+          _statCard('⚠️', 'D/F', gradeCount.D + gradeCount.F, '#DC2626') +
+        '</div>';
+    } else if (statsEl) statsEl.innerHTML = '';
+
+    if (!Array.isArray(results) || !results.length) {
+      el.innerHTML = '<tr><td colspan="8" style="text-align:center;color:var(--text3);padding:32px"><div style="font-size:40px;margin-bottom:8px">📭</div><div>Natijalar yo\'q</div></td></tr>';
+      return;
+    }
+
+    el.innerHTML = results.map((r, i) => {
+      const gc  = r.letter_grade === 'A' ? '#16A34A' : r.letter_grade === 'B' ? '#2563EB' : r.letter_grade === 'C' ? '#D97706' : r.letter_grade === 'D' ? '#EA580C' : '#DC2626';
+      const pct = r.score || 0;
+      const bar = '<div style="width:60px;height:6px;background:#E2E8F0;border-radius:3px;display:inline-block;vertical-align:middle;margin-left:4px">' +
+        '<div style="height:100%;width:' + Math.min(100, pct) + '%;background:' + gc + ';border-radius:3px"></div></div>';
+      const typeColors = { sesiya:'#7C3AED', real:'#1D4ED8', test:'#0891B2' };
+      const typeColor  = typeColors[r.exam_type] || '#475569';
+      const subjLabels = { algo:'Algoritmlar', ai:'Sun\'iy intellekt', math:'Matematika', db:'Ma\'lumotlar bazasi', web:'Web texnologiya' };
+      return '<tr>' +
+        '<td><strong style="color:var(--text3)">' + (i + 1) + '</strong></td>' +
+        '<td><div style="font-weight:700;color:var(--text1)">' + (r.student_name || '—') + '</div>' +
+          (r.correct_count != null ? '<div style="font-size:11px;color:var(--text3)">' + r.correct_count + '/' + (r.total_count || '?') + ' ta to\'g\'ri</div>' : '') + '</td>' +
+        '<td><span style="font-size:11px;background:' + typeColor + '18;color:' + typeColor + ';padding:3px 9px;border-radius:20px;font-weight:700">' + (r.exam_type || '—') + '</span></td>' +
+        '<td style="font-size:12px;font-weight:600;color:var(--text2)">' + (subjLabels[r.subject] || r.subject || '—') + '</td>' +
+        '<td><strong style="font-family:monospace;font-size:14px">' + pct + '%</strong>' + bar + '</td>' +
+        '<td><span style="font-size:16px;font-weight:900;color:' + gc + ';background:' + gc + '15;padding:4px 12px;border-radius:8px">' + (r.letter_grade || '—') + '</span></td>' +
+        '<td style="font-size:11px;color:var(--text3)">' + (r.submitted_at ? new Date(r.submitted_at).toLocaleDateString('uz-UZ', { day:'2-digit', month:'2-digit', year:'numeric' }) : '—') + '</td>' +
+      '</tr>';
     }).join('');
-  } catch(e){el.innerHTML='<tr><td colspan="7" style="text-align:center;color:var(--red);padding:20px">Xato: '+e.message+'</td></tr>';}
+  } catch(e) {
+    el.innerHTML = '<tr><td colspan="8" style="text-align:center;color:var(--red);padding:24px">❌ Xato: ' + e.message + '</td></tr>';
+  }
+}
+
+function _statCard(icon, label, value, color) {
+  return '<div style="background:#fff;border-radius:12px;padding:12px 14px;text-align:center;box-shadow:0 2px 8px rgba(0,0,0,.06);border-top:3px solid ' + color + '">' +
+    '<div style="font-size:20px">' + icon + '</div>' +
+    '<div style="font-size:18px;font-weight:900;color:' + color + '">' + value + '</div>' +
+    '<div style="font-size:11px;color:#64748B;font-weight:600">' + label + '</div>' +
+  '</div>';
 }
 
 async function renderDekanatApplications() {
