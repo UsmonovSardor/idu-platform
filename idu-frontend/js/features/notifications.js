@@ -22,7 +22,7 @@ async function renderNotifications() {
 
   // API dan ham olishga harakat qilish
   try {
-    var data = await api('GET', '/applications?type=my');
+    var data = await api('GET', '/applications');
     // applications ham bildirishnoma sifatida ko'rinsin
   } catch(e) {}
 
