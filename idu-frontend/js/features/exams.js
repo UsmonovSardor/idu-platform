@@ -372,7 +372,7 @@ function _onFullscreenChange() {
     } else {
       _showWarnOv(
         '🖥️ Fullscreen tark etildi!',
-        'Test fullscreen rejimda bo'lishi shart!'
+        "Test fullscreen rejimda bo'lishi shart!"
       );
       setTimeout(_requestFullscreen, 600);
     }
