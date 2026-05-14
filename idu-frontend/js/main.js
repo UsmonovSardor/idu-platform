@@ -1298,9 +1298,50 @@ function _saveIdeaMessages(id, msgs) {
   try { _lsSet(_ideaMsgKey(id), JSON.stringify(msgs)); } catch(e) {}
 }
 
+function _seedDemoIdeas() {
+  IDEAS = [
+    {
+      id: 1001, title: 'EduBot — AI o\'qituvchi', category: 'edu',
+      desc: 'Sun\'iy intellekt asosida ishlaydigan shaxsiylashtirilgan o\'qituvchi. Har bir talabaning bilim darajasini aniqlab, moslashtirilgan darslar tayyorlaydi.',
+      team: ['Alisher Nazarov', 'Dilnoza Yusupova', 'Jasur Mirzayev'],
+      investment: '30,000$', likes: 24, investorRating: 4, comments: [
+        { author: 'Sardor Rahimov', text: 'Ajoyib g\'oya! Bu talabalar uchun juda foydali bo\'ladi.', time: '2 soat oldin' }
+      ]
+    },
+    {
+      id: 1002, title: 'MediTrack — Sog\'liq monitoring', category: 'health',
+      desc: 'Smartfon orqali sog\'liq ko\'rsatkichlarini kuzatuvchi platforma. Shifokor bilan real-vaqt muloqot va tahlil imkoniyati.',
+      team: ['Nodira Hamidova', 'Bobur Toshmatov'],
+      investment: '50,000$', likes: 18, investorRating: 3, comments: []
+    },
+    {
+      id: 1003, title: 'AgriTech UZ — Aqlli dehqonchilik', category: 'tech',
+      desc: 'IoT sensorlar va AI yordamida dehqonchilikni optimallashtirish. Suv sarfini 40% kamaytiradi, hosildorlikni oshiradi.',
+      team: ['Sherzod Umarov', 'Malika Sodiqova', 'Firdavs Qodirov', 'Zulfiya Ergasheva'],
+      investment: '75,000$', likes: 31, investorRating: 5, comments: [
+        { author: 'Investor Pro', text: 'Bu loyiha katta kelajakka ega!', time: '1 kun oldin' }
+      ]
+    },
+    {
+      id: 1004, title: 'PayEasy — To\'lov ekotizimi', category: 'fintech',
+      desc: 'Mahalliy bizneslar uchun sodda va arzon to\'lov echimlari. QR kod orqali bir soniyada to\'lov, komisyon 0.5%.',
+      team: ['Otabek Xolmatov', 'Gulnora Askarova'],
+      investment: '25,000$', likes: 15, investorRating: 3, comments: []
+    }
+  ];
+}
+
 function renderIdeas(filter) {
   filter = filter || 'all';
   const el = document.getElementById('ideasList'); if (!el) return;
+
+  // Seed demo ideas if empty
+  if (!IDEAS.length) _seedDemoIdeas();
+
+  // Show/hide add button based on role (more reliable than launchApp override)
+  var addBtn = document.getElementById('addIdeaBtn');
+  if (addBtn) addBtn.style.display = (currentRole === 'student' || currentRole === 'dekanat') ? '' : 'none';
+
   const catColors = { tech:'cat-tech', health:'cat-health', edu:'cat-edu', fintech:'cat-fintech', social:'cat-social' };
   const catNames  = { tech:'💻 Texnologiya', health:'🏥 Sog\'liqni saqlash', edu:'📚 Ta\'lim', fintech:'💰 Fintech', social:'🌍 Ijtimoiy' };
   const filtered  = filter === 'all' ? IDEAS : IDEAS.filter(function(i) { return i.category === filter; });
