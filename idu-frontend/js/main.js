@@ -3215,6 +3215,43 @@ function showTestInstructions() {
   document.getElementById('testPageSub').textContent = 'Fan tanlang va testni boshlang';
 }
 
+function renderActiveTestQuestions() {
+  var icons = {algo:'💻', ai:'🤖', math:'📐', db:'🗄️', web:'🌐'};
+  var names = {algo:'Algoritmlar va Dasturlash', ai:"Sun'iy Intellekt", math:'Matematika (AI uchun)', db:"Ma'lumotlar Bazasi", web:'Web Dasturlash'};
+  var subj = _currentTestSubject;
+  var iconEl = document.getElementById('testSubjectIcon');
+  var nameEl = document.getElementById('testSubjectName');
+  var progEl = document.getElementById('testProgressLabel');
+  var barEl  = document.getElementById('testProgressBar');
+  if (iconEl) iconEl.textContent = icons[subj] || '📝';
+  if (nameEl) nameEl.textContent = names[subj] || subj;
+  if (progEl) progEl.textContent = '0/' + _currentTestQuestions.length;
+  if (barEl)  barEl.style.width = '0%';
+  var sub = document.getElementById('testPageSub');
+  if (sub) sub.textContent = (names[subj] || subj) + ' · Mashq rejimi';
+  // Render questions
+  var container = document.getElementById('testQuestionsContainer');
+  if (container) {
+    var html = '';
+    _currentTestQuestions.forEach(function(q, i) { html += _buildTestQHtml(q, i, 'test'); });
+    container.innerHTML = html;
+  }
+  // Start timer
+  if (_testTimer) clearInterval(_testTimer);
+  _testSec = 30 * 60;
+  var timerEl = document.getElementById('testTimerDisplay');
+  if (timerEl) timerEl.textContent = '30:00';
+  _testTimer = setInterval(function() {
+    _testSec--;
+    var m = Math.floor(_testSec / 60).toString().padStart(2, '0');
+    var s = (_testSec % 60).toString().padStart(2, '0');
+    var el = document.getElementById('testTimerDisplay');
+    if (el) { el.textContent = m + ':' + s; el.style.color = _testSec < 300 ? '#DC2626' : '#1B4FD8'; }
+    if (_testSec <= 0) { clearInterval(_testTimer); _testTimer = null; submitTestExam(); }
+  }, 1000);
+  window.scrollTo({ top: 0, behavior: 'smooth' });
+}
+
 function startTestWithSubject(subj) {
   try {
     _currentTestSubject = subj;
@@ -3226,9 +3263,6 @@ function startTestWithSubject(subj) {
     }
 
     _testAnswers = {};
-    quizIdx = 0;
-    quizScore = 0;
-    quizAnswered = false;
 
     document.getElementById('stest-instructions').style.display = 'none';
     document.getElementById('stest-active').style.display = 'block';
@@ -3245,19 +3279,19 @@ function onTestAnswer(qi, optIdx) {
   _testAnswers[qi] = optIdx;
   var hidden = document.getElementById('tq' + qi + 'ans');
   if (hidden) hidden.value = optIdx;
-  // Style the selected option
-  var qs = TEST_QUESTIONS_DB[_currentTestSubject][qi];
-  qs.opts.forEach(function(_, j) {
-    var lbl = document.getElementById('tq-' + qi + '-opt-' + j);
-    if (lbl) {
-      lbl.style.borderColor = j === optIdx ? '#1B4FD8' : '#E2E8F0';
-      lbl.style.background = j === optIdx ? '#EEF3FF' : 'white';
-    }
-  });
-  // Mark question card
+  // Use _currentTestQuestions (works for both DB and dekanat questions)
+  var qs = _currentTestQuestions[qi];
+  if (qs && qs.opts) {
+    qs.opts.forEach(function(_, j) {
+      var lbl = document.getElementById('tq-' + qi + '-opt-' + j);
+      if (lbl) {
+        lbl.style.borderColor = j === optIdx ? '#1B4FD8' : '#E2E8F0';
+        lbl.style.background  = j === optIdx ? '#EEF3FF' : 'white';
+      }
+    });
+  }
   var card = document.getElementById('tq-' + qi);
   if (card) card.style.borderColor = '#86EFAC';
-  // Update answered count and progress
   var answered = Object.keys(_testAnswers).length;
   var total = _currentTestQuestions.length;
   var pct = Math.round(answered / total * 100);
@@ -3267,6 +3301,60 @@ function onTestAnswer(qi, optIdx) {
   if (pl) pl.textContent = answered + '/' + total;
   var ac = document.getElementById('testAnsweredCount');
   if (ac) ac.textContent = answered + ' ta savol javob berildi';
+}
+
+// submitTestExam — exams.js da bo'sh, bu yerda to'liq implementatsiya
+function submitTestExam() {
+  if (_testTimer) { clearInterval(_testTimer); _testTimer = null; }
+  var qs = _currentTestQuestions;
+  var total = qs.length;
+  var correct = 0;
+  qs.forEach(function(q, i) {
+    var ans = _testAnswers[i];
+    var rightIdx = (typeof q.ans !== 'undefined') ? q.ans : q.correct;
+    if (ans !== undefined && ans === rightIdx) correct++;
+  });
+  var pct = total ? Math.round(correct / total * 100) : 0;
+  var grade = pct >= 86 ? 5 : pct >= 71 ? 4 : pct >= 56 ? 3 : 2;
+  var gradeColor = grade === 5 ? '#16A34A' : grade === 4 ? '#2563EB' : grade === 3 ? '#D97706' : '#DC2626';
+  var gradeEmoji = grade === 5 ? '🏆' : grade === 4 ? '✅' : grade === 3 ? '📊' : '❌';
+
+  // Build results HTML
+  var html = '<div style="text-align:center;padding:24px 0 16px">';
+  html += '<div style="font-size:52px;margin-bottom:8px">' + gradeEmoji + '</div>';
+  html += '<div style="font-size:28px;font-weight:900;color:' + gradeColor + '">' + pct + '%</div>';
+  html += '<div style="font-size:15px;color:#64748B;margin-top:4px">' + correct + ' / ' + total + ' ta to\'g\'ri javob</div>';
+  html += '<div style="display:inline-block;margin-top:10px;padding:6px 20px;background:' + gradeColor + '20;border:2px solid ' + gradeColor + ';border-radius:10px;font-size:18px;font-weight:800;color:' + gradeColor + '">' + grade + '-baho</div>';
+  html += '</div>';
+  // Answer review
+  html += '<div style="margin-top:16px">';
+  qs.forEach(function(q, i) {
+    var userAns = _testAnswers[i];
+    var rightIdx = (typeof q.ans !== 'undefined') ? q.ans : q.correct;
+    var isRight = userAns !== undefined && userAns === rightIdx;
+    var bg = isRight ? '#F0FDF4' : '#FFF5F5';
+    var border = isRight ? '#86EFAC' : '#FCA5A5';
+    var icon = isRight ? '✅' : '❌';
+    html += '<div style="background:' + bg + ';border:1.5px solid ' + border + ';border-radius:10px;padding:12px 16px;margin-bottom:10px">';
+    html += '<div style="font-size:13px;font-weight:700;color:#0F172A;margin-bottom:6px">' + icon + ' ' + (i+1) + '. ' + q.q + '</div>';
+    if (!isRight && userAns !== undefined) {
+      html += '<div style="font-size:12px;color:#DC2626">Sizning javobingiz: ' + (q.opts[userAns] || '—') + '</div>';
+    }
+    if (userAns === undefined) {
+      html += '<div style="font-size:12px;color:#94A3B8">Javob berilmadi</div>';
+    }
+    html += '<div style="font-size:12px;color:#16A34A;font-weight:600">To\'g\'ri javob: ' + (q.opts[rightIdx] || '—') + '</div>';
+    if (q.izoh) html += '<div style="font-size:11.5px;color:#64748B;margin-top:4px;font-style:italic">' + q.izoh + '</div>';
+    html += '</div>';
+  });
+  html += '</div>';
+
+  var rc = document.getElementById('testResultsContent');
+  if (rc) rc.innerHTML = html;
+  document.getElementById('stest-active').style.display = 'none';
+  document.getElementById('stest-results').style.display = 'block';
+  window.scrollTo({ top: 0, behavior: 'smooth' });
+  showToast(gradeEmoji, 'Test yakunlandi', correct + '/' + total + ' to\'g\'ri · ' + pct + '%');
 }
 
 function toggleEtirozBox(qi) {
