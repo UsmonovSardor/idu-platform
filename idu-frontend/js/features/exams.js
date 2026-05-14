@@ -535,17 +535,17 @@ function _botDetect() {
 // ============================================================
 function _serverTimeSync() {
   _examState.startServerTime = Date.now();
-  // Agar backend mavjud bo'lsa, server vaqtini olish
+  if (_examState.isTestMode) return; // Test rejimida server vaqt tekshiruvi yo'q
   if (typeof api !== 'undefined' && _examState.attemptId) {
     api('GET', '/exams/time').then(function(data) {
-  if (data && data.serverTime) {
-    var drift = Math.abs(data.serverTime - Date.now());
-    if (drift > 60000) {
-      _examLog('TIME_DRIFT', drift);
-      _addSuspicion(30, 'TIME_MANIPULATION');
-    }
-  }
-}).catch(function() {});
+      if (data && data.serverTime) {
+        var drift = Math.abs(data.serverTime - Date.now());
+        if (drift > 60000) {
+          _examLog('TIME_DRIFT', drift);
+          _addSuspicion(30, 'TIME_MANIPULATION');
+        }
+      }
+    }).catch(function() {});
   }
 }
 
@@ -564,8 +564,8 @@ function _startHeartbeat() {
       _addSuspicion(30, 'TIME_TAMPER');
     }
 
-    // Backend heartbeat
-    if (typeof api !== 'undefined' && _examState.attemptId) {
+    // Backend heartbeat (faqat real sesiyada)
+    if (!_examState.isTestMode && typeof api !== 'undefined' && _examState.attemptId) {
       try {
         api('POST', '/exams/' + _examState.attemptId + '/heartbeat', {
           suspicion: _examState.suspicionScore,
@@ -689,8 +689,8 @@ function _autoSave() {
     localStorage.setItem(storageKey, encrypted);
   } catch(e) {}
 
-  // Backend'ga save
-  if (typeof api !== 'undefined' && _examState.attemptId) {
+  // Backend'ga save (faqat real sesiyada)
+  if (!_examState.isTestMode && typeof api !== 'undefined' && _examState.attemptId) {
     try {
       api('POST', '/exams/' + _examState.attemptId + '/save', {
         answers: _examState.answers,
@@ -868,6 +868,7 @@ _examSecurityOff();
 var _examLogs = [];
 function _examLog(event, data) {
   _examLogs.push({ event: event, data: data, t: new Date().toISOString() });
+  if (_examState.isTestMode) return; // Test rejimida API ga yubormaydi
   if (typeof api !== 'undefined' && _examState.attemptId) {
     try {
       api('POST', '/exams/' + _examState.attemptId + '/log', {
