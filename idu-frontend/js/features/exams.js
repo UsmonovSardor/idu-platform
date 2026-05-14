@@ -1094,6 +1094,23 @@ function _renderQ(idx) {
     ].join('');
   }).join('');
 
+  var etirozHtml = !_examState.isTestMode ? [
+    '<div id="etirozSection_' + idx + '" style="margin-top:16px">',
+      '<button onclick="toggleEtirozBox(' + idx + ')" style="padding:6px 14px;background:#FFF7ED;border:1.5px solid #FED7AA;border-radius:8px;font-size:12px;font-weight:600;color:#EA580C;cursor:pointer">',
+        "⚠️ Bu savolga e'tiroz bildirish",
+      '</button>',
+      '<div id="etirozBox_' + idx + '" style="display:none;margin-top:10px;background:#FFF7ED;border:1.5px solid #FED7AA;border-radius:12px;padding:14px">',
+        '<div style="font-size:12px;font-weight:700;color:#92400E;margin-bottom:8px">',
+          "⚠️ " + (idx + 1) + "-savol bo'yicha e'tiroz:",
+        '</div>',
+        '<textarea id="etirozText_' + idx + '" rows="3" placeholder="E\'tiroz sababini yozing..." style="width:100%;padding:10px;border:1.5px solid #FED7AA;border-radius:8px;font-size:13px;resize:vertical;box-sizing:border-box;font-family:inherit"></textarea>',
+        '<button onclick="submitEtiraz(' + idx + ')" style="margin-top:8px;padding:8px 18px;background:#EA580C;color:#fff;border:none;border-radius:8px;font-size:13px;font-weight:700;cursor:pointer">',
+          "📤 E'tiroz yuborish",
+        '</button>',
+      '</div>',
+    '</div>',
+  ].join('') : '';
+
   area.innerHTML = [
     '<div style="max-width:680px;margin:0 auto">',
       '<div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:10px">',
@@ -1102,6 +1119,7 @@ function _renderQ(idx) {
       '</div>',
       '<div style="font-size:18px;font-weight:700;color:#1e293b;line-height:1.6;margin-bottom:24px;padding:22px 24px;background:#fff;border-radius:16px;border:1px solid #e2e8f0;box-shadow:0 1px 4px rgba(0,0,0,.04)">' + q.q + '</div>',
       optsHtml,
+      etirozHtml,
     '</div>',
   ].join('');
 
@@ -1152,6 +1170,41 @@ function _updateProgress() {
 function examGoTo(i) { _renderQ(i); }
 function examNext() { _renderQ(_examState.currentIdx + 1); }
 function examPrev() { _renderQ(_examState.currentIdx - 1); }
+
+function toggleEtirozBox(idx) {
+  var box = document.getElementById('etirozBox_' + idx);
+  if (box) box.style.display = box.style.display === 'none' ? 'block' : 'none';
+}
+
+async function submitEtiraz(idx) {
+  var textEl = document.getElementById('etirozText_' + idx);
+  var text = textEl ? textEl.value.trim() : '';
+  if (!text) { if (typeof showToast !== 'undefined') showToast('⚠️', "E'tiroz matni bo'sh", "Iltimos, e'tiroz sababini yozing"); return; }
+
+  var q = _examState.questions[idx];
+  var body = {
+    type: 'etiraz',
+    detail: (idx + 1) + "-savol: " + text,
+    note: q ? ("Savol matni: " + q.q) : '',
+    questionIndex: idx,
+    examType: 'sesiya',
+  };
+
+  var btn = document.querySelector('#etirozBox_' + idx + ' button[onclick^="submitEtiraz"]');
+  if (btn) { btn.disabled = true; btn.textContent = '⏳ Yuborilmoqda...'; }
+
+  try {
+    if (typeof api !== 'undefined') {
+      await api('POST', '/applications', body);
+    }
+    var box = document.getElementById('etirozBox_' + idx);
+    if (box) box.innerHTML = '<div style="color:#16A34A;font-weight:700;padding:8px 0">✅ E\'tiroz muvaffaqiyatli yuborildi! Dekanat ko\'rib chiqadi.</div>';
+    if (typeof showToast !== 'undefined') showToast('✅', "E'tiroz yuborildi", (idx + 1) + '-savol bo\'yicha dekanatga xabar ketdi');
+  } catch(e) {
+    if (btn) { btn.disabled = false; btn.textContent = "📤 E'tiroz yuborish"; }
+    if (typeof showToast !== 'undefined') showToast('❌', 'Xato', 'Yuborishda muammo yuz berdi');
+  }
+}
 
 function examToggleFlag() {
   var idx = _examState.currentIdx;

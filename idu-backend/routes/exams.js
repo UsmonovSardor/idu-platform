@@ -32,12 +32,13 @@ router.post(
   authorize('admin', 'dekanat'),
   [
     body('examType').isIn(VALID_EXAM_TYPES),
-    body('isOpen').isBoolean().toBoolean(),
+    body('isOpen').custom(v => v === true || v === false || v === 'true' || v === 'false').withMessage('isOpen must be boolean'),
     body('closesAt').optional().isISO8601().toDate(),
   ],
   validate,
   async (req, res) => {
-    const { examType, isOpen, closesAt } = req.body;
+    const { examType, closesAt } = req.body;
+    const isOpen = req.body.isOpen === true || req.body.isOpen === 'true';
 
     await db.query(
       `INSERT INTO exam_sessions (exam_type, is_open, opened_at, closes_at, controlled_by)
