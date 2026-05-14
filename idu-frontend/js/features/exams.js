@@ -1209,9 +1209,8 @@ async function submitRealExam(reason) {
         elapsed: _examState.startTime ? Math.floor((Date.now() - _examState.startTime) / 1000) : 0,
       });
     } catch(e) {
-      alert('Internet yoki server xatosi. Qayta urinib ko‘ring!');
-    throw e;
-}
+      console.warn(‘Exam submit API error (ignored):’, e);
+    }
   }
 }
 

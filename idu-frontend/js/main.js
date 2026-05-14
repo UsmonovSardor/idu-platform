@@ -3807,9 +3807,35 @@ startTestWithSubject = function(subj) {
   });
 };
 
-startRealWithSubject = function(subj) {
+startRealWithSubject = async function(subj) {
   var dekQs = DEKANAT_QUESTIONS.filter(function(q) { return q.subject === subj && (q.type === 'real' || q.type === 'both'); });
   var baseQs = TEST_QUESTIONS_DB[subj] || TEST_QUESTIONS_DB.algo || [];
+
+  // API orqali boshlashga urinish (dekanat sesiyani ochgan bo'lsa)
+  if (typeof api !== 'undefined') {
+    try {
+      var started = await api('POST', '/exams/start', { examType: 'sesiya', subject: subj });
+      if (started && started.attemptId) {
+        var apiQs = (started.questions || []).map(function(q) {
+          return { id: q.id, q: q.text || q.question_text, opts: q.options || [] };
+        });
+        _currentRealSubject = subj;
+        _currentRealQuestions = apiQs;
+        openRealExam({
+          id: started.attemptId,
+          questions: apiQs,
+          duration: (started.durationMin || 90) * 60,
+          maxWarnings: 2,
+          maxSuspicion: 80,
+          isTestMode: false,
+          subjectName: _examSubjectNames[subj] || subj,
+        });
+        return;
+      }
+    } catch(e) { /* fallback to local */ }
+  }
+
+  // Mahalliy savollar bilan (sesiya ochilmagan yoki API yo'q)
   var qs;
   if (dekQs.length >= 20) {
     qs = dekQs.slice(0, 30);
@@ -3823,13 +3849,13 @@ startRealWithSubject = function(subj) {
   _realAnswers = {};
 
   openRealExam({
-    id: 'real_' + subj + '_' + Date.now(),
+    id: 'local_real_' + subj + '_' + Date.now(),
     questions: qs,
     duration: 90 * 60,
     maxWarnings: 2,
     maxSuspicion: 80,
-    isTestMode: false,
-    subjectName: _examSubjectNames[subj] || subj,
+    isTestMode: true,   // local → natijani mahalliy ko'rsat
+    subjectName: (_examSubjectNames[subj] || subj) + ' — Mashq sesiyasi',
   });
 };
 
