@@ -3307,15 +3307,17 @@ function setSesiyaState(type, active, noToast) {
   var label = type === 'test' ? 'Test Rejim' : 'Sesiya';
   var action = active ? 'faollashtirildi' : 'bloklandi';
   var emoji = active ? '✅' : '🔒';
-  // Update log
-  var log = document.getElementById('sesiyaLog');
-  if (log) {
-    var oldEmpty = log.querySelector('[style*="text-align:center"]');
-    if (oldEmpty) oldEmpty.remove();
-    var entry = document.createElement('div');
-    entry.style.cssText = 'padding:10px 14px;background:' + (active ? '#DCFCE7' : '#FEE2E2') + ';border-radius:9px;border:1px solid ' + (active ? '#86EFAC' : '#FCA5A5') + ';font-size:13px;color:#0F172A;display:flex;align-items:center;gap:10px';
-    entry.innerHTML = '<span style="font-size:16px">' + emoji + '</span><span><strong>' + label + '</strong> ' + action + '</span><span style="margin-left:auto;color:#94A3B8;font-size:11px;font-family:monospace">' + timeStr + '</span>';
-    log.insertBefore(entry, log.firstChild);
+  // Update log — only when user actually clicks (noToast = page render, skip log)
+  if (!noToast) {
+    var log = document.getElementById('sesiyaLog');
+    if (log) {
+      var oldEmpty = log.querySelector('[style*="text-align:center"]');
+      if (oldEmpty) oldEmpty.remove();
+      var entry = document.createElement('div');
+      entry.style.cssText = 'padding:10px 14px;background:' + (active ? '#DCFCE7' : '#FEE2E2') + ';border-radius:9px;border:1px solid ' + (active ? '#86EFAC' : '#FCA5A5') + ';font-size:13px;color:#0F172A;display:flex;align-items:center;gap:10px';
+      entry.innerHTML = '<span style="font-size:16px">' + emoji + '</span><span><strong>' + label + '</strong> ' + action + '</span><span style="margin-left:auto;color:#94A3B8;font-size:11px;font-family:monospace">' + timeStr + '</span>';
+      log.insertBefore(entry, log.firstChild);
+    }
   }
   // Update card UI
   if (type === 'test') {

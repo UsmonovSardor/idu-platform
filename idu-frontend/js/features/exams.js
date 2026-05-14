@@ -1096,19 +1096,14 @@ function _renderQ(idx) {
   }).join('');
 
   var etirozHtml = (_examState.isRealSesiya || !_examState.isTestMode) ? [
-    '<div id="etirozSection_' + idx + '" style="margin-top:16px">',
-      '<button onclick="toggleEtirozBox(' + idx + ')" style="padding:6px 14px;background:#FFF7ED;border:1.5px solid #FED7AA;border-radius:8px;font-size:12px;font-weight:600;color:#EA580C;cursor:pointer">',
-        "⚠️ Bu savolga e'tiroz bildirish",
-      '</button>',
-      '<div id="etirozBox_' + idx + '" style="display:none;margin-top:10px;background:#FFF7ED;border:1.5px solid #FED7AA;border-radius:12px;padding:14px">',
-        '<div style="font-size:12px;font-weight:700;color:#92400E;margin-bottom:8px">',
-          "⚠️ " + (idx + 1) + "-savol bo'yicha e'tiroz:",
-        '</div>',
-        '<textarea id="etirozText_' + idx + '" rows="3" placeholder="E\'tiroz sababini yozing..." style="width:100%;padding:10px;border:1.5px solid #FED7AA;border-radius:8px;font-size:13px;resize:vertical;box-sizing:border-box;font-family:inherit"></textarea>',
-        '<button onclick="submitEtiraz(' + idx + ')" style="margin-top:8px;padding:8px 18px;background:#EA580C;color:#fff;border:none;border-radius:8px;font-size:13px;font-weight:700;cursor:pointer">',
-          "📤 E'tiroz yuborish",
-        '</button>',
+    '<div id="etirozSection_' + idx + '" style="margin-top:20px;background:#FFF7ED;border:1.5px solid #FED7AA;border-radius:12px;padding:14px">',
+      '<div style="font-size:12px;font-weight:700;color:#92400E;margin-bottom:8px">',
+        "⚠️ Bu savolga izoh yoki e'tiroz (ixtiyoriy):",
       '</div>',
+      '<textarea id="etirozText_' + idx + '" rows="2" placeholder="Savol noto\'g\'ri yoki tushunarsiz deb hisoblasangiz, izohingizni yozing..." style="width:100%;padding:10px;border:1.5px solid #FED7AA;border-radius:8px;font-size:13px;resize:vertical;box-sizing:border-box;font-family:inherit;background:#fff"></textarea>',
+      '<button onclick="submitEtiraz(' + idx + ')" style="margin-top:8px;padding:7px 16px;background:#EA580C;color:#fff;border:none;border-radius:8px;font-size:12px;font-weight:700;cursor:pointer">',
+        "📤 Dekanatga yuborish",
+      '</button>',
     '</div>',
   ].join('') : '';
 
