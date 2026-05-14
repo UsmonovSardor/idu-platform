@@ -38,22 +38,23 @@ const upload = multer({
 router.use(authenticate);
 
 // ?? GET /api/students ?????????????????????????????????????????????????????????
-// Dekanat/admin: list all students with optional search/filter
+// Dekanat/admin/teacher: list students with optional filters
 router.get(
   '/',
-  authorize('dekanat', 'admin'),
+  authorize('dekanat', 'admin', 'teacher'),
   [
     query('search').optional().isString().trim(),
     query('faculty').optional().isString().trim(),
+    query('group').optional().isString().trim(),
     query('year').optional().isInt({ min: 1, max: 6 }),
     query('page').optional().isInt({ min: 1 }).toInt(),
     query('limit').optional().isInt({ min: 1, max: 100 }).toInt(),
   ],
   validate,
   async (req, res) => {
-    const { search, faculty, year } = req.query;
+    const { search, faculty, group, year } = req.query;
     const page  = req.query.page  || 1;
-    const limit = req.query.limit || 20;
+    const limit = req.query.limit || 50;
     const offset = (page - 1) * limit;
 
     let conditions = ['u.is_active = TRUE', "u.role = 'student'"];
@@ -66,6 +67,10 @@ router.get(
     if (faculty) {
       params.push(faculty);
       conditions.push(`s.faculty = $${params.length}`);
+    }
+    if (group) {
+      params.push(group);
+      conditions.push(`s.group_name = $${params.length}`);
     }
     if (year) {
       params.push(year);
@@ -82,7 +87,8 @@ router.get(
 
     const { rows } = await db.query(
       `SELECT u.id, u.full_name, u.phone, u.avatar_url,
-              s.student_id_number, s.faculty, s.department, s.year_of_study, s.gpa
+              s.student_id_number, s.faculty, s.department, s.year_of_study, s.gpa,
+              s.group_name
        FROM users u
        LEFT JOIN students s ON s.user_id = u.id
        ${where}
@@ -202,6 +208,56 @@ router.get(
     );
 
     res.json(rows);
+  }
+);
+
+// ?? POST /api/students/attendance ????????????????????????????????????????????
+// Teacher/dekanat: save attendance records for a group
+router.post(
+  '/attendance',
+  authorize('teacher', 'dekanat', 'admin'),
+  [
+    body('date').isISO8601().toDate(),
+    body('records').isArray({ min: 1 }),
+    body('records.*.studentId').notEmpty(),
+    body('records.*.present').isBoolean(),
+  ],
+  validate,
+  async (req, res) => {
+    const { date, group, records } = req.body;
+
+    // Ensure attendance table exists (soft create)
+    await db.query(`
+      CREATE TABLE IF NOT EXISTS attendance (
+        id           SERIAL PRIMARY KEY,
+        student_id   INT NOT NULL REFERENCES users(id) ON DELETE CASCADE,
+        teacher_id   INT NOT NULL REFERENCES users(id),
+        date         DATE NOT NULL,
+        present      BOOLEAN NOT NULL DEFAULT TRUE,
+        excused      BOOLEAN NOT NULL DEFAULT FALSE,
+        note         TEXT,
+        group_name   VARCHAR(50),
+        created_at   TIMESTAMPTZ DEFAULT NOW(),
+        UNIQUE(student_id, date)
+      )
+    `).catch(() => {});
+
+    const saved = [];
+    for (const rec of records) {
+      try {
+        const { rows } = await db.query(
+          `INSERT INTO attendance (student_id, teacher_id, date, present, excused, note, group_name)
+           VALUES ($1, $2, $3, $4, $5, $6, $7)
+           ON CONFLICT (student_id, date)
+           DO UPDATE SET present = $4, excused = $5, note = $6, teacher_id = $2
+           RETURNING id`,
+          [rec.studentId, req.user.id, date, rec.present, !!rec.excused, rec.note || null, group || null]
+        );
+        saved.push(rows[0]?.id);
+      } catch(e) { /* skip individual failures */ }
+    }
+
+    res.json({ saved: saved.length, total: records.length });
   }
 );
 

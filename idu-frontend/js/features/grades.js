@@ -169,23 +169,42 @@ function renderRating(){
     </div>`).join('');
 }
 
-function loadGradeGroup(){
+async function loadGradeGroup(){
   const el=document.getElementById('gradeEntryBody');if(!el)return;
   _curGrp=document.getElementById('gradeGroupSelect')?.value||'AI-2301';
   _curSub=document.getElementById('gradeSubjectSelect')?.value||'Machine Learning';
   const tEl=document.getElementById('gradeEntryTitle');
   if(tEl)tEl.textContent='✏️ '+_curSub+' — '+_curGrp+' guruh';
-  const students=STUDENTS_DATA.filter(s=>s.group===_curGrp);
+
+  // Skeleton
+  el.innerHTML='<tr><td colspan="9" style="text-align:center;padding:20px"><div style="display:flex;flex-direction:column;gap:8px">'
+    +[1,2,3,4].map(()=>'<div class="skel" style="height:36px;border-radius:6px"></div>').join('')
+    +'</div></td></tr>';
+
+  var students=[];
+  try {
+    var data=await api('GET','/students?group='+encodeURIComponent(_curGrp)+'&limit=100');
+    var raw=Array.isArray(data)?data:(data.data||data.students||data.rows||[]);
+    students=raw.map(function(s){return {id:s.id,name:s.full_name||s.name,group:s.group_name||_curGrp};});
+  } catch(e){
+    students=STUDENTS_DATA.filter(s=>s.group===_curGrp);
+  }
+
+  if(!students.length){
+    el.innerHTML='<tr><td colspan="9" style="text-align:center;color:#94A3B8;padding:24px">Bu guruhda talabalar topilmadi</td></tr>';
+    return;
+  }
+
   const palette=['#1B4FD8','#7C3AED','#0891B2','#16A34A','#D97706','#DC2626','#0F766E','#9333EA'];
   el.innerHTML=students.map(function(s,i){
     const key=s.id+'_'+_curSub;
     const sv=SAVED_GRADES[key];
-    const jv=sv?sv.jn:Math.floor(Math.random()*11+19);
-    const ov=sv?sv.on:Math.floor(Math.random()*7+13);
-    const yv=sv?sv.yn:Math.floor(Math.random()*11+18);
-    const mv=sv?sv.mi:Math.floor(Math.random()*7+12);
-    const ini=s.name.split(' ').map(function(x){return x[0];}).join('');
-    const col=palette[s.id%palette.length];
+    const jv=sv?sv.jn:0;
+    const ov=sv?sv.on:0;
+    const yv=sv?sv.yn:0;
+    const mv=sv?sv.mi:0;
+    const ini=(s.name||'?').split(' ').map(function(x){return x[0];}).join('');
+    const col=palette[i%palette.length];
     return '<tr id="grade-row-'+s.id+'">'
       +'<td>'+(i+1)+'</td>'
       +'<td style="min-width:160px"><div style="display:flex;align-items:center;gap:8px">'
@@ -230,17 +249,19 @@ function calcTotal(id){
 }
 
 function updateGradeFooter(students){
-  var sum=0,alo=0,fail=0;
-  students.forEach(function(s){
-    var jn=parseInt(document.getElementById('jn-'+s.id)?.value)||0;
-    var on=parseInt(document.getElementById('on-'+s.id)?.value)||0;
-    var yn=parseInt(document.getElementById('yn-'+s.id)?.value)||0;
-    var mi=parseInt(document.getElementById('mi-'+s.id)?.value)||0;
-    var t=jn+on+yn+mi;sum+=t;
+  var rows=document.querySelectorAll('#gradeEntryBody tr[id^="grade-row-"]');
+  var sum=0,alo=0,fail=0,count=0;
+  rows.forEach(function(row){
+    var sid=row.id.replace('grade-row-','');
+    var jn=parseInt(document.getElementById('jn-'+sid)?.value)||0;
+    var on=parseInt(document.getElementById('on-'+sid)?.value)||0;
+    var yn=parseInt(document.getElementById('yn-'+sid)?.value)||0;
+    var mi=parseInt(document.getElementById('mi-'+sid)?.value)||0;
+    var t=jn+on+yn+mi;sum+=t;count++;
     if(t>=86)alo++;if(t<55)fail++;
   });
-  var avg=students.length?(sum/students.length).toFixed(1):'—';
-  var ce=document.getElementById('gradeEntryCount');if(ce)ce.textContent=students.length;
+  var avg=count?(sum/count).toFixed(1):'—';
+  var ce=document.getElementById('gradeEntryCount');if(ce)ce.textContent=count;
   var av=document.getElementById('gradeEntryAvg');if(av)av.textContent=avg;
   var al=document.getElementById('gradeEntryAlo');if(al)al.textContent=alo;
   var fa=document.getElementById('gradeEntryFail');if(fa)fa.textContent=fail;
@@ -261,15 +282,16 @@ function saveGrade(id){
 }
 
 function saveAllGrades(){
-  var students=STUDENTS_DATA.filter(function(s){return s.group===_curGrp;});
+  var rows=document.querySelectorAll('#gradeEntryBody tr[id^="grade-row-"]');
   var err=false;
-  students.forEach(function(s){
-    var jn=parseInt(document.getElementById('jn-'+s.id)?.value)||0;
-    var on=parseInt(document.getElementById('on-'+s.id)?.value)||0;
-    var yn=parseInt(document.getElementById('yn-'+s.id)?.value)||0;
-    var mi=parseInt(document.getElementById('mi-'+s.id)?.value)||0;
+  rows.forEach(function(row){
+    var sid=row.id.replace('grade-row-','');
+    var jn=parseInt(document.getElementById('jn-'+sid)?.value)||0;
+    var on=parseInt(document.getElementById('on-'+sid)?.value)||0;
+    var yn=parseInt(document.getElementById('yn-'+sid)?.value)||0;
+    var mi=parseInt(document.getElementById('mi-'+sid)?.value)||0;
     if(jn>30||on>20||yn>30||mi>20){err=true;return;}
-    SAVED_GRADES[s.id+'_'+_curSub]={jn:jn,on:on,yn:yn,mi:mi};
+    SAVED_GRADES[sid+'_'+_curSub]={jn:jn,on:on,yn:yn,mi:mi};
   });
   if(err){showToast('⚠️','Xato','Limitdan oshgan baholar mavjud!');return;}
   document.querySelectorAll('#gradeEntryBody tr').forEach(function(row){
@@ -279,9 +301,10 @@ function saveAllGrades(){
 }
 
 function exportGrades(){
-  var students=STUDENTS_DATA.filter(function(s){return s.group===_curGrp;});
+  var rows=document.querySelectorAll('#gradeEntryBody tr[id^="grade-row-"]');
   var csv='Fan,Guruh,Talaba,JN/30,ON/20,YN/30,MI/20,Jami/100,Baho\n';
-  students.forEach(function(s){
+  rows.forEach(function(row){
+    var s={id:row.id.replace('grade-row-',''),name:row.querySelector('span[style*="font-weight"]')?.textContent||'',group:_curGrp};
     var jn=parseInt(document.getElementById('jn-'+s.id)?.value)||0;
     var on=parseInt(document.getElementById('on-'+s.id)?.value)||0;
     var yn=parseInt(document.getElementById('yn-'+s.id)?.value)||0;

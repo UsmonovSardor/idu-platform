@@ -49,11 +49,10 @@ async function _renderAttendanceRows() {
   var students = [];
   try {
     var data = await api('GET', '/students?group=' + encodeURIComponent(group) + '&limit=50');
-    students = Array.isArray(data) ? data : (data.students || data.rows || []);
+    students = Array.isArray(data) ? data : (data.data || data.students || data.rows || []);
   } catch(e) {
-    // Fallback to local STUDENTS_DATA
     students = (typeof STUDENTS_DATA !== 'undefined' ? STUDENTS_DATA : [])
-      .filter(function(s) { return s.group === group; });
+      .filter(function(s) { return s.group === group || s.group_name === group; });
   }
 
   if (!students.length) {
