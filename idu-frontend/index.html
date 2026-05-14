@@ -2237,7 +2237,7 @@
       <div class="ph-title">📬 Arizalar boshqaruvi</div>
       <div class="ph-sub">Sertifikat buyurtmalari va ish murojaatlari</div>
     </div>
-    <div class="page-header-right">
+    <div class="page-header-right" style="display:flex;align-items:center;gap:10px;flex-wrap:wrap">
       <div class="filter-row" style="margin:0">
         <button class="filter-chip active" onclick="filterApps('all',this)">Barchasi</button>
         <button class="filter-chip" onclick="filterApps('cert',this)">🎓 Sertifikat</button>
@@ -2245,6 +2245,7 @@
         <button class="filter-chip" onclick="filterApps('etiraz',this)">⚠️ E'tirozlar</button>
         <button class="filter-chip" onclick="filterApps('pending',this)">⏳ Kutilmoqda</button>
       </div>
+      <button onclick="exportApplicationsExcel()" style="padding:7px 14px;background:#16A34A;color:#fff;border:none;border-radius:8px;font-size:12px;font-weight:700;cursor:pointer;display:flex;align-items:center;gap:6px">📥 Excel</button>
     </div>
   </div>
   <div class="stats-grid-3" style="margin-bottom:16px">

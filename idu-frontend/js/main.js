@@ -2574,7 +2574,36 @@ function filterApps(filter, el){
   renderDekanatApplications();
 }
 
-function renderDekanatApplications(){
+async function renderDekanatApplications(){
+  // Fetch from backend and merge with local
+  if (typeof api !== 'undefined') {
+    try {
+      var apiApps = await api('GET', '/applications');
+      if (Array.isArray(apiApps) && apiApps.length) {
+        var localIds = new Set(APPLICATIONS.map(function(a){ return a.apiId; }).filter(Boolean));
+        apiApps.forEach(function(a) {
+          if (!localIds.has(a.id)) {
+            APPLICATIONS.push({
+              id: a.id, apiId: a.id,
+              studentName: a.student_name || a.studentName || '',
+              fullName: a.student_name || a.studentName || '',
+              group: a.student_id_number || '',
+              type: a.type,
+              detail: a.detail || '',
+              company: a.company || '',
+              price: '—',
+              date: a.created_at ? new Date(a.created_at).toLocaleDateString('uz-UZ') : '',
+              status: a.status || 'pending',
+              note: a.note || '',
+              phone: '', email: ''
+            });
+            localIds.add(a.id);
+          }
+        });
+        saveApplications();
+      }
+    } catch(e) {}
+  }
   let apps = [...APPLICATIONS].sort((a,b)=>b.id-a.id);
   if(currentAppFilter==='cert') apps=apps.filter(a=>a.type==='cert');
   else if(currentAppFilter==='job') apps=apps.filter(a=>a.type==='job');
@@ -2639,6 +2668,37 @@ function addNoteToApp(id){
   if(!app) return;
   const note = prompt('Talabaga izoh yozing:', app.note||'');
   if(note !== null){ app.note = note; renderDekanatApplications(); showToast('💬','Izoh saqlandi',''); }
+}
+
+function exportApplicationsExcel() {
+  var apps = [...APPLICATIONS].sort(function(a,b){ return b.id - a.id; });
+  if (!apps.length) { showToast('⚠️','Ma\'lumot yo\'q','Hali ariza mavjud emas'); return; }
+  var header = ['#','Talaba','Guruh','Ariza turi','Tafsilot','Izoh','Sana','Holat'];
+  var typeMap = { cert: 'Sertifikat', job: 'Ish ariza', etiraz: "E'tiroz", other: 'Boshqa' };
+  var statusMap = { pending: 'Kutilmoqda', approved: 'Tasdiqlandi', rejected: 'Rad etildi', reviewing: "Ko'rib chiqilmoqda" };
+  var rows = apps.map(function(a, i) {
+    return [
+      i + 1,
+      a.fullName || a.studentName || '',
+      a.group || '',
+      typeMap[a.type] || a.type || '',
+      (a.detail || '').replace(/,/g, ';'),
+      (a.note || '').replace(/,/g, ';'),
+      a.date || '',
+      statusMap[a.status] || a.status || ''
+    ].join(',');
+  });
+  var csv = '﻿' + header.join(',') + '\n' + rows.join('\n');
+  var blob = new Blob([csv], { type: 'text/csv;charset=utf-8;' });
+  var url = URL.createObjectURL(blob);
+  var a = document.createElement('a');
+  a.href = url;
+  a.download = 'arizalar_' + new Date().toISOString().slice(0,10) + '.csv';
+  document.body.appendChild(a);
+  a.click();
+  document.body.removeChild(a);
+  URL.revokeObjectURL(url);
+  showToast('📥', 'Excel', 'Arizalar yuklab olindi');
 }
 
 // ════════════════════════════════════
@@ -3525,48 +3585,58 @@ function toggleEtirozBox(qi) {
 }
 
 function submitEtiraz(qi) {
-  var textEl = document.getElementById('etirozText' + qi);
+  // Support both new (etirozText_N) and old (etirozTextN) HTML structures
+  var textEl = document.getElementById('etirozText_' + qi) || document.getElementById('etirozText' + qi);
   var text = textEl ? textEl.value.trim() : '';
   if (!text) { showToast('⚠️', 'Xato', "Iltimos, e'tiroz sababini yozing"); return; }
-  var q = _currentTestQuestions[qi];
-  var user = currentUser || {name:'Noma\'lum talaba', group:'Guruh'};
+
+  var examSt = (typeof _examState !== 'undefined') ? _examState : null;
+  var q = examSt ? examSt.questions[qi] : (_currentTestQuestions ? _currentTestQuestions[qi] : null);
+  var user = currentUser || { name: "Noma'lum talaba", group: '' };
   var now = new Date();
   var dateStr = now.getDate() + '.' + (now.getMonth()+1) + '.' + now.getFullYear();
-  var subjectName = (document.getElementById('testSubjectName')||{textContent:''}).textContent;
-  var detail = "E'tiroz: " + (qi+1) + "-savol — «" + q.q.substring(0,60) + (q.q.length>60?'...':'') + "»";
+  var subjectName = examSt ? (examSt.subjectName || '') : ((document.getElementById('testSubjectName')||{}).textContent || '');
+  var qText = q ? q.q : '';
+  var detail = (qi+1) + "-savol: " + text;
 
-  // Push to local APPLICATIONS array (localStorage-persisted)
+  // Push to local APPLICATIONS for immediate dekanat panel update
   APPLICATIONS.push({
-    id: APPLICATIONS.length + 1,
+    id: Date.now(),
     studentName: user.name,
     fullName: user.name,
-    group: user.group || 'A-101',
+    group: user.group || '',
     type: 'etiraz',
     detail: detail,
-    company: "Test: " + subjectName,
+    company: subjectName,
     price: '—',
     date: dateStr,
     status: 'pending',
-    note: text,
+    note: qText ? ('Savol: ' + qText.substring(0, 200)) : '',
     phone: '',
     email: ''
   });
   updateAppBadges();
-  saveApplications(); // localStorage persistence
+  saveApplications();
 
-  // Also send to backend API (non-blocking)
-  apiSubmitApplication({
-    type: 'etiraz',
-    detail: detail,
-    company: 'Test: ' + subjectName,
-    note: text,
-    questionIndex: qi,
-    examType: 'test',
-    subject: _currentTestSubject || ''
-  }).catch(function(){});  // silent fail — localStorage is the source of truth
+  // Send to backend API (persists across deployments)
+  if (typeof api !== 'undefined') {
+    api('POST', '/applications', {
+      type: 'etiraz',
+      detail: detail,
+      note: qText ? ('Savol matni: ' + qText) : '',
+      questionIndex: qi,
+      examType: (examSt && examSt.isRealSesiya) ? 'sesiya' : 'test',
+      subject: (typeof _currentTestSubject !== 'undefined' && _currentTestSubject) ? _currentTestSubject : ''
+    }).catch(function(){});
+  }
 
-  document.getElementById('etirozBox' + qi).style.display = 'none';
-  showToast('✅', "E'tiroz yuborildi!", "Dekanat ko'rib chiqadi", 'green');
+  // Clear textarea after send
+  if (textEl) textEl.value = '';
+  // Hide old-style etirazBox if present
+  var oldBox = document.getElementById('etirozBox' + qi);
+  if (oldBox) oldBox.style.display = 'none';
+
+  showToast('✅', "E'tiroz yuborildi!", "Dekanat ko'rib chiqadi");
 }
 
 function renderSesiyaReal() {
