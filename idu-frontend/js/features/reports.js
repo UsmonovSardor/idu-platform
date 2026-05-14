@@ -50,10 +50,149 @@ function exportAttendance(){
   showToast('📤','Export','Davomat hisoboti Excel formatida yuklanmoqda...');
 }
 
-function renderFullReport(){
-  renderGradeDistribution();
-  renderGroupAvgChart();
-  renderSubjectAvgTable();
+async function renderFullReport(){
+  // Skeleton
+  var u = function(id, val){ var el=document.getElementById(id); if(el) el.textContent=val; };
+  u('rpt-total-students','…'); u('rpt-avg-score','…');
+  u('rpt-total-exams','…'); u('rpt-pass-rate','…'); u('rpt-fail-count','…');
+
+  var attempts = [];
+  var students  = [];
+  try {
+    var res = await Promise.all([
+      api('GET', '/exams/history'),
+      api('GET', '/students?limit=200')
+    ]);
+    attempts = Array.isArray(res[0]) ? res[0] : [];
+    students  = Array.isArray(res[1]) ? res[1] : (Array.isArray(res[1] && res[1].students) ? res[1].students : []);
+  } catch(e) {}
+
+  // ── KPI ──────────────────────────────────────────────────────
+  var completed = attempts.filter(function(a){ return a.status === 'completed'; });
+  var totalStudents = students.length;
+  var avgScore  = completed.length
+    ? Math.round(completed.reduce(function(s,a){ return s + (a.score||0); }, 0) / completed.length * 10) / 10
+    : 0;
+  var passCount = completed.filter(function(a){ return a.letter_grade && a.letter_grade !== 'F'; }).length;
+  var failCount = completed.filter(function(a){ return a.letter_grade === 'F'; }).length;
+  var passRate  = completed.length ? Math.round(passCount / completed.length * 100) : 0;
+
+  u('rpt-total-students', totalStudents || 0);
+  u('rpt-avg-score',  avgScore || 0);
+  u('rpt-total-exams', completed.length);
+  u('rpt-pass-rate',  passRate + '%');
+  u('rpt-fail-count', failCount);
+
+  var scoreEl = document.getElementById('rpt-avg-score');
+  if (scoreEl) scoreEl.style.color = avgScore >= 71 ? '#16A34A' : avgScore >= 56 ? '#D97706' : '#DC2626';
+  var failTrend = document.getElementById('rpt-fail-trend');
+  if (failTrend) { failTrend.textContent = failCount > 0 ? '↓ Nazorat kerak' : '✅ Yaxshi'; failTrend.style.color = failCount > 0 ? '#DC2626' : '#16A34A'; }
+
+  // ── Grade distribution ────────────────────────────────────────
+  var gradeEl = document.getElementById('gradeDistribution');
+  if (gradeEl) {
+    var alo  = completed.filter(function(a){ return (a.score||0) >= 86; }).length;
+    var yax  = completed.filter(function(a){ var s=a.score||0; return s>=71 && s<86; }).length;
+    var qon  = completed.filter(function(a){ var s=a.score||0; return s>=56 && s<71; }).length;
+    var fail2= completed.filter(function(a){ return (a.score||0) < 56; }).length;
+    var tot  = completed.length || 1;
+    var bars = [
+      { label:"A'lo (86–100)",  cnt: alo,  pct: Math.round(alo/tot*100),  color:'#16A34A' },
+      { label:'Yaxshi (71–85)', cnt: yax,  pct: Math.round(yax/tot*100),  color:'#1B4FD8' },
+      { label:'Qoniqarli (56–70)', cnt: qon, pct: Math.round(qon/tot*100), color:'#D97706' },
+      { label:'Qoniqarsiz (<56)',  cnt: fail2, pct: Math.round(fail2/tot*100), color:'#DC2626' }
+    ];
+    gradeEl.innerHTML = bars.map(function(b){
+      return '<div style="margin-bottom:12px">'
+        +'<div style="display:flex;justify-content:space-between;font-size:12px;font-weight:600;margin-bottom:4px">'
+          +'<span style="color:#0F172A">'+b.label+'</span>'
+          +'<span style="color:'+b.color+'">'+b.cnt+' ta &nbsp;'+b.pct+'%</span>'
+        +'</div>'
+        +'<div style="background:#F1F5F9;border-radius:6px;height:10px;overflow:hidden">'
+          +'<div style="width:'+b.pct+'%;background:'+b.color+';height:100%;border-radius:6px;transition:width 0.5s"></div>'
+        +'</div>'
+      +'</div>';
+    }).join('');
+  }
+
+  // ── Group avg bar chart ───────────────────────────────────────
+  var chartEl = document.getElementById('groupAvgChart');
+  if (chartEl) {
+    if (!completed.length) {
+      chartEl.innerHTML = '<div style="padding:30px;text-align:center;color:#94A3B8;font-size:13px">Hali imtihon natijalari yo\'q</div>';
+    } else {
+      var groupMap = {};
+      completed.forEach(function(a){
+        var g = a.group_name || a.group || 'Noma\'lum';
+        if (!groupMap[g]) groupMap[g] = [];
+        groupMap[g].push(a.score || 0);
+      });
+      var colors = ['#1B4FD8','#7C3AED','#16A34A','#EA580C','#0891B2','#DB2777'];
+      var groups = Object.keys(groupMap);
+      var gdata = groups.map(function(g, i){
+        var scores = groupMap[g];
+        var avg = scores.length ? Math.round(scores.reduce(function(s,v){ return s+v; },0)/scores.length) : 0;
+        return { g: g, avg: avg, cnt: scores.length, c: colors[i % colors.length] };
+      });
+      var maxV = Math.max.apply(null, gdata.map(function(d){ return d.avg; })) + 10 || 100;
+      chartEl.innerHTML = '<div style="display:flex;align-items:flex-end;gap:10px;height:120px;padding:0 8px;margin-bottom:8px">'
+        + gdata.map(function(d){
+          var h = Math.max(4, Math.round((d.avg / maxV) * 95));
+          return '<div style="flex:1;display:flex;flex-direction:column;align-items:center;gap:4px">'
+            +'<span style="font-size:11px;font-weight:800;color:'+d.c+'">'+d.avg+'</span>'
+            +'<div style="width:100%;background:'+d.c+';border-radius:6px 6px 0 0;height:'+h+'px;opacity:0.88"></div>'
+            +'<div style="font-size:9px;color:#94A3B8;text-align:center;line-height:1.3">'+d.g+'<br><span style="color:#CBD5E1">'+d.cnt+' ta</span></div>'
+          +'</div>';
+        }).join('')
+      +'</div>';
+    }
+  }
+
+  // ── Subject avg table ─────────────────────────────────────────
+  var subEl = document.getElementById('subjectAvgTable');
+  if (subEl) {
+    var subNames = { algo:'Algoritmlar', ai:"Sun'iy Intellekt", math:'Matematika', db:"Ma'lumotlar Bazasi", web:'Web Dasturlash' };
+    var subMap = {};
+    completed.forEach(function(a){
+      var s = a.subject || 'unknown';
+      if (!subMap[s]) subMap[s] = [];
+      subMap[s].push(a.score || 0);
+    });
+    var subRows = Object.keys(subMap).map(function(sub){
+      var scores = subMap[sub];
+      var avg  = parseFloat((scores.reduce(function(s,v){ return s+v; },0)/scores.length).toFixed(1));
+      var alo  = scores.filter(function(s){ return s>=86; }).length;
+      var fail = scores.filter(function(s){ return s<56; }).length;
+      var tc   = avg>=80?'#166534':avg>=65?'#1E40AF':'#991B1B';
+      var tb   = avg>=80?'#DCFCE7':avg>=65?'#DBEAFE':'#FEE2E2';
+      return { sub: subNames[sub]||sub, avg: avg, alo: alo, fail: fail, tc: tc, tb: tb, total: scores.length };
+    });
+    subRows.sort(function(a,b){ return b.avg - a.avg; });
+    if (!subRows.length) {
+      subEl.innerHTML = '<div style="padding:24px;text-align:center;color:#94A3B8;font-size:13px">Hali imtihon natijalari yo\'q</div>';
+    } else {
+      subEl.innerHTML = '<table style="width:100%;border-collapse:collapse;font-size:13px">'
+        +'<thead><tr>'
+          +'<th style="text-align:left;padding:8px 12px;border-bottom:1.5px solid #E2E8F0;font-size:11px;font-weight:700;color:#94A3B8">#</th>'
+          +'<th style="text-align:left;padding:8px 12px;border-bottom:1.5px solid #E2E8F0;font-size:11px;font-weight:700;color:#94A3B8">FAN NOMI</th>'
+          +'<th style="text-align:center;padding:8px 12px;border-bottom:1.5px solid #E2E8F0;font-size:11px;font-weight:700;color:#94A3B8">O\'RT. BALL</th>'
+          +'<th style="text-align:center;padding:8px 12px;border-bottom:1.5px solid #E2E8F0;font-size:11px;font-weight:700;color:#94A3B8">A\'LOCHILAR</th>'
+          +'<th style="text-align:center;padding:8px 12px;border-bottom:1.5px solid #E2E8F0;font-size:11px;font-weight:700;color:#94A3B8">QONIQARSIZ</th>'
+          +'<th style="padding:8px 12px;border-bottom:1.5px solid #E2E8F0"></th>'
+        +'</tr></thead><tbody>'
+        + subRows.map(function(r, i){
+          return '<tr style="border-bottom:1px solid #F1F5F9">'
+            +'<td style="padding:10px 12px;color:#94A3B8;font-weight:700">'+(i+1)+'</td>'
+            +'<td style="padding:10px 12px;font-weight:700;color:#0F172A">'+r.sub+'</td>'
+            +'<td style="padding:10px 12px;text-align:center"><span style="background:'+r.tb+';color:'+r.tc+';padding:3px 10px;border-radius:20px;font-weight:800;font-size:12px">'+r.avg+'</span></td>'
+            +'<td style="padding:10px 12px;text-align:center;font-weight:700;color:#16A34A">'+r.alo+'</td>'
+            +'<td style="padding:10px 12px;text-align:center;font-weight:700;color:#DC2626">'+r.fail+'</td>'
+            +'<td style="padding:10px 12px"><div style="background:#F1F5F9;border-radius:4px;height:6px;width:100px;overflow:hidden"><div style="width:'+Math.round(r.avg)+'%;background:'+r.tc+';height:100%;border-radius:4px"></div></div></td>'
+          +'</tr>';
+        }).join('')
+        +'</tbody></table>';
+    }
+  }
 }
 
 function renderGroupDetailReport(){
