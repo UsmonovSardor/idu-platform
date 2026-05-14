@@ -434,11 +434,21 @@
       <div class="nav-icon-btn" id="notifBtn" onclick="showPage('notifications')">
         🔔<div class="notif-badge" id="notifCount" style="display:none">0</div>
       </div>
-      <div class="user-chip" id="userChip">
+      <div class="user-chip" id="userChip" onclick="toggleUserMenu(event)" style="position:relative">
         <div class="uc-avatar" id="chipAvatar"></div>
         <div class="uc-info">
           <div class="uc-name" id="chipName"></div>
           <div class="uc-role" id="chipRole"></div>
+        </div>
+        <!-- Dropdown menu -->
+        <div id="userDropdown" style="display:none;position:absolute;top:calc(100% + 8px);right:0;min-width:160px;background:#fff;border:1.5px solid #E2E8F0;border-radius:12px;box-shadow:0 8px 24px rgba(0,0,0,.12);z-index:9999;overflow:hidden">
+          <div style="padding:10px 14px;border-bottom:1px solid #F1F5F9">
+            <div style="font-size:12px;font-weight:700;color:#0F172A" id="dropName"></div>
+            <div style="font-size:11px;color:#94A3B8" id="dropRole"></div>
+          </div>
+          <button onclick="logout()" style="display:flex;align-items:center;gap:8px;width:100%;padding:11px 14px;background:none;border:none;font-size:13px;font-weight:600;color:#DC2626;cursor:pointer;font-family:inherit">
+            <span>🚪</span> Chiqish
+          </button>
         </div>
       </div>
       <button class="logout-btn" onclick="logout()">Chiqish</button>

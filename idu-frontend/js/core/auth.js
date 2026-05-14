@@ -373,6 +373,28 @@ function loginInvestor(){
   launchApp('investor', u);
 }
 
+function toggleUserMenu(e) {
+  e.stopPropagation();
+  var dd = document.getElementById('userDropdown');
+  if (!dd) return;
+  var isOpen = dd.style.display !== 'none';
+  dd.style.display = isOpen ? 'none' : 'block';
+  // Ism va rolni to'ldirish
+  var dn = document.getElementById('dropName');
+  var dr = document.getElementById('dropRole');
+  if (dn) dn.textContent = document.getElementById('chipName')?.textContent || '';
+  if (dr) dr.textContent = document.getElementById('chipRole')?.textContent || '';
+  // Tashqarida click qilganda yopish
+  if (!isOpen) {
+    setTimeout(function() {
+      document.addEventListener('click', function _close() {
+        dd.style.display = 'none';
+        document.removeEventListener('click', _close);
+      });
+    }, 0);
+  }
+}
+
 function logout(){
   currentUser=null; currentRole=null;
   _apiToken = null;
