@@ -84,12 +84,13 @@ app.use('/api/exams', examsRoutes);
 app.use('/api/assignments', assignmentsRoutes);
 app.use('/api/submissions', submissionsRoutes);
 
-/* FRONTEND RAILWAYDA SHU YERDAN OCHILADI */
+/* FRONTEND — monorepo: node idu-backend/server.js buyrug'i bilan ishlaganda
+   cwd = repo root, shuning uchun 'idu-frontend' to'g'ridan topiladi */
 const frontendCandidates = [
-  path.resolve(__dirname, '../idu-frontend'),
-  path.resolve(__dirname, 'public'),
-  path.resolve(process.cwd(), 'idu-frontend'),
-  path.resolve(process.cwd(), 'idu-backend/public'),
+  path.resolve(process.cwd(), 'idu-frontend'),          // monorepo root (Railway)
+  path.resolve(__dirname, '../idu-frontend'),            // local: idu-backend/../idu-frontend
+  path.resolve(__dirname, 'public'),                     // fallback: idu-backend/public
+  path.resolve(process.cwd(), 'idu-backend/public'),     // legacy fallback
 ];
 
 const frontendDir = frontendCandidates.find((dir) => {

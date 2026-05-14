@@ -8,12 +8,7 @@
 ═══════════════════════════════════════════════════════════════════ */
 
 
-// ── 0. API BASE (Railway uchun) ──────────────────────────────────
-(function () {
-  if (!window.API_BASE) {
-    window.API_BASE = '/api';
-  }
-})();
+// ── 0. API BASE — config.js da aniqlanadi (enhancements.js override qilmaydi)
 
 
 // ── 1. Landing page o‘chirilmasin ────────────────────────────────

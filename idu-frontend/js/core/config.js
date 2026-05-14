@@ -1,7 +1,25 @@
 'use strict';
 // IDU - core/config.js
-// API konfiguratsiya
-var API_BASE = '/api';
+
+// Backend URL — Railway environment variable yoki auto-detect
+var API_BASE = (function () {
+  // 1. HTML <meta name="api-base"> orqali override (deploy vaqtida inject qilinishi mumkin)
+  var meta = document.querySelector('meta[name="api-base"]');
+  if (meta && meta.content) return meta.content;
+
+  // 2. Asosiy backend domenida ishlayapti — same-origin
+  var backendHosts = [
+    'idu-platform-production.up.railway.app',
+    'localhost',
+    '127.0.0.1',
+  ];
+  if (backendHosts.some(function(h) { return window.location.hostname.indexOf(h) !== -1; })) {
+    return '/api';
+  }
+
+  // 3. Alohida frontend domenidan — backend URL ga to'g'ridan murojaat
+  return 'https://idu-platform-production.up.railway.app/api';
+}());
 var _apiToken=null;
 
 function safeHTML(str) {

@@ -1,0 +1,13 @@
+{
+  "name": "idu-platform",
+  "version": "3.0.0",
+  "description": "IDU University Platform — Monorepo",
+  "private": true,
+  "scripts": {
+    "start": "node idu-backend/server.js",
+    "install:backend": "cd idu-backend && npm ci --omit=dev"
+  },
+  "engines": {
+    "node": ">=20.0.0"
+  }
+}
