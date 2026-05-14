@@ -145,7 +145,8 @@ function renderTeacherTodayFull(){
   let lessons=[];
   Object.keys(SCHEDULE).forEach(grp=>{
     (SCHEDULE[grp][todayIdx]||[]).forEach((l,i)=>{
-      if(l&&l.teacher.startsWith('Toshmatov'))lessons.push({...l,para:i,grp});
+      const teacherName=(typeof currentUser!=='undefined'&&currentUser?.name)||'';
+      if(l&&teacherName&&l.teacher.includes(teacherName.split(' ')[0]))lessons.push({...l,para:i,grp});
     });
   });
   if(!lessons.length){el.innerHTML=`<div style="color:var(--text3);font-size:13px">${currentLang==='ru'?'Сегодня нет занятий':'Bugun dars yo\'q yoki bu o\'qituvchiga dars tayinlanmagan'}</div>`;return;}

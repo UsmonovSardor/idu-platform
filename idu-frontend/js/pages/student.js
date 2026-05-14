@@ -241,13 +241,7 @@ function renderRiskStudents(){
   var midEl=document.getElementById('riskMidList');
   var attEl=document.getElementById('attendRiskBody');
   if(!highEl||!midEl) return;
-  var allStudents=STUDENTS_DATA.length?STUDENTS_DATA:[
-    {id:1,name:'Bobur Tursunov',group:'AI-2301',course:2,gpa:1.8,avg:51,att:72},
-    {id:2,name:'Kamola Mirzayeva',group:'CS-2301',course:2,gpa:2.1,avg:58,att:68},
-    {id:3,name:'Jasur Rahmatov',group:'IT-2301',course:1,gpa:1.6,avg:44,att:61},
-    {id:4,name:'Gulnora Tosheva',group:'DB-2301',course:3,gpa:2.4,avg:63,att:74},
-    {id:5,name:'Nodir Hamidov',group:'AI-2301',course:2,gpa:2.2,avg:61,att:71},
-  ];
+  var allStudents=STUDENTS_DATA;
   var high=allStudents.filter(function(s){return s.avg<56;});
   var mid=allStudents.filter(function(s){return s.avg>=56&&s.avg<66;});
   var badAtt=allStudents.filter(function(s){return s.att<80;});

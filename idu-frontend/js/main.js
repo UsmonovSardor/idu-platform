@@ -152,159 +152,8 @@ const SUBJECTS_COLORS = {
   'Matematika':'tt-blue','Fizika':'tt-green','Algoritmlar va Dasturlash':'tt-red'
 };
 
-// Schedule data (EduPage style)
 // Dars jadvali backend API dan olinadi
 const SCHEDULE = {};
-const _SCHEDULE_UNUSED = {
-  'AI-2301': [
-    [
-      {sub:'Machine Learning',teacher:'Prof. Rahimov J.',room:'Lab-AI',type:"Ma'ruza"},
-      null,
-      {sub:'Python for AI',teacher:'Prof. Rahimov J.',room:'Lab-AI',type:'Laboratoriya'},
-      {sub:"Matematika (AI uchun)",teacher:'Prof. Yusupova M.',room:'A-201',type:'Seminar'},
-      {sub:'Ingliz tili (Tech)',teacher:'Prof. Rahimova N.',room:'A-102',type:"Amaliyot"}
-    ],
-    [
-      {sub:'Deep Learning',teacher:'Prof. Ergashev T.',room:'Lab-AI',type:"Ma'ruza"},
-      {sub:'Data Science',teacher:'Prof. Yusupova M.',room:'A-201',type:"Ma'ruza"},
-      null,
-      {sub:'Machine Learning',teacher:'Prof. Rahimov J.',room:'Lab-AI',type:'Laboratoriya'},
-      {sub:"Matematika (AI uchun)",teacher:'Prof. Yusupova M.',room:'A-201',type:"Ma'ruza"}
-    ],
-    [
-      null,
-      {sub:'Python for AI',teacher:'Prof. Rahimov J.',room:'Lab-AI',type:'Laboratoriya'},
-      {sub:'Computer Vision',teacher:'Prof. Ergashev T.',room:'Lab-AI',type:"Ma'ruza"},
-      {sub:'Ingliz tili (Tech)',teacher:'Prof. Rahimova N.',room:'A-102',type:"Amaliyot"},
-      null
-    ],
-    [
-      {sub:'Neural Networks',teacher:'Prof. Rahimov J.',room:'Lab-AI',type:"Ma'ruza"},
-      null,
-      {sub:'Data Science',teacher:'Prof. Yusupova M.',room:'A-201',type:'Laboratoriya'},
-      {sub:'Deep Learning',teacher:'Prof. Ergashev T.',room:'Lab-AI',type:'Seminar'},
-      {sub:'Computer Vision',teacher:'Prof. Ergashev T.',room:'Lab-AI',type:'Laboratoriya'}
-    ],
-    [
-      {sub:"Matematika (AI uchun)",teacher:'Prof. Yusupova M.',room:'A-201',type:"Ma'ruza"},
-      {sub:'Neural Networks',teacher:'Prof. Rahimov J.',room:'Lab-AI',type:'Amaliyot'},
-      null,
-      {sub:'Machine Learning',teacher:'Prof. Rahimov J.',room:'Lab-AI',type:'Seminar'},
-      null
-    ]
-  ],
-  'CS-2301': [
-    [
-      {sub:'Network Security',teacher:'Prof. Toshmatov A.',room:'Lab-CS',type:"Ma'ruza"},
-      null,
-      {sub:'Ethical Hacking',teacher:'Prof. Toshmatov A.',room:'Lab-CS',type:'Laboratoriya'},
-      {sub:'Kriptografiya',teacher:'Prof. Nazarov B.',room:'A-301',type:"Ma'ruza"},
-      {sub:'Ingliz tili (Tech)',teacher:'Prof. Rahimova N.',room:'A-102',type:"Amaliyot"}
-    ],
-    [
-      {sub:'Web Application Security',teacher:'Prof. Toshmatov A.',room:'Lab-CS',type:"Ma'ruza"},
-      {sub:'Digital Forensics',teacher:'Prof. Nazarov B.',room:'Lab-CS',type:"Ma'ruza"},
-      null,
-      {sub:'Network Security',teacher:'Prof. Toshmatov A.',room:'Lab-CS',type:'Laboratoriya'},
-      {sub:'Kriptografiya',teacher:'Prof. Nazarov B.',room:'A-301',type:"Ma'ruza"}
-    ],
-    [
-      null,
-      {sub:'Ethical Hacking',teacher:'Prof. Toshmatov A.',room:'Lab-CS',type:'Amaliyot'},
-      {sub:'Cloud Security',teacher:'Prof. Nazarov B.',room:'A-301',type:"Ma'ruza"},
-      {sub:'Ingliz tili (Tech)',teacher:'Prof. Rahimova N.',room:'A-102',type:"Amaliyot"},
-      null
-    ],
-    [
-      {sub:'IDS/IPS Tizimlari',teacher:'Prof. Toshmatov A.',room:'Lab-CS',type:"Ma'ruza"},
-      null,
-      {sub:'Digital Forensics',teacher:'Prof. Nazarov B.',room:'Lab-CS',type:'Laboratoriya'},
-      {sub:'Web Application Security',teacher:'Prof. Toshmatov A.',room:'Lab-CS',type:'Seminar'},
-      {sub:'Cloud Security',teacher:'Prof. Nazarov B.',room:'A-301',type:'Laboratoriya'}
-    ],
-    [
-      {sub:'Kriptografiya',teacher:'Prof. Nazarov B.',room:'A-301',type:"Ma'ruza"},
-      {sub:'IDS/IPS Tizimlari',teacher:'Prof. Toshmatov A.',room:'Lab-CS',type:'Amaliyot'},
-      null,
-      {sub:'Network Security',teacher:'Prof. Toshmatov A.',room:'Lab-CS',type:'Seminar'},
-      null
-    ]
-  ],
-  'IT-2301': [
-    [
-      {sub:'Dasturlash Asoslari',teacher:'Prof. Rahimov Sh.',room:'Lab-IT',type:"Ma'ruza"},
-      null,
-      {sub:"Ma'lumotlar Tuzilmasi",teacher:'Prof. Rahimov Sh.',room:'Lab-IT',type:'Laboratoriya'},
-      {sub:'Algoritmlar',teacher:'Prof. Rahimov Sh.',room:'A-202',type:"Ma'ruza"},
-      {sub:'Ingliz tili (Tech)',teacher:'Prof. Rahimova N.',room:'A-102',type:"Amaliyot"}
-    ],
-    [
-      {sub:'Web Dasturlash',teacher:'Prof. Ergashev T.',room:'Lab-IT',type:"Ma'ruza"},
-      {sub:"Ma'lumotlar Bazasi",teacher:'Prof. Yusupova M.',room:'A-201',type:"Ma'ruza"},
-      null,
-      {sub:'Dasturlash Asoslari',teacher:'Prof. Rahimov Sh.',room:'Lab-IT',type:'Laboratoriya'},
-      {sub:'Algoritmlar',teacher:'Prof. Rahimov Sh.',room:'A-202',type:"Ma'ruza"}
-    ],
-    [
-      null,
-      {sub:"Ma'lumotlar Tuzilmasi",teacher:'Prof. Rahimov Sh.',room:'Lab-IT',type:'Amaliyot'},
-      {sub:'Kompyuter Tarmoqlari',teacher:'Prof. Ergashev T.',room:'A-202',type:"Ma'ruza"},
-      {sub:'Ingliz tili (Tech)',teacher:'Prof. Rahimova N.',room:'A-102',type:"Amaliyot"},
-      null
-    ],
-    [
-      {sub:'Operatsion Tizimlar',teacher:'Prof. Ergashev T.',room:'Lab-IT',type:"Ma'ruza"},
-      null,
-      {sub:"Ma'lumotlar Bazasi",teacher:'Prof. Yusupova M.',room:'A-201',type:'Laboratoriya'},
-      {sub:'Web Dasturlash',teacher:'Prof. Ergashev T.',room:'Lab-IT',type:'Seminar'},
-      {sub:'Kompyuter Tarmoqlari',teacher:'Prof. Ergashev T.',room:'A-202',type:'Laboratoriya'}
-    ],
-    [
-      {sub:'Algoritmlar',teacher:'Prof. Rahimov Sh.',room:'A-202',type:"Ma'ruza"},
-      {sub:'Operatsion Tizimlar',teacher:'Prof. Ergashev T.',room:'Lab-IT',type:'Amaliyot'},
-      null,
-      {sub:"Ma'lumotlar Tuzilmasi",teacher:'Prof. Rahimov Sh.',room:'Lab-IT',type:'Seminar'},
-      null
-    ]
-  ],
-  'DB-2301': [
-    [
-      {sub:'Raqamli Marketing',teacher:'Prof. Nazarov B.',room:'A-301',type:"Ma'ruza"},
-      null,
-      {sub:'E-Tijorat',teacher:'Prof. Nazarov B.',room:'A-301',type:'Amaliyot'},
-      {sub:'Biznes Analitika',teacher:'Prof. Yusupova M.',room:'A-201',type:"Ma'ruza"},
-      {sub:'Ingliz tili (Tech)',teacher:'Prof. Rahimova N.',room:'A-102',type:"Amaliyot"}
-    ],
-    [
-      {sub:'Raqamli Transformatsiya',teacher:'Prof. Nazarov B.',room:'A-301',type:"Ma'ruza"},
-      {sub:'Loyiha Boshqaruvi',teacher:'Prof. Ergashev T.',room:'A-202',type:"Ma'ruza"},
-      null,
-      {sub:'Raqamli Marketing',teacher:'Prof. Nazarov B.',room:'A-301',type:'Amaliyot'},
-      {sub:'Biznes Analitika',teacher:'Prof. Yusupova M.',room:'A-201',type:"Ma'ruza"}
-    ],
-    [
-      null,
-      {sub:'E-Tijorat',teacher:'Prof. Nazarov B.',room:'A-301',type:"Ma'ruza"},
-      {sub:'Moliyaviy Texnologiyalar',teacher:'Prof. Yusupova M.',room:'A-201',type:"Ma'ruza"},
-      {sub:'Ingliz tili (Tech)',teacher:'Prof. Rahimova N.',room:'A-102',type:"Amaliyot"},
-      null
-    ],
-    [
-      {sub:'Tadbirkorlik',teacher:'Prof. Nazarov B.',room:'A-301',type:"Ma'ruza"},
-      null,
-      {sub:'Loyiha Boshqaruvi',teacher:'Prof. Ergashev T.',room:'A-202',type:'Seminar'},
-      {sub:'Raqamli Transformatsiya',teacher:'Prof. Nazarov B.',room:'A-301',type:'Amaliyot'},
-      {sub:'Moliyaviy Texnologiyalar',teacher:'Prof. Yusupova M.',room:'A-201',type:'Laboratoriya'}
-    ],
-    [
-      {sub:'Biznes Analitika',teacher:'Prof. Yusupova M.',room:'A-201',type:"Ma'ruza"},
-      {sub:'Tadbirkorlik',teacher:'Prof. Nazarov B.',room:'A-301',type:'Amaliyot'},
-      null,
-      {sub:'E-Tijorat',teacher:'Prof. Nazarov B.',room:'A-301',type:'Seminar'},
-      null
-    ]
-  ]
-};
 // Baholar backend API dan olinadi
 const GRADES_DATA = [];
 
@@ -1023,19 +872,7 @@ function renderDekanatTeachers(){
 var _dekFilter='all';
 function renderDekanatAttendance(){
   const el=document.getElementById('dekAttBody');if(!el)return;
-  const data=[
-    {name:'Bobur Tursunov',date:'2026-03-01',sub:'Dasturlash asoslari',status:'kelmadi',sabab:'Sababsiz'},
-    {name:'Kamola Mirzayeva',date:'2026-03-02',sub:'Ingliz tili (Tech)',status:'kelmadi',sabab:'Sababli (shifoxona)'},
-    {name:'Sardor Umarov',date:'2026-03-01',sub:'Machine Learning',status:'kechikdi',sabab:'—'},
-    {name:'Nilufar Xasanova',date:'2026-03-03',sub:'Python for AI',status:'kelmadi',sabab:'Sababsiz'},
-    {name:'Jasur Rахматов',date:'2026-03-04',sub:'Data Science',status:'kelmadi',sabab:'Sababli (oilaviy)'},
-    {name:'Dilnoza Yunusova',date:'2026-03-04',sub:'Deep Learning',status:'kechikdi',sabab:'—'},
-  ];
-  el.innerHTML=data.map(d=>`<tr>
-    <td>${d.name}</td><td>${d.date}</td><td>${d.sub}</td>
-    <td><span class="status-tag ${d.status==='kelmadi'?'st-warning':d.status==='kechikdi'?'st-neutral':'st-active'}">${d.status}</span></td>
-    <td style="font-size:12px;color:#64748B">${d.sabab}</td>
-  </tr>`).join('');
+  el.innerHTML='<tr><td colspan="5" style="text-align:center;color:#94A3B8;padding:20px">Davomat ma\'lumotlari yo\'q</td></tr>';
 }
 
 // ---- REPORT: tab switcher ----
@@ -1135,13 +972,13 @@ function renderTeacherPerformance(){
   var tLoad=document.getElementById('teacherLoadChart');
   var tBody=document.getElementById('teacherDetailBody');
   if(!tList||!tLoad||!tBody) return;
-  var teachers=TEACHERS_DATA.length?TEACHERS_DATA:[
-    {name:'Prof. Karimov J.',dept:'Sun\'iy intellekt',subjects:['Machine Learning','Deep Learning'],groups:['AI-2301','CS-2301'],hours:14,rating:4.8},
-    {name:'Prof. Ergashev T.',dept:'Dasturlash',subjects:['Python for AI','Data Science'],groups:['AI-2301','IT-2301'],hours:12,rating:4.6},
-    {name:'Prof. Yusupova M.',dept:'Matematika',subjects:['Matematika (AI)','Algoritmlar'],groups:['AI-2301','DB-2301'],hours:16,rating:4.4},
-    {name:'Prof. Rahimova N.',dept:'Ingliz tili',subjects:['Ingliz tili (Tech)'],groups:['AI-2301','CS-2301','IT-2301'],hours:18,rating:4.7},
-    {name:'Prof. Toshmatov A.',dept:'Computer Vision',subjects:['Computer Vision','NLP'],groups:['AI-2301'],hours:10,rating:4.2},
-  ];
+  var teachers=TEACHERS_DATA;
+  if(!teachers.length){
+    if(tList) tList.innerHTML='<div class="empty-box"><div class="empty-box-icon">👨‍🏫</div><div class="empty-box-title">O\'qituvchilar yo\'q</div><div class="empty-box-sub">Dekanat panelidan o\'qituvchilarni qo\'shing</div></div>';
+    if(tLoad) tLoad.innerHTML='';
+    if(tBody) tBody.innerHTML='<tr><td colspan="7" style="text-align:center;color:#94A3B8;padding:20px">Ma\'lumot yo\'q</td></tr>';
+    return;
+  }
   var bgPalette=['#1B4FD8','#7C3AED','#16A34A','#EA580C','#0D9488'];
   // Performance list
   var sorted=[...teachers].sort(function(a,b){return b.rating-a.rating;});
@@ -1894,13 +1731,7 @@ const REWARDS=[
   {emoji:'🔓',name:'Qo\'shimcha test urinish',cost:100},
   {emoji:'🎭',name:'Animatsiyali avatar',cost:500},
 ];
-const LB_DATA=[
-  {name:'Dilnoza Tosheva',xp:1840,coins:342,games:28},
-  {name:'Mohira Xasanova',xp:1620,coins:298,games:24},
-  {name:'Sherzod Raimov',xp:1480,coins:265,games:22},
-  {name:'Feruza Sobirov',xp:1350,coins:240,games:20},
-  {name:'Alisher Azimov',xp:playerXP||980,coins:playerCoins||180,games:gamesPlayed||15},
-];
+const LB_DATA=[];
 function renderGamification(){
   updateXPDisplays();
   renderAchievements();
@@ -1921,7 +1752,7 @@ function renderLB(key){
   const el=document.getElementById('gamificationLeaderboard');if(!el)return;
   const sorted=[...LB_DATA].sort((a,b)=>b[key]-a[key]);
   el.innerHTML=sorted.map((s,i)=>`
-    <div class="rank-row${s.name.includes('Alisher')?` me`:''}">
+    <div class="rank-row">
       <div class="rank-pos${i<3?' rp-'+(i+1):''}">${i<3?['🥇','🥈','🥉'][i]:i+1}</div>
       <div class="rank-info"><div class="rank-name">${s.name}</div></div>
       <div class="rank-score">${key==='coins'?'🪙':key==='games'?'🎮':'⚡'} ${s[key]}</div>
@@ -1940,43 +1771,9 @@ let APPLICATIONS = []; // {id, studentName, group, type:'cert'|'job', detail, pr
 let appIdCounter = 1;
 
 // ════════════════════════════════════
-//  PROFESSORS DATA
+//  PROFESSORS DATA — real API dan olinadi
 // ════════════════════════════════════
-const PROFESSORS_DATA = [
-  {id:1, name:'Prof. Rahimov J.',   short:'RJ', subject:'Machine Learning, Python for AI', dept:"Kompyuter fanlari", color:'#1B4FD8', tags:['ML','Python','AI'], totalReviews:0, ratings:[]},
-  {id:2, name:'Prof. Yusupova M.',  short:'YM', subject:'Matematika (AI uchun), Data Science', dept:"Raqamli matematika", color:'#7C3AED', tags:['Matematika','Data Science'], totalReviews:0, ratings:[]},
-  {id:3, name:'Prof. Ergashev T.',  short:'ET', subject:'Deep Learning, Computer Vision', dept:"Sun'iy intellekt", color:'#16A34A', tags:['Deep Learning','CV','TensorFlow'], totalReviews:0, ratings:[]},
-  {id:4, name:'Prof. Rahimova N.',  short:'RN', subject:"Ingliz tili (Tech), Academic Writing", dept:"Chet tillar", color:'#EA580C', tags:['English','Tech Writing'], totalReviews:0, ratings:[]},
-  {id:5, name:'Prof. Toshmatov S.', short:'TS', subject:'Neural Networks, NLP', dept:"Sun'iy intellekt", color:'#0D9488', tags:['NLP','Neural Networks'], totalReviews:0, ratings:[]},
-  {id:6, name:'Prof. Karimova D.',  short:'KD', subject:'Cybersecurity, Network Security', dept:"Axborot xavfsizligi", color:'#DC2626', tags:['Cybersecurity','Networking'], totalReviews:0, ratings:[]},
-  {id:7, name:'Prof. Nazarov B.',   short:'NB', subject:'Web Development, React, Node.js', dept:"Dasturlash texnologiyalari", color:'#0EA5E9', tags:['React','Node.js','Web'], totalReviews:0, ratings:[]},
-  {id:8, name:'Prof. Holiqova S.',  short:'HS', subject:'Database Systems, PostgreSQL', dept:"Ma'lumotlar bazasi", color:'#A21CAF', tags:['SQL','Database','PostgreSQL'], totalReviews:0, ratings:[]},
-];
-
-// Seed some demo reviews
-const PROF_REVIEWS_INIT = [
-  {profId:1, overall:5, cats:[5,4,5,4], comment:"Juda yaxshi tushuntiradi, savollarimga har doim javob beradi!", time:'2 kun oldin'},
-  {profId:1, overall:4, cats:[4,5,4,5], comment:"Darslar qiziqarli, lekin vazifalar ko'p. Umuman olganda yaxshi ustoz.", time:'5 kun oldin'},
-  {profId:1, overall:5, cats:[5,5,5,4], comment:"ML bo'yicha eng yaxshi profil! Amaliy misollar juda foydali.", time:'1 hafta oldin'},
-  {profId:2, overall:4, cats:[4,4,5,3], comment:"Matematikani juda chuqur o'rgatadi. Ba'zan tushunish qiyin.", time:'3 kun oldin'},
-  {profId:2, overall:5, cats:[5,5,4,5], comment:"Data Science kursida eng yaxshi professor! Loyiha topshiriqlari real hayotga mos.", time:'1 hafta oldin'},
-  {profId:3, overall:3, cats:[3,4,3,3], comment:"Mavzular qiyin lekin tushuntirish yetarli emas ba'zida.", time:'4 kun oldin'},
-  {profId:3, overall:5, cats:[5,5,5,5], comment:"Computer Vision bo'yicha bilimi ajoyib! Har bir darsdan ilhom olaman.", time:'2 hafta oldin'},
-  {profId:4, overall:5, cats:[5,5,5,5], comment:"Ingliz tilini o'rgatish uslubi juda samarali. Har darsdan yangi narsa o'rganaman.", time:'1 kun oldin'},
-  {profId:4, overall:4, cats:[4,5,4,4], comment:"Yaxshi o'qituvchi, lekin ba'zan test savollari juda qiyin.", time:'3 kun oldin'},
-  {profId:5, overall:4, cats:[4,4,5,4], comment:"NLP bo'yicha ko'p material beradi. Eng yaxshi tomonlari: amaliy loyihalar.", time:'5 kun oldin'},
-  {profId:6, overall:5, cats:[5,5,5,4], comment:"Cybersecurity sohasida juda tajribali! Haqiqiy zaifliklarni ko'rsatadi.", time:'1 hafta oldin'},
-  {profId:7, overall:4, cats:[4,4,4,5], comment:"React va Node.js juda yaxshi o'rgatadi. Portfolio loyihalari foydali.", time:'2 kun oldin'},
-  {profId:8, overall:3, cats:[3,4,3,4], comment:"Database darslari tushunish oson, lekin chuqurlik yetishmaydi.", time:'3 kun oldin'},
-];
-
-// Initialize ratings from demo data
-(function initProfRatings(){
-  PROF_REVIEWS_INIT.forEach(r=>{
-    const p = PROFESSORS_DATA.find(x=>x.id===r.profId);
-    if(p){ p.ratings.push(r); p.totalReviews++; }
-  });
-})();
+const PROFESSORS_DATA = [];
 
 let _profReviewTarget = null; // professor being reviewed
 let _prmStarVal = 0;
