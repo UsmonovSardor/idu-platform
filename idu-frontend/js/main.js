@@ -3300,7 +3300,7 @@ var _testAnswers = {};
 var _testTimer = null, _realTimer = null;
 var _testSec = 30*60, _realSec = 90*60;
 
-function setSesiyaState(type, active) {
+function setSesiyaState(type, active, noToast) {
   SESIYA_STATE[type] = active;
   var now = new Date();
   var timeStr = now.getHours().toString().padStart(2,'0') + ':' + now.getMinutes().toString().padStart(2,'0');
@@ -3337,7 +3337,7 @@ function setSesiyaState(type, active) {
     if (btnL2) btnL2.style.display = active ? '' : 'none';
     if (card2) card2.style.borderColor = active ? '#FCA5A5' : '#E2E8F0';
   }
-  showToast(emoji, label, active ? 'Talabalar uchun faollashtirildi!' : 'Qulflandi. Talabalar kira olmaydi.', active ? 'green' : 'red');
+  if (!noToast) showToast(emoji, label, active ? 'Talabalar uchun faollashtirildi!' : 'Qulflandi. Talabalar kira olmaydi.', active ? 'green' : 'red');
 }
 
 function renderSesiyaTest() {
@@ -3734,9 +3734,9 @@ function submitRealEtiraz(qi) {
 }
 
 function renderDekanatSesiya() {
-  // Re-sync UI with current state
-  setSesiyaState('test', SESIYA_STATE.test);
-  setSesiyaState('real', SESIYA_STATE.real);
+  // Re-sync UI with current state (silent — no toast on page open)
+  setSesiyaState('test', SESIYA_STATE.test, true);
+  setSesiyaState('real', SESIYA_STATE.real, true);
 }
 
 // ═══════════════════════════════════════════════
@@ -3828,6 +3828,7 @@ startRealWithSubject = async function(subj) {
           maxWarnings: 2,
           maxSuspicion: 80,
           isTestMode: false,
+          isRealSesiya: true,
           subjectName: _examSubjectNames[subj] || subj,
         });
         return;
@@ -3854,7 +3855,8 @@ startRealWithSubject = async function(subj) {
     duration: 90 * 60,
     maxWarnings: 2,
     maxSuspicion: 80,
-    isTestMode: true,   // local → natijani mahalliy ko'rsat
+    isTestMode: true,
+    isRealSesiya: true,
     subjectName: (_examSubjectNames[subj] || subj) + ' — Mashq sesiyasi',
   });
 };

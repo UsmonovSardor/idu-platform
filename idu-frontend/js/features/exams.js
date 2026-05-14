@@ -915,6 +915,7 @@ function openRealExam(exam) {
     _fsCheckInterval: null,
     _origWindowOpen: null,
     isTestMode: !!exam.isTestMode,
+    isRealSesiya: !!exam.isRealSesiya,
     subjectName: exam.subjectName || '',
   };
   _examLogs = [];
@@ -1094,7 +1095,7 @@ function _renderQ(idx) {
     ].join('');
   }).join('');
 
-  var etirozHtml = !_examState.isTestMode ? [
+  var etirozHtml = (_examState.isRealSesiya || !_examState.isTestMode) ? [
     '<div id="etirozSection_' + idx + '" style="margin-top:16px">',
       '<button onclick="toggleEtirozBox(' + idx + ')" style="padding:6px 14px;background:#FFF7ED;border:1.5px solid #FED7AA;border-radius:8px;font-size:12px;font-weight:600;color:#EA580C;cursor:pointer">',
         "⚠️ Bu savolga e'tiroz bildirish",
