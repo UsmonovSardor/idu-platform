@@ -4058,6 +4058,7 @@ function renderDekanatSesiya() {
   setSesiyaState('test', SESIYA_STATE.test, true);
   setSesiyaState('real', SESIYA_STATE.real, true);
   loadSesiyaEtirazlar();
+  if (typeof renderExamResults === 'function') renderExamResults();
 }
 
 async function loadSesiyaEtirazlar() {

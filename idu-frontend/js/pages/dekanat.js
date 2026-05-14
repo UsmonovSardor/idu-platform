@@ -167,28 +167,53 @@ async function saveQuestionModal() {
 function closeQuestionModal(){const m=document.getElementById('addQuestionModal');if(m)m.style.display='none';_editingQId=null;}
 
 async function uploadQuestionsPDF() {
-  const subject=document.getElementById('pdfSubject')?.value;
-  const type=document.getElementById('pdfType')?.value;
-  const fileInput=document.getElementById('pdfFileInput');
-  const file=fileInput?.files[0];
-  if(!file){showToast('⚠️','Xato','PDF fayl tanlang');return;}
-  if(!subject){showToast('⚠️','Xato','Fan tanlang');return;}
-  const btn=document.getElementById('pdfUploadBtn');
-  if(btn){btn.disabled=true;btn.textContent='⏳ Yuklanmoqda...';}
+  const subject = document.getElementById('pdfSubject')?.value;
+  const type    = document.getElementById('pdfType')?.value;
+  const fileInput = document.getElementById('pdfFileInput');
+  const file = fileInput?.files[0];
+  if (!file)    { showToast('⚠️','Xato','Fayl tanlang (PDF yoki JSON)'); return; }
+  if (!subject) { showToast('⚠️','Xato','Fan tanlang'); return; }
+  const btn = document.getElementById('pdfUploadBtn');
+  if (btn) { btn.disabled = true; btn.textContent = '⏳ Yuklanmoqda...'; }
+
   try {
-    const formData=new FormData();
-    formData.append('pdf',file);formData.append('subject',subject);formData.append('type',type||'test');
-    const token=_apiToken||localStorage.getItem('idu_jwt');
-    const res=await fetch((window.location.origin+'/api')+'/questions/upload-pdf',{method:'POST',headers:token?{'Authorization':'Bearer '+token}:{},body:formData});
-    const data=await res.json();
-    if(!res.ok) throw new Error(data.error||'PDF yuklashda xato');
-    showToast('✅','PDF yuklandi',data.inserted+' savol bazaga kiritildi');
-    if(fileInput)fileInput.value='';
-    const pdfModal=document.getElementById('pdfUploadModal');
-    if(pdfModal)pdfModal.style.display='none';
+    const isJson = file.name.toLowerCase().endsWith('.json');
+
+    if (isJson) {
+      // JSON import — read file locally, POST as JSON
+      const text = await file.text();
+      let questions;
+      try { questions = JSON.parse(text); } catch(e) { throw new Error('JSON format noto\'g\'ri: ' + e.message); }
+      if (!Array.isArray(questions)) throw new Error('JSON massiv (array) bo\'lishi kerak: [{"question_text":...}]');
+      const data = await api('POST', '/questions/import-json', { subject, type: type || 'test', questions });
+      showToast('✅', 'JSON yuklandi', data.inserted + ' savol bazaga kiritildi');
+    } else {
+      // PDF upload via FormData
+      const formData = new FormData();
+      formData.append('pdf', file);
+      formData.append('subject', subject);
+      formData.append('type', type || 'test');
+      const token = (typeof _apiToken !== 'undefined' && _apiToken) || localStorage.getItem('idu_jwt');
+      const res = await fetch(window.location.origin + '/api/questions/upload-pdf', {
+        method: 'POST',
+        headers: token ? { 'Authorization': 'Bearer ' + token } : {},
+        body: formData
+      });
+      const data = await res.json();
+      if (!res.ok) throw new Error(data.error || 'PDF yuklashda xato');
+      showToast('✅', 'PDF yuklandi', data.inserted + ' savol bazaga kiritildi');
+    }
+
+    if (fileInput) fileInput.value = '';
+    document.getElementById('pdfFileName').textContent = '';
+    const pdfModal = document.getElementById('pdfUploadModal');
+    if (pdfModal) pdfModal.style.display = 'none';
     renderDekanatQuestions();
-  } catch(e){showToast('❌','Xato',e.message);}
-  finally{if(btn){btn.disabled=false;btn.textContent='📤 Yuklash';}}
+  } catch(e) {
+    showToast('❌', 'Xato', e.message);
+  } finally {
+    if (btn) { btn.disabled = false; btn.textContent = '📤 Yuklash'; }
+  }
 }
 
 function openPdfUploadModal(){const m=document.getElementById('pdfUploadModal');if(m)m.style.display='flex';}

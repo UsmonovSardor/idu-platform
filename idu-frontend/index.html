@@ -2952,11 +2952,15 @@
         </select>
       </div>
     </div>
+    <div style="background:#F0FDF4;border:1px solid #86EFAC;border-radius:10px;padding:10px 14px;margin-bottom:14px;font-size:12px;color:#166534">
+      📋 <strong>PDF format:</strong> <code>1. Savol? A) ... B) ... C) ... D) ... To'g'ri: A</code><br>
+      📋 <strong>JSON format:</strong> <code>[{"question_text":"...","option_a":"...","option_b":"...","option_c":"...","option_d":"...","correct_option":"A"}]</code>
+    </div>
     <div style="border:2px dashed #CBD5E1;border-radius:12px;padding:24px;text-align:center;margin-bottom:16px;background:#F8FAFC">
       <div style="font-size:32px;margin-bottom:8px">📄</div>
-      <div style="font-size:14px;font-weight:600;margin-bottom:4px">PDF fayl tanlang</div>
-      <div style="font-size:12px;color:#94A3B8;margin-bottom:12px">Maksimal 10 MB</div>
-      <input type="file" id="pdfFileInput" accept=".pdf" style="display:none" onchange="document.getElementById('pdfFileName').textContent=this.files[0]?.name||'Fayl tanlanmagan'">
+      <div style="font-size:14px;font-weight:600;margin-bottom:4px">PDF yoki JSON fayl tanlang</div>
+      <div style="font-size:12px;color:#94A3B8;margin-bottom:12px">PDF (max 10 MB) · JSON massiv formati</div>
+      <input type="file" id="pdfFileInput" accept=".pdf,.json" style="display:none" onchange="document.getElementById('pdfFileName').textContent=this.files[0]?.name||'Fayl tanlanmagan'">
       <button onclick="document.getElementById('pdfFileInput').click()" style="padding:8px 20px;background:#EEF3FF;border:1.5px solid #93C5FD;border-radius:8px;color:#1B4FD8;font-family:'Outfit',sans-serif;font-size:13px;font-weight:600;cursor:pointer">Fayl tanlash</button>
       <div id="pdfFileName" style="margin-top:8px;font-size:12px;color:#1B4FD8;font-weight:600"></div>
     </div>
@@ -3095,8 +3099,44 @@
     </div>
   </div>
 
+  <!-- Imtihon natijalari -->
+  <div class="card" style="margin-top:18px">
+    <div class="card-header" style="display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:8px">
+      <div class="card-title">📊 Imtihon natijalari</div>
+      <div style="display:flex;gap:8px;flex-wrap:wrap;align-items:center">
+        <select id="examResultFilter" onchange="renderExamResults()" style="padding:6px 10px;border:1.5px solid #E2E8F0;border-radius:8px;font-size:12px;font-family:inherit;outline:none">
+          <option value="">Barcha turlar</option>
+          <option value="test">🧪 Test</option>
+          <option value="sesiya">📋 Sesiya</option>
+        </select>
+        <select id="examSubjectFilter" onchange="renderExamResults()" style="padding:6px 10px;border:1.5px solid #E2E8F0;border-radius:8px;font-size:12px;font-family:inherit;outline:none">
+          <option value="">Barcha fanlar</option>
+          <option value="algo">💻 Algoritmlar</option>
+          <option value="ai">🤖 Sun'iy Intellekt</option>
+          <option value="math">📐 Matematika</option>
+          <option value="db">🗄️ Ma'lumotlar Bazasi</option>
+          <option value="web">🌐 Web Dasturlash</option>
+        </select>
+        <button onclick="renderExamResults()" style="padding:6px 14px;background:#EEF3FF;border:1.5px solid #93C5FD;border-radius:8px;font-size:12px;font-weight:700;color:#1B4FD8;cursor:pointer">🔄 Yangilash</button>
+      </div>
+    </div>
+    <div class="table-wrap">
+      <table class="dekanat-table">
+        <thead><tr>
+          <th>#</th><th>Talaba</th><th>Tur</th><th>Fan</th><th>Ball</th><th>Baho</th><th>Sana</th>
+        </tr></thead>
+        <tbody id="examResultsBody">
+          <tr><td colspan="7" style="text-align:center;color:#94A3B8;padding:30px">
+            <div style="font-size:32px;margin-bottom:8px">📊</div>
+            <div>Hali imtihon natijalari yo'q</div>
+          </td></tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+
   <!-- E'tirozlar -->
-  <div class="card">
+  <div class="card" style="margin-top:18px">
     <div class="card-header" style="display:flex;align-items:center;justify-content:space-between">
       <div class="card-title">⚠️ Talabalar e'tirozlari</div>
       <button onclick="loadSesiyaEtirazlar()" style="padding:6px 14px;background:#FFF7ED;border:1.5px solid #FED7AA;border-radius:8px;font-size:12px;font-weight:700;color:#EA580C;cursor:pointer">🔄 Yangilash</button>

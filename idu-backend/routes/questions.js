@@ -242,7 +242,10 @@ router.post(
 
     let pdfText = '';
     try {
-      const pdfParse = require('pdf-parse');
+      // Use internal path to avoid pdf-parse v1.1.1 test-file bug on Railway
+      let pdfParse;
+      try { pdfParse = require('pdf-parse/lib/pdf-parse'); }
+      catch(e) { pdfParse = require('pdf-parse'); }
       const data = await pdfParse(req.file.buffer);
       pdfText = data.text;
     } catch (err) {
@@ -305,6 +308,44 @@ router.post(
       insertedIds: inserted,
       errors: errors.length ? errors : undefined
     });
+  }
+);
+
+// ── POST /api/questions/import-json — JSON formatda savollar import ──────────
+router.post(
+  '/import-json',
+  authorize('dekanat', 'admin', 'teacher'),
+  async (req, res) => {
+    const { subject, type, questions } = req.body;
+    const VALID_SUBJECTS = ['algo','ai','math','db','web'];
+    const VALID_TYPES = ['test','real','both'];
+    if (!VALID_SUBJECTS.includes(subject)) return res.status(400).json({ error: 'Noto\'g\'ri fan' });
+    if (!VALID_TYPES.includes(type)) return res.status(400).json({ error: 'Noto\'g\'ri tur' });
+    if (!Array.isArray(questions) || !questions.length) return res.status(400).json({ error: 'questions massivi bo\'sh' });
+
+    const client = await db.getClient();
+    const inserted = [], errors = [];
+    try {
+      await client.query('BEGIN');
+      for (const q of questions) {
+        if (!q.question_text || !q.option_a || !q.option_b || !q.option_c || !q.option_d || !q.correct_option) continue;
+        const types = type === 'both' ? ['test','real'] : [type];
+        for (const t of types) {
+          try {
+            const { rows } = await client.query(
+              `INSERT INTO questions (subject,type,question_text,option_a,option_b,option_c,option_d,correct_option,explanation,created_by)
+               VALUES ($1,$2,$3,$4,$5,$6,$7,$8,$9,$10) RETURNING id`,
+              [subject, t, q.question_text, q.option_a, q.option_b, q.option_c, q.option_d,
+               q.correct_option.toUpperCase(), q.explanation||null, req.user.id]
+            );
+            inserted.push(rows[0].id);
+          } catch(e) { errors.push({ q: q.question_text?.substring(0,50), err: e.message }); }
+        }
+      }
+      await client.query('COMMIT');
+    } catch(err) { await client.query('ROLLBACK'); throw err; }
+    finally { client.release(); }
+    res.status(201).json({ inserted: inserted.length, failed: errors.length, errors: errors.length ? errors : undefined });
   }
 );
 
