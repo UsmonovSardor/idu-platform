@@ -3781,84 +3781,56 @@ var DEKANAT_QUESTIONS = [];
 loadDekanatQuestions();
 
 // Override question sources: use dekanat questions when available
-var _origStartTestWithSubject = startTestWithSubject;
+// Both test rejim and sesiya now use openRealExam for fullscreen + full security
+var _examSubjectNames = {algo:'Algoritmlar va Dasturlash', ai:"Sun'iy Intellekt", math:'Matematika (AI uchun)', db:"Ma'lumotlar Bazasi", web:'Web Dasturlash'};
+
 startTestWithSubject = function(subj) {
   var dekQs = DEKANAT_QUESTIONS.filter(function(q) { return q.subject === subj && (q.type === 'test' || q.type === 'both'); });
-  if (dekQs.length >= 20) {
-    _currentTestSubject = subj;
-    _currentTestQuestions = dekQs.slice(0, 20);
-    _testAnswers = {};
-    var icons = {algo:'💻', ai:'🤖', math:'📐', db:'🗄️', web:'🌐'};
-    var names = {algo:'Algoritmlar va Dasturlash', ai:"Sun'iy Intellekt", math:'Matematika (AI uchun)', db:"Ma'lumotlar Bazasi", web:'Web Dasturlash'};
-    document.getElementById('testSubjectIcon').textContent = icons[subj] || '📝';
-    document.getElementById('testSubjectName').textContent = names[subj] || subj;
-    document.getElementById('testProgressLabel').textContent = '0/20';
-    document.getElementById('testProgressBar').style.width = '0%';
-    document.getElementById('testPageSub').textContent = names[subj] + ' · Dekanat savollari';
-    var container = document.getElementById('testQuestionsContainer');
-    var html = '';
-    _currentTestQuestions.forEach(function(q, i) {
-      html += _buildTestQHtml(q, i, 'test');
-    });
-    container.innerHTML = html;
-    document.getElementById('stest-instructions').style.display = 'none';
-    document.getElementById('stest-active').style.display = 'block';
-    document.getElementById('stest-results').style.display = 'none';
-    if (_testTimer) clearInterval(_testTimer);
-    _testSec = 30 * 60;
-    document.getElementById('testTimerDisplay').textContent = '30:00';
-    _testTimer = setInterval(function() {
-      _testSec--;
-      var m = Math.floor(_testSec/60).toString().padStart(2,'0');
-      var s = (_testSec%60).toString().padStart(2,'0');
-      var el = document.getElementById('testTimerDisplay');
-      if (el) { el.textContent = m + ':' + s; el.style.color = _testSec < 300 ? '#DC2626' : '#1B4FD8'; }
-      if (_testSec <= 0) { clearInterval(_testTimer); _testTimer = null; submitTestExam(); }
-    }, 1000);
-    window.scrollTo({top: 0, behavior: 'smooth'});
-  } else {
-    _origStartTestWithSubject(subj);
-  }
+  var qs = dekQs.length >= 10
+    ? dekQs.slice(0, 20)
+    : (TEST_QUESTIONS_DB[subj] || []).slice(0, 20);
+
+  if (!qs.length) { alert('Bu fan uchun test savollari topilmadi'); return; }
+
+  _currentTestSubject = subj;
+  _currentTestQuestions = qs;
+  _testAnswers = {};
+
+  openRealExam({
+    id: 'test_' + subj + '_' + Date.now(),
+    questions: qs,
+    duration: 30 * 60,
+    maxWarnings: 5,
+    maxSuspicion: 200,
+    isTestMode: true,
+    subjectName: _examSubjectNames[subj] || subj,
+  });
 };
 
-var _origStartRealWithSubject = startRealWithSubject;
 startRealWithSubject = function(subj) {
   var dekQs = DEKANAT_QUESTIONS.filter(function(q) { return q.subject === subj && (q.type === 'real' || q.type === 'both'); });
-  if (dekQs.length >= 30) {
-    _currentRealSubject = subj;
-    _currentRealQuestions = dekQs.slice(0, 30);
-    _realAnswers = {};
-    var icons = {algo:'💻', ai:'🤖', math:'📐', db:'🗄️', web:'🌐'};
-    var names = {algo:'Algoritmlar va Dasturlash', ai:"Sun'iy Intellekt", math:'Matematika (AI uchun)', db:"Ma'lumotlar Bazasi", web:'Web Dasturlash'};
-    document.getElementById('realSubjectIcon').textContent = icons[subj] || '📝';
-    document.getElementById('realSubjectName').textContent = names[subj] || subj;
-    document.getElementById('realProgressLabel').textContent = '0/30';
-    document.getElementById('realProgressBar').style.width = '0%';
-    document.getElementById('realPageSub').textContent = names[subj] + ' · Dekanat savollari';
-    var container = document.getElementById('realQuestionsContainer');
-    var html = '';
-    _currentRealQuestions.forEach(function(q, i) {
-      html += _buildTestQHtml(q, i, 'real');
-    });
-    container.innerHTML = html;
-    document.getElementById('sreal-instructions').style.display = 'none';
-    document.getElementById('sreal-active').style.display = 'block';
-    document.getElementById('sreal-results').style.display = 'none';
-    if (_realTimer) clearInterval(_realTimer);
-    _realSec = 90 * 60;
-    document.getElementById('realTimerDisplay').textContent = '90:00';
-    _realTimer = setInterval(function() {
-      _realSec--;
-      var m = Math.floor(_realSec/60).toString().padStart(2,'0');
-      var s = (_realSec%60).toString().padStart(2,'0');
-      var el = document.getElementById('realTimerDisplay');
-      if (el) { el.textContent = m + ':' + s; el.style.color = _realSec < 600 ? '#B91C1C' : '#DC2626'; }
-      if (_realSec <= 0) { clearInterval(_realTimer); _realTimer = null; submitRealExam(); }
-    }, 1000);
-    window.scrollTo({top: 0, behavior: 'smooth'});
+  var baseQs = TEST_QUESTIONS_DB[subj] || TEST_QUESTIONS_DB.algo || [];
+  var qs;
+  if (dekQs.length >= 20) {
+    qs = dekQs.slice(0, 30);
   } else {
-    _origStartRealWithSubject(subj);
+    qs = [];
+    for (var i = 0; i < 30; i++) qs.push(baseQs[i % baseQs.length]);
   }
+
+  _currentRealSubject = subj;
+  _currentRealQuestions = qs;
+  _realAnswers = {};
+
+  openRealExam({
+    id: 'real_' + subj + '_' + Date.now(),
+    questions: qs,
+    duration: 90 * 60,
+    maxWarnings: 2,
+    maxSuspicion: 80,
+    isTestMode: false,
+    subjectName: _examSubjectNames[subj] || subj,
+  });
 };
 
 function _buildTestQHtml(q, i, mode) {

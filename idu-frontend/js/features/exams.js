@@ -280,6 +280,13 @@ function _blockKeys(e) {
     e.ctrlKey && e.shiftKey && (e.key === 'I' || e.key === 'J' || e.key === 'C' || e.key === 'i' || e.key === 'j' || e.key === 'c'),
     e.ctrlKey && (e.key === 'u' || e.key === 'U'),
     e.ctrlKey && (e.key === 'a' || e.key === 'A'),
+    e.ctrlKey && (e.key === 'c' || e.key === 'C'),   // Copy
+    e.ctrlKey && (e.key === 'v' || e.key === 'V'),   // Paste
+    e.ctrlKey && (e.key === 'x' || e.key === 'X'),   // Cut
+    e.metaKey  && (e.key === 'c' || e.key === 'C'),  // Mac copy
+    e.metaKey  && (e.key === 'v' || e.key === 'V'),  // Mac paste
+    e.metaKey  && (e.key === 'x' || e.key === 'X'),  // Mac cut
+    e.metaKey  && (e.key === 'a' || e.key === 'A'),  // Mac select all
     e.ctrlKey && (e.key === 'p' || e.key === 'P'),   // Print
     e.ctrlKey && (e.key === 's' || e.key === 'S'),   // Save page
     e.metaKey && (e.key === 'p' || e.key === 'P'),   // Mac print
@@ -785,12 +792,74 @@ _examSecurityOff();
   if (!ov.parentNode) document.body.appendChild(ov);
 
   // Submit
-  try { submitRealExam(reason); } catch(e) {}
+  var isTestMode = _examState.isTestMode;
+  var qs = _examState.questions;
+  var answers = _examState.answers;
   _clearSnapshot(_examState.attemptId);
-  setTimeout(function() {
-    if (ov.parentNode) ov.remove();
-    closeRealExam();
-  }, 4000);
+
+  if (!isTestMode) {
+    try { submitRealExam(reason); } catch(e) {}
+    setTimeout(function() {
+      if (ov.parentNode) ov.remove();
+      closeRealExam();
+    }, 4000);
+  } else {
+    // Test rejimi — local natijalar ko'rsat
+    var correct = 0;
+    qs.forEach(function(q, i) {
+      var rightIdx = (typeof q.ans !== 'undefined') ? q.ans : q.correct;
+      if (answers[i] !== undefined && answers[i] === rightIdx) correct++;
+    });
+    var pct = qs.length ? Math.round(correct / qs.length * 100) : 0;
+    var grade = pct >= 86 ? 5 : pct >= 71 ? 4 : pct >= 56 ? 3 : 2;
+    var gradeColor = grade === 5 ? '#16A34A' : grade === 4 ? '#2563EB' : grade === 3 ? '#D97706' : '#DC2626';
+    var gradeEmoji = grade === 5 ? '🏆' : grade === 4 ? '✅' : grade === 3 ? '📊' : '❌';
+
+    setTimeout(function() {
+      if (ov.parentNode) ov.remove();
+      closeRealExam();
+
+      // Show results modal
+      var res = document.createElement('div');
+      res.id = 'testResultsModal';
+      res.style.cssText = 'position:fixed;inset:0;z-index:9500;background:#f1f5f9;overflow-y:auto;font-family:inherit';
+      var reviewHtml = qs.map(function(q, i) {
+        var userAns = answers[i];
+        var rightIdx = (typeof q.ans !== 'undefined') ? q.ans : q.correct;
+        var isRight = userAns !== undefined && userAns === rightIdx;
+        var bg = isRight ? '#F0FDF4' : userAns !== undefined ? '#FFF5F5' : '#FFFBEB';
+        var border = isRight ? '#86EFAC' : userAns !== undefined ? '#FCA5A5' : '#FDE68A';
+        var icon = isRight ? '✅' : userAns !== undefined ? '❌' : '⚠️';
+        var html2 = '<div style="background:' + bg + ';border:1.5px solid ' + border + ';border-radius:12px;padding:16px 18px;margin-bottom:12px">';
+        html2 += '<div style="font-size:13px;font-weight:700;color:#0F172A;margin-bottom:10px"><span style="color:#94A3B8;margin-right:6px">' + (i+1) + '.</span>' + icon + ' ' + q.q + '</div>';
+        q.opts.forEach(function(opt, j) {
+          var isCorrect = j === rightIdx;
+          var isUser = j === userAns;
+          var optBg = isCorrect ? '#DCFCE7' : isUser && !isRight ? '#FEE2E2' : 'transparent';
+          var optBorder = isCorrect ? '#16A34A' : isUser && !isRight ? '#DC2626' : '#E2E8F0';
+          var optColor = isCorrect ? '#15803D' : isUser && !isRight ? '#B91C1C' : '#374151';
+          html2 += '<div style="padding:8px 12px;border:1.5px solid ' + optBorder + ';border-radius:8px;margin-bottom:6px;font-size:12.5px;background:' + optBg + ';color:' + optColor + '">';
+          html2 += (isCorrect ? '✓ ' : isUser && !isRight ? '✗ ' : '') + opt + '</div>';
+        });
+        html2 += '</div>';
+        return html2;
+      }).join('');
+
+      res.innerHTML = '<div style="max-width:680px;margin:0 auto;padding:24px 16px">' +
+        '<div style="text-align:center;padding:32px 0 20px">' +
+          '<div style="font-size:56px;margin-bottom:10px">' + gradeEmoji + '</div>' +
+          '<div style="font-size:30px;font-weight:900;color:' + gradeColor + '">' + pct + '%</div>' +
+          '<div style="font-size:15px;color:#64748B;margin-top:6px">' + correct + ' / ' + qs.length + ' ta to\'g\'ri javob</div>' +
+          '<div style="display:inline-block;margin-top:12px;padding:8px 24px;background:' + gradeColor + '20;border:2px solid ' + gradeColor + ';border-radius:12px;font-size:20px;font-weight:800;color:' + gradeColor + '">' + grade + '-baho</div>' +
+        '</div>' +
+        '<div style="margin-bottom:16px">' + reviewHtml + '</div>' +
+        '<div style="text-align:center;padding:12px 0 32px">' +
+          '<button onclick="document.getElementById(\'testResultsModal\').remove()" style="padding:14px 36px;background:linear-gradient(135deg,#1e3a8a,#1e40af);color:#fff;border:none;border-radius:12px;font-size:15px;font-weight:700;cursor:pointer;box-shadow:0 4px 12px rgba(30,58,138,.3)">Yopish</button>' +
+        '</div>' +
+      '</div>';
+      document.body.appendChild(res);
+    }, 1500);
+  }
 }
 
 // ============================================================
@@ -844,6 +913,8 @@ function openRealExam(exam) {
     _mouseInterval: null,
     _fsCheckInterval: null,
     _origWindowOpen: null,
+    isTestMode: !!exam.isTestMode,
+    subjectName: exam.subjectName || '',
   };
   _examLogs = [];
 
@@ -937,7 +1008,8 @@ function _examModalHTML() {
     // Header
     '<div style="background:linear-gradient(135deg,#1e3a8a 0%,#1e40af 100%);color:#fff;padding:10px 20px;display:flex;align-items:center;justify-content:space-between;flex-shrink:0;box-shadow:0 2px 8px rgba(0,0,0,.2)">',
       '<div style="font-weight:800;font-size:15px;display:flex;align-items:center;gap:8px">',
-        '<span>📋</span> Imtihon',
+        '<span>' + (_examState.isTestMode ? '🧪' : '📋') + '</span>',
+        (_examState.subjectName || 'Imtihon') + (_examState.isTestMode ? ' — Mashq' : ' — Sesiya'),
       '</div>',
       '<div style="display:flex;align-items:center;gap:16px">',
         // Suspicion bar
