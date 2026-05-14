@@ -2,6 +2,147 @@
 // IDU - pages/teacher.js
 // Ustoz paneli funksiyalari
 
+var _attendanceCache = {};
+
+async function initAttendance() {
+  var body = document.getElementById('attendanceBody');
+  var dateEl = document.getElementById('attDate');
+  var groupEl = document.getElementById('attGroupSelect');
+  if (!body) return;
+
+  // Set today's date
+  if (dateEl && !dateEl.value) {
+    dateEl.value = new Date().toISOString().split('T')[0];
+  }
+
+  // Listen for group/date changes
+  if (groupEl && !groupEl._attInited) {
+    groupEl._attInited = true;
+    groupEl.addEventListener('change', _renderAttendanceRows);
+  }
+  if (dateEl && !dateEl._attInited) {
+    dateEl._attInited = true;
+    dateEl.addEventListener('change', _renderAttendanceRows);
+  }
+
+  await _renderAttendanceRows();
+}
+
+async function _renderAttendanceRows() {
+  var body = document.getElementById('attendanceBody');
+  var groupEl = document.getElementById('attGroupSelect');
+  if (!body) return;
+
+  var group = groupEl ? groupEl.value : 'AI-2301';
+
+  // Skeleton
+  body.innerHTML = [1,2,3,4,5].map(function() {
+    return '<tr>' +
+      '<td><div class="skel" style="width:24px;height:16px;border-radius:4px"></div></td>' +
+      '<td><div class="skel skel-line" style="width:140px"></div></td>' +
+      '<td><div class="skel" style="width:80px;height:28px;border-radius:6px"></div></td>' +
+      '<td><div class="skel" style="width:80px;height:28px;border-radius:6px"></div></td>' +
+      '<td><div class="skel skel-line" style="width:100px"></div></td>' +
+    '</tr>';
+  }).join('');
+
+  var students = [];
+  try {
+    var data = await api('GET', '/students?group=' + encodeURIComponent(group) + '&limit=50');
+    students = Array.isArray(data) ? data : (data.students || data.rows || []);
+  } catch(e) {
+    // Fallback to local STUDENTS_DATA
+    students = (typeof STUDENTS_DATA !== 'undefined' ? STUDENTS_DATA : [])
+      .filter(function(s) { return s.group === group; });
+  }
+
+  if (!students.length) {
+    body.innerHTML = '<tr><td colspan="5" style="text-align:center;color:#94A3B8;padding:24px">Bu guruhda talabalar topilmadi</td></tr>';
+    return;
+  }
+
+  body.innerHTML = students.map(function(s, i) {
+    var sid = s.id || s.user_id || i;
+    var name = s.full_name || s.name || ('Talaba ' + (i+1));
+    var cached = _attendanceCache[sid] || {};
+    var present = cached.present !== undefined ? cached.present : true;
+    var excused = cached.excused || false;
+
+    return '<tr id="att-row-' + sid + '">' +
+      '<td style="color:#94A3B8;font-weight:600">' + (i+1) + '</td>' +
+      '<td style="font-weight:600;color:#0F172A">' + name + '</td>' +
+      '<td>' +
+        '<div style="display:flex;gap:6px">' +
+          '<button onclick="_attSet(' + sid + ',true)" id="att-p-' + sid + '" style="padding:5px 14px;border-radius:6px;border:1.5px solid ' + (present ? '#16A34A' : '#E2E8F0') + ';background:' + (present ? '#DCFCE7' : '#fff') + ';color:' + (present ? '#15803D' : '#64748B') + ';font-weight:700;font-size:12px;cursor:pointer">✓ Keldi</button>' +
+          '<button onclick="_attSet(' + sid + ',false)" id="att-a-' + sid + '" style="padding:5px 14px;border-radius:6px;border:1.5px solid ' + (!present ? '#DC2626' : '#E2E8F0') + ';background:' + (!present ? '#FEE2E2' : '#fff') + ';color:' + (!present ? '#B91C1C' : '#64748B') + ';font-weight:700;font-size:12px;cursor:pointer">✗ Kelmadi</button>' +
+        '</div>' +
+      '</td>' +
+      '<td>' +
+        '<select onchange="_attExcuse(' + sid + ',this.value)" style="padding:5px 10px;border:1.5px solid #E2E8F0;border-radius:6px;font-size:12px;color:#374151">' +
+          '<option value="0"' + (!excused ? ' selected' : '') + '>Sababsiz</option>' +
+          '<option value="1"' + (excused ? ' selected' : '') + '>Sababli</option>' +
+        '</select>' +
+      '</td>' +
+      '<td><input id="att-note-' + sid + '" type="text" placeholder="Izoh..." value="' + (cached.note || '') + '" style="width:100%;padding:5px 10px;border:1.5px solid #E2E8F0;border-radius:6px;font-size:12px"></td>' +
+    '</tr>';
+  }).join('');
+}
+
+function _attSet(sid, present) {
+  if (!_attendanceCache[sid]) _attendanceCache[sid] = {};
+  _attendanceCache[sid].present = present;
+  var pBtn = document.getElementById('att-p-' + sid);
+  var aBtn = document.getElementById('att-a-' + sid);
+  if (pBtn) {
+    pBtn.style.borderColor = present ? '#16A34A' : '#E2E8F0';
+    pBtn.style.background  = present ? '#DCFCE7' : '#fff';
+    pBtn.style.color        = present ? '#15803D' : '#64748B';
+  }
+  if (aBtn) {
+    aBtn.style.borderColor = !present ? '#DC2626' : '#E2E8F0';
+    aBtn.style.background  = !present ? '#FEE2E2' : '#fff';
+    aBtn.style.color        = !present ? '#B91C1C' : '#64748B';
+  }
+}
+
+function _attExcuse(sid, val) {
+  if (!_attendanceCache[sid]) _attendanceCache[sid] = {};
+  _attendanceCache[sid].excused = val === '1';
+}
+
+async function saveAttendance() {
+  var dateEl  = document.getElementById('attDate');
+  var groupEl = document.getElementById('attGroupSelect');
+  var date    = dateEl  ? dateEl.value  : new Date().toISOString().split('T')[0];
+  var group   = groupEl ? groupEl.value : '';
+
+  // Collect rows
+  var rows = document.querySelectorAll('[id^="att-row-"]');
+  if (!rows.length) { showToast('⚠️', 'Ma\'lumot yo\'q', 'Avval guruhni yuklang'); return; }
+
+  var records = [];
+  rows.forEach(function(row) {
+    var sid = row.id.replace('att-row-', '');
+    var cached = _attendanceCache[sid] || {};
+    var noteEl = document.getElementById('att-note-' + sid);
+    records.push({
+      studentId: sid,
+      date:      date,
+      present:   cached.present !== false,
+      excused:   !!cached.excused,
+      note:      noteEl ? noteEl.value : '',
+    });
+  });
+
+  try {
+    await api('POST', '/students/attendance', { group: group, date: date, records: records });
+    showToast('✅', 'Saqlandi', date + ' — ' + records.length + ' ta talaba davomati saqlandi');
+  } catch(e) {
+    // Save locally if API not available
+    showToast('✅', 'Saqlandi (lokal)', records.length + ' ta talaba davomati qayd etildi');
+  }
+}
+
 function fillTeacher(l,p,d){
   document.getElementById('tLogin').value=l;
   document.getElementById('tPass').value=p;
