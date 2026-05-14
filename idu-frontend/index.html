@@ -253,11 +253,43 @@
           <button class="login-submit" onclick="realAutoLogin()" id="loginSubmitBtn">
             <span>Kirish</span><span style="font-size:16px">&#8594;</span>
           </button>
+          <button type="button" onclick="showForgotPassword()" style="width:100%;margin-top:10px;background:none;border:none;color:#64748B;font-size:13px;cursor:pointer;text-align:center;padding:6px;font-family:inherit;text-decoration:underline">
+            Login yoki parolni unutdingizmi?
+          </button>
         </div>
-        <div class="login-note" style="margin-top:16px;padding:13px 14px;background:#F8FAFC;border:1px solid #E2E8F0;border-radius:12px;color:#64748B;font-size:12px;line-height:1.5;text-align:center">
+        <div class="login-note" style="margin-top:12px;padding:13px 14px;background:#F8FAFC;border:1px solid #E2E8F0;border-radius:12px;color:#64748B;font-size:12px;line-height:1.5;text-align:center">
           Login va parol universitet administratsiyasi tomonidan beriladi.
        </div>
       </div>
+    </div>
+  </div>
+</div>
+
+<!-- ═══ FORGOT PASSWORD MODAL ═══ -->
+<div id="forgotModal" style="display:none;position:fixed;inset:0;background:rgba(15,23,42,0.6);z-index:99999;align-items:center;justify-content:center;padding:16px">
+  <div style="background:#fff;border-radius:20px;padding:32px 28px;width:100%;max-width:420px;box-shadow:0 24px 60px rgba(0,0,0,0.2);position:relative">
+    <button onclick="closeForgotModal()" style="position:absolute;top:14px;right:14px;background:#F1F5F9;border:none;border-radius:8px;width:32px;height:32px;cursor:pointer;font-size:16px;color:#64748B">✕</button>
+    <div style="font-size:22px;font-weight:800;color:#1e293b;margin-bottom:6px">🔑 Parolni tiklash</div>
+    <div style="font-size:13px;color:#64748B;margin-bottom:20px">Login yoki parolingizni unutgan bo'lsangiz, pastdagi ma'lumotlarni to'ldiring. Dekanat siz bilan bog'lanadi.</div>
+    <div style="display:flex;flex-direction:column;gap:12px">
+      <div>
+        <label style="font-size:12px;font-weight:700;color:#374151;margin-bottom:5px;display:block">To'liq ismingiz *</label>
+        <input id="forgotName" type="text" placeholder="Familiya Ism Sharif" style="width:100%;padding:11px 14px;border:1.5px solid #E2E8F0;border-radius:10px;font-size:14px;box-sizing:border-box;font-family:inherit;outline:none" onfocus="this.style.borderColor='#1B4FD8'" onblur="this.style.borderColor='#E2E8F0'">
+      </div>
+      <div>
+        <label style="font-size:12px;font-weight:700;color:#374151;margin-bottom:5px;display:block">Telefon raqamingiz *</label>
+        <input id="forgotPhone" type="tel" placeholder="+998 90 123 45 67" style="width:100%;padding:11px 14px;border:1.5px solid #E2E8F0;border-radius:10px;font-size:14px;box-sizing:border-box;font-family:inherit;outline:none" onfocus="this.style.borderColor='#1B4FD8'" onblur="this.style.borderColor='#E2E8F0'">
+      </div>
+      <div>
+        <label style="font-size:12px;font-weight:700;color:#374151;margin-bottom:5px;display:block">Guruhingiz</label>
+        <input id="forgotGroup" type="text" placeholder="Masalan: AI-2301" style="width:100%;padding:11px 14px;border:1.5px solid #E2E8F0;border-radius:10px;font-size:14px;box-sizing:border-box;font-family:inherit;outline:none" onfocus="this.style.borderColor='#1B4FD8'" onblur="this.style.borderColor='#E2E8F0'">
+      </div>
+      <div id="forgotSuccessBox" style="display:none;background:#F0FDF4;border:1px solid #86EFAC;border-radius:10px;padding:12px 14px;font-size:13px;color:#15803D;font-weight:600">
+        ✅ So'rovingiz yuborildi! Dekanat 1-2 ish kuni ichida siz bilan bog'lanadi.
+      </div>
+      <button onclick="submitForgotPassword()" id="forgotSubmitBtn" style="width:100%;padding:13px;background:#1B4FD8;color:#fff;border:none;border-radius:10px;font-size:15px;font-weight:700;cursor:pointer;font-family:inherit">
+        📨 So'rov yuborish
+      </button>
     </div>
   </div>
 </div>
@@ -643,17 +675,57 @@
   <div class="page-header">
     <div class="page-header-left">
       <div class="ph-title">📝 Vazifalar</div>
-      <div class="ph-sub">Topshiriqlar, testlar va laboratoriya ishlari</div>
+      <div class="ph-sub">O'qituvchilar yuborgan topshiriqlar</div>
+    </div>
+    <div class="page-header-right">
+      <button onclick="renderStudentAssignments()" style="padding:7px 14px;background:#F1F5F9;border:none;border-radius:8px;cursor:pointer;font-size:13px;font-weight:600">🔄 Yangilash</button>
     </div>
   </div>
-  <div class="filter-row">
-    <button class="filter-chip active" onclick="filterTasks('all',this)">Barchasi</button>
-    <button class="filter-chip" onclick="filterTasks('test',this)">Testlar</button>
-    <button class="filter-chip" onclick="filterTasks('lab',this)">Laboratoriya</button>
-    <button class="filter-chip" onclick="filterTasks('hw',this)">Uy vazifasi</button>
-    <button class="filter-chip" onclick="filterTasks('project',this)">Loyihalar</button>
+  <div id="studentAssignmentsList"><div style="padding:40px;text-align:center;color:#94A3B8">Yuklanmoqda...</div></div>
+</div>
+
+<!-- ═══ ASSIGNMENT FULLSCREEN MODAL ═══ -->
+<div id="assignmentModal" style="display:none;position:fixed;inset:0;background:#0F172A;z-index:99998;flex-direction:column">
+  <div style="background:#1e3a8a;padding:14px 24px;display:flex;align-items:center;justify-content:space-between;flex-shrink:0">
+    <div style="display:flex;align-items:center;gap:14px">
+      <div style="width:36px;height:36px;background:rgba(255,255,255,0.15);border-radius:10px;display:flex;align-items:center;justify-content:center;font-size:18px">📝</div>
+      <div>
+        <div style="color:#fff;font-weight:800;font-size:15px" id="asgnModalTitle">Vazifa</div>
+        <div style="color:#93C5FD;font-size:12px" id="asgnModalSubject"></div>
+      </div>
+    </div>
+    <div style="display:flex;align-items:center;gap:16px">
+      <div style="color:#FCA5A5;font-size:13px;font-weight:700" id="asgnModalDeadline"></div>
+      <div style="background:rgba(255,255,255,0.1);padding:6px 14px;border-radius:8px;color:#fff;font-size:13px;font-weight:700" id="asgnModalTimer">--:--</div>
+    </div>
   </div>
-  <div id="tasksList"></div>
+  <div style="flex:1;overflow-y:auto;padding:24px;max-width:800px;width:100%;margin:0 auto;box-sizing:border-box">
+    <!-- Task description -->
+    <div style="background:#1e293b;border:1px solid #334155;border-radius:16px;padding:24px;margin-bottom:20px">
+      <div style="color:#94A3B8;font-size:11px;font-weight:700;text-transform:uppercase;margin-bottom:10px">📋 Topshiriq</div>
+      <div style="color:#E2E8F0;font-size:15px;line-height:1.7;white-space:pre-wrap" id="asgnModalDesc"></div>
+    </div>
+    <!-- Answer area -->
+    <div style="background:#1e293b;border:1px solid #334155;border-radius:16px;padding:24px">
+      <div style="color:#94A3B8;font-size:11px;font-weight:700;text-transform:uppercase;margin-bottom:10px">✍️ Javobingiz</div>
+      <textarea id="asgnAnswerText" rows="12"
+        placeholder="Javobingizni shu yerga yozing..."
+        style="width:100%;background:#0F172A;border:1.5px solid #334155;border-radius:12px;padding:16px;color:#E2E8F0;font-size:14px;line-height:1.6;resize:vertical;box-sizing:border-box;font-family:inherit;outline:none;min-height:200px"
+        onfocus="this.style.borderColor='#3B82F6'" onblur="this.style.borderColor='#334155'"></textarea>
+      <div id="asgnAiResult" style="display:none;margin-top:16px;background:#0c1a2e;border:1.5px solid #1d4ed8;border-radius:12px;padding:16px"></div>
+    </div>
+  </div>
+  <div style="background:#1e293b;border-top:1px solid #334155;padding:14px 24px;display:flex;align-items:center;justify-content:space-between;flex-shrink:0">
+    <div style="color:#64748B;font-size:12px">🔒 Xavfsiz rejim — nusxa olish va yangi oyna taqiqlangan</div>
+    <div style="display:flex;gap:10px">
+      <button id="asgnSubmitBtn" onclick="submitAssignmentAnswer()" style="padding:11px 28px;background:#16A34A;color:#fff;border:none;border-radius:10px;font-size:14px;font-weight:800;cursor:pointer">
+        📤 Topshirish
+      </button>
+      <button onclick="closeAssignmentModal()" style="padding:11px 18px;background:#374151;color:#9CA3AF;border:none;border-radius:10px;font-size:13px;font-weight:700;cursor:pointer">
+        Chiqish
+      </button>
+    </div>
+  </div>
 </div>
 
 <!-- ═══ STUDENT: MATERIALS (LMS) ═══ -->
@@ -926,6 +998,78 @@
     <div style="padding-top:14px;display:flex;gap:10px;justify-content:flex-end">
       <button class="btn btn-primary" onclick="saveAttendance()">💾 Saqlash</button>
     </div>
+  </div>
+</div>
+
+<!-- ═══ TEACHER: ASSIGNMENTS ═══ -->
+<div class="page" id="page-teacher-assignments">
+  <div class="page-header">
+    <div class="page-header-left">
+      <div class="ph-title">📝 Vazifalar</div>
+      <div class="ph-sub">Talabalar uchun topshiriqlar va AI baholash</div>
+    </div>
+    <div class="page-header-right">
+      <button class="btn btn-primary" onclick="openCreateAssignment()">+ Yangi vazifa</button>
+    </div>
+  </div>
+
+  <!-- Create form (hidden by default) -->
+  <div id="createAssignmentForm" style="display:none" class="card" style="margin-bottom:16px">
+    <div class="card-header"><div class="card-title">📋 Yangi vazifa yaratish</div></div>
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:14px;padding:0 0 16px">
+      <div>
+        <label style="font-size:12px;font-weight:700;color:#374151;margin-bottom:5px;display:block">Sarlavha *</label>
+        <input id="asgn-title" type="text" placeholder="Vazifa nomi" class="form-input">
+      </div>
+      <div>
+        <label style="font-size:12px;font-weight:700;color:#374151;margin-bottom:5px;display:block">Fan</label>
+        <select id="asgn-subject" class="form-select">
+          <option value="algo">Algoritmlar va Dasturlash</option>
+          <option value="ai">Sun'iy Intellekt</option>
+          <option value="math">Matematika</option>
+          <option value="db">Ma'lumotlar Bazasi</option>
+          <option value="web">Web Dasturlash</option>
+        </select>
+      </div>
+      <div>
+        <label style="font-size:12px;font-weight:700;color:#374151;margin-bottom:5px;display:block">Guruh</label>
+        <select id="asgn-group" class="form-select">
+          <option value="ALL">Barcha guruhlar</option>
+          <option value="AI-2301">AI-2301</option>
+          <option value="CS-2301">CS-2301</option>
+          <option value="IT-2301">IT-2301</option>
+          <option value="DB-2301">DB-2301</option>
+        </select>
+      </div>
+      <div>
+        <label style="font-size:12px;font-weight:700;color:#374151;margin-bottom:5px;display:block">Muddat *</label>
+        <input id="asgn-deadline" type="datetime-local" class="form-input">
+      </div>
+      <div style="grid-column:1/-1">
+        <label style="font-size:12px;font-weight:700;color:#374151;margin-bottom:5px;display:block">Topshiriq matni *</label>
+        <textarea id="asgn-desc" rows="5" placeholder="Vazifa tavsifi, talablar, misol..." class="form-input" style="resize:vertical;font-family:inherit"></textarea>
+      </div>
+      <div>
+        <label style="font-size:12px;font-weight:700;color:#374151;margin-bottom:5px;display:block">Maksimal ball</label>
+        <input id="asgn-maxscore" type="number" value="100" min="10" max="100" class="form-input">
+      </div>
+    </div>
+    <div style="display:flex;gap:10px">
+      <button class="btn btn-primary" onclick="submitCreateAssignment()">💾 Saqlash</button>
+      <button class="btn btn-secondary" onclick="document.getElementById('createAssignmentForm').style.display='none'">Bekor</button>
+    </div>
+  </div>
+
+  <!-- Assignments list -->
+  <div id="teacherAssignmentsList"></div>
+
+  <!-- Submissions panel (slides in) -->
+  <div id="submissionsPanel" style="display:none">
+    <div style="display:flex;align-items:center;gap:10px;margin-bottom:16px">
+      <button onclick="closeSubmissionsPanel()" style="padding:7px 14px;background:#F1F5F9;border:none;border-radius:8px;cursor:pointer;font-weight:700">← Orqaga</button>
+      <div style="font-size:17px;font-weight:800" id="submissionsPanelTitle">Javoblar</div>
+    </div>
+    <div id="submissionsList"></div>
   </div>
 </div>
 

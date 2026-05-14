@@ -1,98 +1,134 @@
 'use strict';
 const express = require('express');
 const router  = express.Router();
-const { Pool } = require('pg');
+const db      = require('../config/database');
+const { authenticate, authorize } = require('../middleware/auth');
 
-const pool = new Pool({ connectionString: process.env.DATABASE_URL, ssl: { rejectUnauthorized: false } });
+router.use(authenticate);
 
-// AI tekshiruv funksiyasi
-async function checkWithAI(assignmentTitle, assignmentDesc, studentAnswer) {
-  const prompt = `Sen IDU universitetining professional o'qituvchisisiz.
-Vazifa: "${assignmentTitle}"
-Vazifa tavsifi: "${assignmentDesc}"
-Talaba javobi: "${studentAnswer}"
+// AI grading via Anthropic claude-haiku
+async function gradeWithAI(title, description, answer) {
+  const key = process.env.ANTHROPIC_API_KEY;
+  if (!key) return { ball: 0, xatolar: 'AI kalit topilmadi', ijobiy: '', tavsiyalar: '' };
 
-Quyidagilarni o'zbek tilida baholang:
-1. Ball (0-100): faqat raqam
-2. Xatolar: nima noto'g'ri yoki yetishmayapti
-3. Ijobiy tomonlar: nima yaxshi qilingan
-4. Tavsiyalar: qanday yaxshilash mumkin
+  const prompt = `Sen IDU universitetining professional o'qituvchisisiz. Quyidagi vazifaga berilgan talaba javobini baholang.
 
-Javobni quyidagi JSON formatida bering:
-{"ball": 85, "xatolar": "...", "ijobiy": "...", "tavsiyalar": "..."}`;
+Vazifa: "${title}"
+Vazifa tavsifi: "${description}"
+Talaba javobi: "${answer.substring(0, 3000)}"
 
-  const resp = await fetch('https://api.openai.com/v1/chat/completions', {
-    method: 'POST',
-    headers: {
-      'Content-Type': 'application/json',
-      'Authorization': `Bearer ${process.env.OPENAI_API_KEY}`
-    },
-    body: JSON.stringify({
-      model: 'gpt-4o-mini',
-      messages: [{ role: 'user', content: prompt }],
-      max_tokens: 500
-    })
-  });
-  const data = await resp.json();
-  const text = data.choices?.[0]?.message?.content || '{}';
+Quyidagi JSON formatida o'zbek tilida javob bering (faqat JSON, hech qanday qo'shimcha matn yo'q):
+{"ball": <0-100 son>, "xatolar": "<nima yetishmayapti yoki noto'g'ri>", "ijobiy": "<nima yaxshi qilingan>", "tavsiyalar": "<qanday yaxshilash mumkin>"}`;
+
   try {
+    const resp = await fetch('https://api.anthropic.com/v1/messages', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'x-api-key': key,
+        'anthropic-version': '2023-06-01'
+      },
+      body: JSON.stringify({
+        model: 'claude-haiku-4-5-20251001',
+        max_tokens: 600,
+        messages: [{ role: 'user', content: prompt }]
+      })
+    });
+    const data = await resp.json();
+    const text = data.content?.[0]?.text || '{}';
     const clean = text.replace(/```json|```/g, '').trim();
-    return JSON.parse(clean);
-  } catch {
-    return { ball: 0, xatolar: text, ijobiy: '', tavsiyalar: '' };
+    const parsed = JSON.parse(clean);
+    return {
+      ball:        Math.min(100, Math.max(0, Number(parsed.ball) || 0)),
+      xatolar:     parsed.xatolar || '',
+      ijobiy:      parsed.ijobiy  || '',
+      tavsiyalar:  parsed.tavsiyalar || ''
+    };
+  } catch(e) {
+    return { ball: 0, xatolar: 'AI tekshirishda xato: ' + e.message, ijobiy: '', tavsiyalar: '' };
   }
 }
 
-// POST /api/submissions — talaba javob yuboradi + AI tekshiradi
+// POST /api/submissions — talaba javob yuboradi
 router.post('/', async (req, res) => {
   const { assignment_id, content } = req.body;
-  const studentId = req.user?.id;
   if (!assignment_id || !content) return res.status(400).json({ error: 'assignment_id va content majburiy' });
 
-  // Vazifani topamiz
-  const asgn = await pool.query('SELECT * FROM assignments WHERE id=$1', [assignment_id]);
+  const asgn = await db.query('SELECT * FROM assignments WHERE id=$1', [assignment_id]);
   if (!asgn.rows[0]) return res.status(404).json({ error: 'Vazifa topilmadi' });
 
-  // Avval yuborilganmi?
-  const exists = await pool.query('SELECT id FROM submissions WHERE assignment_id=$1 AND student_id=$2', [assignment_id, studentId]);
-  
-  // AI tekshiruv
-  const ai = await checkWithAI(asgn.rows[0].title, asgn.rows[0].description, content);
+  const ai = await gradeWithAI(asgn.rows[0].title, asgn.rows[0].description, content);
 
+  const exists = await db.query(
+    'SELECT id FROM submissions WHERE assignment_id=$1 AND student_id=$2',
+    [assignment_id, req.user.id]
+  );
+
+  let row;
   if (exists.rows[0]) {
-    // Qayta yuborish — yangilash
-    const upd = await pool.query(
-      `UPDATE submissions SET content=$1, ai_ball=$2, ai_xatolar=$3, ai_ijobiy=$4, ai_tavsiyalar=$5, submitted_at=NOW()
+    const r = await db.query(
+      `UPDATE submissions SET content=$1, ai_ball=$2, ai_xatolar=$3, ai_ijobiy=$4,
+       ai_tavsiyalar=$5, updated_at=NOW(), teacher_score=NULL, teacher_comment=NULL
        WHERE assignment_id=$6 AND student_id=$7 RETURNING *`,
-      [content, ai.ball, ai.xatolar, ai.ijobiy, ai.tavsiyalar, assignment_id, studentId]);
-    return res.json({ submission: upd.rows[0], ai_feedback: ai });
+      [content, ai.ball, ai.xatolar, ai.ijobiy, ai.tavsiyalar, assignment_id, req.user.id]
+    );
+    row = r.rows[0];
+  } else {
+    const r = await db.query(
+      `INSERT INTO submissions (assignment_id, student_id, content, ai_ball, ai_xatolar, ai_ijobiy, ai_tavsiyalar)
+       VALUES ($1,$2,$3,$4,$5,$6,$7) RETURNING *`,
+      [assignment_id, req.user.id, content, ai.ball, ai.xatolar, ai.ijobiy, ai.tavsiyalar]
+    );
+    row = r.rows[0];
   }
 
-  const ins = await pool.query(
-    `INSERT INTO submissions (assignment_id, student_id, content, ai_ball, ai_xatolar, ai_ijobiy, ai_tavsiyalar)
-     VALUES ($1,$2,$3,$4,$5,$6,$7) RETURNING *`,
-    [assignment_id, studentId, content, ai.ball, ai.xatolar, ai.ijobiy, ai.tavsiyalar]);
-  res.status(201).json({ submission: ins.rows[0], ai_feedback: ai });
-});
-
-// GET /api/submissions/assignment/:id — ustoz barcha javoblarni ko'radi
-router.get('/assignment/:id', async (req, res) => {
-  const role = req.user?.role;
-  if (!['teacher','dekanat','admin'].includes(role)) return res.status(403).json({ error: 'Ruxsat yoq' });
-  const r = await pool.query(
-    `SELECT s.*, u.full_name AS student_name
-     FROM submissions s JOIN users u ON u.id=s.student_id
-     WHERE s.assignment_id=$1 ORDER BY s.submitted_at DESC`, [req.params.id]);
-  res.json({ submissions: r.rows });
+  res.status(201).json({ submission: row, ai_feedback: ai });
 });
 
 // GET /api/submissions/my — talaba o'z javoblarini ko'radi
 router.get('/my', async (req, res) => {
-  const r = await pool.query(
-    `SELECT s.*, a.title AS assignment_title, a.deadline
-     FROM submissions s JOIN assignments a ON a.id=s.assignment_id
-     WHERE s.student_id=$1 ORDER BY s.submitted_at DESC`, [req.user.id]);
-  res.json({ submissions: r.rows });
+  const { rows } = await db.query(
+    `SELECT s.*, a.title AS assignment_title, a.description AS assignment_desc,
+            a.deadline, a.max_score, a.subject
+     FROM submissions s
+     JOIN assignments a ON a.id = s.assignment_id
+     WHERE s.student_id = $1
+     ORDER BY s.submitted_at DESC`,
+    [req.user.id]
+  );
+  res.json({ submissions: rows });
+});
+
+// GET /api/submissions/assignment/:id — ustoz barcha javoblarni ko'radi
+router.get('/assignment/:id', authorize('teacher','dekanat','admin'), async (req, res) => {
+  const { rows } = await db.query(
+    `SELECT s.*, u.full_name AS student_name, st.group_name
+     FROM submissions s
+     JOIN users u ON u.id = s.student_id
+     LEFT JOIN students st ON st.user_id = s.student_id
+     WHERE s.assignment_id = $1
+     ORDER BY s.submitted_at DESC`,
+    [req.params.id]
+  );
+  res.json({ submissions: rows });
+});
+
+// PATCH /api/submissions/:id/approve — ustoz yakuniy baho qo'yadi
+router.patch('/:id/approve', authorize('teacher','dekanat','admin'), async (req, res) => {
+  const { teacher_score, teacher_comment } = req.body;
+  if (teacher_score === undefined || teacher_score === null) {
+    return res.status(400).json({ error: 'teacher_score majburiy' });
+  }
+  const score = Math.min(100, Math.max(0, Number(teacher_score)));
+  const { rows, rowCount } = await db.query(
+    `UPDATE submissions
+     SET teacher_score=$1, teacher_comment=$2, updated_at=NOW()
+     WHERE id=$3
+     RETURNING *`,
+    [score, teacher_comment || null, req.params.id]
+  );
+  if (!rowCount) return res.status(404).json({ error: 'Topilmadi' });
+  res.json({ submission: rows[0] });
 });
 
 module.exports = router;

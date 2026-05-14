@@ -539,6 +539,7 @@ const NAV_TABS = {
     {id:'teacher-students',icon:'👥',label:'Talabalar',labelRu:'Студенты'},
     {id:'teacher-grade',icon:'✏️',label:'Baholash',labelRu:'Оценивание'},
     {id:'teacher-attendance',icon:'📋',label:'Davomat',labelRu:'Посещаемость'},
+    {id:'teacher-assignments',icon:'📝',label:'Vazifalar',labelRu:'Задания'},
     {id:'startup',icon:'🚀',label:'Startup',labelRu:'Стартап'},
     {id:'notifications',icon:'🔔',label:'Xabarlar',labelRu:'Уведомления',badge:2},
   ],
@@ -651,6 +652,8 @@ function showPage(id){
   else if(id==='teacher-students') renderStudentList();
   else if(id==='teacher-grade') loadGradeGroup();
   else if(id==='teacher-attendance') initAttendance();
+  else if(id==='teacher-assignments') renderTeacherAssignments();
+  else if(id==='tasks') renderStudentAssignments();
   else if(id==='dekanat-students') renderDekanatStudents();
   else if(id==='dekanat-teachers') renderDekanatTeachers();
   else if(id==='dekanat-schedule') renderDekanatSchedule();
