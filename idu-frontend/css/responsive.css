@@ -459,6 +459,80 @@ img, video { max-width: 100%; height: auto; }
   .sidebar-backdrop { display: none !important; }
 }
 
+/* ══ ASSIGNMENTS / TEACHER PANEL ═══════════════════════════ */
+@media (max-width: 768px) {
+  /* Create-assignment form: 2-col grid → 1-col */
+  #createAssignmentForm > div[style*="grid-template-columns"] {
+    grid-template-columns: 1fr !important;
+  }
+  #createAssignmentForm > div[style*="flex"] {
+    flex-wrap: wrap;
+  }
+  #createAssignmentForm .btn { flex: 1 1 120px; }
+
+  /* Submissions approve row: stack on very small */
+  #submissionsList div[style*="gap:10px"][style*="flex-wrap"] input[type="number"] {
+    width: 100% !important;
+  }
+
+  /* Assignment fullscreen modal footer */
+  #assignmentModal > div:last-child {
+    flex-direction: column !important;
+    align-items: flex-start !important;
+    gap: 10px !important;
+    padding: 12px 16px !important;
+  }
+  #assignmentModal > div:last-child > div:last-child {
+    width: 100%;
+    display: flex;
+    gap: 8px;
+  }
+  #assignmentModal > div:last-child > div:last-child button {
+    flex: 1;
+  }
+
+  /* Assignment modal header: wrap title/timer */
+  #assignmentModal > div:first-child {
+    padding: 10px 14px !important;
+    flex-wrap: wrap !important;
+    gap: 8px !important;
+  }
+
+  /* Assignment modal content area */
+  #assignmentModal > div[style*="overflow-y"] {
+    padding: 14px 12px !important;
+  }
+
+  /* Student assignment card open btn: full width on tiny screens */
+  #studentAssignmentsList button[onclick*="openAssignmentModal"] {
+    width: 100%;
+    justify-content: center;
+  }
+
+  /* Forgot password modal */
+  #forgotModal > div {
+    width: 100% !important;
+    max-width: 420px;
+    border-radius: 20px !important;
+    padding: 24px 18px !important;
+  }
+}
+
+@media (max-width: 480px) {
+  /* Teacher card action buttons: stack */
+  #teacherAssignmentsList div[style*="flex-direction:column"][style*="align-items:flex-end"] {
+    align-items: flex-start !important;
+    width: 100%;
+  }
+  #teacherAssignmentsList div[style*="flex-direction:column"][style*="align-items:flex-end"] > div[style*="gap:8px"] {
+    width: 100%;
+    justify-content: flex-start;
+  }
+  #teacherAssignmentsList div[style*="flex-direction:column"][style*="align-items:flex-end"] button {
+    flex: 1;
+  }
+}
+
 /* ── Print ──────────────────────────────────────────────── */
 @media print {
   .mob-nav,
