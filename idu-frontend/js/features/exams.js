@@ -372,7 +372,7 @@ function _onFullscreenChange() {
     } else {
       _showWarnOv(
         '🖥️ Fullscreen tark etildi!',
-        'Test fullscreen rejimda bo‘lishi shart!'
+        'Test fullscreen rejimda bo'lishi shart!'
       );
       setTimeout(_requestFullscreen, 600);
     }
@@ -1209,7 +1209,7 @@ async function submitRealExam(reason) {
         elapsed: _examState.startTime ? Math.floor((Date.now() - _examState.startTime) / 1000) : 0,
       });
     } catch(e) {
-      console.warn(‘Exam submit API error (ignored):’, e);
+      console.warn('Exam submit API error (ignored):', e);
     }
   }
 }
