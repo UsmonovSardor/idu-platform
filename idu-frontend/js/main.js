@@ -3521,8 +3521,7 @@ loadApplications();
 // DEKANAT QUESTIONS — LOCALSTORAGE
 // ═══════════════════════════════════════════════
 var DEKANAT_QUESTIONS = [];
-// _editingQId — dekanat.js da e'lon qilingan (let), bu yerda qayta e'lon qilinmaydi
-var _currentQFilter = 'all';
+// _editingQId, _currentQFilter — dekanat.js da let bilan e'lon qilingan, takrorlanmaydi
 loadDekanatQuestions();
 
 // Override question sources: use dekanat questions when available
