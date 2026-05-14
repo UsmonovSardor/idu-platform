@@ -153,7 +153,9 @@ const SUBJECTS_COLORS = {
 };
 
 // Schedule data (EduPage style)
-const SCHEDULE = {
+// Dars jadvali backend API dan olinadi
+const SCHEDULE = {};
+const _SCHEDULE_UNUSED = {
   'AI-2301': [
     [
       {sub:'Machine Learning',teacher:'Prof. Rahimov J.',room:'Lab-AI',type:"Ma'ruza"},
@@ -303,105 +305,19 @@ const SCHEDULE = {
     ]
   ]
 };
-const GRADES_DATA = [
-  {sub:'Machine Learning',teacher:'Prof. Rahimov J.',jn:27,on:18,yn:26,mi:19},
-  {sub:'Python for AI',teacher:'Prof. Rahimov J.',jn:29,on:19,yn:28,mi:19},
-  {sub:'Deep Learning',teacher:'Prof. Ergashev T.',jn:25,on:17,yn:24,mi:17},
-  {sub:'Matematika (AI uchun)',teacher:'Prof. Yusupova M.',jn:24,on:16,yn:22,mi:16},
-  {sub:'Data Science',teacher:'Prof. Yusupova M.',jn:26,on:18,yn:25,mi:18},
-  {sub:'Ingliz tili (Tech)',teacher:'Prof. Rahimova N.',jn:22,on:15,yn:21,mi:15},
-  {sub:'Natural Language Processing',teacher:'Prof. Rahimov J.',jn:24,on:16,yn:23,mi:17},
-  {sub:'Computer Vision',teacher:'Prof. Ergashev T.',jn:23,on:16,yn:22,mi:16},
-];
+// Baholar backend API dan olinadi
+const GRADES_DATA = [];
 
-const STUDENTS_DATA = [
-  {id:1,name:'Azimov Alisher',group:'AI-2301',course:1,avg:87,att:96,gpa:3.9},
-  {id:2,name:'Karimova Nilufar',group:'AI-2301',course:1,avg:82,att:98,gpa:3.7},
-  {id:3,name:'Toshev Jasur',group:'AI-2301',course:1,avg:74,att:89,gpa:3.3},
-  {id:4,name:'Mirzayeva Dilnoza',group:'AI-2301',course:1,avg:91,att:100,gpa:4.0},
-  {id:5,name:'Umarov Sardor',group:'CS-2301',course:1,avg:79,att:93,gpa:3.5},
-  {id:6,name:'Hasanova Mohira',group:'CS-2301',course:1,avg:85,att:97,gpa:3.8},
-  {id:7,name:'Raimov Sherzod',group:'CS-2301',course:1,avg:68,att:81,gpa:3.0},
-  {id:8,name:'Nazarova Zulfiya',group:'CS-2301',course:1,avg:76,att:92,gpa:3.4},
-  {id:9,name:'Tursunov Bobur',group:'IT-2301',course:1,avg:72,att:85,gpa:3.2},
-  {id:10,name:'Sobirov Farrux',group:'IT-2301',course:1,avg:80,att:94,gpa:3.6},
-  {id:11,name:'Eshmatov Ulugbek',group:'DB-2301',course:1,avg:78,att:91,gpa:3.5},
-  {id:12,name:'Toshpulatova Kamola',group:'DB-2301',course:1,avg:84,att:96,gpa:3.7},
-  {id:13,name:'Mirzaev Otabek',group:'AI-2301',course:1,avg:65,att:78,gpa:2.9},
-  {id:14,name:'Yusupova Feruza',group:'CS-2301',course:1,avg:88,att:99,gpa:3.9},
-  {id:15,name:'Normatov Behruz',group:'IT-2301',course:1,avg:77,att:90,gpa:3.4},
-  {id:16,name:'Qodirov Mansur',group:'DB-2301',course:1,avg:83,att:95,gpa:3.7},
-];
-
-const TEACHERS_DATA = [
-  {id:1,name:"Prof. Rahimov Jasur",dept:"Sun'iy Intellekt",subjects:['Machine Learning','Deep Learning','Neural Networks','Python for AI'],groups:['AI-2301'],hours:24,rating:4.9},
-  {id:2,name:'Prof. Toshmatov Alisher',dept:'Kiberxavfsizlik',subjects:['Network Security','Ethical Hacking','Web Application Security','IDS/IPS Tizimlari'],groups:['CS-2301'],hours:22,rating:4.8},
-  {id:3,name:'Prof. Yusupova Malika',dept:"Matematika & Data Science",subjects:["Matematika (AI uchun)",'Data Science','Biznes Analitika','Moliyaviy Texnologiyalar'],groups:['AI-2301','DB-2301'],hours:20,rating:4.7},
-  {id:4,name:'Prof. Rahimova Nodira',dept:'Ingliz tili',subjects:['Ingliz tili (Tech)'],groups:['AI-2301','CS-2301','IT-2301','DB-2301'],hours:16,rating:4.6},
-  {id:5,name:'Prof. Nazarov Bobur',dept:'Digital Business',subjects:['Raqamli Marketing','E-Tijorat','Raqamli Transformatsiya','Tadbirkorlik','Kriptografiya','Digital Forensics','Cloud Security'],groups:['DB-2301','CS-2301'],hours:20,rating:4.8},
-  {id:6,name:'Prof. Ergashev Timur',dept:'Computing & Networks',subjects:['Computer Vision','Kompyuter Tarmoqlari','Web Dasturlash','Operatsion Tizimlar','Loyiha Boshqaruvi'],groups:['AI-2301','IT-2301','DB-2301'],hours:22,rating:4.7},
-  {id:7,name:'Prof. Rahimov Sherzod',dept:'Computing/IT',subjects:["Dasturlash Asoslari","Ma'lumotlar Tuzilmasi","Algoritmlar"],groups:['IT-2301'],hours:18,rating:4.8},
-];
-
-const TASKS_DATA = [
-  {id:1,sub:'Machine Learning',name:'Linear Regression modeli yaratish',type:'project',due:'2026-03-10',pts:25},
-  {id:2,sub:'Python for AI',name:'NumPy va Pandas bilan ishlash',type:'lab',due:'2026-03-07',pts:20},
-  {id:3,sub:'Deep Learning',name:'CNN arxitekturasi testi',type:'test',due:'2026-03-12',pts:15},
-  {id:4,sub:'Ingliz tili (Tech)',name:'Tech essay: AI in Uzbekistan (400 words)',type:'hw',due:'2026-03-08',pts:10},
-  {id:5,sub:'Data Science',name:'EDA: real dataset tahlili',type:'project',due:'2026-03-14',pts:30},
-  {id:6,sub:'Matematika (AI uchun)',name:'Chiziqli algebra testi',type:'test',due:'2026-03-11',pts:15},
-];
-
-const NOTIFS = [
-  {icon:'📊',color:'var(--primary-light)',title:'Yangi baho kiritildi',text:'Machine Learning fanidan ON bahosi: 18/20 — Prof. Rahimov J.',time:'10 daqiqa oldin',unread:true},
-  {icon:'📅',color:'var(--orange-light)',title:'Dars o\'zgardi',text:"Ertangi Deep Learning darsi Lab-AI dan A-201 xonaga ko\'chirildi",time:'1 soat oldin',unread:true},
-  {icon:'⚠️',color:'var(--red-light)',title:'Davomat ogohlantirishi',text:'Python for AI darsiga 2 marta kelmadingiz — diqqat!',time:'Kecha',unread:true},
-  {icon:'🎉',color:'var(--green-light)',title:'Reyting yangilandi',text:'AI-2301 guruhi reytingida #3 o\'ringa ko\'tarildingiz! 🏆',time:'2 kun oldin',unread:false},
-  {icon:'📝',color:'var(--purple-light)',title:'Yangi vazifa',text:'Data Science: EDA loyihasi — muddati 14-mart',time:'3 kun oldin',unread:false},
-  {icon:'🏫',color:'var(--purple-light)',title:"IDU xabarnomasi",text:"Wolverhampton universiteti bilan hamkorlik dasturi boshlandi — ariza qabul qilinmoqda",time:'4 kun oldin',unread:false},
-];
-
-let IDEAS = [
-  {
-    id:1,title:'EduBot — AI O\'qituvchi',category:'edu',
-    desc:'Sun\'iy intellekt asosida ishlaydi va har bir talabaga shaxsiy o\'quv rejasi tuzib beradi. Zaif tomonlarini aniqlaydi va maxsus mashqlar taklif qiladi.',
-    team:['Alisher Azimov','Nilufar Karimova','Sardor Umarov'],
-    investment:'30,000$',likes:24,stars:4,comments:[
-      {author:'Bobur T.',text:'Juda yaxshi g\'oya! AI qismi qanday ishlaydi?',time:'1 kun oldin'},
-      {author:'Investor (TechVentures)',text:'Bu g\'oya biz izlayotgan narsaga o\'xshaydi. Aloqaga chiqamiz!',time:'12 soat oldin'},
-    ],investorRating:4
-  },
-  {
-    id:2,title:'MedConnect — Shifoxona platformasi',category:'health',
-    desc:'Bemorlar va shifokorlarni ulaydi. Online navbat, tibbiy tarix, retseptlar — hammasi bitta ilovada. O\'zbekiston sharoitiga moslashtrilgan.',
-    team:['Dilnoza Tosheva','Jasur Toshpulatov','Kamola Mirzayeva','Sherzod Raimov'],
-    investment:'80,000$',likes:31,stars:5,comments:[
-      {author:'Mohira X.',text:'Bu g\'oya juda dolzarb! O\'zbekistonda shifokorga navbat olish qiyin.',time:'2 kun oldin'},
-    ],investorRating:5
-  },
-  {
-    id:3,title:'AgriTech UZ — Qishloq xo\'jaligi AI',category:'tech',
-    desc:'Fermerlar uchun AI yordamchi: tuproq tahlili, ob-havo bashorati, hosil optimizatsiyasi va bozor narxlari. Drone bilan integratsiya.',
-    team:['Ulugbek Eshmatov','Feruza Sobirov','Zulfiya Nazarova'],
-    investment:'120,000$',likes:18,stars:3,comments:[],investorRating:0
-  },
-  {
-    id:4,title:'PayEasy — To\'lov agregatori',category:'fintech',
-    desc:'Barcha to\'lov tizimlarini birlashtiradi: Click, Payme, Uzcard. QR kod bilan tezkor to\'lov va SME biznes uchun kassa tizimi.',
-    team:['Bobur Tursunov','Mohira Xasanova','Alisher Azimov'],
-    investment:'50,000$',likes:42,stars:4,comments:[
-      {author:'Sardor U.',text:'Raqobat kuchli, lekin UX jihatdan farqlanish mumkin.',time:'3 kun oldin'},
-    ],investorRating:4
-  },
-];
-
-const QUIZ_QUESTIONS = [
-  {q:'Python dasturlash tilida list nima?',opts:['O\'zgarmas to\'plam','O\'zgaruvchan tartibli to\'plam','Kalit-qiymat juftligi','Butun sonlar to\'plami'],ans:1},
-  {q:'Big O notation nima uchun ishlatiladi?',opts:['Dizayn uchun','Algoritmning samaradorligini o\'lchash uchun','Ma\'lumotlar saqlash uchun','Tarmoq tezligini o\'lchash uchun'],ans:1},
-  {q:'SQL da SELECT operatori nima qiladi?',opts:['Ma\'lumot o\'chiradi','Jadval yaratadi','Ma\'lumotlarni tanlaydi','Ma\'lumot qo\'shadi'],ans:2},
-  {q:'HTTP va HTTPS farqi nima?',opts:['Tezlikda farq bor','HTTPS shifrlangan xavfsiz protokol','HTTP yangroq versiya','Hech qanday farq yo\'q'],ans:1},
-  {q:'Git repository nima?',opts:['Faqat kod fayllar papkasi','Versiya nazorat tizimidagi loyiha', 'Internet sayt','Kompilator'],ans:1},
-];
+// ═══════════════════════════════════════════════════════════
+// BARCHA MA'LUMOTLAR REAL API DAN OLINADI
+// Bu massivlar bo'sh — dekanat paneli orqali kiritiladi
+// ═══════════════════════════════════════════════════════════
+const STUDENTS_DATA = [];
+const TEACHERS_DATA = [];
+const TASKS_DATA    = [];
+const NOTIFS        = [];
+let   IDEAS         = [];
+const QUIZ_QUESTIONS = [];
 
 // ════════════════════════════════════
 //  STATE
@@ -994,12 +910,8 @@ const SAVED_GRADES={};
 let _curSub='Machine Learning';
 let _curGrp='AI-2301';
 // Dynamic groups list (starts with defaults, dekanat can add more)
-let GROUPS_LIST = [
-  {name:'AI-2301', dir:"Sun'iy Intellekt", course:1, count:25},
-  {name:'CS-2301', dir:'Kiberxavfsizlik', course:1, count:28},
-  {name:'IT-2301', dir:'Computing & IT', course:1, count:27},
-  {name:'DB-2301', dir:'Digital Business', course:1, count:26},
-];
+// Guruhlar dekanat paneli orqali kiritiladi
+let GROUPS_LIST = [];
 
 function getGroupNames(){ return GROUPS_LIST.map(g=>g.name); }
 

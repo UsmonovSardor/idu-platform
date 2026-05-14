@@ -46,6 +46,8 @@ var _examState = {
   mediaStream: null,          // Screen share detection
   _dtInterval: null,          // DevTools interval
   _mouseInterval: null,
+  _fsCheckInterval: null,     // Fullscreen tekshiruv interval
+  _origWindowOpen: null,      // Asl window.open reference
 };
 // =====================
 // FINGERPRINT
@@ -96,6 +98,47 @@ function _removeSecurityCSS() {
 }
 
 // ============================================================
+// 0.5. FULLSCREEN HELPERS (kritik — bular bo'lmasa hech narsa ishlamaydi)
+// ============================================================
+function _requestFullscreen() {
+  var el = document.documentElement;
+  try {
+    if (el.requestFullscreen) {
+      el.requestFullscreen({ navigationUI: 'hide' }).catch(function() {});
+    } else if (el.webkitRequestFullscreen) {
+      el.webkitRequestFullscreen();
+    } else if (el.mozRequestFullScreen) {
+      el.mozRequestFullScreen();
+    } else if (el.msRequestFullscreen) {
+      el.msRequestFullscreen();
+    }
+  } catch (e) {}
+}
+
+function _exitFullscreen() {
+  try {
+    if (document.exitFullscreen) {
+      document.exitFullscreen().catch(function() {});
+    } else if (document.webkitExitFullscreen) {
+      document.webkitExitFullscreen();
+    } else if (document.mozCancelFullScreen) {
+      document.mozCancelFullScreen();
+    } else if (document.msExitFullscreen) {
+      document.msExitFullscreen();
+    }
+  } catch (e) {}
+}
+
+function _isFullscreen() {
+  return !!(
+    document.fullscreenElement ||
+    document.webkitFullscreenElement ||
+    document.mozFullScreenElement ||
+    document.msFullscreenElement
+  );
+}
+
+// ============================================================
 // 1. SECURITY SYSTEM
 // ============================================================
 function _examSecurityOn() {
@@ -105,6 +148,8 @@ function _examSecurityOn() {
   window.addEventListener('blur', _onWindowBlur);
   document.addEventListener('fullscreenchange', _onFullscreenChange);
   document.addEventListener('webkitfullscreenchange', _onFullscreenChange);
+  document.addEventListener('mozfullscreenchange', _onFullscreenChange);
+  document.addEventListener('MSFullscreenChange', _onFullscreenChange);
   document.addEventListener('contextmenu', _blockEvent);
   document.addEventListener('copy', _onCopy);
   document.addEventListener('paste', _blockEvent);
@@ -115,12 +160,32 @@ function _examSecurityOn() {
   window.addEventListener('beforeunload', _onBeforeUnload);
   window.addEventListener('resize', _onResize);
 
+  // window.open bloklash — boshqa oynada ochilishini to'xtatish
+  _examState._origWindowOpen = window.open;
+  window.open = function(url, target, features) {
+    _addSuspicion(30, 'WINDOW_OPEN_ATTEMPT');
+    _examLog('WINDOW_OPEN', { url: url || '', target: target || '' });
+    _showWarnOv('🚫 Yangi oyna taqiqlangan!', 'Imtihon davomida yangi oyna yoki tab ochish mumkin emas.');
+    return null;
+  };
+
+  // link target=_blank ni bloklash
+  document.addEventListener('click', _blockNewTabLinks, true);
+
   _devToolsDetect();
   _multiTabDetect();
   _screenRecordDetect();
   _botDetect();
   _serverTimeSync();
   _startHeartbeat();
+
+  // Fullscreen yo'qolsa qayta so'rash (har 3 sekundda tekshiruv)
+  _examState._fsCheckInterval = setInterval(function() {
+    if (!_examState.active) return;
+    if (!_isFullscreen()) {
+      _requestFullscreen();
+    }
+  }, 3000);
 }
 
 function _examSecurityOff() {
@@ -130,6 +195,8 @@ function _examSecurityOff() {
   window.removeEventListener('blur', _onWindowBlur);
   document.removeEventListener('fullscreenchange', _onFullscreenChange);
   document.removeEventListener('webkitfullscreenchange', _onFullscreenChange);
+  document.removeEventListener('mozfullscreenchange', _onFullscreenChange);
+  document.removeEventListener('MSFullscreenChange', _onFullscreenChange);
   document.removeEventListener('contextmenu', _blockEvent);
   document.removeEventListener('copy', _onCopy);
   document.removeEventListener('paste', _blockEvent);
@@ -139,10 +206,18 @@ function _examSecurityOff() {
   document.removeEventListener('mouseleave', _onMouseLeave);
   window.removeEventListener('beforeunload', _onBeforeUnload);
   window.removeEventListener('resize', _onResize);
+  document.removeEventListener('click', _blockNewTabLinks, true);
+
+  // window.open ni tiklash
+  if (_examState._origWindowOpen) {
+    window.open = _examState._origWindowOpen;
+    _examState._origWindowOpen = null;
+  }
 
   clearInterval(_examState._dtInterval);
   clearInterval(_examState._mouseInterval);
   clearInterval(_examState.heartbeatInterval);
+  clearInterval(_examState._fsCheckInterval);
 
   if (_examState.broadcastChannel) {
     try { _examState.broadcastChannel.close(); } catch(e) {}
@@ -156,6 +231,21 @@ function _examSecurityOff() {
   }
   _exitFullscreen();
   _removeSecurityCSS();
+}
+
+// target=_blank linkni bloklash
+function _blockNewTabLinks(e) {
+  if (!_examState.active) return;
+  var target = e.target || e.srcElement;
+  while (target && target !== document.body) {
+    if (target.tagName === 'A' && (target.target === '_blank' || target.getAttribute('target') === '_blank')) {
+      e.preventDefault();
+      e.stopPropagation();
+      _addSuspicion(15, 'NEW_TAB_LINK');
+      return false;
+    }
+    target = target.parentNode;
+  }
 }
 
 // ---- Asosiy blokerlar ----
@@ -752,6 +842,8 @@ function openRealExam(exam) {
     mediaStream: null,
     _dtInterval: null,
     _mouseInterval: null,
+    _fsCheckInterval: null,
+    _origWindowOpen: null,
   };
   _examLogs = [];
 
@@ -1073,21 +1165,40 @@ function closeQuiz() {
 // ============================================================
 function startTestWithSubject(subject, questions, duration) {
   if (!questions || !questions.length) return;
-  var el = document.documentElement;
-  if (el.requestFullscreen) {
-  el.requestFullscreen().catch(function() {
-    alert('⚠️ Fullscreen rejim talab qilinadi! Ruxsat bering.');
-    return; // test boshlanmasin
-  });
-} else if (el.webkitRequestFullscreen) el.webkitRequestFullscreen();
 
-  openRealExam({
+  var examConfig = {
     id: 'test_' + (subject || 'subject') + '_' + Date.now(),
     questions: questions,
     duration: duration || 1800,
     maxWarnings: 3,
     maxSuspicion: 100,
-  });
+  };
+
+  var el = document.documentElement;
+  var fsPromise = el.requestFullscreen
+    ? el.requestFullscreen({ navigationUI: 'hide' })
+    : el.webkitRequestFullscreen
+      ? Promise.resolve(el.webkitRequestFullscreen())
+      : Promise.resolve();
+
+  fsPromise
+    .then(function() { openRealExam(examConfig); })
+    .catch(function() {
+      // Foydalanuvchi ruxsat berishi uchun click event kerak
+      var overlay = document.createElement('div');
+      overlay.style.cssText = 'position:fixed;inset:0;z-index:99999;background:rgba(15,23,42,.97);display:flex;flex-direction:column;align-items:center;justify-content:center;color:#fff;text-align:center;padding:40px';
+      overlay.innerHTML = '<div style="font-size:60px;margin-bottom:20px">🖥️</div><h2 style="font-size:22px;font-weight:800;margin-bottom:12px">Fullscreen rejim talab qilinadi</h2><p style="font-size:14px;opacity:.7;margin-bottom:28px;max-width:380px">Imtihon xavfsizligi uchun fullscreen rejimda ishlash majburiy. Davom etish uchun tugmani bosing.</p><button id="_fsBtnTemp" style="background:#1e3a8a;color:#fff;border:none;padding:14px 40px;border-radius:12px;font-size:15px;font-weight:700;cursor:pointer">Fullscreen rejimda boshlash</button>';
+      document.body.appendChild(overlay);
+      document.getElementById('_fsBtnTemp').onclick = function() {
+        overlay.remove();
+        var p2 = el.requestFullscreen
+          ? el.requestFullscreen({ navigationUI: 'hide' })
+          : el.webkitRequestFullscreen
+            ? Promise.resolve(el.webkitRequestFullscreen())
+            : Promise.resolve();
+        p2.then(function() { openRealExam(examConfig); }).catch(function() { openRealExam(examConfig); });
+      };
+    });
 }
 // ============================================================
 // 21. SECURE EXAM LAUNCHER
