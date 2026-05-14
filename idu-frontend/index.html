@@ -1792,13 +1792,12 @@
       <input class="form-input" id="ideaInvestment" placeholder="Masalan: 50,000$">
     </div>
     <div style="margin-bottom:14px">
-      <label class="form-label">Jamoa a'zolari (3-4 kishi)</label>
+      <label class="form-label">👥 Jamoa a'zolari (2-4 kishi) — ism bo'yicha qidiring</label>
       <div style="display:flex;gap:8px;flex-wrap:wrap" id="teamMembersRow">
-        <input class="form-input" style="width:180px" placeholder="1-a'zo ismi" id="tm1">
-        <input class="form-input" style="width:180px" placeholder="2-a'zo ismi" id="tm2">
-        <input class="form-input" style="width:180px" placeholder="3-a'zo ismi" id="tm3">
-        <input class="form-input" style="width:180px" placeholder="4-a'zo ismi (ixtiyoriy)" id="tm4">
+        <!-- filled dynamically by _renderTeamSearchSlots() -->
+        <div style="font-size:13px;color:#94A3B8;padding:10px">G'oya formi ochilganda a'zo qidirish paydo bo'ladi...</div>
       </div>
+      <div style="font-size:11px;color:#94A3B8;margin-top:6px">💡 Ism yozganingizda talabalar ro'yxatidan qidirib toping yoki qo'lda kiriting</div>
     </div>
     <div style="display:flex;gap:10px;justify-content:flex-end">
       <button class="btn btn-secondary" onclick="toggleIdeaForm()">Bekor qilish</button>

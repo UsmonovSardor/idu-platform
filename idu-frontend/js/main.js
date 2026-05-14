@@ -1272,113 +1272,317 @@ function renderSemesterCompare(){
 // ════════════════════════════════════
 //  STARTUP IDEAS
 // ════════════════════════════════════
-function renderIdeas(filter='all'){
-  const el=document.getElementById('ideasList');if(!el)return;
-  const catColors={tech:'cat-tech',health:'cat-health',edu:'cat-edu',fintech:'cat-fintech',social:'cat-social'};
-  const catNames={tech:'💻 Texnologiya',health:'🏥 Sog\'liqni saqlash',edu:'📚 Ta\'lim',fintech:'💰 Fintech',social:'🌍 Ijtimoiy'};
-  const filtered=filter==='all'?IDEAS:IDEAS.filter(i=>i.category===filter);
-  el.innerHTML=filtered.map(idea=>`
-    <div class="idea-card" id="idea-${idea.id}">
-      <div class="idea-header">
-        <div>
-          <span class="idea-category ${catColors[idea.category]||'cat-tech'}">${catNames[idea.category]||idea.category}</span>
-          <div class="idea-title">${idea.title}</div>
-        </div>
-        ${currentRole==='investor'?`<div class="investor-badge">💼 Investor ko'rinishi</div>`:''}
-      </div>
-      <div class="idea-desc">${idea.desc}</div>
-      ${idea.investment?`<div style="font-size:13px;color:var(--text2);margin-bottom:10px">💰 Kerakli investitsiya: <strong>${idea.investment}</strong></div>`:''}
-      <div class="idea-team">
-        ${idea.team.map((m,i)=>{const cs=['#1B4FD8','#16A34A','#7C3AED','#EA580C'];return`<div class="team-member"><div class="tm-avatar" style="background:${cs[i%4]}">${m.split(' ').map(x=>x[0]).join('')}</div>${m}</div>`;}).join('')}
-      </div>
-      <div class="idea-footer">
-        <div class="idea-stats">
-          <div class="idea-stat" onclick="likeIdea(${idea.id})">❤️ ${idea.likes}</div>
-          <div class="idea-stat">💬 ${idea.comments.length}</div>
-          ${currentRole==='investor'||currentRole==='dekanat'?`
-          <div style="display:flex;align-items:center;gap:6px">
-            <span style="font-size:12px;color:var(--text2)">Baho:</span>
-            <div class="star-rating" id="stars-${idea.id}">
-              ${[1,2,3,4,5].map(n=>`<span class="star${n<=idea.investorRating?' filled':''}" onclick="rateIdea(${idea.id},${n})">★</span>`).join('')}
-            </div>
-          </div>`:''}
-        </div>
-        ${currentRole==='investor'?`<button class="invest-btn" onclick="expressInterest(${idea.id})">💼 Qiziqish bildirish</button>`:''}
-      </div>
-      <div class="idea-comments">
-        <div style="font-size:13px;font-weight:700;margin-bottom:10px">Izohlar (${idea.comments.length})</div>
-        ${idea.comments.map(c=>`
-          <div class="comment-item">
-            <div class="comment-avatar" style="background:#7C3AED">${c.author[0]}</div>
-            <div class="comment-body">
-              <div class="comment-author">${c.author}</div>
-              <div class="comment-text">${c.text}</div>
-              <div class="comment-time">${c.time}</div>
-            </div>
-          </div>`).join('')}
-        <div class="add-comment-row">
-          <input class="comment-input" placeholder="Izoh yozing..." id="comment-input-${idea.id}"
-            onkeydown="if(event.key==='Enter')addComment(${idea.id})">
-          <button class="comment-send" onclick="addComment(${idea.id})">Yuborish</button>
-        </div>
-      </div>
-    </div>`).join('');
+
+// Cached student list for team search
+var _startupStudents = [];
+
+async function _loadStartupStudents() {
+  if (_startupStudents.length) return;
+  try {
+    var data = await api('GET', '/students?limit=200');
+    _startupStudents = (data.students || data || []).map(function(s) {
+      return { name: s.full_name || s.name || '', login: s.login || '', group: s.group_name || '' };
+    });
+  } catch(e) {
+    // fallback to empty — user can still type manually
+  }
 }
-function filterIdeas(f,el){
-  document.querySelectorAll('#page-startup .filter-chip').forEach(c=>c.classList.remove('active'));
-  el.classList.add('active');
+
+function _ideaMsgKey(id) { return 'idu_startup_chat_' + id; }
+
+function _ideaMessages(id) {
+  try { return JSON.parse(_lsGet(_ideaMsgKey(id)) || '[]'); } catch(e) { return []; }
+}
+
+function _saveIdeaMessages(id, msgs) {
+  try { _lsSet(_ideaMsgKey(id), JSON.stringify(msgs)); } catch(e) {}
+}
+
+function renderIdeas(filter) {
+  filter = filter || 'all';
+  const el = document.getElementById('ideasList'); if (!el) return;
+  const catColors = { tech:'cat-tech', health:'cat-health', edu:'cat-edu', fintech:'cat-fintech', social:'cat-social' };
+  const catNames  = { tech:'💻 Texnologiya', health:'🏥 Sog\'liqni saqlash', edu:'📚 Ta\'lim', fintech:'💰 Fintech', social:'🌍 Ijtimoiy' };
+  const filtered  = filter === 'all' ? IDEAS : IDEAS.filter(function(i) { return i.category === filter; });
+  const cs        = ['#1B4FD8','#16A34A','#7C3AED','#EA580C'];
+  const me        = currentUser ? (currentUser.name || '') : '';
+
+  if (!filtered.length) {
+    el.innerHTML = '<div style="padding:60px 20px;text-align:center;color:#94A3B8"><div style="font-size:48px;margin-bottom:12px">🚀</div><div style="font-size:15px;font-weight:700">Hali g\'oyalar yo\'q</div><div style="font-size:13px;margin-top:6px">Birinchi startup g\'oyangizni qo\'shing!</div></div>';
+    return;
+  }
+
+  el.innerHTML = filtered.map(function(idea) {
+    var inTeam = idea.team.indexOf(me) !== -1 || (me && idea.team.some(function(t){ return t.toLowerCase() === me.toLowerCase(); }));
+    var msgs = _ideaMessages(idea.id);
+    var unreadCount = msgs.filter(function(m) { return !m.read; }).length;
+
+    return '<div class="idea-card" id="idea-' + idea.id + '">' +
+      // Header
+      '<div class="idea-header">' +
+        '<div>' +
+          '<span class="idea-category ' + (catColors[idea.category]||'cat-tech') + '">' + (catNames[idea.category]||idea.category) + '</span>' +
+          '<div class="idea-title">' + idea.title + '</div>' +
+        '</div>' +
+        '<div style="display:flex;align-items:center;gap:8px">' +
+          (currentRole === 'investor' ? '<div class="investor-badge">💼 Investor</div>' : '') +
+          (inTeam ? '<span style="padding:3px 9px;border-radius:20px;font-size:11px;font-weight:700;background:#DCFCE7;color:#16A34A">✅ Jamoa a\'zosi</span>' : '') +
+        '</div>' +
+      '</div>' +
+      // Desc + investment
+      '<div class="idea-desc">' + idea.desc + '</div>' +
+      (idea.investment ? '<div style="font-size:13px;color:var(--text2);margin-bottom:10px">💰 Kerakli investitsiya: <strong>' + idea.investment + '</strong></div>' : '') +
+      // Team members
+      '<div class="idea-team">' +
+        idea.team.map(function(m, i) {
+          return '<div class="team-member">' +
+            '<div class="tm-avatar" style="background:' + cs[i%4] + '">' + (m.split(' ').map(function(x){return x[0]||'';}).join('')) + '</div>' +
+            m +
+          '</div>';
+        }).join('') +
+        (!inTeam && currentRole === 'student' ?
+          '<div class="team-member" onclick="inviteToTeam(' + idea.id + ')" style="cursor:pointer;border:1.5px dashed #CBD5E1;background:transparent;color:#64748B;padding:5px 10px;border-radius:20px;font-size:12px">+ Qo\'shilish so\'rovi</div>'
+          : '') +
+      '</div>' +
+      // Footer
+      '<div class="idea-footer">' +
+        '<div class="idea-stats">' +
+          '<div class="idea-stat" onclick="likeIdea(' + idea.id + ')">❤️ ' + idea.likes + '</div>' +
+          '<div class="idea-stat" onclick="toggleIdeaChat(' + idea.id + ')" style="cursor:pointer;position:relative">' +
+            '💬 ' + msgs.length +
+            (unreadCount > 0 ? '<span style="position:absolute;top:-4px;right:-4px;width:14px;height:14px;background:#EF4444;border-radius:50%;font-size:9px;color:#fff;display:flex;align-items:center;justify-content:center">' + unreadCount + '</span>' : '') +
+          '</div>' +
+          (currentRole === 'investor' || currentRole === 'dekanat' ?
+            '<div style="display:flex;align-items:center;gap:6px"><span style="font-size:12px;color:var(--text2)">Baho:</span>' +
+            '<div class="star-rating" id="stars-' + idea.id + '">' +
+              [1,2,3,4,5].map(function(n) {
+                return '<span class="star' + (n <= idea.investorRating ? ' filled' : '') + '" onclick="rateIdea(' + idea.id + ',' + n + ')">★</span>';
+              }).join('') +
+            '</div></div>'
+            : '') +
+        '</div>' +
+        (currentRole === 'investor' ? '<button class="invest-btn" onclick="expressInterest(' + idea.id + ')">💼 Qiziqish bildirish</button>' : '') +
+      '</div>' +
+      // Public comments section
+      '<div class="idea-comments">' +
+        '<div style="font-size:13px;font-weight:700;margin-bottom:10px">Izohlar (' + idea.comments.length + ')</div>' +
+        idea.comments.map(function(c) {
+          return '<div class="comment-item">' +
+            '<div class="comment-avatar" style="background:#7C3AED">' + (c.author[0]||'?') + '</div>' +
+            '<div class="comment-body">' +
+              '<div class="comment-author">' + c.author + '</div>' +
+              '<div class="comment-text">' + c.text + '</div>' +
+              '<div class="comment-time">' + c.time + '</div>' +
+            '</div>' +
+          '</div>';
+        }).join('') +
+        '<div class="add-comment-row">' +
+          '<input class="comment-input" placeholder="Izoh yozing..." id="comment-input-' + idea.id + '" onkeydown="if(event.key===\'Enter\')addComment(' + idea.id + ')">' +
+          '<button class="comment-send" onclick="addComment(' + idea.id + ')">Yuborish</button>' +
+        '</div>' +
+      '</div>' +
+      // Team chat (hidden by default)
+      '<div id="idea-chat-' + idea.id + '" style="display:none;margin-top:12px;border-top:1.5px solid #E2E8F0;padding-top:14px">' +
+        '<div style="font-size:13px;font-weight:700;color:#1B4FD8;margin-bottom:10px">💬 Jamoa chati ' +
+          (inTeam ? '<span style="font-size:11px;color:#16A34A;font-weight:600;background:#DCFCE7;padding:2px 8px;border-radius:10px;margin-left:6px">Siz a\'zo</span>' : '<span style="font-size:11px;color:#64748B;font-weight:600;margin-left:6px">— faqat a\'zolar yozishi mumkin</span>') +
+        '</div>' +
+        '<div id="idea-chat-msgs-' + idea.id + '" style="max-height:240px;overflow-y:auto;display:flex;flex-direction:column;gap:8px;margin-bottom:10px">' +
+          _renderIdeaMsgs(msgs, me) +
+        '</div>' +
+        (inTeam ?
+          '<div style="display:flex;gap:8px">' +
+            '<input id="idea-chat-inp-' + idea.id + '" type="text" placeholder="Xabar yozing..." ' +
+              'style="flex:1;padding:9px 13px;border:1.5px solid #E2E8F0;border-radius:10px;font-size:13px;font-family:inherit;outline:none" ' +
+              'onkeydown="if(event.key===\'Enter\')sendIdeaMessage(' + idea.id + ')" ' +
+              'onfocus="this.style.borderColor=\'#1B4FD8\'" onblur="this.style.borderColor=\'#E2E8F0\'">' +
+            '<button onclick="sendIdeaMessage(' + idea.id + ')" style="padding:9px 18px;background:#1B4FD8;color:#fff;border:none;border-radius:10px;font-size:13px;font-weight:700;cursor:pointer">📤</button>' +
+          '</div>'
+          : '<div style="font-size:12px;color:#94A3B8;text-align:center;padding:8px;background:#F8FAFC;border-radius:8px">Jamoa a\'zolari yozishi mumkin</div>'
+        ) +
+      '</div>' +
+    '</div>';
+  }).join('');
+}
+
+function _renderIdeaMsgs(msgs, me) {
+  if (!msgs.length) return '<div style="font-size:12px;color:#94A3B8;text-align:center;padding:16px">Hali xabarlar yo\'q</div>';
+  return msgs.map(function(m) {
+    var isMine = m.author === me;
+    return '<div style="display:flex;flex-direction:' + (isMine?'row-reverse':'row') + ';gap:8px;align-items:flex-end">' +
+      '<div style="width:28px;height:28px;border-radius:50%;background:' + (isMine?'#1B4FD8':'#7C3AED') + ';color:#fff;display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:700;flex-shrink:0">' +
+        (m.author ? m.author[0].toUpperCase() : '?') +
+      '</div>' +
+      '<div style="max-width:70%;background:' + (isMine?'#1B4FD8':'#F1F5F9') + ';color:' + (isMine?'#fff':'#1E293B') + ';padding:8px 12px;border-radius:' + (isMine?'12px 12px 2px 12px':'12px 12px 12px 2px') + ';font-size:13px;line-height:1.45">' +
+        (!isMine ? '<div style="font-size:10px;font-weight:700;color:' + (isMine?'rgba(255,255,255,0.7)':'#1B4FD8') + ';margin-bottom:3px">' + m.author + '</div>' : '') +
+        m.text +
+        '<div style="font-size:10px;opacity:0.55;margin-top:3px;text-align:' + (isMine?'left':'right') + '">' + (m.time||'') + '</div>' +
+      '</div>' +
+    '</div>';
+  }).join('');
+}
+
+function toggleIdeaChat(ideaId) {
+  var el = document.getElementById('idea-chat-' + ideaId); if (!el) return;
+  var open = el.style.display !== 'none';
+  el.style.display = open ? 'none' : 'block';
+  if (!open) {
+    var msgsEl = document.getElementById('idea-chat-msgs-' + ideaId);
+    if (msgsEl) msgsEl.scrollTop = msgsEl.scrollHeight;
+  }
+}
+
+function sendIdeaMessage(ideaId) {
+  var inp = document.getElementById('idea-chat-inp-' + ideaId); if (!inp) return;
+  var text = inp.value.trim(); if (!text) return;
+  var me = currentUser ? (currentUser.name || currentUser.login || '') : '';
+  var msgs = _ideaMessages(ideaId);
+  var now = new Date();
+  msgs.push({
+    author: me,
+    text: text,
+    time: now.toLocaleTimeString('uz-UZ', { hour:'2-digit', minute:'2-digit' }),
+    read: true
+  });
+  _saveIdeaMessages(ideaId, msgs);
+  inp.value = '';
+  var msgsEl = document.getElementById('idea-chat-msgs-' + ideaId);
+  if (msgsEl) { msgsEl.innerHTML = _renderIdeaMsgs(msgs, me); msgsEl.scrollTop = msgsEl.scrollHeight; }
+}
+
+function inviteToTeam(ideaId) {
+  var idea = IDEAS.find(function(i){ return i.id === ideaId; }); if (!idea) return;
+  var me = currentUser ? (currentUser.name || '') : '';
+  if (!me) { showToast('⚠️', 'Xato', 'Avval tizimga kiring'); return; }
+  if (idea.team.indexOf(me) !== -1) { showToast('ℹ️', 'Ma\'lumot', 'Siz allaqachon jamoa a\'zosisiz'); return; }
+  if (idea.team.length >= 5) { showToast('⚠️', 'To\'liq', 'Jamoa to\'ldi (max 5 kishi)'); return; }
+  idea.team.push(me);
+  renderIdeas();
+  showToast('✅', 'Qo\'shildingiz!', '"' + idea.title + '" jamoasiga qo\'shildingiz');
+}
+
+function filterIdeas(f, el) {
+  document.querySelectorAll('#page-startup .filter-chip').forEach(function(c){ c.classList.remove('active'); });
+  if (el) el.classList.add('active');
   renderIdeas(f);
 }
-function likeIdea(id){
-  const idea=IDEAS.find(i=>i.id===id);if(!idea)return;
-  idea.likes++;renderIdeas();showToast('❤️','Like!','Qiziqishingiz belgilandi');
+
+function likeIdea(id) {
+  const idea = IDEAS.find(function(i){ return i.id === id; }); if (!idea) return;
+  idea.likes++; renderIdeas(); showToast('❤️', 'Like!', 'Qiziqishingiz belgilandi');
 }
-function rateIdea(id,stars){
-  const idea=IDEAS.find(i=>i.id===id);if(!idea)return;
-  idea.investorRating=stars;
+
+function rateIdea(id, stars) {
+  const idea = IDEAS.find(function(i){ return i.id === id; }); if (!idea) return;
+  idea.investorRating = stars;
   renderIdeas();
-  showToast('⭐','Baholandi!',`G'oya ${stars} yulduz bilan baholandi`);
-  const ic=document.getElementById('investorRatedCount');if(ic)ic.textContent=parseInt(ic.textContent||'0')+1;
+  showToast('⭐', 'Baholandi!', 'G\'oya ' + stars + ' yulduz bilan baholandi');
+  const ic = document.getElementById('investorRatedCount'); if (ic) ic.textContent = parseInt(ic.textContent || '0') + 1;
 }
-function addComment(id){
-  const inp=document.getElementById('comment-input-'+id);if(!inp)return;
-  const text=inp.value.trim();if(!text)return;
-  const idea=IDEAS.find(i=>i.id===id);if(!idea)return;
-  idea.comments.push({author:currentUser?.name||'Foydalanuvchi',text,time:'Hozir'});
-  inp.value='';
+
+function addComment(id) {
+  const inp = document.getElementById('comment-input-' + id); if (!inp) return;
+  const text = inp.value.trim(); if (!text) return;
+  const idea = IDEAS.find(function(i){ return i.id === id; }); if (!idea) return;
+  idea.comments.push({ author: (currentUser && currentUser.name) || 'Foydalanuvchi', text: text, time: 'Hozir' });
+  inp.value = '';
   renderIdeas();
-  showToast('💬','Izoh qo\'shildi','Izohingiz muvaffaqiyatli qo\'shildi');
+  showToast('💬', 'Izoh qo\'shildi', 'Izohingiz muvaffaqiyatli qo\'shildi');
 }
-function toggleIdeaForm(){
-  ideaFormVisible=!ideaFormVisible;
-  const fc=document.getElementById('ideaFormCard');
-  if(fc)fc.style.display=ideaFormVisible?'block':'none';
-  const btn=document.getElementById('addIdeaBtn');
-  if(btn)btn.textContent=ideaFormVisible?'✕ Yopish':'+ G\'oya qo\'shish';
+
+function toggleIdeaForm() {
+  ideaFormVisible = !ideaFormVisible;
+  const fc = document.getElementById('ideaFormCard');
+  if (fc) fc.style.display = ideaFormVisible ? 'block' : 'none';
+  const btn = document.getElementById('addIdeaBtn');
+  if (btn) btn.textContent = ideaFormVisible ? '✕ Yopish' : '+ G\'oya qo\'shish';
+  if (ideaFormVisible) { _loadStartupStudents(); _renderTeamSearchSlots(); }
 }
-function submitIdea(){
-  const title=document.getElementById('ideaTitle')?.value.trim();
-  const desc=document.getElementById('ideaDesc')?.value.trim();
-  const cat=document.getElementById('ideaCategory')?.value;
-  const inv=document.getElementById('ideaInvestment')?.value.trim();
-  const t1=document.getElementById('tm1')?.value.trim();
-  const t2=document.getElementById('tm2')?.value.trim();
-  const t3=document.getElementById('tm3')?.value.trim();
-  const t4=document.getElementById('tm4')?.value.trim();
-  if(!title||!desc){showToast('⚠️','Xato','Sarlavha va tavsif kiritilishi shart!');return;}
-  const team=[t1,t2,t3,t4].filter(Boolean);
-  if(team.length<2){showToast('⚠️','Xato','Kamida 2 ta jamoa a\'zosi kerak!');return;}
-  const newIdea={
-    id:Date.now(),title,category:cat,desc,team,
-    investment:inv||null,likes:0,stars:0,comments:[],investorRating:0
+
+// ── Team member search ──────────────────────────────────────
+var _teamSelected = [];
+
+function _renderTeamSearchSlots() {
+  var row = document.getElementById('teamMembersRow'); if (!row) return;
+  // Ensure current user is pre-added as slot 0
+  var myName = currentUser ? (currentUser.name || '') : '';
+  if (!_teamSelected.length && myName) _teamSelected = [myName];
+  row.innerHTML = '';
+  for (var i = 0; i < 4; i++) {
+    (function(idx) {
+      var val = _teamSelected[idx] || '';
+      var slotHtml = '<div style="position:relative;flex:1;min-width:160px">' +
+        '<input class="form-input" id="tm-inp-' + idx + '" ' +
+          'value="' + (val.replace(/"/g,'&quot;')) + '" ' +
+          'placeholder="' + (idx === 0 ? 'Siz (a\'zo 1)' : (idx + 1) + '-a\'zo ismi') + '" ' +
+          'autocomplete="off" ' +
+          'oninput="_filterTeamSearch(this,' + idx + ')" ' +
+          (idx === 0 && val ? 'readonly style="background:#F0FDF4;color:#16A34A;font-weight:700"' : '') +
+          '>' +
+        '<div id="tm-sug-' + idx + '" style="display:none;position:absolute;top:100%;left:0;right:0;background:#fff;border:1.5px solid #1B4FD8;border-radius:10px;z-index:500;box-shadow:0 8px 24px rgba(0,0,0,0.12);max-height:180px;overflow-y:auto"></div>' +
+      '</div>';
+      row.insertAdjacentHTML('beforeend', slotHtml);
+    })(i);
+  }
+}
+
+function _filterTeamSearch(input, idx) {
+  var q = input.value.trim().toLowerCase();
+  var sug = document.getElementById('tm-sug-' + idx); if (!sug) return;
+  _teamSelected[idx] = input.value;
+  if (q.length < 2) { sug.style.display = 'none'; return; }
+  var results = _startupStudents.filter(function(s) {
+    return s.name.toLowerCase().includes(q);
+  }).slice(0, 8);
+  if (!results.length) { sug.style.display = 'none'; return; }
+  sug.style.display = 'block';
+  sug.innerHTML = results.map(function(s) {
+    return '<div onclick="_selectTeamMember(' + idx + ',\'' + s.name.replace(/'/g, "\\'") + '\')" ' +
+      'style="padding:9px 13px;cursor:pointer;border-bottom:1px solid #F1F5F9;font-size:13px;display:flex;align-items:center;gap:8px" ' +
+      'onmouseover="this.style.background=\'#EFF6FF\'" onmouseout="this.style.background=\'\'">' +
+      '<div style="width:30px;height:30px;border-radius:50%;background:#1B4FD8;color:#fff;display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:700;flex-shrink:0">' +
+        s.name.split(' ').map(function(x){return x[0]||'';}).join('').substring(0,2) +
+      '</div>' +
+      '<div><div style="font-weight:600">' + s.name + '</div>' +
+      (s.group ? '<div style="font-size:11px;color:#94A3B8">' + s.group + '</div>' : '') +
+      '</div></div>';
+  }).join('');
+}
+
+function _selectTeamMember(idx, name) {
+  _teamSelected[idx] = name;
+  var inp = document.getElementById('tm-inp-' + idx);
+  if (inp) inp.value = name;
+  var sug = document.getElementById('tm-sug-' + idx);
+  if (sug) sug.style.display = 'none';
+}
+
+function submitIdea() {
+  const title = (document.getElementById('ideaTitle') || {}).value.trim();
+  const desc  = (document.getElementById('ideaDesc')  || {}).value.trim();
+  const cat   = (document.getElementById('ideaCategory') || {}).value;
+  const inv   = (document.getElementById('ideaInvestment') || {}).value.trim();
+  if (!title || !desc) { showToast('⚠️', 'Xato', 'Sarlavha va tavsif kiritilishi shart!'); return; }
+  // Gather from search slots
+  var slots = [];
+  for (var i = 0; i < 4; i++) {
+    var inp = document.getElementById('tm-inp-' + i);
+    var v = inp ? inp.value.trim() : (_teamSelected[i] || '');
+    if (v) slots.push(v);
+  }
+  if (slots.length < 2) { showToast('⚠️', 'Xato', 'Kamida 2 ta jamoa a\'zosi kerak!'); return; }
+  const newIdea = {
+    id: Date.now(), title: title, category: cat, desc: desc,
+    team: slots, investment: inv || null,
+    likes: 0, stars: 0, comments: [], investorRating: 0
   };
   IDEAS.unshift(newIdea);
+  _teamSelected = [];
   toggleIdeaForm();
-  ['ideaTitle','ideaDesc','ideaInvestment','tm1','tm2','tm3','tm4'].forEach(id=>{
-    const el=document.getElementById(id);if(el)el.value='';
+  ['ideaTitle','ideaDesc','ideaInvestment'].forEach(function(id) {
+    var el = document.getElementById(id); if (el) el.value = '';
   });
   renderIdeas();
-  showToast('🚀','G\'oya yuborildi!','Startup g\'oyangiz muvaffaqiyatli qo\'shildi');
+  showToast('🚀', 'G\'oya yuborildi!', 'Startup g\'oyangiz muvaffaqiyatli qo\'shildi');
 }
 
 // ════════════════════════════════════
@@ -3855,11 +4059,13 @@ async function loadSesiyaEtirazlar() {
       '<div style="font-size:13px;color:#1E293B;font-weight:600">' + (a.detail || '') + '</div>' +
       (a.note ? '<div style="font-size:12px;color:#64748B;background:#fff;border-radius:8px;padding:8px 10px;border:1px solid #FED7AA">' + a.note + '</div>' : '') +
       (a.company ? '<div style="font-size:11px;color:#EA580C">📚 ' + a.company + '</div>' : '') +
-      (a.status === 'pending' ?
-        '<div style="display:flex;gap:8px;margin-top:4px">' +
+      '<div style="display:flex;gap:8px;margin-top:4px;flex-wrap:wrap">' +
+        (a.status === 'pending' ?
           '<button onclick="updateEtirazStatus(' + a.id + ',\'approved\')" style="padding:5px 14px;background:#16A34A;color:#fff;border:none;border-radius:7px;font-size:12px;font-weight:700;cursor:pointer">✅ Ko\'rib chiqildi</button>' +
-          '<button onclick="updateEtirazStatus(' + a.id + ',\'rejected\')" style="padding:5px 14px;background:#DC2626;color:#fff;border:none;border-radius:7px;font-size:12px;font-weight:700;cursor:pointer">❌ Rad</button>' +
-        '</div>' : '') +
+          '<button onclick="updateEtirazStatus(' + a.id + ',\'rejected\')" style="padding:5px 14px;background:#DC2626;color:#fff;border:none;border-radius:7px;font-size:12px;font-weight:700;cursor:pointer">❌ Rad</button>'
+        : '') +
+        '<button onclick="deleteEtiraz(' + a.id + ')" style="padding:5px 12px;background:#F1F5F9;border:none;border-radius:7px;font-size:12px;font-weight:700;color:#64748B;cursor:pointer;margin-left:auto">🗑 O\'chirish</button>' +
+      '</div>' +
     '</div>';
   }).join('');
 }
@@ -3871,6 +4077,17 @@ async function updateEtirazStatus(id, status) {
     loadSesiyaEtirazlar();
   } catch(e) {
     showToast('❌', 'Xato', 'Serverga ulanishda muammo');
+  }
+}
+
+async function deleteEtiraz(id) {
+  if (!confirm("Bu e'tirozni o'chirmoqchimisiz?")) return;
+  try {
+    await api('DELETE', '/applications/' + id);
+    showToast('🗑', 'O\'chirildi', "E'tiroz o'chirildi");
+    loadSesiyaEtirazlar();
+  } catch(e) {
+    showToast('❌', 'Xato', 'O\'chirishda muammo');
   }
 }
 
