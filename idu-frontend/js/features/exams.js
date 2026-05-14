@@ -1102,7 +1102,7 @@ function _renderQ(idx) {
       '</div>',
       '<textarea id="etirozText_' + idx + '" rows="2" placeholder="Savol noto\'g\'ri yoki tushunarsiz deb hisoblasangiz, izohingizni yozing..." style="width:100%;padding:10px;border:1.5px solid #FED7AA;border-radius:8px;font-size:13px;resize:vertical;box-sizing:border-box;font-family:inherit;background:#fff"></textarea>',
       '<button onclick="submitEtiraz(' + idx + ')" style="margin-top:8px;padding:7px 16px;background:#EA580C;color:#fff;border:none;border-radius:8px;font-size:12px;font-weight:700;cursor:pointer">',
-        "📤 Dekanatga yuborish",
+        "📤 Yuborish",
       '</button>',
     '</div>',
   ].join('') : '';
