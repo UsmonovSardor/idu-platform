@@ -33,7 +33,7 @@ router.post(
   [
     body('examType').isIn(VALID_EXAM_TYPES),
     body('isOpen').custom(v => v === true || v === false || v === 'true' || v === 'false').withMessage('isOpen must be boolean'),
-    body('closesAt').optional().isISO8601().toDate(),
+    body('closesAt').optional({ nullable: true }).isISO8601().toDate(),
   ],
   validate,
   async (req, res) => {

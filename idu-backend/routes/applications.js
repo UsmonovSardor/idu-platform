@@ -73,12 +73,11 @@ router.post(
   [
     body('type').isIn(VALID_TYPES).withMessage('Invalid application type'),
     body('detail').isLength({ min: 5, max: 1000 }).trim().withMessage('Detail required (5-1000 chars)'),
-    body('company').optional().isLength({ max: 200 }).trim(),
-    body('note').optional().isLength({ max: 2000 }).trim(),
-    // For etiraz: allow optional question reference fields
-    body('questionIndex').optional().isInt({ min: 0 }),
-    body('examType').optional().isIn(['test', 'sesiya']),
-    body('subject').optional().isString().trim(),
+    body('company').optional({ nullable: true }).isLength({ max: 200 }).trim(),
+    body('note').optional({ nullable: true }).isLength({ max: 2000 }).trim(),
+    body('questionIndex').optional({ nullable: true }).isInt({ min: 0 }),
+    body('examType').optional({ nullable: true }).isIn(['test', 'sesiya']),
+    body('subject').optional({ nullable: true }).isString().trim(),
   ],
   validate,
   async (req, res) => {
