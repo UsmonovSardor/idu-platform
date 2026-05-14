@@ -3800,7 +3800,7 @@ startTestWithSubject = function(subj) {
     id: 'test_' + subj + '_' + Date.now(),
     questions: qs,
     duration: 30 * 60,
-    maxWarnings: 5,
+    maxWarnings: 2,
     maxSuspicion: 200,
     isTestMode: true,
     subjectName: _examSubjectNames[subj] || subj,
