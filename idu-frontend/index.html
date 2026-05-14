@@ -2242,7 +2242,7 @@
         <button class="filter-chip active" onclick="filterApps('all',this)">Barchasi</button>
         <button class="filter-chip" onclick="filterApps('cert',this)">🎓 Sertifikat</button>
         <button class="filter-chip" onclick="filterApps('job',this)">💼 Ish ariza</button>
-        <button class="filter-chip" onclick="filterApps('etiraz',this)">⚠️ E'tirozlar</button>
+
         <button class="filter-chip" onclick="filterApps('pending',this)">⏳ Kutilmoqda</button>
       </div>
       <button onclick="exportApplicationsExcel()" style="padding:7px 14px;background:#16A34A;color:#fff;border:none;border-radius:8px;font-size:12px;font-weight:700;cursor:pointer;display:flex;align-items:center;gap:6px">📥 Excel</button>
@@ -2949,6 +2949,17 @@
       <div style="padding:12px 14px;background:#F8FAFC;border-radius:9px;border:1px solid #E2E8F0;font-size:13px;color:#64748B;text-align:center">
         Hozircha hech qanday harakat amalga oshirilmagan
       </div>
+    </div>
+  </div>
+
+  <!-- E'tirozlar -->
+  <div class="card">
+    <div class="card-header" style="display:flex;align-items:center;justify-content:space-between">
+      <div class="card-title">⚠️ Talabalar e'tirozlari</div>
+      <button onclick="loadSesiyaEtirazlar()" style="padding:6px 14px;background:#FFF7ED;border:1.5px solid #FED7AA;border-radius:8px;font-size:12px;font-weight:700;color:#EA580C;cursor:pointer">🔄 Yangilash</button>
+    </div>
+    <div id="sesiyaEtirazList" style="display:flex;flex-direction:column;gap:8px">
+      <div style="padding:20px;text-align:center;font-size:13px;color:#94A3B8">Yuklanmoqda...</div>
     </div>
   </div>
 </div>

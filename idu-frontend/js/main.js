@@ -2604,10 +2604,10 @@ async function renderDekanatApplications(){
       }
     } catch(e) {}
   }
-  let apps = [...APPLICATIONS].sort((a,b)=>b.id-a.id);
+  // Etiraz faqat test panelda ko'rinadi — bu yerda chiqarilmaydi
+  let apps = [...APPLICATIONS].filter(a=>a.type!=='etiraz').sort((a,b)=>b.id-a.id);
   if(currentAppFilter==='cert') apps=apps.filter(a=>a.type==='cert');
   else if(currentAppFilter==='job') apps=apps.filter(a=>a.type==='job');
-  else if(currentAppFilter==='etiraz') apps=apps.filter(a=>a.type==='etiraz');
   else if(currentAppFilter==='pending') apps=apps.filter(a=>a.status==='pending');
 
   // Update stats
@@ -3809,6 +3809,66 @@ function renderDekanatSesiya() {
   // Re-sync UI with current state (silent — no toast on page open)
   setSesiyaState('test', SESIYA_STATE.test, true);
   setSesiyaState('real', SESIYA_STATE.real, true);
+  loadSesiyaEtirazlar();
+}
+
+async function loadSesiyaEtirazlar() {
+  var el = document.getElementById('sesiyaEtirazList');
+  if (!el) return;
+
+  el.innerHTML = '<div style="padding:16px;text-align:center;font-size:13px;color:#94A3B8">Yuklanmoqda...</div>';
+
+  var items = [];
+  try {
+    var apps = await api('GET', '/applications');
+    if (Array.isArray(apps)) {
+      items = apps.filter(function(a) { return a.type === 'etiraz'; });
+    }
+  } catch(e) {
+    el.innerHTML = '<div style="padding:16px;text-align:center;font-size:13px;color:#EF4444">Serverga ulanishda xato</div>';
+    return;
+  }
+
+  if (!items.length) {
+    el.innerHTML = '<div style="padding:20px;text-align:center;font-size:13px;color:#94A3B8">Hozircha e\'tiroz yo\'q</div>';
+    return;
+  }
+
+  var statusColor = { pending:'#FEF3C7', approved:'#DCFCE7', rejected:'#FEE2E2' };
+  var statusLabel = { pending:'⏳ Kutilmoqda', approved:'✅ Ko\'rib chiqildi', rejected:'❌ Rad' };
+
+  el.innerHTML = items.map(function(a) {
+    var sc = statusColor[a.status] || '#F8FAFC';
+    var sl = statusLabel[a.status] || a.status;
+    var date = a.created_at ? new Date(a.created_at).toLocaleString('uz-UZ', {day:'2-digit',month:'2-digit',hour:'2-digit',minute:'2-digit'}) : '';
+    return '<div style="background:#FFF7ED;border:1.5px solid #FED7AA;border-radius:12px;padding:14px 16px;display:flex;flex-direction:column;gap:6px">' +
+      '<div style="display:flex;align-items:center;justify-content:space-between;gap:8px">' +
+        '<div style="font-size:13px;font-weight:700;color:#92400E">⚠️ ' + (a.student_name || 'Talaba') + '</div>' +
+        '<div style="display:flex;align-items:center;gap:8px">' +
+          '<span style="font-size:11px;color:#64748B">' + date + '</span>' +
+          '<span style="padding:3px 10px;border-radius:20px;font-size:11px;font-weight:700;background:' + sc + '">' + sl + '</span>' +
+        '</div>' +
+      '</div>' +
+      '<div style="font-size:13px;color:#1E293B;font-weight:600">' + (a.detail || '') + '</div>' +
+      (a.note ? '<div style="font-size:12px;color:#64748B;background:#fff;border-radius:8px;padding:8px 10px;border:1px solid #FED7AA">' + a.note + '</div>' : '') +
+      (a.company ? '<div style="font-size:11px;color:#EA580C">📚 ' + a.company + '</div>' : '') +
+      (a.status === 'pending' ?
+        '<div style="display:flex;gap:8px;margin-top:4px">' +
+          '<button onclick="updateEtirazStatus(' + a.id + ',\'approved\')" style="padding:5px 14px;background:#16A34A;color:#fff;border:none;border-radius:7px;font-size:12px;font-weight:700;cursor:pointer">✅ Ko\'rib chiqildi</button>' +
+          '<button onclick="updateEtirazStatus(' + a.id + ',\'rejected\')" style="padding:5px 14px;background:#DC2626;color:#fff;border:none;border-radius:7px;font-size:12px;font-weight:700;cursor:pointer">❌ Rad</button>' +
+        '</div>' : '') +
+    '</div>';
+  }).join('');
+}
+
+async function updateEtirazStatus(id, status) {
+  try {
+    await api('PATCH', '/applications/' + id + '/status', { status: status });
+    showToast('✅', 'Yangilandi', status === 'approved' ? "E'tiroz ko'rib chiqildi" : "E'tiroz rad etildi");
+    loadSesiyaEtirazlar();
+  } catch(e) {
+    showToast('❌', 'Xato', 'Serverga ulanishda muammo');
+  }
 }
 
 // ═══════════════════════════════════════════════
