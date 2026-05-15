@@ -3400,19 +3400,7 @@
       });
     }
 
-    // Parallax orbs on mouse move
-    var hero = document.querySelector('.lp-hero');
-    if (hero) {
-      hero.addEventListener('mousemove', function(e) {
-        var rect = hero.getBoundingClientRect();
-        var x = (e.clientX - rect.left) / rect.width - 0.5;
-        var y = (e.clientY - rect.top)  / rect.height - 0.5;
-        var orbs = hero.querySelectorAll('.lp-orb');
-        orbs[0] && (orbs[0].style.transform = 'translate(' + (x*20) + 'px,' + (y*20) + 'px)');
-        orbs[1] && (orbs[1].style.transform = 'translate(' + (-x*30) + 'px,' + (-y*15) + 'px)');
-        orbs[2] && (orbs[2].style.transform = 'translate(' + (x*15) + 'px,' + (y*25) + 'px)');
-      });
-    }
+    // Orb parallax removed (orbs disabled for performance)
   }
 
   // Init when DOM ready, re-init if authScreen shown
