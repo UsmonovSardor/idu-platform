@@ -56,13 +56,22 @@ router.post(
     if (!user)            return res.status(401).json({ error: "Login yoki parol noto'g'ri" });
     if (!user.is_active)  return res.status(403).json({ error: 'Account deactivated' });
 
-    // Only bcrypt hashes accepted — no plaintext fallback (security)
-    const hashExists = user.password_hash && user.password_hash.startsWith('$2');
-    if (!hashExists) {
-      return res.status(401).json({ error: "Login yoki parol noto'g'ri" });
+    // Check password — support plaintext with auto-upgrade to bcrypt on login
+    let isValid = false;
+    const isBcrypt = user.password_hash && user.password_hash.startsWith('$2');
+
+    if (isBcrypt) {
+      isValid = await bcrypt.compare(password, user.password_hash);
+    } else {
+      // Legacy plaintext — compare directly, then upgrade hash
+      isValid = password === user.password_hash;
+      if (isValid) {
+        // Silently upgrade to bcrypt so plaintext is never stored again
+        const newHash = await bcrypt.hash(password, 12);
+        db.query('UPDATE users SET password_hash=$1 WHERE id=$2', [newHash, user.id]).catch(() => {});
+      }
     }
 
-    const isValid = await bcrypt.compare(password, user.password_hash);
     if (!isValid) return res.status(401).json({ error: "Login yoki parol noto'g'ri" });
 
     await db.query('UPDATE users SET last_login = NOW(), updated_at = NOW() WHERE id = $1', [user.id]);
