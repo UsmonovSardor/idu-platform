@@ -88,27 +88,28 @@ app.get('/health', (_req, res) => {
   });
 });
 
-// ── API v1 routes ─────────────────────────────────────────────────────────────
+// ── API routes (v1 + legacy /api/* aliases) ──────────────────────────────────
 app.use('/api/v1', generalLimiter);
+app.use('/api',    generalLimiter);
 
-app.use('/api/v1/auth',         authRoutes);
-app.use('/api/v1/students',     studentsRoutes);
-app.use('/api/v1/grades',       gradesRoutes);
-app.use('/api/v1/teachers',     teachersRoutes);
-app.use('/api/v1/schedule',     scheduleRoutes);
-app.use('/api/v1/applications', applicationsRoutes);
-app.use('/api/v1/questions',    questionsRoutes);
-app.use('/api/v1/ai',           aiRoutes);
-app.use('/api/v1/exams',        examsRoutes);
-app.use('/api/v1/assignments',  assignmentsRoutes);
-app.use('/api/v1/submissions',  submissionsRoutes);
+// Register each router under both /api/v1/* and /api/* (backwards compat)
+const routeMap = [
+  ['/auth',         authRoutes],
+  ['/students',     studentsRoutes],
+  ['/grades',       gradesRoutes],
+  ['/teachers',     teachersRoutes],
+  ['/schedule',     scheduleRoutes],
+  ['/applications', applicationsRoutes],
+  ['/questions',    questionsRoutes],
+  ['/ai',           aiRoutes],
+  ['/exams',        examsRoutes],
+  ['/assignments',  assignmentsRoutes],
+  ['/submissions',  submissionsRoutes],
+];
 
-// Legacy /api/* → redirect to /api/v1/* for backwards compatibility
-app.use('/api', (req, res, next) => {
-  if (req.path.startsWith('/v1')) return next();
-  // Rewrite and forward
-  req.url = '/v1' + req.url;
-  app.handle(req, res, next);
+routeMap.forEach(([path, router]) => {
+  app.use('/api/v1' + path, router);
+  app.use('/api'    + path, router); // legacy alias
 });
 
 // ── Frontend SPA ──────────────────────────────────────────────────────────────

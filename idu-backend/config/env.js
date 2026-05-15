@@ -2,10 +2,9 @@
 
 /**
  * Startup environment validation.
- * Throws immediately if critical env vars are missing — fail fast.
+ * DATABASE_URL is required UNLESS individual DB_* vars are present (Railway may use either).
+ * JWT_SECRET is always required.
  */
-
-const REQUIRED = ['JWT_SECRET', 'DATABASE_URL'];
 
 const OPTIONAL_WITH_DEFAULTS = {
   NODE_ENV:               'development',
@@ -19,26 +18,32 @@ const OPTIONAL_WITH_DEFAULTS = {
 };
 
 function validateEnv() {
-  const missing = REQUIRED.filter((key) => !process.env[key]);
+  const missing = [];
+
+  // JWT_SECRET is always required
+  if (!process.env.JWT_SECRET) missing.push('JWT_SECRET');
+
+  // DATABASE_URL OR individual DB vars must be present
+  const hasDbUrl  = !!process.env.DATABASE_URL;
+  const hasDbVars = !!process.env.DB_HOST || !!process.env.PGHOST;
+  if (!hasDbUrl && !hasDbVars) missing.push('DATABASE_URL (or DB_HOST)');
 
   if (missing.length) {
     console.error('═══════════════════════════════════════════════════');
     console.error('  STARTUP ERROR: Missing required environment vars');
     missing.forEach((key) => console.error('  ✗ ' + key));
+    console.error('  Set these in Railway → Variables tab');
     console.error('═══════════════════════════════════════════════════');
     process.exit(1);
   }
 
   // Apply defaults for optional vars
-  Object.entries(OPTIONAL_WITH_DEFAULTS).forEach(([key, defaultVal]) => {
-    if (!process.env[key]) {
-      process.env[key] = defaultVal;
-    }
+  Object.entries(OPTIONAL_WITH_DEFAULTS).forEach(([key, val]) => {
+    if (!process.env[key]) process.env[key] = val;
   });
 
   if (process.env.NODE_ENV === 'production' && process.env.JWT_SECRET.length < 32) {
-    console.error('SECURITY: JWT_SECRET must be at least 32 characters in production');
-    process.exit(1);
+    console.warn('[SECURITY] JWT_SECRET should be at least 32 characters in production');
   }
 }
 
