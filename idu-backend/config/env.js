@@ -42,8 +42,8 @@ function validateEnv() {
     if (!process.env[key]) process.env[key] = val;
   });
 
-  if (process.env.NODE_ENV === 'production' && process.env.JWT_SECRET.length < 32) {
-    console.warn('[SECURITY] JWT_SECRET should be at least 32 characters in production');
+  if (process.env.JWT_SECRET.length < 16) {
+    console.warn('[SECURITY] JWT_SECRET is very short — use at least 32 random characters in production');
   }
 }
 
