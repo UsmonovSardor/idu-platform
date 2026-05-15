@@ -48,7 +48,7 @@ router.get(
     query('group').optional().isString().trim(),
     query('year').optional().isInt({ min: 1, max: 6 }),
     query('page').optional().isInt({ min: 1 }).toInt(),
-    query('limit').optional().isInt({ min: 1, max: 100 }).toInt(),
+    query('limit').optional().isInt({ min: 1, max: 200 }).toInt(),
   ],
   validate,
   async (req, res) => {
