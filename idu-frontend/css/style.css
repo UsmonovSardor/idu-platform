@@ -1423,4 +1423,171 @@ button:focus-visible, a:focus-visible { border-radius: 8px; }
 }
 .ptr-indicator.visible { height: 40px; }
 
+/* ═══════════════════════════════════════════════════════════════════
+   PREMIUM ENHANCEMENTS v4.2 — animations, hover effects, visual depth
+═══════════════════════════════════════════════════════════════════ */
+
+/* ── Topnav accent line: more visible ─────────────────────────────── */
+.topnav::after { opacity: 0.75; }
+
+/* ── Sidebar premium background + spacing ────────────────────────── */
+.sidebar { background: linear-gradient(180deg, #fff 0%, #f9fafb 100%); }
+.sidebar-label {
+  font-size: 9.5px; font-weight: 800; color: #c3ccd8;
+  letter-spacing: 1.5px;
+}
+/* Stronger active indicator: 3px cyan inset bar + bright text */
+.sidebar-item.active {
+  box-shadow: inset 3px 0 0 #06b6d4;
+  background: linear-gradient(90deg, rgba(30,64,175,0.09), rgba(8,145,178,0.04));
+  color: #1E40AF; font-weight: 700;
+}
+/* Active dot in the right side */
+.sidebar-item.active::after {
+  content: '';
+  position: absolute; right: 10px; top: 50%; transform: translateY(-50%);
+  width: 6px; height: 6px; border-radius: 50%;
+  background: #06b6d4; opacity: 0.8;
+}
+.sidebar-item:hover { transform: translateX(3px); }
+
+/* ── Stat card: entrance animation (fires whenever element renders) ── */
+@keyframes cardIn {
+  from { opacity: 0; transform: translateY(18px) scale(0.97); }
+  to   { opacity: 1; transform: none; }
+}
+.stat-card { animation: cardIn 0.48s cubic-bezier(0.16,1,0.3,1) both; }
+.stats-grid .stat-card:nth-child(1),
+.stats-grid-3 .stat-card:nth-child(1) { animation-delay: 0.04s; }
+.stats-grid .stat-card:nth-child(2),
+.stats-grid-3 .stat-card:nth-child(2) { animation-delay: 0.11s; }
+.stats-grid .stat-card:nth-child(3),
+.stats-grid-3 .stat-card:nth-child(3) { animation-delay: 0.18s; }
+.stats-grid .stat-card:nth-child(4)   { animation-delay: 0.25s; }
+
+/* Stat card icon: subtle rotation on hover */
+.stat-card:hover .stat-card-icon {
+  transform: scale(1.1) rotate(-4deg);
+  transition: transform 0.25s cubic-bezier(0.16,1,0.3,1);
+}
+
+/* ── Card (non-stat) entrance ────────────────────────────────────── */
+@keyframes cardSlide {
+  from { opacity: 0; transform: translateY(12px); }
+  to   { opacity: 1; transform: none; }
+}
+.card { animation: cardSlide 0.4s cubic-bezier(0.16,1,0.3,1) both; }
+.card:nth-child(1) { animation-delay: 0.05s; }
+.card:nth-child(2) { animation-delay: 0.12s; }
+.card:nth-child(3) { animation-delay: 0.19s; }
+.card-header {
+  padding-bottom: 14px;
+  border-bottom: 1px solid #f1f5f9;
+  margin-bottom: 18px;
+}
+
+/* ── Page header: slide in from left ────────────────────────────── */
+@keyframes phIn {
+  from { opacity: 0; transform: translateX(-12px); }
+  to   { opacity: 1; transform: none; }
+}
+.ph-title { animation: phIn 0.38s cubic-bezier(0.16,1,0.3,1) both 0.06s; }
+.ph-sub   { animation: phIn 0.38s cubic-bezier(0.16,1,0.3,1) both 0.12s; }
+
+/* ── Buttons: shimmer sweep on hover ────────────────────────────── */
+.btn { position: relative; overflow: hidden; }
+.btn-primary::after, .btn-auth::after, .login-submit::after, .hb-primary::after {
+  content: '';
+  position: absolute; top: 0; left: -100%;
+  width: 55%; height: 100%;
+  background: linear-gradient(90deg, transparent, rgba(255,255,255,0.22), transparent);
+  transform: skewX(-18deg);
+  transition: left 0.55s cubic-bezier(0.16,1,0.3,1);
+}
+.btn-primary:hover::after, .btn-auth:hover::after,
+.login-submit:hover::after, .hb-primary:hover::after { left: 160%; }
+
+/* ── Grade table premium header ─────────────────────────────────── */
+.grade-table th {
+  background: linear-gradient(135deg, #f8fafc, #eff6ff);
+  color: #1E40AF;
+  border-bottom: 2px solid #dbeafe;
+  font-size: 11.5px;
+  letter-spacing: 0.5px;
+}
+.grade-table tr { transition: background 0.13s; }
+.grade-table tr:hover td { background: #f8fbff; }
+
+/* ── Timetable today header: gradient matching landing ──────────── */
+.tt-today-header { letter-spacing: 0.3px; }
+.tt-cell { transition: all 0.18s cubic-bezier(0.16,1,0.3,1); }
+.tt-cell:hover { transform: scale(1.025); z-index: 2; box-shadow: 0 6px 20px rgba(30,64,175,0.12); }
+
+/* ── Schedule item: slide right on hover ────────────────────────── */
+.sched-item { transition: all 0.2s cubic-bezier(0.16,1,0.3,1); }
+.sched-item:hover { transform: translateX(4px); border-color: rgba(8,145,178,0.22); box-shadow: 0 4px 16px rgba(30,64,175,0.08); }
+.sched-item.now { border-color: var(--accent-bright); background: linear-gradient(90deg, #eff6ff, #ecfeff); }
+.sched-now-label { background: var(--primary-gradient); }
+
+/* ── Idea card premium hover ────────────────────────────────────── */
+.idea-card { transition: all 0.22s cubic-bezier(0.16,1,0.3,1); }
+.idea-card:hover { transform: translateY(-5px); box-shadow: 0 14px 36px rgba(30,64,175,0.10), 0 4px 12px rgba(8,145,178,0.07); border-color: rgba(8,145,178,0.22); }
+
+/* ── Progress fill: smooth animated width ────────────────────────── */
+.progress-fill { transition: width 1.3s cubic-bezier(0.16,1,0.3,1); }
+
+/* ── Toast: spring in ───────────────────────────────────────────── */
+.toast-item.show { animation: toastIn 0.35s cubic-bezier(0.16,1,0.3,1) both; }
+@keyframes toastIn {
+  from { transform: translateX(120%); opacity: 0; }
+  to   { transform: translateX(0); opacity: 1; }
+}
+
+/* ── Main content: subtle gradient bg ──────────────────────────── */
+.main-content { background: linear-gradient(180deg, #f8fafc 0%, #f1f5f9 100%); }
+
+/* ── Filter tabs (e.g. Barchasi / A'lo / Yaxshi) ────────────────── */
+.filter-tabs { display: flex; gap: 6px; align-items: center; flex-wrap: wrap; }
+.filter-tab {
+  padding: 7px 15px; border-radius: 20px; font-size: 13px; font-weight: 600;
+  cursor: pointer; transition: all 0.18s; border: 1.5px solid var(--border);
+  background: var(--white); color: var(--text2); font-family: 'Outfit', sans-serif;
+}
+.filter-tab:hover { border-color: var(--accent); color: var(--primary); background: var(--accent-light); }
+.filter-tab.active {
+  background: var(--primary-gradient); color: white; border-color: transparent;
+  box-shadow: 0 3px 12px rgba(30,64,175,0.22);
+}
+
+/* ── Stat card value: bigger bolder ─────────────────────────────── */
+.stat-card-val { font-size: 30px; letter-spacing: -1.4px; }
+
+/* ── Modal premium: better backdrop ─────────────────────────────── */
+.modal-bg {
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+  background: rgba(15,23,42,0.4);
+}
+
+/* ── Input premium focus ring ────────────────────────────────────── */
+.form-select:focus { border-color: #1E40AF; box-shadow: 0 0 0 3px rgba(8,145,178,0.12); }
+.comment-input:focus { border-color: var(--accent); box-shadow: 0 0 0 3px rgba(8,145,178,0.1); outline: none; }
+
+/* ── Topnav logo: subtle glow pulse ─────────────────────────────── */
+@keyframes logoGlow {
+  0%, 100% { box-shadow: 0 2px 8px rgba(30,64,175,0.25); }
+  50%       { box-shadow: 0 4px 18px rgba(8,145,178,0.38); }
+}
+.topnav-logo-icon { animation: logoGlow 3.5s ease-in-out infinite; }
+
+/* ── Stat card bar: animated width on first paint ───────────────── */
+.stat-card-bar { animation: barGrow 0.9s cubic-bezier(0.16,1,0.3,1) both 0.3s; }
+@keyframes barGrow {
+  from { transform: scaleX(0); transform-origin: left; }
+  to   { transform: scaleX(1); transform-origin: left; }
+}
+
+/* ── Page header right buttons slide in ─────────────────────────── */
+.page-header-right { animation: phIn 0.4s cubic-bezier(0.16,1,0.3,1) both 0.18s; }
+
 
