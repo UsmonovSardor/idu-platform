@@ -16,6 +16,7 @@
 <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800&family=DM+Mono:wght@400;500;600&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="css/style.css">
 <link rel="stylesheet" href="css/responsive.css">
+<link rel="stylesheet" href="css/landing.css">
 <script>
   // Register Service Worker
   if ('serviceWorker' in navigator) {
@@ -30,77 +31,206 @@
 <div class="toast-container" id="toastContainer"></div>
 <!-- ════════ AUTH SCREEN ════════ -->
 <div id="authScreen">
-  <nav class="hemis-nav" id="hemis-nav">
-    <div class="hemis-nav-logo"><div class="hn-dot">IDU</div><span class="hn-name">IDU</span></div>
-    <div class="hemis-nav-links">
 
-      <a class="hn-link" id="nav-about" onclick="openAboutModal()">Tizim haqida</a>
-
-      <a class="hn-link" id="nav-features" onclick="openFeatModal()">Tizim imkoniyatlari</a>
-
-      <!-- Yo'riqnomalar dropdown -->
-      <div class="hn-drop">
-        <a class="hn-link" id="nav-guides">Yo'riqnomalar <span class="hn-drop-arrow">▼</span></a>
-        <div class="hn-drop-menu" id="navGuidesMenu">
-          <div class="hn-drop-item" onclick="openGuideModal('student')">
-            <div class="hn-drop-item-icon" style="background:#EEF3FF">👨‍🎓</div>
-            <div><div class="hn-drop-item-text" id="ng-student">Talabalarga</div><div class="hn-drop-item-sub">Kirish, baholar, jadval</div></div>
-          </div>
-          <div class="hn-drop-item" onclick="openGuideModal('teacher')">
-            <div class="hn-drop-item-icon" style="background:#F0FDF4">👨‍🏫</div>
-            <div><div class="hn-drop-item-text" id="ng-teacher">O'qituvchilarga</div><div class="hn-drop-item-sub">Baholash, davomat, jadval</div></div>
-          </div>
-          <div class="hn-drop-item" onclick="openGuideModal('dekanat')">
-            <div class="hn-drop-item-icon" style="background:#FDF4FF">🏛️</div>
-            <div><div class="hn-drop-item-text" id="ng-dekanat">Dekanlarga</div><div class="hn-drop-item-sub">Talabalar, hisobotlar, arizalar</div></div>
-          </div>
-          <div class="hn-drop-item" onclick="openGuideModal('admin')">
-            <div class="hn-drop-item-icon" style="background:#FFF7ED">⚙️</div>
-            <div><div class="hn-drop-item-text" id="ng-admin">Administratorlarga</div><div class="hn-drop-item-sub">Tizim sozlamalari, foydalanuvchilar</div></div>
-          </div>
-          <div class="hn-drop-item" onclick="openGuideModal('kafedra')">
-            <div class="hn-drop-item-icon" style="background:#F0FDF4">📚</div>
-            <div><div class="hn-drop-item-text" id="ng-kafedra">Kafedra mudirlariga</div><div class="hn-drop-item-sub">Fan dasturlari, o'qituvchilar</div></div>
-          </div>
+  <!-- ── PREMIUM NAV ───────────────────────────────────────────── -->
+  <nav class="lp-nav" id="hemis-nav">
+    <div class="lp-nav-logo">
+      <div class="lp-logo-mark">IDU</div>
+      <span class="lp-logo-text">IDU</span>
+    </div>
+    <div class="lp-nav-links">
+      <a class="lp-link" id="nav-about" onclick="openAboutModal()">Tizim haqida</a>
+      <a class="lp-link" id="nav-features" onclick="openFeatModal()">Imkoniyatlar</a>
+      <div class="lp-drop">
+        <a class="lp-link lp-drop-trigger" id="nav-guides">Yo'riqnomalar <svg width="12" height="12" viewBox="0 0 12 12" fill="none"><path d="M2 4l4 4 4-4" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></svg></a>
+        <div class="lp-drop-menu" id="navGuidesMenu">
+          <div class="lp-drop-item" onclick="openGuideModal('student')"><span class="lp-drop-icon">👨‍🎓</span><div><div class="lp-drop-label" id="ng-student">Talabalarga</div><div class="lp-drop-sub">Kirish, baholar, jadval</div></div></div>
+          <div class="lp-drop-item" onclick="openGuideModal('teacher')"><span class="lp-drop-icon">👨‍🏫</span><div><div class="lp-drop-label" id="ng-teacher">O'qituvchilarga</div><div class="lp-drop-sub">Baholash, davomat</div></div></div>
+          <div class="lp-drop-item" onclick="openGuideModal('dekanat')"><span class="lp-drop-icon">🏛️</span><div><div class="lp-drop-label" id="ng-dekanat">Dekanlarga</div><div class="lp-drop-sub">Talabalar, hisobotlar</div></div></div>
+          <div class="lp-drop-item" onclick="openGuideModal('admin')"><span class="lp-drop-icon">⚙️</span><div><div class="lp-drop-label" id="ng-admin">Administratorlarga</div><div class="lp-drop-sub">Tizim sozlamalari</div></div></div>
         </div>
       </div>
-
-      <a class="hn-link" id="nav-faq" onclick="openFaqModal()">FAQ</a>
-
+      <a class="lp-link" id="nav-faq" onclick="openFaqModal()">FAQ</a>
     </div>
-    <div class="hn-right">
+    <div class="lp-nav-right">
       <div class="lang-drop" id="langDrop">
-        <div class="lang-current" onclick="toggleLangDrop()">
+        <div class="lang-current lp-lang" onclick="toggleLangDrop()">
           <span class="lc-flag" id="lcFlag">🇺🇿</span>
           <span id="lcText">UZ</span>
           <span class="lc-arrow">▼</span>
         </div>
         <div class="lang-options" id="langOptions">
-          <div class="lang-option active" id="lopt-uz" onclick="setLang('uz')">
-            <span class="lo-flag">🇺🇿</span> O'zbek
-          </div>
-          <div class="lang-option" id="lopt-ru" onclick="setLang('ru')">
-            <span class="lo-flag">🇷🇺</span> Русский
-          </div>
+          <div class="lang-option active" id="lopt-uz" onclick="setLang('uz')"><span class="lo-flag">🇺🇿</span> O'zbek</div>
+          <div class="lang-option" id="lopt-ru" onclick="setLang('ru')"><span class="lo-flag">🇷🇺</span> Русский</div>
         </div>
       </div>
-      <button class="hn-kirish" onclick="openLoginModal()" id="nav-kirish">Kirish</button>
+      <button class="lp-cta-btn" onclick="openLoginModal()" id="nav-kirish">Kirish →</button>
     </div>
   </nav>
-  <div class="hemis-hero">
-    <h1 class="hero-title">
-      <span class="ht-brand">IDU</span> — <span id="hero-title-text">International Digital University</span>
-    </h1>
-    <p class="hero-sub" id="hero-sub">Zamonaviy ta'lim platformasi — talabalar, o'qituvchilar, dekanat va investorlar uchun yagona raqamli muhit.</p>
-    <div class="hemis-stats">
-      <div class="h-stat"><div class="h-stat-val">4.2K+</div><div class="h-stat-key" id="hstat1">Talabalar</div></div>
-      <div class="h-stat"><div class="h-stat-val">180+</div><div class="h-stat-key" id="hstat2">O'qituvchilar</div></div>
-      <div class="h-stat"><div class="h-stat-val">98%</div><div class="h-stat-key" id="hstat3">Muvaffaqiyat</div></div>
-      <div class="h-stat"><div class="h-stat-val">24/7</div><div class="h-stat-key" id="hstat4">Onlayn</div></div>
-      <div class="h-stat"><div class="h-stat-val">40+</div><div class="h-stat-key" id="hstat5">Fanlar</div></div>
-      <div class="h-stat"><div class="h-stat-val">12</div><div class="h-stat-key" id="hstat6">Hamkorlar</div></div>
+
+  <!-- ── HERO ──────────────────────────────────────────────────── -->
+  <div class="lp-hero">
+    <!-- Animated background orbs -->
+    <div class="lp-orb lp-orb-1"></div>
+    <div class="lp-orb lp-orb-2"></div>
+    <div class="lp-orb lp-orb-3"></div>
+    <!-- Grid overlay -->
+    <div class="lp-grid-overlay"></div>
+
+    <div class="lp-hero-content">
+      <div class="lp-badge">🎓 Raqamli ta'lim platformasi</div>
+      <h1 class="lp-hero-title">
+        <span class="lp-brand-gradient">IDU</span><br>
+        <span id="hero-title-text" class="lp-hero-sub-title">International Digital University</span>
+      </h1>
+      <p class="lp-hero-desc" id="hero-sub">Talabalar, o'qituvchilar, dekanat va investorlar uchun<br>yagona intellektual ta'lim ekotizimi.</p>
+
+      <div class="lp-hero-actions">
+        <button class="lp-primary-btn" onclick="openLoginModal()">
+          <span>Tizimga kirish</span>
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none"><path d="M5 12h14M12 5l7 7-7 7" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+        </button>
+        <button class="lp-secondary-btn" onclick="openFeatModal()">Imkoniyatlarni ko'rish</button>
+      </div>
+
+      <!-- Floating feature pills -->
+      <div class="lp-pills">
+        <div class="lp-pill"><span>🤖</span> AI Tutor</div>
+        <div class="lp-pill"><span>📊</span> Real-vaqt baholar</div>
+        <div class="lp-pill"><span>🔒</span> Xavfsiz imtihon</div>
+        <div class="lp-pill"><span>📱</span> Mobile-first</div>
+      </div>
+    </div>
+
+    <!-- Floating dashboard preview card -->
+    <div class="lp-hero-card">
+      <div class="lp-card-header">
+        <div class="lp-card-dots"><span></span><span></span><span></span></div>
+        <div class="lp-card-title">📊 Dashboard</div>
+      </div>
+      <div class="lp-card-stats">
+        <div class="lp-cs"><div class="lp-cs-val" style="color:#06b6d4">3.8</div><div class="lp-cs-key">GPA</div></div>
+        <div class="lp-cs"><div class="lp-cs-val" style="color:#22d3ee">94%</div><div class="lp-cs-key">Davomat</div></div>
+        <div class="lp-cs"><div class="lp-cs-val" style="color:#818cf8">#12</div><div class="lp-cs-key">Reyting</div></div>
+      </div>
+      <div class="lp-card-bar-wrap">
+        <div class="lp-card-bar-label"><span>Semestr natijasi</span><span style="color:#06b6d4">82%</span></div>
+        <div class="lp-progress-bg"><div class="lp-progress-fill" style="width:82%"></div></div>
+      </div>
+      <div class="lp-card-subjects">
+        <div class="lp-subj" style="--c:#06b6d4">Algoritmlar <span>A</span></div>
+        <div class="lp-subj" style="--c:#818cf8">Web texn. <span>B+</span></div>
+        <div class="lp-subj" style="--c:#34d399">Matematika <span>A-</span></div>
+      </div>
     </div>
   </div>
+
+  <!-- ── STATS ─────────────────────────────────────────────────── -->
+  <div class="lp-stats">
+    <div class="lp-stat-card">
+      <div class="lp-stat-icon">🎓</div>
+      <div class="lp-stat-num" data-target="4200">0</div>
+      <div class="lp-stat-label" id="hstat1">Talabalar</div>
+    </div>
+    <div class="lp-stat-card">
+      <div class="lp-stat-icon">👨‍🏫</div>
+      <div class="lp-stat-num" data-target="180">0</div>
+      <div class="lp-stat-label" id="hstat2">O'qituvchilar</div>
+    </div>
+    <div class="lp-stat-card">
+      <div class="lp-stat-icon">✅</div>
+      <div class="lp-stat-num" data-target="98" data-suffix="%">0</div>
+      <div class="lp-stat-label" id="hstat3">Muvaffaqiyat</div>
+    </div>
+    <div class="lp-stat-card">
+      <div class="lp-stat-icon">🌐</div>
+      <div class="lp-stat-num" data-suffix="/7">24</div>
+      <div class="lp-stat-label" id="hstat4">Onlayn</div>
+    </div>
+    <div class="lp-stat-card">
+      <div class="lp-stat-icon">📚</div>
+      <div class="lp-stat-num" data-target="40" data-suffix="+">0</div>
+      <div class="lp-stat-label" id="hstat5">Fanlar</div>
+    </div>
+    <div class="lp-stat-card">
+      <div class="lp-stat-icon">🤝</div>
+      <div class="lp-stat-num" data-target="12">0</div>
+      <div class="lp-stat-label" id="hstat6">Hamkorlar</div>
+    </div>
+  </div>
+
+  <!-- ── FEATURES GRID ─────────────────────────────────────────── -->
+  <div class="lp-features">
+    <div class="lp-feat-header">
+      <div class="lp-feat-tag">Nima taklif qilamiz</div>
+      <h2 class="lp-feat-title">Barcha ehtiyojlar — <span class="lp-brand-gradient">bitta tizimda</span></h2>
+    </div>
+    <div class="lp-feat-grid">
+      <div class="lp-feat-card lp-feat-lg">
+        <div class="lp-feat-glow" style="--gc:rgba(6,182,212,0.3)"></div>
+        <div class="lp-feat-icon-wrap" style="background:linear-gradient(135deg,#0e7490,#06b6d4)">🤖</div>
+        <h3>AI Tutor</h3>
+        <p>Har bir talabaga shaxsiy sun'iy intellekt murabbiy. Savollarga javob, tushuntirish, mashq — 24/7.</p>
+        <div class="lp-feat-chip">GPT-4 powered</div>
+      </div>
+      <div class="lp-feat-card">
+        <div class="lp-feat-glow" style="--gc:rgba(129,140,248,0.3)"></div>
+        <div class="lp-feat-icon-wrap" style="background:linear-gradient(135deg,#4338ca,#818cf8)">📋</div>
+        <h3>Onlayn imtihon</h3>
+        <p>Anti-cheat tizimi, real-vaqt monitoring va xavfsiz sesiya boshqaruvi.</p>
+      </div>
+      <div class="lp-feat-card">
+        <div class="lp-feat-glow" style="--gc:rgba(52,211,153,0.3)"></div>
+        <div class="lp-feat-icon-wrap" style="background:linear-gradient(135deg,#065f46,#34d399)">📊</div>
+        <h3>Baholar & Hisobot</h3>
+        <p>JN, ON, YN, MI hisobi. Semester hisobotlari, reyting, PDF eksport.</p>
+      </div>
+      <div class="lp-feat-card">
+        <div class="lp-feat-glow" style="--gc:rgba(251,146,60,0.3)"></div>
+        <div class="lp-feat-icon-wrap" style="background:linear-gradient(135deg,#9a3412,#fb923c)">🚀</div>
+        <h3>Startup Hub</h3>
+        <p>Talabalar o'z loyihalarini yaratadi, jamoa tuzadi va investor e'tiborini tortadi.</p>
+      </div>
+      <div class="lp-feat-card">
+        <div class="lp-feat-glow" style="--gc:rgba(244,114,182,0.3)"></div>
+        <div class="lp-feat-icon-wrap" style="background:linear-gradient(135deg,#9d174d,#f472b6)">📅</div>
+        <h3>Jadval & Davomat</h3>
+        <p>Haftalik dars jadvali, xona holati, davomat nazorati — real vaqtda.</p>
+      </div>
+      <div class="lp-feat-card lp-feat-lg">
+        <div class="lp-feat-glow" style="--gc:rgba(6,182,212,0.25)"></div>
+        <div class="lp-feat-icon-wrap" style="background:linear-gradient(135deg,#1e3a8a,#3b82f6)">🏛️</div>
+        <h3>Dekanat paneli</h3>
+        <p>To'liq boshqaruv: talabalar bazasi, arizalar, imtihon sessiyasi, hisobotlar va statistika — bitta qulay panelda.</p>
+        <div class="lp-feat-chip lp-feat-chip-blue">Admin & Dekanat</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ── CTA SECTION ────────────────────────────────────────────── -->
+  <div class="lp-cta-section">
+    <div class="lp-cta-orb"></div>
+    <div class="lp-cta-content">
+      <h2 class="lp-cta-title">Bugun boshlang</h2>
+      <p class="lp-cta-sub">Login va parol universitet administratsiyasi tomonidan beriladi.</p>
+      <button class="lp-primary-btn lp-cta-main-btn" onclick="openLoginModal()">
+        <span>Tizimga kirish</span>
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none"><path d="M5 12h14M12 5l7 7-7 7" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+      </button>
+    </div>
+  </div>
+
+  <!-- ── FOOTER ─────────────────────────────────────────────────── -->
+  <footer class="lp-footer">
+    <div class="lp-footer-logo"><div class="lp-logo-mark" style="width:28px;height:28px;font-size:11px">IDU</div><span style="font-weight:700;color:#e2e8f0">IDU Platform</span></div>
+    <div class="lp-footer-links">
+      <a onclick="openAboutModal()">Tizim haqida</a>
+      <a onclick="openFeatModal()">Imkoniyatlar</a>
+      <a onclick="openFaqModal()">FAQ</a>
+    </div>
+    <div class="lp-footer-copy">© 2026 IDU. Barcha huquqlar himoyalangan.</div>
+  </footer>
+
 </div>
 
 
@@ -3197,4 +3327,103 @@
   <script src="js/features/notifications.js"></script>
   <script src="js/main.js"></script>
   <script src="js/enhancements.js"></script>
+
+<script>
+/* ── Landing page interactions ───────────────────────────────── */
+(function() {
+  // ── Counter animation ──────────────────────────────────────
+  function animateCounter(el) {
+    var target  = parseInt(el.dataset.target || el.textContent, 10);
+    var suffix  = el.dataset.suffix || '';
+    if (!target || isNaN(target)) return;
+    var duration = 1600;
+    var start    = performance.now();
+    var startVal = 0;
+    function tick(now) {
+      var elapsed  = now - start;
+      var progress = Math.min(elapsed / duration, 1);
+      var ease     = 1 - Math.pow(1 - progress, 3); // easeOutCubic
+      var current  = Math.round(startVal + (target - startVal) * ease);
+      el.textContent = (current >= 1000 ? (current/1000).toFixed(1) + 'K' : current) + suffix;
+      if (progress < 1) requestAnimationFrame(tick);
+    }
+    requestAnimationFrame(tick);
+  }
+
+  // ── Scroll reveal + counter trigger ───────────────────────
+  var observed = new Set();
+  var io = new IntersectionObserver(function(entries) {
+    entries.forEach(function(entry) {
+      if (!entry.isIntersecting) return;
+      var el = entry.target;
+      el.classList.add('visible');
+      // Trigger counters inside stat cards
+      el.querySelectorAll('.lp-stat-num[data-target]').forEach(function(num) {
+        if (!observed.has(num)) { observed.add(num); animateCounter(num); }
+      });
+      if (el.classList.contains('lp-stat-num') && el.dataset.target && !observed.has(el)) {
+        observed.add(el); animateCounter(el);
+      }
+    });
+  }, { threshold: 0.15 });
+
+  function initLanding() {
+    // Add reveal class to sections
+    document.querySelectorAll(
+      '.lp-stat-card, .lp-feat-card, .lp-cta-section, .lp-stats, .lp-feat-header'
+    ).forEach(function(el, i) {
+      el.classList.add('lp-reveal');
+      el.style.transitionDelay = (i * 0.05) + 's';
+      io.observe(el);
+    });
+
+    // Counter: also observe each stat card individually for number animation
+    document.querySelectorAll('.lp-stat-card').forEach(function(card) {
+      io.observe(card);
+    });
+
+    // Navbar scroll effect
+    var nav = document.getElementById('hemis-nav');
+    if (nav) {
+      var authEl = document.getElementById('authScreen');
+      if (authEl) {
+        authEl.addEventListener('scroll', function() {
+          nav.style.background = authEl.scrollTop > 20
+            ? 'rgba(3,7,18,0.95)'
+            : 'rgba(3,7,18,0.7)';
+        });
+      }
+      window.addEventListener('scroll', function() {
+        nav.style.background = window.scrollY > 20
+          ? 'rgba(3,7,18,0.95)'
+          : 'rgba(3,7,18,0.7)';
+      });
+    }
+
+    // Parallax orbs on mouse move
+    var hero = document.querySelector('.lp-hero');
+    if (hero) {
+      hero.addEventListener('mousemove', function(e) {
+        var rect = hero.getBoundingClientRect();
+        var x = (e.clientX - rect.left) / rect.width - 0.5;
+        var y = (e.clientY - rect.top)  / rect.height - 0.5;
+        var orbs = hero.querySelectorAll('.lp-orb');
+        orbs[0] && (orbs[0].style.transform = 'translate(' + (x*20) + 'px,' + (y*20) + 'px)');
+        orbs[1] && (orbs[1].style.transform = 'translate(' + (-x*30) + 'px,' + (-y*15) + 'px)');
+        orbs[2] && (orbs[2].style.transform = 'translate(' + (x*15) + 'px,' + (y*25) + 'px)');
+      });
+    }
+  }
+
+  // Init when DOM ready, re-init if authScreen shown
+  if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', initLanding);
+  } else {
+    initLanding();
+  }
+
+  // Also expose for external call (when user logs out and returns to landing)
+  window._initLanding = initLanding;
+}());
+</script>
 </html>
