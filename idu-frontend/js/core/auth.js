@@ -397,11 +397,11 @@ function toggleUserMenu(e) {
 
 function logout(){
   currentUser=null; currentRole=null;
-  _apiToken = null;
-  try { localStorage.removeItem('idu_jwt'); } catch(e) {}
   _ssDel('idu_active_role');
   _ssDel('idu_active_login');
   _lsDel('idu_session');
+  // Clear httpOnly cookie on server + in-memory token
+  if (typeof apiLogout === 'function') apiLogout();
   document.getElementById('appScreen').classList.remove('visible');
   document.getElementById('appScreen').style.display='none';
   document.getElementById('authScreen').style.display='flex';

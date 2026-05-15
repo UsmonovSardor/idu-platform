@@ -4,18 +4,31 @@ const jwt = require('jsonwebtoken');
 const db  = require('../config/database');
 
 /**
- * Verify JWT from Authorization: Bearer <token>
- * Attaches req.user = { id, login, role } on success.
+ * Verify JWT from:
+ *   1. httpOnly cookie: idu_token
+ *   2. Authorization: Bearer <token>  (fallback for API clients / dev)
  */
 async function authenticate(req, res, next) {
-  const header = req.headers['authorization'] || '';
-  if (!header.startsWith('Bearer ')) {
+  let token = null;
+
+  // 1. Cookie (preferred — httpOnly, not accessible to JS)
+  if (req.cookies && req.cookies.idu_token) {
+    token = req.cookies.idu_token;
+  }
+
+  // 2. Bearer header fallback
+  if (!token) {
+    const header = req.headers['authorization'] || '';
+    if (header.startsWith('Bearer ')) {
+      token = header.slice(7);
+    }
+  }
+
+  if (!token) {
     return res.status(401).json({ error: 'Authentication required' });
   }
 
-  const token = header.slice(7);
   let payload;
-
   try {
     payload = jwt.verify(token, process.env.JWT_SECRET);
   } catch (err) {
@@ -40,10 +53,8 @@ async function authenticate(req, res, next) {
       role:  rows[0].role,
     };
 
-    await db.query(
-      'UPDATE users SET last_login = NOW() WHERE id = $1',
-      [rows[0].id]
-    );
+    // fire-and-forget last_login update
+    db.query('UPDATE users SET last_login = NOW() WHERE id = $1', [rows[0].id]).catch(() => {});
 
     next();
   } catch (err) {
@@ -53,16 +64,10 @@ async function authenticate(req, res, next) {
 
 function authorize(...roles) {
   return (req, res, next) => {
-    if (!req.user) {
-      return res.status(401).json({ error: 'Authentication required' });
-    }
-
+    if (!req.user) return res.status(401).json({ error: 'Authentication required' });
     if (!roles.includes(req.user.role)) {
-      return res.status(403).json({
-        error: `Access denied. Required role: ${roles.join(' or ')}`,
-      });
+      return res.status(403).json({ error: `Access denied. Required: ${roles.join(' or ')}` });
     }
-
     next();
   };
 }
