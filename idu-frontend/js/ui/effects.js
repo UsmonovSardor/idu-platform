@@ -4,56 +4,57 @@
 (function () {
 
   /* ── 1. RIPPLE EFFECT ──────────────────────────────────────────────
-     Creates a spreading circle from click origin on interactive elements */
+     Only on explicit button/tab elements — NOT on cards or large containers.
+     overflow:hidden is handled by CSS (.ripple-host), NOT set via JS. */
   var RIPPLE_TARGETS = [
-    '.btn', 'button', '.sidebar-item', '.nav-icon-btn',
-    '.topnav-tab', '.filter-tab', '.demo-card', '.stat-card',
+    '.btn', 'button:not([data-no-ripple])', '.nav-icon-btn',
+    '.topnav-tab', '.filter-tab',
     '.hn-kirish', '.login-submit', '.btn-auth', '.hb-primary',
-    '.lp-btn-primary', '.lp-btn-outline'
+    '.lp-btn-primary', '.lp-btn-outline', '.sidebar-item'
   ].join(',');
 
   function createRipple(e) {
     var target = e.target.closest(RIPPLE_TARGETS);
-    if (!target || target.disabled) return;
+    if (!target || target.disabled || target.getAttribute('disabled')) return;
 
-    var rect = target.getBoundingClientRect();
-    var size = Math.max(rect.width, rect.height) * 2.2;
-    var x    = e.clientX - rect.left  - size / 2;
-    var y    = e.clientY - rect.top   - size / 2;
+    var rect  = target.getBoundingClientRect();
+    // Use a fixed small size relative to click point, not element size
+    var size  = Math.min(rect.width, rect.height, 60) * 2;
+    var x     = e.clientX - rect.left - size / 2;
+    var y     = e.clientY - rect.top  - size / 2;
 
-    // Use light ripple on dark buttons, dark ripple on light ones
-    var bg = window.getComputedStyle(target).backgroundColor;
-    var isDark = bg && bg !== 'rgba(0, 0, 0, 0)' && isColorDark(bg);
-    var color  = isDark ? 'rgba(255,255,255,0.25)' : 'rgba(30,64,175,0.10)';
+    var bg    = window.getComputedStyle(target).backgroundColor;
+    var dark  = bg && bg !== 'rgba(0, 0, 0, 0)' && isColorDark(bg);
+    var color = dark ? 'rgba(255,255,255,0.3)' : 'rgba(30,64,175,0.12)';
+
+    // Add ripple-host class so CSS handles overflow:hidden (not inline style)
+    target.classList.add('ripple-host');
 
     var wave = document.createElement('span');
     wave.className = 'ripple-wave';
     wave.style.cssText =
-      'width:' + size + 'px;height:' + size + 'px;' +
-      'left:' + x + 'px;top:' + y + 'px;' +
-      'background:' + color;
-
-    // Ensure parent has correct positioning
-    var pos = window.getComputedStyle(target).position;
-    if (pos === 'static') target.style.position = 'relative';
-    target.style.overflow = 'hidden';
-
+      'width:'  + size + 'px;height:' + size + 'px;' +
+      'left:'   + x   + 'px;top:'    + y    + 'px;' +
+      'background:' + color + ';';
     target.appendChild(wave);
-    setTimeout(function () { wave.remove(); }, 650);
+
+    // Remove after animation completes
+    setTimeout(function () {
+      wave.remove();
+    }, 500);
   }
 
   function isColorDark(rgb) {
     var m = rgb.match(/\d+/g);
     if (!m || m.length < 3) return false;
-    var luminance = 0.299 * m[0] + 0.587 * m[1] + 0.114 * m[2];
-    return luminance < 140;
+    return (0.299 * m[0] + 0.587 * m[1] + 0.114 * m[2]) < 140;
   }
 
   document.addEventListener('click', createRipple);
 
   /* ── 2. PRESS SCALE FEEDBACK ───────────────────────────────────────
      Slight shrink on mousedown for tactile feel */
-  var PRESS_TARGETS = '.btn,.sidebar-item,.nav-icon-btn,.filter-tab,.demo-card,.hn-kirish';
+  var PRESS_TARGETS = '.btn,.nav-icon-btn,.filter-tab,.hn-kirish';
   var _pressed = null;
 
   document.addEventListener('mousedown', function (e) {

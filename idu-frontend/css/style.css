@@ -1594,14 +1594,19 @@ button:focus-visible, a:focus-visible { border-radius: 8px; }
    MICRO-INTERACTIONS v1.0 — ripple · skeleton · empty-state · tooltip
 ═══════════════════════════════════════════════════════════════════ */
 
-/* ── Ripple wave ─────────────────────────────────────────────────── */
+/* ── Ripple ──────────────────────────────────────────────────────── */
+/* overflow:hidden via class (JS never sets inline overflow) */
+.ripple-host { position: relative !important; overflow: hidden !important; }
+
 .ripple-wave {
   position: absolute; border-radius: 50%;
-  transform: scale(0); pointer-events: none; z-index: 999;
-  animation: rippleAnim 0.6s cubic-bezier(0.4,0,0.2,1) forwards;
+  pointer-events: none; z-index: 9;
+  will-change: transform, opacity;
+  animation: rippleAnim 0.45s cubic-bezier(0.4,0,0.2,1) forwards;
 }
 @keyframes rippleAnim {
-  to { transform: scale(1); opacity: 0; }
+  0%   { transform: scale(0);   opacity: 0.7; }
+  100% { transform: scale(3.5); opacity: 0;   }
 }
 
 /* ── Press scale feedback ────────────────────────────────────────── */
