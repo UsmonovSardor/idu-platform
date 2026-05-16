@@ -9,6 +9,7 @@ const fs       = require('fs');
 const db                    = require('../config/database');
 const validate              = require('../middleware/validate');
 const { authenticate, authorize } = require('../middleware/auth');
+const { cache, invalidate } = require('../middleware/cache');
 
 const router = express.Router();
 
@@ -42,6 +43,7 @@ router.use(authenticate);
 router.get(
   '/',
   authorize('dekanat', 'admin', 'teacher'),
+  cache(30), // 30s per-user cache
   [
     query('search').optional().isString().trim(),
     query('faculty').optional().isString().trim(),

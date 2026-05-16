@@ -13,6 +13,7 @@ const cookieParser = require('cookie-parser');
 const path         = require('path');
 const fs           = require('fs');
 
+const compression             = require('compression');
 const { logger, requestLogger } = require('./middleware/logger');
 const { generalLimiter }        = require('./middleware/rateLimiter');
 const errorHandler              = require('./middleware/errorHandler');
@@ -30,6 +31,16 @@ const assignmentsRoutes = require('./routes/assignments');
 const submissionsRoutes = require('./routes/submissions');
 
 const app = express();
+
+// ── Gzip compression (before everything else) ────────────────────────────────
+app.use(compression({
+  level: 6,           // good balance of speed vs ratio
+  threshold: 1024,    // don't compress responses < 1 KB
+  filter: (req, res) => {
+    if (req.headers['x-no-compression']) return false;
+    return compression.filter(req, res);
+  },
+}));
 
 // ── Security headers ─────────────────────────────────────────────────────────
 app.use(helmet({
@@ -127,14 +138,30 @@ if (!frontendDir) {
   logger.warn('Frontend index.html not found. Checked: ' + frontendCandidates.join(', '));
 } else {
   logger.info('Frontend: ' + frontendDir);
+
+  // Smart cache headers:
+  //   index.html / sw.js  → no-cache   (must always be fresh)
+  //   *.css / *.js        → 24 hours   (Service Worker handles updates)
+  //   images / fonts      → 7 days
+  function staticCacheControl(filePath) {
+    const f = filePath.replace(/\\/g, '/');
+    if (/\/(index\.html|sw\.js|manifest\.json)$/.test(f)) {
+      return 'no-cache, no-store, must-revalidate';
+    }
+    if (/\.(css|js)$/.test(f)) {
+      return 'public, max-age=86400, stale-while-revalidate=3600';
+    }
+    if (/\.(png|jpg|jpeg|gif|ico|svg|webp|woff2?|ttf|eot)$/.test(f)) {
+      return 'public, max-age=604800, immutable';
+    }
+    return 'public, max-age=3600';
+  }
+
   app.use(express.static(frontendDir, {
-    maxAge: 0,
-    etag: false,
-    lastModified: false,
-    setHeaders: (res) => {
-      res.setHeader('Cache-Control', 'no-store, no-cache, must-revalidate');
-      res.setHeader('Pragma', 'no-cache');
-      res.setHeader('Expires', '0');
+    etag:         true,
+    lastModified: true,
+    setHeaders:   (res, filePath) => {
+      res.setHeader('Cache-Control', staticCacheControl(filePath));
     },
   }));
 }

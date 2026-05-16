@@ -6,6 +6,7 @@ const { body, param, query } = require('express-validator');
 const db                    = require('../config/database');
 const validate              = require('../middleware/validate');
 const { authenticate, authorize } = require('../middleware/auth');
+const { cache } = require('../middleware/cache');
 
 const router = express.Router();
 router.use(authenticate);
@@ -13,6 +14,7 @@ router.use(authenticate);
 // ?? GET /api/schedule ?????????????????????????????????????????????????????????
 router.get(
   '/',
+  cache(300), // 5 min — schedule rarely changes
   [
     query('weekday').optional().isIn(['0','1','2','3','4','5','6']).toInt(),
     query('semester').optional().isInt({ min: 1, max: 8 }).toInt(),

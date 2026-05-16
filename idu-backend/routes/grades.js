@@ -6,6 +6,7 @@ const { body, param, query } = require('express-validator');
 const db                    = require('../config/database');
 const validate              = require('../middleware/validate');
 const { authenticate, authorize } = require('../middleware/auth');
+const { cache } = require('../middleware/cache');
 
 const router = express.Router();
 router.use(authenticate);
@@ -24,6 +25,7 @@ function calcLetterGrade(total) {
 router.get(
   '/',
   authorize('dekanat', 'admin', 'teacher'),
+  cache(60), // 60s cache
   [
     query('studentId').optional().isInt({ min: 1 }).toInt(),
     query('courseId').optional().isInt({ min: 1 }).toInt(),
@@ -82,7 +84,7 @@ router.get(
 );
 
 // GET /api/grades/my — student o'z baholarini ko'radi
-router.get('/my', authorize('student'), async (req, res) => {
+router.get('/my', authorize('student'), cache(120), async (req, res) => {
   const { rows } = await db.query(
     `SELECT c.name AS course_name, c.code AS course_code,
             g.jn, g.on_score, g.yn, g.mi,
@@ -105,7 +107,7 @@ router.get('/my', authorize('student'), async (req, res) => {
 });
 
 // GET /api/grades/my-stats — dashboard uchun qisqa statistika
-router.get('/my-stats', authorize('student'), async (req, res) => {
+router.get('/my-stats', authorize('student'), cache(120), async (req, res) => {
   const { rows } = await db.query(
     `SELECT ROUND(AVG(g.jn + g.on_score + g.yn + g.mi), 1) AS avg_total,
             COUNT(*) AS total_courses,

@@ -2,13 +2,19 @@
 
 const { Pool } = require('pg');
 
+const POOL_COMMON = {
+  max:                    parseInt(process.env.DB_POOL_MAX    || '20', 10),
+  min:                    parseInt(process.env.DB_POOL_MIN    || '2',  10),
+  idleTimeoutMillis:      30_000,
+  connectionTimeoutMillis: 3_000,
+  statement_timeout:      15_000, // kill queries running > 15 s
+};
+
 const poolConfig = process.env.DATABASE_URL
   ? {
       connectionString: process.env.DATABASE_URL,
       ssl: { rejectUnauthorized: false },
-      max: 20,
-      idleTimeoutMillis: 30000,
-      connectionTimeoutMillis: 2000,
+      ...POOL_COMMON,
     }
   : {
       host:     process.env.DB_HOST     || 'localhost',
@@ -16,7 +22,8 @@ const poolConfig = process.env.DATABASE_URL
       database: process.env.DB_NAME     || 'idu_platform',
       user:     process.env.DB_USER     || 'idu_user',
       password: process.env.DB_PASSWORD || '',
-      max: 20, idleTimeoutMillis: 30000, connectionTimeoutMillis: 2000, ssl: false,
+      ssl:      false,
+      ...POOL_COMMON,
     };
 
 const pool = new Pool(poolConfig);
