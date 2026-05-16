@@ -1590,4 +1590,158 @@ button:focus-visible, a:focus-visible { border-radius: 8px; }
 /* ── Page header right buttons slide in ─────────────────────────── */
 .page-header-right { animation: phIn 0.4s cubic-bezier(0.16,1,0.3,1) both 0.18s; }
 
+/* ═══════════════════════════════════════════════════════════════════
+   MICRO-INTERACTIONS v1.0 — ripple · skeleton · empty-state · tooltip
+═══════════════════════════════════════════════════════════════════ */
+
+/* ── Ripple wave ─────────────────────────────────────────────────── */
+.ripple-wave {
+  position: absolute; border-radius: 50%;
+  transform: scale(0); pointer-events: none; z-index: 999;
+  animation: rippleAnim 0.6s cubic-bezier(0.4,0,0.2,1) forwards;
+}
+@keyframes rippleAnim {
+  to { transform: scale(1); opacity: 0; }
+}
+
+/* ── Press scale feedback ────────────────────────────────────────── */
+.pressing { transform: scale(0.965) !important; transition: transform 0.08s !important; }
+
+/* ── Skeleton shimmer ────────────────────────────────────────────── */
+@keyframes shimmer {
+  0%   { background-position: -400px 0; }
+  100% { background-position: 400px 0; }
+}
+.skeleton-card, .skeleton-row, .skeleton-stat,
+.skeleton-line, .skeleton-td {
+  background: linear-gradient(90deg, #f0f4f8 0%, #e2eaf4 40%, #f0f4f8 80%);
+  background-size: 800px 100%;
+  animation: shimmer 1.6s ease-in-out infinite;
+  border-radius: 10px;
+}
+.skeleton-card  { height: 110px; border-radius: 14px; }
+.skeleton-row   { height: 48px; margin-bottom: 8px; border-radius: 10px; }
+.skeleton-stat  { padding: 18px 20px; border-radius: 14px; border: 1px solid #e8edf5; }
+.skeleton-line  { margin-bottom: 8px; border-radius: 5px; }
+.skeleton-table { display: flex; flex-direction: column; gap: 6px; }
+.skeleton-tr    { display: flex; gap: 10px; align-items: center; padding: 12px 14px; background: #fff; border: 1px solid #f1f5f9; border-radius: 10px; }
+.skeleton-td    { height: 12px; border-radius: 4px; flex-shrink: 0; }
+
+/* ── Empty state ─────────────────────────────────────────────────── */
+.empty-state {
+  display: flex; flex-direction: column; align-items: center;
+  justify-content: center; padding: 56px 24px; text-align: center;
+  animation: cardIn 0.45s cubic-bezier(0.16,1,0.3,1) both;
+}
+.es-icon {
+  font-size: 52px; margin-bottom: 16px;
+  animation: esBounce 0.6s cubic-bezier(0.16,1,0.3,1) both 0.15s;
+  display: inline-block;
+}
+@keyframes esBounce {
+  from { opacity: 0; transform: scale(0.5) translateY(16px); }
+  to   { opacity: 1; transform: none; }
+}
+.es-title {
+  font-size: 16px; font-weight: 700; color: var(--text); margin-bottom: 8px;
+  animation: phIn 0.4s cubic-bezier(0.16,1,0.3,1) both 0.2s;
+}
+.es-desc {
+  font-size: 13.5px; color: var(--text3); line-height: 1.7; max-width: 340px;
+  animation: phIn 0.4s cubic-bezier(0.16,1,0.3,1) both 0.26s;
+}
+.es-action {
+  margin-top: 18px;
+  animation: phIn 0.4s cubic-bezier(0.16,1,0.3,1) both 0.32s;
+}
+
+/* ── Tooltip (data-tip) ──────────────────────────────────────────── */
+[data-tip] { position: relative; }
+[data-tip]::after {
+  content: attr(data-tip);
+  position: absolute; bottom: calc(100% + 8px); left: 50%;
+  transform: translateX(-50%) translateY(4px);
+  background: #0f172a; color: #f1f5f9;
+  padding: 5px 10px; border-radius: 7px;
+  font-size: 12px; font-weight: 500; line-height: 1.4;
+  white-space: nowrap; pointer-events: none;
+  opacity: 0; transition: opacity 0.15s, transform 0.15s;
+  z-index: 9000; font-family: 'Outfit', sans-serif;
+}
+[data-tip]::before {
+  content: '';
+  position: absolute; bottom: calc(100% + 3px); left: 50%;
+  transform: translateX(-50%) translateY(4px);
+  border: 5px solid transparent; border-top-color: #0f172a;
+  opacity: 0; transition: opacity 0.15s, transform 0.15s;
+  pointer-events: none; z-index: 9000;
+}
+[data-tip]:hover::after { opacity: 1; transform: translateX(-50%) translateY(0); }
+[data-tip]:hover::before { opacity: 1; transform: translateX(-50%) translateY(0); }
+
+/* ── Keyboard shortcut hint badge ───────────────────────────────── */
+.kbd {
+  display: inline-flex; align-items: center; justify-content: center;
+  padding: 1px 6px; background: #f1f5f9; border: 1px solid #e2e8f0;
+  border-radius: 5px; font-size: 11px; font-weight: 600;
+  color: var(--text3); font-family: 'DM Mono', monospace;
+}
+
+/* ── Search pulse (Ctrl+K focus) ────────────────────────────────── */
+input:focus { transition: border-color 0.15s, box-shadow 0.15s; }
+
+/* ── Smooth scroll on main content ──────────────────────────────── */
+.main-content { scroll-behavior: smooth; }
+
+/* ── Loading spinner (global) ───────────────────────────────────── */
+.spin {
+  display: inline-block; width: 18px; height: 18px;
+  border: 2.5px solid rgba(30,64,175,0.15);
+  border-top-color: var(--primary);
+  border-radius: 50%; animation: spin 0.7s linear infinite;
+}
+@keyframes spin { to { transform: rotate(360deg); } }
+
+/* ── Input float-label effect (for new inputs) ──────────────────── */
+.input-float { position: relative; }
+.input-float input:focus ~ label,
+.input-float input:not(:placeholder-shown) ~ label {
+  transform: translateY(-20px) scale(0.82);
+  color: var(--primary); font-weight: 600;
+}
+.input-float label {
+  position: absolute; left: 13px; top: 12px;
+  font-size: 14px; color: var(--text3);
+  pointer-events: none; transition: transform 0.18s, color 0.18s;
+  transform-origin: left;
+}
+
+/* ── Active nav item: animated indicator dot ─────────────────────── */
+.sidebar-item.active .si-icon {
+  filter: drop-shadow(0 0 4px rgba(6,182,212,0.5));
+  transition: filter 0.3s;
+}
+
+/* ── Stat card val: count-up ready ──────────────────────────────── */
+.stat-card-val { transition: none; }
+
+/* ── Table row: slide-in on render ──────────────────────────────── */
+@keyframes rowIn {
+  from { opacity: 0; transform: translateX(-6px); }
+  to   { opacity: 1; transform: none; }
+}
+.grade-table tbody tr { animation: rowIn 0.3s ease both; }
+.grade-table tbody tr:nth-child(1)  { animation-delay: 0.03s; }
+.grade-table tbody tr:nth-child(2)  { animation-delay: 0.07s; }
+.grade-table tbody tr:nth-child(3)  { animation-delay: 0.11s; }
+.grade-table tbody tr:nth-child(4)  { animation-delay: 0.15s; }
+.grade-table tbody tr:nth-child(5)  { animation-delay: 0.19s; }
+.grade-table tbody tr:nth-child(n+6){ animation-delay: 0.22s; }
+
+/* ── Nav icon btn tooltip positioning ───────────────────────────── */
+.nav-icon-btn[data-tip]::after { bottom: auto; top: calc(100% + 8px); transform: translateX(-50%) translateY(-4px); }
+.nav-icon-btn[data-tip]::before { bottom: auto; top: calc(100% + 3px); border-top-color: transparent; border-bottom-color: #0f172a; transform: translateX(-50%) translateY(-4px); }
+.nav-icon-btn[data-tip]:hover::after { transform: translateX(-50%) translateY(0); }
+.nav-icon-btn[data-tip]:hover::before { transform: translateX(-50%) translateY(0); }
+
 

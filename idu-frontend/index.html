@@ -575,8 +575,8 @@
     </div>
     <div class="topnav-tabs" id="topnavTabs"></div>
     <div class="topnav-right">
-      <div class="nav-icon-btn" title="Yangilash" onclick="syncData()">↻</div>
-      <div class="nav-icon-btn" id="notifBtn" onclick="showPage('notifications')">
+      <div class="nav-icon-btn" data-tip="Yangilash (Ctrl+R)" onclick="syncData()">↻</div>
+      <div class="nav-icon-btn" id="notifBtn" data-tip="Bildirishnomalar" onclick="showPage('notifications')">
         🔔<div class="notif-badge" id="notifCount" style="display:none">0</div>
       </div>
       <div class="user-chip" id="userChip" onclick="toggleUserMenu(event)" style="position:relative">
@@ -3312,6 +3312,7 @@
   <script src="js/core/router.js"></script>
   <script src="js/ui/toast.js"></script>
   <script src="js/ui/modal.js"></script>
+  <script src="js/ui/effects.js"></script>
   <script src="js/pages/student.js"></script>
   <script src="js/pages/teacher.js"></script>
   <script src="js/pages/dekanat.js"></script>
