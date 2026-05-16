@@ -6,20 +6,21 @@
   /* ── 1. RIPPLE EFFECT ──────────────────────────────────────────────
      Only on explicit button/tab elements — NOT on cards or large containers.
      overflow:hidden is handled by CSS (.ripple-host), NOT set via JS. */
+  // Sidebar items deliberately excluded — they have their own CSS hover/active effects
   var RIPPLE_TARGETS = [
-    '.btn', 'button:not([data-no-ripple])', '.nav-icon-btn',
-    '.topnav-tab', '.filter-tab',
+    '.btn:not(.sidebar-item)', '.nav-icon-btn', '.topnav-tab', '.filter-tab',
     '.hn-kirish', '.login-submit', '.btn-auth', '.hb-primary',
-    '.lp-btn-primary', '.lp-btn-outline', '.sidebar-item'
+    '.lp-btn-primary', '.lp-btn-outline'
   ].join(',');
 
   function createRipple(e) {
     var target = e.target.closest(RIPPLE_TARGETS);
     if (!target || target.disabled || target.getAttribute('disabled')) return;
+    // Skip sidebar items completely (they are button elements too)
+    if (target.classList.contains('sidebar-item')) return;
 
     var rect  = target.getBoundingClientRect();
-    // Use a fixed small size relative to click point, not element size
-    var size  = Math.min(rect.width, rect.height, 60) * 2;
+    var size  = Math.min(rect.width, rect.height, 56) * 2;
     var x     = e.clientX - rect.left - size / 2;
     var y     = e.clientY - rect.top  - size / 2;
 
@@ -27,21 +28,20 @@
     var dark  = bg && bg !== 'rgba(0, 0, 0, 0)' && isColorDark(bg);
     var color = dark ? 'rgba(255,255,255,0.3)' : 'rgba(30,64,175,0.12)';
 
-    // Add ripple-host class so CSS handles overflow:hidden (not inline style)
     target.classList.add('ripple-host');
-
     var wave = document.createElement('span');
     wave.className = 'ripple-wave';
     wave.style.cssText =
-      'width:'  + size + 'px;height:' + size + 'px;' +
-      'left:'   + x   + 'px;top:'    + y    + 'px;' +
+      'width:' + size + 'px;height:' + size + 'px;' +
+      'left:'  + x   + 'px;top:'    + y    + 'px;' +
       'background:' + color + ';';
     target.appendChild(wave);
 
-    // Remove after animation completes
     setTimeout(function () {
       wave.remove();
-    }, 500);
+      // Clean up the ripple-host class so it doesn't linger
+      target.classList.remove('ripple-host');
+    }, 480);
   }
 
   function isColorDark(rgb) {
