@@ -140,21 +140,16 @@ if (!frontendDir) {
   logger.info('Frontend: ' + frontendDir);
 
   // Smart cache headers:
-  //   index.html / sw.js  → no-cache   (must always be fresh)
-  //   *.css / *.js        → 24 hours   (Service Worker handles updates)
-  //   images / fonts      → 7 days
+  //   index.html / sw.js  → no-cache   (always revalidate)
+  //   *.css / *.js        → no-cache + ETag (revalidate every request; 304 if unchanged)
+  //   images / fonts      → 7 days immutable
   function staticCacheControl(filePath) {
     const f = filePath.replace(/\\/g, '/');
-    if (/\/(index\.html|sw\.js|manifest\.json)$/.test(f)) {
-      return 'no-cache, no-store, must-revalidate';
-    }
-    if (/\.(css|js)$/.test(f)) {
-      return 'public, max-age=86400, stale-while-revalidate=3600';
-    }
     if (/\.(png|jpg|jpeg|gif|ico|svg|webp|woff2?|ttf|eot)$/.test(f)) {
       return 'public, max-age=604800, immutable';
     }
-    return 'public, max-age=3600';
+    // HTML, CSS, JS — always revalidate so deploys take effect immediately
+    return 'no-cache';
   }
 
   app.use(express.static(frontendDir, {
