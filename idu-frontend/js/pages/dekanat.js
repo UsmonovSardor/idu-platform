@@ -171,24 +171,31 @@ async function uploadQuestionsPDF() {
   const type    = document.getElementById('pdfType')?.value;
   const fileInput = document.getElementById('pdfFileInput');
   const file = fileInput?.files[0];
-  if (!file)    { showToast('⚠️','Xato','Fayl tanlang (PDF yoki JSON)'); return; }
+  if (!file)    { showToast('⚠️','Xato','Fayl tanlang'); return; }
   if (!subject) { showToast('⚠️','Xato','Fan tanlang'); return; }
   const btn = document.getElementById('pdfUploadBtn');
   if (btn) { btn.disabled = true; btn.textContent = '⏳ Yuklanmoqda...'; }
 
   try {
-    const isJson = file.name.toLowerCase().endsWith('.json');
+    const ext = file.name.split('.').pop().toLowerCase();
 
-    if (isJson) {
-      // JSON import — read file locally, POST as JSON
+    if (ext === 'json') {
       const text = await file.text();
       let questions;
       try { questions = JSON.parse(text); } catch(e) { throw new Error('JSON format noto\'g\'ri: ' + e.message); }
-      if (!Array.isArray(questions)) throw new Error('JSON massiv (array) bo\'lishi kerak: [{"question_text":...}]');
+      if (!Array.isArray(questions)) throw new Error('JSON massiv (array) bo\'lishi kerak');
       const data = await api('POST', '/questions/import-json', { subject, type: type || 'test', questions });
-      showToast('✅', 'JSON yuklandi', data.inserted + ' savol bazaga kiritildi');
+      showToast('✅', 'JSON yuklandi', data.inserted + ' savol kiritildi');
+
+    } else if (ext === 'txt' || ext === 'csv') {
+      const text = await file.text();
+      const questions = parseTxtQuestions(text);
+      if (!questions.length) throw new Error('Fayl ichida savol topilmadi. Format: "1. Savol? A) ... To\'g\'ri: A"');
+      const data = await api('POST', '/questions/import-json', { subject, type: type || 'test', questions });
+      showToast('✅', 'TXT yuklandi', data.inserted + ' savol kiritildi');
+
     } else {
-      // PDF upload via FormData
+      // PDF, DOCX, DOC, XLSX — server-side processing
       const formData = new FormData();
       formData.append('pdf', file);
       formData.append('subject', subject);
@@ -200,8 +207,8 @@ async function uploadQuestionsPDF() {
         body: formData
       });
       const data = await res.json();
-      if (!res.ok) throw new Error(data.error || 'PDF yuklashda xato');
-      showToast('✅', 'PDF yuklandi', data.inserted + ' savol bazaga kiritildi');
+      if (!res.ok) throw new Error(data.error || 'Fayl yuklashda xato');
+      showToast('✅', 'Yuklandi', (data.inserted || 0) + ' savol kiritildi');
     }
 
     if (fileInput) fileInput.value = '';
@@ -212,8 +219,33 @@ async function uploadQuestionsPDF() {
   } catch(e) {
     showToast('❌', 'Xato', e.message);
   } finally {
-    if (btn) { btn.disabled = false; btn.textContent = '📤 Yuklash'; }
+    if (btn) { btn.disabled = false; btn.innerHTML = '📤 Yuklash'; }
   }
+}
+
+function parseTxtQuestions(text) {
+  const questions = [];
+  // Split by question numbers: "1.", "2.", etc.
+  const blocks = text.split(/\n(?=\d+[\.\)]\s)/);
+  for (const block of blocks) {
+    const lines = block.split('\n').map(l => l.trim()).filter(Boolean);
+    if (!lines.length) continue;
+    // First line is the question (remove leading number)
+    const qLine = lines[0].replace(/^\d+[\.\)]\s*/, '').trim();
+    if (!qLine) continue;
+    let optA='', optB='', optC='', optD='', correct='A', explanation='';
+    for (const line of lines.slice(1)) {
+      if (/^[Aa][\)\.]/.test(line)) optA = line.replace(/^[Aa][\)\.]\s*/, '');
+      else if (/^[Bb][\)\.]/.test(line)) optB = line.replace(/^[Bb][\)\.]\s*/, '');
+      else if (/^[Cc][\)\.]/.test(line)) optC = line.replace(/^[Cc][\)\.]\s*/, '');
+      else if (/^[Dd][\)\.]/.test(line)) optD = line.replace(/^[Dd][\)\.]\s*/, '');
+      else if (/^(To'g'ri|Togri|Answer|Javob|Correct)\s*[:=]/i.test(line)) correct = line.split(/[:=]/)[1].trim().toUpperCase().charAt(0) || 'A';
+      else if (/^(Izoh|Explanation|Hint)\s*[:=]/i.test(line)) explanation = line.split(/[:=]/)[1].trim();
+    }
+    if (!optA && !optB) continue; // skip if no options
+    questions.push({ question_text: qLine, option_a: optA, option_b: optB, option_c: optC, option_d: optD, correct_option: correct, explanation });
+  }
+  return questions;
 }
 
 function openPdfUploadModal(){const m=document.getElementById('pdfUploadModal');if(m)m.style.display='flex';}

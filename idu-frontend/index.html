@@ -14,9 +14,13 @@
 <script src="https://cdnjs.cloudflare.com/ajax/libs/dompurify/3.0.8/purify.min.js"></script>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800&family=DM+Mono:wght@400;500;600&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="css/style.css?v=20260517b">
-<link rel="stylesheet" href="css/responsive.css?v=20260517b">
-<link rel="stylesheet" href="css/landing.css?v=20260517b">
+<link rel="stylesheet" href="css/style.css?v=20260517c">
+<link rel="stylesheet" href="css/responsive.css?v=20260517c">
+<link rel="stylesheet" href="css/landing.css?v=20260517c">
+<!-- KaTeX for math formula rendering -->
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/katex.min.css" crossorigin="anonymous">
+<script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/katex.min.js" crossorigin="anonymous"></script>
+<script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/contrib/auto-render.min.js" crossorigin="anonymous" onload="initKaTeX()"></script>
 <script>
   // Register Service Worker
   if ('serviceWorker' in navigator) {
@@ -578,14 +582,14 @@
              <button class="login-eye" id="eyeBtn" onclick="togglePassEye()" title="Ko'rsatish/yashirish">&#x1F441;</button>
           </div>
           <button class="login-submit" onclick="realAutoLogin()" id="loginSubmitBtn">
-            <span>Kirish</span><span style="font-size:16px">&#8594;</span>
+            <span id="login-submit-text">Kirish</span><span style="font-size:16px">&#8594;</span>
           </button>
-          <button type="button" onclick="showForgotPassword()" style="width:100%;margin-top:10px;background:none;border:none;color:#64748B;font-size:13px;cursor:pointer;text-align:center;padding:6px;font-family:inherit;text-decoration:underline">
-            Login yoki parolni unutdingizmi?
+          <button type="button" onclick="showForgotPassword()" id="login-forgot-btn" style="width:100%;margin-top:10px;background:none;border:none;color:#64748B;font-size:13px;cursor:pointer;text-align:center;padding:6px;font-family:inherit;text-decoration:underline">
+            <span id="login-forgot-text">Login yoki parolni unutdingizmi?</span>
           </button>
         </div>
         <div class="login-note" style="margin-top:12px;padding:13px 14px;background:#F8FAFC;border:1px solid #E2E8F0;border-radius:12px;color:#64748B;font-size:12px;line-height:1.5;text-align:center">
-          Login va parol universitet administratsiyasi tomonidan beriladi.
+          <span id="login-note-text">Login va parol universitet administratsiyasi tomonidan beriladi.</span>
        </div>
       </div>
     </div>
@@ -1176,7 +1180,7 @@
 <div class="page" id="page-teacher-dashboard">
   <div class="page-header">
     <div class="page-header-left">
-      <div class="ph-title">O'qituvchi paneli</div>
+      <div class="ph-title" id="tc-panel-title">O'qituvchi paneli</div>
       <div class="ph-sub" id="teacherDashDate"></div>
     </div>
     <div class="page-header-right">
@@ -1185,43 +1189,43 @@
   </div>
   <div class="stats-grid">
     <div class="stat-card">
-      <div class="stat-card-top"><div class="stat-card-label">Jami talabalar</div>
+      <div class="stat-card-top"><div class="stat-card-label" id="tc-stat1-label">Jami talabalar</div>
         <div class="stat-card-icon" style="background:var(--primary-light)">👥</div></div>
       <div class="stat-card-val" style="color:var(--primary)">87</div>
-      <div class="stat-card-change sc-flat">3 guruh</div>
+      <div class="stat-card-change sc-flat" id="tc-stat1-sub">3 guruh</div>
       <div class="stat-card-bar scb-blue"></div>
     </div>
     <div class="stat-card">
-      <div class="stat-card-top"><div class="stat-card-label">O'rtacha ball</div>
+      <div class="stat-card-top"><div class="stat-card-label" id="tc-stat2-label">O'rtacha ball</div>
         <div class="stat-card-icon" style="background:var(--green-light)">📊</div></div>
       <div class="stat-card-val" style="color:var(--green)">74.2</div>
-      <div class="stat-card-change sc-up">↑ +2.1 o'tgan oyga nisbatan</div>
+      <div class="stat-card-change sc-up" id="tc-stat2-sub">↑ +2.1 o'tgan oyga nisbatan</div>
       <div class="stat-card-bar scb-green"></div>
     </div>
     <div class="stat-card">
-      <div class="stat-card-top"><div class="stat-card-label">Bugungi darslar</div>
+      <div class="stat-card-top"><div class="stat-card-label" id="tc-stat3-label">Bugungi darslar</div>
         <div class="stat-card-icon" style="background:var(--orange-light)">📅</div></div>
       <div class="stat-card-val" style="color:var(--orange)">4</div>
-      <div class="stat-card-change sc-flat">Jadvalda</div>
+      <div class="stat-card-change sc-flat" id="tc-stat3-sub">Jadvalda</div>
       <div class="stat-card-bar scb-orange"></div>
     </div>
     <div class="stat-card">
-      <div class="stat-card-top"><div class="stat-card-label">Xavfli talabalar</div>
+      <div class="stat-card-top"><div class="stat-card-label" id="tc-stat4-label">Xavfli talabalar</div>
         <div class="stat-card-icon" style="background:var(--red-light)">⚠️</div></div>
       <div class="stat-card-val" style="color:var(--red)">5</div>
-      <div class="stat-card-change sc-down">Davomat yoki ball past</div>
+      <div class="stat-card-change sc-down" id="tc-stat4-sub">Davomat yoki ball past</div>
       <div class="stat-card-bar scb-red"></div>
     </div>
   </div>
   <div class="grid-2">
     <div class="card">
-      <div class="card-header"><div class="card-title">Bugungi darslar</div>
+      <div class="card-header"><div class="card-title" id="tc-today-title">Bugungi darslar</div>
         <div class="card-badge cb-blue" id="teacherTodayBadge">3-Mart</div></div>
       <div id="teacherTodaySchedule"></div>
     </div>
     <div class="card">
-      <div class="card-header"><div class="card-title">Xavfli talabalar</div>
-        <div class="card-badge cb-red">5 ta</div></div>
+      <div class="card-header"><div class="card-title" id="tc-risk-title">Xavfli talabalar</div>
+        <div class="card-badge cb-red" id="tc-risk-badge">5 ta</div></div>
       <div id="atRiskStudents"></div>
     </div>
   </div>
@@ -1231,16 +1235,16 @@
 <div class="page" id="page-teacher-timetable">
   <div class="page-header">
     <div class="page-header-left">
-      <div class="ph-title">📅 Mening jadvalim</div>
-      <div class="ph-sub">Qaysi fan, qaysi guruh, qaysi xona</div>
+      <div class="ph-title" id="tc-tt-title">📅 Mening jadvalim</div>
+      <div class="ph-sub" id="tc-tt-sub">Qaysi fan, qaysi guruh, qaysi xona</div>
     </div>
   </div>
   <div class="card" style="margin-bottom:16px;padding:16px 20px">
-    <div style="font-size:13px;color:var(--text2);margin-bottom:10px;font-weight:600">Bugungi darslarim:</div>
+    <div style="font-size:13px;color:var(--text2);margin-bottom:10px;font-weight:600" id="tc-tt-today">Bugungi darslarim:</div>
     <div id="teacherTodayFull"></div>
   </div>
   <div class="card" style="padding:16px">
-    <div class="card-header"><div class="card-title">Haftalik jadval</div></div>
+    <div class="card-header"><div class="card-title" id="tc-tt-weekly">Haftalik jadval</div></div>
     <div class="timetable-wrap">
       <table class="timetable" id="teacherTTTable">
         <thead id="teacherTTHead"></thead>
@@ -1254,7 +1258,7 @@
 <div class="page" id="page-teacher-grade">
   <div class="page-header">
     <div class="page-header-left">
-      <div class="ph-title">✏️ Baho kiritish</div>
+      <div class="ph-title" id="tc-grade-title">✏️ Baho kiritish</div>
       <div class="ph-sub">100-ballik tizim — faqat professor o'zgartira oladi</div>
     </div>
     <div class="page-header-right">
@@ -3266,8 +3270,8 @@
 <!-- MODAL: PDF savollar yuklash -->
 <div id="pdfUploadModal" style="display:none;position:fixed;top:0;left:0;width:100%;height:100%;background:rgba(0,0,0,0.5);z-index:3000;overflow:auto" onclick="if(event.target===this)closePdfUploadModal()">
   <div style="background:white;border-radius:18px;padding:28px;max-width:500px;margin:60px auto;position:relative">
-    <div style="font-size:18px;font-weight:800;color:#0F172A;margin-bottom:6px">📄 PDF orqali savollar yuklash</div>
-    <div style="font-size:12.5px;color:#64748B;margin-bottom:20px">PDF fayl quyidagi formatda bo'lishi kerak:<br>
+    <div style="font-size:18px;font-weight:800;color:#0F172A;margin-bottom:6px">📂 Savollar yuklash</div>
+    <div style="font-size:12.5px;color:#64748B;margin-bottom:20px">Quyidagi formatlardan birini tanlang:<br>
     <code style="background:#F1F5F9;padding:2px 6px;border-radius:4px;font-size:11px">1. Savol matni?<br>A) Javob A<br>B) Javob B<br>C) Javob C<br>D) Javob D<br>To'g'ri: A<br>Izoh: (ixtiyoriy)</code></div>
     <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:16px">
       <div>
@@ -3290,14 +3294,15 @@
       </div>
     </div>
     <div style="background:#F0FDF4;border:1px solid #86EFAC;border-radius:10px;padding:10px 14px;margin-bottom:14px;font-size:12px;color:#166534">
-      📋 <strong>PDF format:</strong> <code>1. Savol? A) ... B) ... C) ... D) ... To'g'ri: A</code><br>
-      📋 <strong>JSON format:</strong> <code>[{"question_text":"...","option_a":"...","option_b":"...","option_c":"...","option_d":"...","correct_option":"A"}]</code>
+      📄 <strong>PDF / TXT / Word:</strong> <code>1. Savol? A) ... B) ... C) ... D) ... To'g'ri: A</code><br>
+      📋 <strong>JSON:</strong> <code>[{"question_text":"...","option_a":"...","option_b":"...","option_c":"...","option_d":"...","correct_option":"A"}]</code><br>
+      📐 <strong>LaTeX/Math:</strong> <code>$E=mc^2$ yoki \frac{a}{b}</code> — formulalar avtomatik ko'rsatiladi
     </div>
     <div style="border:2px dashed #CBD5E1;border-radius:12px;padding:24px;text-align:center;margin-bottom:16px;background:#F8FAFC">
       <div style="font-size:32px;margin-bottom:8px">📄</div>
-      <div style="font-size:14px;font-weight:600;margin-bottom:4px">PDF yoki JSON fayl tanlang</div>
-      <div style="font-size:12px;color:#94A3B8;margin-bottom:12px">PDF (max 10 MB) · JSON massiv formati</div>
-      <input type="file" id="pdfFileInput" accept=".pdf,.json" style="display:none" onchange="document.getElementById('pdfFileName').textContent=this.files[0]?.name||'Fayl tanlanmagan'">
+      <div style="font-size:14px;font-weight:600;margin-bottom:4px">Fayl tanlang</div>
+      <div style="font-size:12px;color:#94A3B8;margin-bottom:12px">PDF · TXT · Word (docx) · JSON · CSV (max 10 MB)</div>
+      <input type="file" id="pdfFileInput" accept=".pdf,.json,.txt,.doc,.docx,.xlsx,.csv" style="display:none" onchange="document.getElementById('pdfFileName').textContent=this.files[0]?.name||'Fayl tanlanmagan'">
       <button onclick="document.getElementById('pdfFileInput').click()" style="padding:8px 20px;background:#EEF3FF;border:1.5px solid #93C5FD;border-radius:8px;color:#1B4FD8;font-family:'Outfit',sans-serif;font-size:13px;font-weight:600;cursor:pointer">Fayl tanlash</button>
       <div id="pdfFileName" style="margin-top:8px;font-size:12px;color:#1B4FD8;font-weight:600"></div>
     </div>
@@ -3489,26 +3494,26 @@
   </div>
 </div>
   <!-- ===== IDU Platform — Modular Architecture ===== -->
-  <script src="js/core/config.js?v=20260517b"></script>
-  <script src="js/core/auth.js?v=20260517b"></script>
-  <script src="js/core/router.js?v=20260517b"></script>
-  <script src="js/ui/toast.js?v=20260517b"></script>
-  <script src="js/ui/modal.js?v=20260517b"></script>
-  <script src="js/ui/effects.js?v=20260517b"></script>
-  <script src="js/pages/student.js?v=20260517b"></script>
-  <script src="js/pages/teacher.js?v=20260517b"></script>
-  <script src="js/pages/dekanat.js?v=20260517b"></script>
-  <script src="js/pages/investor.js?v=20260517b"></script>
-  <script src="js/features/schedule.js?v=20260517b"></script>
-  <script src="js/features/assignments.js?v=20260517b"></script>
-  <script src="js/features/grades.js?v=20260517b"></script>
-  <script src="js/features/ai-chat.js?v=20260517b"></script>
-  <script src="js/features/exams.js?v=20260517b"></script>
-  <script src="js/features/games.js?v=20260517b"></script>
-  <script src="js/features/reports.js?v=20260517b"></script>
-  <script src="js/features/notifications.js?v=20260517b"></script>
-  <script src="js/main.js?v=20260517b"></script>
-  <script src="js/enhancements.js?v=20260517b"></script>
+  <script src="js/core/config.js?v=20260517c"></script>
+  <script src="js/core/auth.js?v=20260517c"></script>
+  <script src="js/core/router.js?v=20260517c"></script>
+  <script src="js/ui/toast.js?v=20260517c"></script>
+  <script src="js/ui/modal.js?v=20260517c"></script>
+  <script src="js/ui/effects.js?v=20260517c"></script>
+  <script src="js/pages/student.js?v=20260517c"></script>
+  <script src="js/pages/teacher.js?v=20260517c"></script>
+  <script src="js/pages/dekanat.js?v=20260517c"></script>
+  <script src="js/pages/investor.js?v=20260517c"></script>
+  <script src="js/features/schedule.js?v=20260517c"></script>
+  <script src="js/features/assignments.js?v=20260517c"></script>
+  <script src="js/features/grades.js?v=20260517c"></script>
+  <script src="js/features/ai-chat.js?v=20260517c"></script>
+  <script src="js/features/exams.js?v=20260517c"></script>
+  <script src="js/features/games.js?v=20260517c"></script>
+  <script src="js/features/reports.js?v=20260517c"></script>
+  <script src="js/features/notifications.js?v=20260517c"></script>
+  <script src="js/main.js?v=20260517c"></script>
+  <script src="js/enhancements.js?v=20260517c"></script>
 
 <script>
 /* ── Landing page interactions ───────────────────────────────── */
@@ -3595,5 +3600,26 @@
   // Also expose for external call (when user logs out and returns to landing)
   window._initLanding = initLanding;
 }());
+</script>
+<script>
+function initKaTeX(){
+  window._katexReady=true;
+  renderMathInPage();
+}
+function renderMathInPage(container){
+  if(!window._katexReady||typeof renderMathInElement==='undefined') return;
+  var el=container||document.body;
+  renderMathInElement(el,{
+    delimiters:[
+      {left:'$$',right:'$$',display:true},
+      {left:'$',right:'$',display:false},
+      {left:'\\(',right:'\\)',display:false},
+      {left:'\\[',right:'\\]',display:true}
+    ],
+    throwOnError:false,
+    output:'html'
+  });
+}
+window.renderMathInPage=renderMathInPage;
 </script>
 </html>

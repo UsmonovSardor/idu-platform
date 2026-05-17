@@ -3268,6 +3268,19 @@ var LD={
     ttWeekly:"Haftalik",ttDaily:"Kunlik",sidebarLevel:"Yangi boshlovchi",
     // Stat changes
     dashGpaChange:"↑ +0.2 o'tgan semestr",dashTotalChange:"↑ +23 bu hafta",dashRatingChange:"↑ 156 ichida",
+    // Login modal
+    loginBtn2:"Kirish",loginForgot:"Login yoki parolni unutdingizmi?",
+    loginNote:"Login va parol universitet administratsiyasi tomonidan beriladi.",
+    // Teacher panel
+    tcPanelTitle:"O'qituvchi paneli",
+    tcStat1Lbl:"Jami talabalar",tcStat1Sub:"3 guruh",
+    tcStat2Lbl:"O'rtacha ball",tcStat2Sub:"↑ +2.1 o'tgan oyga nisbatan",
+    tcStat3Lbl:"Bugungi darslar",tcStat3Sub:"Jadvalda",
+    tcStat4Lbl:"Xavfli talabalar",tcStat4Sub:"Davomat yoki ball past",
+    tcTodayTitle:"Bugungi darslar",tcRiskTitle:"Xavfli talabalar",tcRiskBadge:"5 ta",
+    tcTTTitle:"📅 Mening jadvalim",tcTTSub:"Qaysi fan, qaysi guruh, qaysi xona",
+    tcTTToday:"Bugungi darslarim:",tcTTWeekly:"Haftalik jadval",
+    tcGradeTitle:"✏️ Baho kiritish",
   },
   ru:{flag:'🇷🇺',code:'RU',
     navAbout:'О системе',navFeat:'Возможности',navCont:'Контакты',navPart:'Партнёры',
@@ -3335,6 +3348,17 @@ var LD={
     ttTitle:"📅 Расписание",ttPrev:"← Прошлая неделя",ttCur:"Текущая неделя",ttNext:"Следующая неделя →",
     ttWeekly:"Недельный",ttDaily:"Дневной",sidebarLevel:"Новичок",
     dashGpaChange:"↑ +0.2 прошлый семестр",dashTotalChange:"↑ +23 эта неделя",dashRatingChange:"↑ из 156",
+    loginBtn2:"Войти",loginForgot:"Забыли логин или пароль?",
+    loginNote:"Логин и пароль выдаются администрацией университета.",
+    tcPanelTitle:"Панель преподавателя",
+    tcStat1Lbl:"Всего студентов",tcStat1Sub:"3 группы",
+    tcStat2Lbl:"Средний балл",tcStat2Sub:"↑ +2.1 к прошлому месяцу",
+    tcStat3Lbl:"Занятий сегодня",tcStat3Sub:"По расписанию",
+    tcStat4Lbl:"Проблемные студенты",tcStat4Sub:"Низкая посещаемость или балл",
+    tcTodayTitle:"Занятия сегодня",tcRiskTitle:"Проблемные студенты",tcRiskBadge:"5 чел.",
+    tcTTTitle:"📅 Моё расписание",tcTTSub:"Какой предмет, какая группа, какой кабинет",
+    tcTTToday:"Мои занятия сегодня:",tcTTWeekly:"Недельное расписание",
+    tcGradeTitle:"✏️ Выставить оценку",
   },
   en:{flag:'🇬🇧',code:'EN',
     navAbout:'About',navFeat:'Features',navCont:'Contacts',navPart:'Partners',
@@ -3401,6 +3425,17 @@ var LD={
     appAch3Name:'Innovator',appAch3Desc:'Submit a startup idea',
     appThFan:'Course',appThJn:'MCA',appThOn:'TCA',appThYn:'FCA',appThMi:'EXM',appThJami:'Total',appThBaho:'Grade',
     appChiqish:'Sign Out',
+    loginBtn2:"Sign In",loginForgot:"Forgot your login or password?",
+    loginNote:"Login and password are provided by the university administration.",
+    tcPanelTitle:"Teacher Dashboard",
+    tcStat1Lbl:"Total Students",tcStat1Sub:"3 groups",
+    tcStat2Lbl:"Average Score",tcStat2Sub:"↑ +2.1 from last month",
+    tcStat3Lbl:"Today's Classes",tcStat3Sub:"On schedule",
+    tcStat4Lbl:"At-Risk Students",tcStat4Sub:"Low attendance or score",
+    tcTodayTitle:"Today's Classes",tcRiskTitle:"At-Risk Students",tcRiskBadge:"5 students",
+    tcTTTitle:"📅 My Timetable",tcTTSub:"Subject, group, and classroom",
+    tcTTToday:"My classes today:",tcTTWeekly:"Weekly Schedule",
+    tcGradeTitle:"✏️ Enter Grade",
   },
 };
 
@@ -3476,6 +3511,18 @@ function setLang(lang){
   s('fm4-title',L.fm4t);s('fm4-desc',L.fm4d);
   s('fm5-title',L.fm5t);s('fm5-desc',L.fm5d);
   s('fm6-title',L.fm6t);s('fm6-desc',L.fm6d);
+  // Login modal
+  s('login-submit-text',L.loginBtn2);s('login-forgot-text',L.loginForgot);s('login-note-text',L.loginNote);
+  // Teacher panel
+  s('tc-panel-title',L.tcPanelTitle);
+  s('tc-stat1-label',L.tcStat1Lbl);s('tc-stat1-sub',L.tcStat1Sub);
+  s('tc-stat2-label',L.tcStat2Lbl);s('tc-stat2-sub',L.tcStat2Sub);
+  s('tc-stat3-label',L.tcStat3Lbl);s('tc-stat3-sub',L.tcStat3Sub);
+  s('tc-stat4-label',L.tcStat4Lbl);s('tc-stat4-sub',L.tcStat4Sub);
+  s('tc-today-title',L.tcTodayTitle);s('tc-risk-title',L.tcRiskTitle);s('tc-risk-badge',L.tcRiskBadge);
+  s('tc-tt-title',L.tcTTTitle);s('tc-tt-sub',L.tcTTSub);
+  s('tc-tt-today',L.tcTTToday);s('tc-tt-weekly',L.tcTTWeekly);
+  s('tc-grade-title',L.tcGradeTitle);
 
   // ── App UI refresh (when user is already logged in) ──
   if(currentUser && currentRole){
