@@ -62,6 +62,7 @@
         <div class="lang-options" id="langOptions">
           <div class="lang-option active" id="lopt-uz" onclick="setLang('uz')"><span class="lo-flag">🇺🇿</span> O'zbek</div>
           <div class="lang-option" id="lopt-ru" onclick="setLang('ru')"><span class="lo-flag">🇷🇺</span> Русский</div>
+          <div class="lang-option" id="lopt-en" onclick="setLang('en')"><span class="lo-flag">🇬🇧</span> English</div>
         </div>
       </div>
       <button class="lp-cta-btn" onclick="openLoginModal()" id="nav-kirish">Kirish →</button>
@@ -102,28 +103,209 @@
       </div>
     </div>
 
-    <!-- Floating dashboard preview card -->
-    <div class="lp-hero-card">
+    <!-- Floating dashboard preview card — carousel -->
+    <div class="lp-hero-card" id="lpHeroCard">
       <div class="lp-card-header">
         <div class="lp-card-dots"><span></span><span></span><span></span></div>
-        <div class="lp-card-title">📊 Dashboard</div>
+        <div class="lp-card-title" id="lpCarouselLabel">📊 Dashboard</div>
       </div>
-      <div class="lp-card-stats">
-        <div class="lp-cs"><div class="lp-cs-val" style="color:#06b6d4">3.8</div><div class="lp-cs-key">GPA</div></div>
-        <div class="lp-cs"><div class="lp-cs-val" style="color:#22d3ee">94%</div><div class="lp-cs-key">Davomat</div></div>
-        <div class="lp-cs"><div class="lp-cs-val" style="color:#818cf8">#12</div><div class="lp-cs-key">Reyting</div></div>
+
+      <!-- Slide 1: Dashboard -->
+      <div class="lp-carousel-slide" id="lpSlide0">
+        <div class="lp-card-stats">
+          <div class="lp-cs"><div class="lp-cs-val" style="color:#06b6d4">3.8</div><div class="lp-cs-key">GPA</div></div>
+          <div class="lp-cs"><div class="lp-cs-val" style="color:#22d3ee">94%</div><div class="lp-cs-key">Davomat</div></div>
+          <div class="lp-cs"><div class="lp-cs-val" style="color:#818cf8">#12</div><div class="lp-cs-key">Reyting</div></div>
+        </div>
+        <div class="lp-card-bar-wrap">
+          <div class="lp-card-bar-label"><span>Semestr natijasi</span><span style="color:#06b6d4">82%</span></div>
+          <div class="lp-progress-bg"><div class="lp-progress-fill" style="width:82%"></div></div>
+        </div>
+        <div class="lp-card-subjects">
+          <div class="lp-subj" style="--c:#06b6d4">Algoritmlar <span>A</span></div>
+          <div class="lp-subj" style="--c:#818cf8">Web texn. <span>B+</span></div>
+          <div class="lp-subj" style="--c:#34d399">Matematika <span>A-</span></div>
+        </div>
       </div>
-      <div class="lp-card-bar-wrap">
-        <div class="lp-card-bar-label"><span>Semestr natijasi</span><span style="color:#06b6d4">82%</span></div>
-        <div class="lp-progress-bg"><div class="lp-progress-fill" style="width:82%"></div></div>
+
+      <!-- Slide 2: AI Tutor -->
+      <div class="lp-carousel-slide lp-slide-hidden" id="lpSlide1">
+        <div class="lp-chat-wrap">
+          <div class="lp-chat-msg lp-chat-user">
+            <div class="lp-chat-bubble lp-bubble-user">Integral hisoblash qoidasi?</div>
+            <div class="lp-chat-avatar lp-avatar-user">👤</div>
+          </div>
+          <div class="lp-chat-msg lp-chat-ai">
+            <div class="lp-chat-avatar lp-avatar-ai">🤖</div>
+            <div class="lp-chat-bubble lp-bubble-ai">∫f(x)dx formulasi bo'yicha: F(b)−F(a). Misol: ∫x²dx = x³/3 + C</div>
+          </div>
+          <div class="lp-chat-msg lp-chat-ai">
+            <div class="lp-chat-avatar lp-avatar-ai">🤖</div>
+            <div class="lp-typing-indicator"><span></span><span></span><span></span></div>
+          </div>
+        </div>
       </div>
-      <div class="lp-card-subjects">
-        <div class="lp-subj" style="--c:#06b6d4">Algoritmlar <span>A</span></div>
-        <div class="lp-subj" style="--c:#818cf8">Web texn. <span>B+</span></div>
-        <div class="lp-subj" style="--c:#34d399">Matematika <span>A-</span></div>
+
+      <!-- Slide 3: Jadval -->
+      <div class="lp-carousel-slide lp-slide-hidden" id="lpSlide2">
+        <div class="lp-jadval-wrap">
+          <div class="lp-jadval-item lp-jadval-today">
+            <div class="lp-jadval-time">08:30</div>
+            <div class="lp-jadval-info">
+              <div class="lp-jadval-name">Algoritmlar</div>
+              <div class="lp-jadval-room">301-xona</div>
+            </div>
+            <div class="lp-jadval-badge">Bugun</div>
+          </div>
+          <div class="lp-jadval-item">
+            <div class="lp-jadval-time">10:10</div>
+            <div class="lp-jadval-info">
+              <div class="lp-jadval-name">Web texnologiyalar</div>
+              <div class="lp-jadval-room">214-xona</div>
+            </div>
+          </div>
+          <div class="lp-jadval-item">
+            <div class="lp-jadval-time">13:40</div>
+            <div class="lp-jadval-info">
+              <div class="lp-jadval-name">Matematika</div>
+              <div class="lp-jadval-room">112-xona</div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Slide 4: Reyting -->
+      <div class="lp-carousel-slide lp-slide-hidden" id="lpSlide3">
+        <div class="lp-rating-wrap">
+          <div class="lp-rating-row">
+            <div class="lp-rating-rank lp-rank-gold">1</div>
+            <div class="lp-rating-avatar" style="background:linear-gradient(135deg,#f59e0b,#fbbf24)">AN</div>
+            <div class="lp-rating-name">Aliyev Nodir</div>
+            <div class="lp-rating-gpa">4.0</div>
+          </div>
+          <div class="lp-rating-row">
+            <div class="lp-rating-rank lp-rank-silver">2</div>
+            <div class="lp-rating-avatar" style="background:linear-gradient(135deg,#94a3b8,#cbd5e1)">KZ</div>
+            <div class="lp-rating-name">Karimova Zulfiya</div>
+            <div class="lp-rating-gpa">3.96</div>
+          </div>
+          <div class="lp-rating-row lp-rating-me">
+            <div class="lp-rating-rank" style="color:#818cf8">#12</div>
+            <div class="lp-rating-avatar" style="background:linear-gradient(135deg,#4338ca,#818cf8)">SU</div>
+            <div class="lp-rating-name">Siz <span style="color:#818cf8;font-size:10px">(men)</span></div>
+            <div class="lp-rating-gpa" style="color:#818cf8">3.8</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Dot indicators -->
+      <div class="lp-carousel-dots" id="lpCarouselDots">
+        <button class="lp-dot lp-dot-active" onclick="lpGoSlide(0)" aria-label="Slide 1"></button>
+        <button class="lp-dot" onclick="lpGoSlide(1)" aria-label="Slide 2"></button>
+        <button class="lp-dot" onclick="lpGoSlide(2)" aria-label="Slide 3"></button>
+        <button class="lp-dot" onclick="lpGoSlide(3)" aria-label="Slide 4"></button>
       </div>
     </div>
   </div>
+
+  <style>
+    /* ── Hero Carousel ── */
+    .lp-carousel-slide{transition:opacity 0.45s ease,transform 0.45s ease;opacity:1;transform:translateY(0);}
+    .lp-slide-hidden{display:none;opacity:0;transform:translateY(8px);}
+    .lp-carousel-dots{display:flex;justify-content:center;gap:6px;margin-top:14px;}
+    .lp-dot{width:8px;height:8px;border-radius:50%;border:none;background:rgba(255,255,255,0.2);cursor:pointer;padding:0;transition:background 0.3s,transform 0.3s;}
+    .lp-dot-active{background:#06b6d4;transform:scale(1.25);}
+    /* Chat slide */
+    .lp-chat-wrap{display:flex;flex-direction:column;gap:10px;padding:4px 0;}
+    .lp-chat-msg{display:flex;align-items:flex-end;gap:8px;}
+    .lp-chat-user{flex-direction:row-reverse;}
+    .lp-chat-bubble{border-radius:14px;padding:8px 12px;font-size:12px;line-height:1.4;max-width:78%;}
+    .lp-bubble-user{background:linear-gradient(135deg,#1e40af,#3b82f6);color:#fff;border-bottom-right-radius:3px;}
+    .lp-bubble-ai{background:rgba(255,255,255,0.08);color:#e2e8f0;border:1px solid rgba(255,255,255,0.1);border-bottom-left-radius:3px;}
+    .lp-chat-avatar{width:26px;height:26px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:13px;flex-shrink:0;}
+    .lp-avatar-user{background:rgba(59,130,246,0.3);}
+    .lp-avatar-ai{background:rgba(6,182,212,0.2);}
+    .lp-typing-indicator{display:flex;align-items:center;gap:4px;padding:10px 14px;background:rgba(255,255,255,0.08);border-radius:14px;border-bottom-left-radius:3px;border:1px solid rgba(255,255,255,0.1);}
+    .lp-typing-indicator span{width:6px;height:6px;border-radius:50%;background:#94a3b8;animation:lpTyping 1.2s infinite;}
+    .lp-typing-indicator span:nth-child(2){animation-delay:0.2s;}
+    .lp-typing-indicator span:nth-child(3){animation-delay:0.4s;}
+    @keyframes lpTyping{0%,60%,100%{transform:translateY(0);}30%{transform:translateY(-5px);}}
+    /* Jadval slide */
+    .lp-jadval-wrap{display:flex;flex-direction:column;gap:8px;padding:2px 0;}
+    .lp-jadval-item{display:flex;align-items:center;gap:10px;padding:9px 12px;border-radius:10px;background:rgba(255,255,255,0.05);border:1px solid rgba(255,255,255,0.07);}
+    .lp-jadval-today{background:rgba(6,182,212,0.1);border-color:rgba(6,182,212,0.3);}
+    .lp-jadval-time{font-family:'DM Mono',monospace;font-size:12px;color:#06b6d4;min-width:38px;font-weight:600;}
+    .lp-jadval-info{flex:1;}
+    .lp-jadval-name{font-size:12px;font-weight:600;color:#e2e8f0;}
+    .lp-jadval-room{font-size:11px;color:#64748b;margin-top:2px;}
+    .lp-jadval-badge{font-size:10px;background:rgba(6,182,212,0.2);color:#06b6d4;padding:2px 7px;border-radius:20px;font-weight:600;}
+    /* Reyting slide */
+    .lp-rating-wrap{display:flex;flex-direction:column;gap:8px;padding:2px 0;}
+    .lp-rating-row{display:flex;align-items:center;gap:10px;padding:8px 10px;border-radius:10px;background:rgba(255,255,255,0.04);border:1px solid rgba(255,255,255,0.06);}
+    .lp-rating-me{background:rgba(129,140,248,0.1);border-color:rgba(129,140,248,0.3);}
+    .lp-rating-rank{font-family:'DM Mono',monospace;font-size:13px;font-weight:700;min-width:24px;text-align:center;color:#f59e0b;}
+    .lp-rank-gold{color:#f59e0b;}
+    .lp-rank-silver{color:#94a3b8;}
+    .lp-rating-avatar{width:28px;height:28px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:10px;font-weight:700;color:#fff;flex-shrink:0;}
+    .lp-rating-name{flex:1;font-size:12px;font-weight:600;color:#e2e8f0;}
+    .lp-rating-gpa{font-size:13px;font-weight:700;color:#34d399;}
+  </style>
+
+  <script>
+  (function(){
+    var labels=['📊 Dashboard','🤖 AI Tutor','📅 Jadval','🏆 Reyting'];
+    var current=0;
+    var total=4;
+    var timer=null;
+
+    function getSlide(i){return document.getElementById('lpSlide'+i);}
+    function getDot(i){return document.querySelectorAll('#lpCarouselDots .lp-dot')[i];}
+    function getLabel(){return document.getElementById('lpCarouselLabel');}
+
+    window.lpGoSlide=function(next){
+      if(next===current) return;
+      var prev=current;
+      current=next;
+      var prevEl=getSlide(prev);
+      var nextEl=getSlide(next);
+      if(!prevEl||!nextEl) return;
+      // Fade out prev
+      prevEl.style.opacity='0';
+      prevEl.style.transform='translateY(-6px)';
+      prevEl.style.transition='opacity 0.3s ease,transform 0.3s ease';
+      setTimeout(function(){
+        prevEl.classList.add('lp-slide-hidden');
+        prevEl.style.opacity='';prevEl.style.transform='';prevEl.style.transition='';
+        nextEl.classList.remove('lp-slide-hidden');
+        nextEl.style.opacity='0';nextEl.style.transform='translateY(8px)';
+        nextEl.style.transition='opacity 0.4s ease,transform 0.4s ease';
+        requestAnimationFrame(function(){
+          requestAnimationFrame(function(){
+            nextEl.style.opacity='1';nextEl.style.transform='translateY(0)';
+          });
+        });
+        setTimeout(function(){nextEl.style.transition='';},450);
+      },300);
+      // Update dots
+      for(var i=0;i<total;i++){
+        var d=getDot(i);
+        if(d) d.classList.toggle('lp-dot-active',i===next);
+      }
+      // Update label
+      var lbl=getLabel();
+      if(lbl) lbl.textContent=labels[next];
+      // Restart timer
+      clearInterval(timer);
+      timer=setInterval(advance,3200);
+    };
+
+    function advance(){
+      lpGoSlide((current+1)%total);
+    }
+
+    timer=setInterval(advance,3200);
+  })();
+  </script>
 
   <!-- ── STATS ─────────────────────────────────────────────────── -->
   <div class="lp-stats">
@@ -162,46 +344,46 @@
   <!-- ── FEATURES GRID ─────────────────────────────────────────── -->
   <div class="lp-features">
     <div class="lp-feat-header">
-      <div class="lp-feat-tag">Nima taklif qilamiz</div>
-      <h2 class="lp-feat-title">Barcha ehtiyojlar — <span class="lp-brand-gradient">bitta tizimda</span></h2>
+      <div class="lp-feat-tag" id="sf-tag">Nima taklif qilamiz</div>
+      <h2 class="lp-feat-title"><span id="sf-title-main">Barcha ehtiyojlar —</span> <span class="lp-brand-gradient" id="sf-title-span">bitta tizimda</span></h2>
     </div>
     <div class="lp-feat-grid">
       <div class="lp-feat-card lp-feat-lg">
         <div class="lp-feat-glow" style="--gc:rgba(6,182,212,0.3)"></div>
         <div class="lp-feat-icon-wrap" style="background:linear-gradient(135deg,#0e7490,#06b6d4)">🤖</div>
-        <h3>AI Tutor</h3>
-        <p>Har bir talabaga shaxsiy sun'iy intellekt murabbiy. Savollarga javob, tushuntirish, mashq — 24/7.</p>
+        <h3 id="ff1-h3">AI Tutor</h3>
+        <p id="ff1-p">Har bir talabaga shaxsiy sun'iy intellekt murabbiy. Savollarga javob, tushuntirish, mashq — 24/7.</p>
         <div class="lp-feat-chip">GPT-4 powered</div>
       </div>
       <div class="lp-feat-card">
         <div class="lp-feat-glow" style="--gc:rgba(129,140,248,0.3)"></div>
         <div class="lp-feat-icon-wrap" style="background:linear-gradient(135deg,#4338ca,#818cf8)">📋</div>
-        <h3>Onlayn imtihon</h3>
-        <p>Anti-cheat tizimi, real-vaqt monitoring va xavfsiz sesiya boshqaruvi.</p>
+        <h3 id="ff2-h3">Onlayn imtihon</h3>
+        <p id="ff2-p">Anti-cheat tizimi, real-vaqt monitoring va xavfsiz sesiya boshqaruvi.</p>
       </div>
       <div class="lp-feat-card">
         <div class="lp-feat-glow" style="--gc:rgba(52,211,153,0.3)"></div>
         <div class="lp-feat-icon-wrap" style="background:linear-gradient(135deg,#065f46,#34d399)">📊</div>
-        <h3>Baholar & Hisobot</h3>
-        <p>JN, ON, YN, MI hisobi. Semester hisobotlari, reyting, PDF eksport.</p>
+        <h3 id="ff3-h3">Baholar & Hisobot</h3>
+        <p id="ff3-p">JN, ON, YN, MI hisobi. Semester hisobotlari, reyting, PDF eksport.</p>
       </div>
       <div class="lp-feat-card">
         <div class="lp-feat-glow" style="--gc:rgba(251,146,60,0.3)"></div>
         <div class="lp-feat-icon-wrap" style="background:linear-gradient(135deg,#9a3412,#fb923c)">🚀</div>
-        <h3>Startup Hub</h3>
-        <p>Talabalar o'z loyihalarini yaratadi, jamoa tuzadi va investor e'tiborini tortadi.</p>
+        <h3 id="ff4-h3">Startup Hub</h3>
+        <p id="ff4-p">Talabalar o'z loyihalarini yaratadi, jamoa tuzadi va investor e'tiborini tortadi.</p>
       </div>
       <div class="lp-feat-card">
         <div class="lp-feat-glow" style="--gc:rgba(244,114,182,0.3)"></div>
         <div class="lp-feat-icon-wrap" style="background:linear-gradient(135deg,#9d174d,#f472b6)">📅</div>
-        <h3>Jadval & Davomat</h3>
-        <p>Haftalik dars jadvali, xona holati, davomat nazorati — real vaqtda.</p>
+        <h3 id="ff5-h3">Jadval & Davomat</h3>
+        <p id="ff5-p">Haftalik dars jadvali, xona holati, davomat nazorati — real vaqtda.</p>
       </div>
       <div class="lp-feat-card lp-feat-lg">
         <div class="lp-feat-glow" style="--gc:rgba(6,182,212,0.25)"></div>
         <div class="lp-feat-icon-wrap" style="background:linear-gradient(135deg,#1e3a8a,#3b82f6)">🏛️</div>
-        <h3>Dekanat paneli</h3>
-        <p>To'liq boshqaruv: talabalar bazasi, arizalar, imtihon sessiyasi, hisobotlar va statistika — bitta qulay panelda.</p>
+        <h3 id="ff6-h3">Dekanat paneli</h3>
+        <p id="ff6-p">To'liq boshqaruv: talabalar bazasi, arizalar, imtihon sessiyasi, hisobotlar va statistika — bitta qulay panelda.</p>
         <div class="lp-feat-chip lp-feat-chip-blue">Admin & Dekanat</div>
       </div>
     </div>
@@ -211,10 +393,10 @@
   <div class="lp-cta-section">
     <div class="lp-cta-orb"></div>
     <div class="lp-cta-content">
-      <h2 class="lp-cta-title">Bugun boshlang</h2>
-      <p class="lp-cta-sub">Login va parol universitet administratsiyasi tomonidan beriladi.</p>
+      <h2 class="lp-cta-title" id="cta-title">Bugun boshlang</h2>
+      <p class="lp-cta-sub" id="cta-sub">Login va parol universitet administratsiyasi tomonidan beriladi.</p>
       <button class="lp-primary-btn lp-cta-main-btn" onclick="openLoginModal()">
-        <span>Tizimga kirish</span>
+        <span id="cta-btn-text">Tizimga kirish</span>
         <svg width="18" height="18" viewBox="0 0 24 24" fill="none"><path d="M5 12h14M12 5l7 7-7 7" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
       </button>
     </div>
@@ -224,11 +406,11 @@
   <footer class="lp-footer">
     <div class="lp-footer-logo"><div class="lp-logo-mark" style="width:28px;height:28px;font-size:11px">IDU</div><span style="font-weight:700;color:#e2e8f0">IDU Platform</span></div>
     <div class="lp-footer-links">
-      <a onclick="openAboutModal()">Tizim haqida</a>
-      <a onclick="openFeatModal()">Imkoniyatlar</a>
-      <a onclick="openFaqModal()">FAQ</a>
+      <a id="ft-about" onclick="openAboutModal()">Tizim haqida</a>
+      <a id="ft-feat" onclick="openFeatModal()">Imkoniyatlar</a>
+      <a id="ft-faq" onclick="openFaqModal()">FAQ</a>
     </div>
-    <div class="lp-footer-copy">© 2026 IDU. Barcha huquqlar himoyalangan.</div>
+    <div class="lp-footer-copy" id="ft-copy">© 2026 IDU. Barcha huquqlar himoyalangan.</div>
   </footer>
 
 </div>

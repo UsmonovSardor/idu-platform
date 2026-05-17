@@ -3232,6 +3232,16 @@ var LD={
     appAch3Name:"Innovator",appAch3Desc:"Startup g'oya kiritish",
     appThFan:"Fan",appThJn:"JN",appThOn:"ON",appThYn:"YN",appThMi:"MI",appThJami:"Jami",appThBaho:"Baho",
     appChiqish:"Chiqish",
+    sfTag:"Nima taklif qilamiz",
+    sfTitleMain:"Barcha ehtiyojlar —",sfTitleSpan:"bitta tizimda",
+    ff1h3:"AI Tutor",ff1p:"Har bir talabaga shaxsiy sun'iy intellekt murabbiy. Savollarga javob, tushuntirish, mashq — 24/7.",
+    ff2h3:"Onlayn imtihon",ff2p:"Anti-cheat tizimi, real-vaqt monitoring va xavfsiz sesiya boshqaruvi.",
+    ff3h3:"Baholar & Hisobot",ff3p:"JN, ON, YN, MI hisobi. Semester hisobotlari, reyting, PDF eksport.",
+    ff4h3:"Startup Hub",ff4p:"Talabalar o'z loyihalarini yaratadi, jamoa tuzadi va investor e'tiborini tortadi.",
+    ff5h3:"Jadval & Davomat",ff5p:"Haftalik dars jadvali, xona holati, davomat nazorati — real vaqtda.",
+    ff6h3:"Dekanat paneli",ff6p:"To'liq boshqaruv: talabalar bazasi, arizalar, imtihon sessiyasi, hisobotlar va statistika — bitta qulay panelda.",
+    ctaTitle:"Bugun boshlang",ctaSub:"Login va parol universitet administratsiyasi tomonidan beriladi.",ctaBtn:"Tizimga kirish",
+    ftAbout:"Tizim haqida",ftFeat:"Imkoniyatlar",ftFaq:"FAQ",ftCopy:"© 2026 IDU. Barcha huquqlar himoyalangan.",
   },
   ru:{flag:'🇷🇺',code:'RU',
     navAbout:'О системе',navFeat:'Возможности',navCont:'Контакты',navPart:'Партнёры',
@@ -3270,7 +3280,64 @@ var LD={
     appAch3Name:'Инноватор',appAch3Desc:'Подать стартап-идею',
     appThFan:'Дисциплина',appThJn:'СКЗ',appThOn:'ОКЗ',appThYn:'ЯКЗ',appThMi:'ЭКЗ',appThJami:'Итого',appThBaho:'Оценка',
     appChiqish:'Выйти',
-  }
+    sfTag:"Что мы предлагаем",
+    sfTitleMain:"Все потребности —",sfTitleSpan:"в одной системе",
+    ff1h3:"AI Репетитор",ff1p:"Персональный ИИ-наставник для каждого студента. Ответы на вопросы, объяснения, упражнения — 24/7.",
+    ff2h3:"Онлайн экзамен",ff2p:"Система антижульничества, мониторинг в реальном времени и безопасное управление сессией.",
+    ff3h3:"Оценки & Отчёты",ff3p:"Учёт СКЗ, ОКЗ, ЯКЗ, ЭКЗ. Семестровые отчёты, рейтинг, экспорт в PDF.",
+    ff4h3:"Startup Hub",ff4p:"Студенты создают проекты, формируют команды и привлекают внимание инвесторов.",
+    ff5h3:"Расписание & Посещаемость",ff5p:"Недельное расписание, состояние аудиторий, контроль посещаемости — в реальном времени.",
+    ff6h3:"Панель деканата",ff6p:"Полное управление: база студентов, заявления, экзаменационная сессия, отчёты и статистика — в одной панели.",
+    ctaTitle:"Начните сегодня",ctaSub:"Логин и пароль выдаются администрацией университета.",ctaBtn:"Войти в систему",
+    ftAbout:"О системе",ftFeat:"Возможности",ftFaq:"FAQ",ftCopy:"© 2026 IDU. Все права защищены.",
+  },
+  en:{flag:'🇬🇧',code:'EN',
+    navAbout:'About',navFeat:'Features',navCont:'Contacts',navPart:'Partners',
+    kirish:'Sign In',
+    heroT:"International Digital University",
+    heroS:"Modern education platform — a unified digital environment for students, teachers, administration, and investors.",
+    st1:'Students',st2:'Teachers',st3:'Success Rate',st4:'Online',st5:'Courses',st6:'Partners',
+    welcome:"Welcome!",chooseRole:"Choose your role",cont:"Continue",demo:"Demo accounts",
+    back:"Go back",btn:"Sign In",err:"Incorrect login or password",
+    ll:"Login",lp:"Password",lc:"Year",lg:"Group",sl:"Service login",dp:"Department",
+    al:"Admin login",comp:"Company",
+    stT:"Student Login",stS:"Enter your login and password",
+    tcT:"Teacher Login",tcS:"Enter your account credentials",
+    dkT:"Dean's Office Login",dkS:"Administrator login credentials",
+    invT:"Investor Login",invS:"View and evaluate startup ideas",
+    c1:"Year I",c2:"Year II",c3:"Year III",c4:"Year IV",cho:"Select",
+    sd:"Student",td:"Teacher",id:"Investor",
+    saBadge:"About Platform",saTitle:"Why IDU?",saSub:"Modern system — all processes in one platform.",
+    saC1t:"For Students",saC2t:"For Teachers",saC3t:"For Administration",
+    sfBadge:"Features",sfTitle:"Core Features",sfSub:"IDU fully digitalises the educational process.",
+    scBadge:"Contact",scTitle:"Contacts",scSub:"Contact us — we are happy to respond.",
+    scLoc:"Address",scPhone:"Phone",scEmail:"Email",scSocial:"Social Media",scSocialSub:"Follow for updates",
+    spBadge:"Partnership",spTitle:"Our Partners",spSub:"Collaboration with leading organisations and universities.",
+    spCtaT:"Want to become a partner?",spCtaS:"Improve education together with IDU.",spCtaBtn:"Contact Us →",
+    sfTag:"What We Offer",
+    sfTitleMain:"All needs —",sfTitleSpan:"in one system",
+    ff1h3:"AI Tutor",ff1p:"A personal AI tutor for every student. Answers, explanations, practice — 24/7.",
+    ff2h3:"Online Exam",ff2p:"Anti-cheat system, real-time monitoring, and secure session management.",
+    ff3h3:"Grades & Reports",ff3p:"GPA tracking, semester reports, rankings, PDF export.",
+    ff4h3:"Startup Hub",ff4p:"Students create projects, build teams, and attract investor attention.",
+    ff5h3:"Schedule & Attendance",ff5p:"Weekly class schedule, room status, attendance control — in real time.",
+    ff6h3:"Dean's Panel",ff6p:"Full management: student database, applications, exam session, reports and statistics — in one convenient panel.",
+    ctaTitle:"Start Today",ctaSub:"Login and password are provided by the university administration.",ctaBtn:"Sign In",
+    ftAbout:"About",ftFeat:"Features",ftFaq:"FAQ",ftCopy:"© 2026 IDU. All rights reserved.",
+    appDashTitle:'Dashboard',appBtnJadval:'📅 Schedule',appBtnQuiz:'🧠 Start Quiz',
+    appBannerTitle:'IDU Platform — Replacing the HEMIS system',
+    appBannerSub:'Last updated: today 08:42 · All data is current',
+    appHb1:'Students',appHb2:'Courses',appHb3:'Attendance',appHb4:'Teachers',
+    appStatTotal:'Total Score',appStatRating:'Ranking Position',appStatDavomat:'Attendance',appStatSemester:'Current Semester',
+    appTodayTitle:"Today's Classes",appTasksTitle:'Upcoming Assignments',appTasksBadge:'5 items',
+    appGradesTitle:'Recent Grades',appGradesAll:'All →',
+    appAchTitle:'Achievements 🏆',
+    appAch1Name:'Honours Student',appAch1Desc:'Maintain GPA 3.5+',
+    appAch2Name:'Punctual Student',appAch2Desc:'95%+ attendance',
+    appAch3Name:'Innovator',appAch3Desc:'Submit a startup idea',
+    appThFan:'Course',appThJn:'MCA',appThOn:'TCA',appThYn:'FCA',appThMi:'EXM',appThJami:'Total',appThBaho:'Grade',
+    appChiqish:'Sign Out',
+  },
 };
 
 function setLang(lang){
@@ -3282,6 +3349,7 @@ function setLang(lang){
   var txt=document.getElementById('lcText');if(txt)txt.textContent=L.code;
   var ou=document.getElementById('lopt-uz');if(ou)ou.classList.toggle('active',lang==='uz');
   var or2=document.getElementById('lopt-ru');if(or2)or2.classList.toggle('active',lang==='ru');
+  var oen=document.getElementById('lopt-en');if(oen)oen.classList.toggle('active',lang==='en');
   function s(id,v){var el=document.getElementById(id);if(el)el.textContent=v;}
   s('nav-about',L.navAbout);s('nav-features',L.navFeat);s('nav-contacts',L.navCont);s('nav-partners',L.navPart);
   s('nav-kirish',L.kirish);
@@ -3296,6 +3364,18 @@ function setLang(lang){
   s('sc-social',L.scSocial);s('sc-social-sub',L.scSocialSub);
   s('sp-badge',L.spBadge);s('sp-title',L.spTitle);s('sp-sub',L.spSub);
   s('sp-cta-t',L.spCtaT);s('sp-cta-s',L.spCtaS);s('sp-cta-btn',L.spCtaBtn);
+  // Features section
+  s('sf-tag',L.sfTag);
+  s('sf-title-main',L.sfTitleMain);s('sf-title-span',L.sfTitleSpan);
+  s('ff1-h3',L.ff1h3);s('ff1-p',L.ff1p);
+  s('ff2-h3',L.ff2h3);s('ff2-p',L.ff2p);
+  s('ff3-h3',L.ff3h3);s('ff3-p',L.ff3p);
+  s('ff4-h3',L.ff4h3);s('ff4-p',L.ff4p);
+  s('ff5-h3',L.ff5h3);s('ff5-p',L.ff5p);
+  s('ff6-h3',L.ff6h3);s('ff6-p',L.ff6p);
+  // CTA + Footer
+  s('cta-title',L.ctaTitle);s('cta-sub',L.ctaSub);s('cta-btn-text',L.ctaBtn);
+  s('ft-about',L.ftAbout);s('ft-feat',L.ftFeat);s('ft-faq',L.ftFaq);s('ft-copy',L.ftCopy);
   // Modal
   s('t-welcome',L.welcome);s('t-choose-role',L.chooseRole);s('t-continue',L.cont);s('t-demo',L.demo);
   document.querySelectorAll('.role-card-title[data-uz]').forEach(function(el){el.textContent=lang==='uz'?el.dataset.uz:el.dataset.ru;});
