@@ -3154,8 +3154,8 @@ function setLang(lang){
   s('hstat1',L.stat1); s('hstat2',L.stat2); s('hstat3',L.stat3); s('hstat4',L.stat4); s('hstat5',L.stat5); s('hstat6',L.stat6);
   // Modal step-role
   s('t-welcome',L.welcome); s('t-choose-role',L.chooseRole); s('t-continue',L.cont); s('t-demo',L.demo);
-  document.querySelectorAll('.role-card-title[data-uz]').forEach(function(el){el.textContent=lang==='uz'?el.dataset.uz:el.dataset.ru;});
-  document.querySelectorAll('.role-card-sub[data-uz]').forEach(function(el){el.textContent=lang==='uz'?el.dataset.uz:el.dataset.ru;});
+  document.querySelectorAll('.role-card-title[data-uz]').forEach(function(el){el.textContent=lang==='uz'?el.dataset.uz:(lang==='ru'?el.dataset.ru:(el.dataset.en||el.dataset.ru));});
+  document.querySelectorAll('.role-card-sub[data-uz]').forEach(function(el){el.textContent=lang==='uz'?el.dataset.uz:(lang==='ru'?el.dataset.ru:(el.dataset.en||el.dataset.ru));});
   // Student
   s('t-student-title',L.stTitle+' 🎓'); s('t-student-sub',L.stSub);
   s('t-err-cred',L.errCred); s('t-err-cred2',L.errCred);
@@ -3242,6 +3242,32 @@ var LD={
     ff6h3:"Dekanat paneli",ff6p:"To'liq boshqaruv: talabalar bazasi, arizalar, imtihon sessiyasi, hisobotlar va statistika — bitta qulay panelda.",
     ctaTitle:"Bugun boshlang",ctaSub:"Login va parol universitet administratsiyasi tomonidan beriladi.",ctaBtn:"Tizimga kirish",
     ftAbout:"Tizim haqida",ftFeat:"Imkoniyatlar",ftFaq:"FAQ",ftCopy:"© 2026 IDU. Barcha huquqlar himoyalangan.",
+    // Hero extras
+    lpBadge:"Raqamli ta'lim platformasi",
+    heroPrimaryBtn:"Tizimga kirish",heroSecBtn:"Imkoniyatlarni ko'rish",
+    pill1:"AI Tutor",pill2:"Real-vaqt baholar",pill3:"Xavfsiz imtihon",pill4:"Mobile-first",
+    // Login modal left
+    llTagline:"Zamonaviy raqamli ta'lim tizimi. Bilim — kelajagingiz poydevori.",
+    llBadge1:"Talabalar uchun",llBadge2:"Professorlar uchun",llBadge3:"Dekanat & Investorlar",
+    lrTitle:"Tizimga kirish",lrSub:"Login va parolni kiriting — rol avtomatik aniqlanadi",
+    // FAQ, About, Feat modals
+    faqTitle:"Tez-tez so'raladigan savollar",
+    aboutTitle:"🏛️ IDU tizimi haqida",featTitle:"Tizim imkoniyatlari",modalBtnLogin:"Tizimga kirish",
+    // About stats
+    aboutStat1:"Faol talabalar",aboutStat2:"O'qituvchilar",aboutStat3:"O'quv fanlar",aboutStat4:"Hamkor kompaniyalar",
+    aboutModules:"Asosiy modullar:",
+    // Feature modal cards
+    fm1t:"SMS 2FA xavfsizlik",fm1d:"Ikki faktorli autentifikatsiya — paroldan keyin telefonga tasdiqlash kodi",
+    fm2t:"AI Tutor",fm2d:"Sun'iy intellekt yordamchi — savollaringizga javob beradi va tushuntiradi",
+    fm3t:"Vaqt boshqaruvi",fm3d:"Pomodoro taymeri, haftalik maqsadlar va o'qish streakini kuzatish",
+    fm4t:"Hamkorlar va vakansiyalar",fm4d:"23+ vakansiya, 6 kompaniya — to'g'ridan to'g'ri ariza yuborish",
+    fm5t:"Startup platformasi",fm5d:"G'oyalar, jamoalar, investorlar bilan bog'lanish imkoniyati",
+    fm6t:"Rasmiy sertifikatlar",fm6d:"Kurslarni tugatgandan so'ng hamkor kompaniyalar tan oladigan sertifikatlar",
+    // Timetable
+    ttTitle:"📅 Dars jadvali",ttPrev:"← Oldingi hafta",ttCur:"Joriy hafta",ttNext:"Keyingi hafta →",
+    ttWeekly:"Haftalik",ttDaily:"Kunlik",sidebarLevel:"Yangi boshlovchi",
+    // Stat changes
+    dashGpaChange:"↑ +0.2 o'tgan semestr",dashTotalChange:"↑ +23 bu hafta",dashRatingChange:"↑ 156 ichida",
   },
   ru:{flag:'🇷🇺',code:'RU',
     navAbout:'О системе',navFeat:'Возможности',navCont:'Контакты',navPart:'Партнёры',
@@ -3290,6 +3316,25 @@ var LD={
     ff6h3:"Панель деканата",ff6p:"Полное управление: база студентов, заявления, экзаменационная сессия, отчёты и статистика — в одной панели.",
     ctaTitle:"Начните сегодня",ctaSub:"Логин и пароль выдаются администрацией университета.",ctaBtn:"Войти в систему",
     ftAbout:"О системе",ftFeat:"Возможности",ftFaq:"FAQ",ftCopy:"© 2026 IDU. Все права защищены.",
+    lpBadge:"Цифровая платформа обучения",
+    heroPrimaryBtn:"Войти",heroSecBtn:"Смотреть возможности",
+    pill1:"AI Репетитор",pill2:"Оценки в реальном времени",pill3:"Безопасный экзамен",pill4:"Mobile-first",
+    llTagline:"Современная цифровая система образования. Знания — основа вашего будущего.",
+    llBadge1:"Для студентов",llBadge2:"Для профессоров",llBadge3:"Деканат и инвесторы",
+    lrTitle:"Войти в систему",lrSub:"Введите логин и пароль — роль определяется автоматически",
+    faqTitle:"Часто задаваемые вопросы",
+    aboutTitle:"🏛️ О системе IDU",featTitle:"Возможности системы",modalBtnLogin:"Войти в систему",
+    aboutStat1:"Активных студентов",aboutStat2:"Преподавателей",aboutStat3:"Учебных дисциплин",aboutStat4:"Компании-партнёры",
+    aboutModules:"Основные модули:",
+    fm1t:"SMS 2FA безопасность",fm1d:"Двухфакторная аутентификация — после пароля код подтверждения на телефон",
+    fm2t:"AI Репетитор",fm2d:"Интеллектуальный помощник — отвечает на вопросы и объясняет",
+    fm3t:"Управление временем",fm3d:"Таймер Помодоро, еженедельные цели и отслеживание streak учёбы",
+    fm4t:"Партнёры и вакансии",fm4d:"23+ вакансии, 6 компаний — прямая подача заявок",
+    fm5t:"Стартап платформа",fm5d:"Идеи, команды, связь с инвесторами",
+    fm6t:"Официальные сертификаты",fm6d:"После прохождения курсов — сертификаты, признанные компаниями-партнёрами",
+    ttTitle:"📅 Расписание",ttPrev:"← Прошлая неделя",ttCur:"Текущая неделя",ttNext:"Следующая неделя →",
+    ttWeekly:"Недельный",ttDaily:"Дневной",sidebarLevel:"Новичок",
+    dashGpaChange:"↑ +0.2 прошлый семестр",dashTotalChange:"↑ +23 эта неделя",dashRatingChange:"↑ из 156",
   },
   en:{flag:'🇬🇧',code:'EN',
     navAbout:'About',navFeat:'Features',navCont:'Contacts',navPart:'Partners',
@@ -3324,6 +3369,25 @@ var LD={
     ff6h3:"Dean's Panel",ff6p:"Full management: student database, applications, exam session, reports and statistics — in one convenient panel.",
     ctaTitle:"Start Today",ctaSub:"Login and password are provided by the university administration.",ctaBtn:"Sign In",
     ftAbout:"About",ftFeat:"Features",ftFaq:"FAQ",ftCopy:"© 2026 IDU. All rights reserved.",
+    lpBadge:"Digital Learning Platform",
+    heroPrimaryBtn:"Sign In",heroSecBtn:"Explore Features",
+    pill1:"AI Tutor",pill2:"Real-time Grades",pill3:"Secure Exam",pill4:"Mobile-first",
+    llTagline:"Modern digital education system. Knowledge — the foundation of your future.",
+    llBadge1:"For Students",llBadge2:"For Professors",llBadge3:"Administration & Investors",
+    lrTitle:"Sign In",lrSub:"Enter your login and password — role is determined automatically",
+    faqTitle:"Frequently Asked Questions",
+    aboutTitle:"🏛️ About IDU System",featTitle:"System Features",modalBtnLogin:"Sign In",
+    aboutStat1:"Active Students",aboutStat2:"Teachers",aboutStat3:"Courses",aboutStat4:"Partner Companies",
+    aboutModules:"Core Modules:",
+    fm1t:"SMS 2FA Security",fm1d:"Two-factor authentication — after password, a confirmation code is sent to your phone",
+    fm2t:"AI Tutor",fm2d:"Intelligent assistant — answers your questions and explains concepts",
+    fm3t:"Time Management",fm3d:"Pomodoro timer, weekly goals and study streak tracking",
+    fm4t:"Partners & Vacancies",fm4d:"23+ vacancies, 6 companies — apply directly",
+    fm5t:"Startup Platform",fm5d:"Ideas, teams, connection with investors",
+    fm6t:"Official Certificates",fm6d:"After completing courses — certificates recognised by partner companies",
+    ttTitle:"📅 Class Schedule",ttPrev:"← Previous Week",ttCur:"Current Week",ttNext:"Next Week →",
+    ttWeekly:"Weekly",ttDaily:"Daily",sidebarLevel:"Beginner",
+    dashGpaChange:"↑ +0.2 last semester",dashTotalChange:"↑ +23 this week",dashRatingChange:"↑ out of 156",
     appDashTitle:'Dashboard',appBtnJadval:'📅 Schedule',appBtnQuiz:'🧠 Start Quiz',
     appBannerTitle:'IDU Platform — Replacing the HEMIS system',
     appBannerSub:'Last updated: today 08:42 · All data is current',
@@ -3378,8 +3442,8 @@ function setLang(lang){
   s('ft-about',L.ftAbout);s('ft-feat',L.ftFeat);s('ft-faq',L.ftFaq);s('ft-copy',L.ftCopy);
   // Modal
   s('t-welcome',L.welcome);s('t-choose-role',L.chooseRole);s('t-continue',L.cont);s('t-demo',L.demo);
-  document.querySelectorAll('.role-card-title[data-uz]').forEach(function(el){el.textContent=lang==='uz'?el.dataset.uz:el.dataset.ru;});
-  document.querySelectorAll('.role-card-sub[data-uz]').forEach(function(el){el.textContent=lang==='uz'?el.dataset.uz:el.dataset.ru;});
+  document.querySelectorAll('.role-card-title[data-uz]').forEach(function(el){el.textContent=lang==='uz'?el.dataset.uz:(lang==='ru'?el.dataset.ru:(el.dataset.en||el.dataset.ru));});
+  document.querySelectorAll('.role-card-sub[data-uz]').forEach(function(el){el.textContent=lang==='uz'?el.dataset.uz:(lang==='ru'?el.dataset.ru:(el.dataset.en||el.dataset.ru));});
   s('t-student-title',L.stT);s('t-student-sub',L.stS);
   s('t-err-cred',L.err);s('t-err-cred2',L.err);
   s('t-label-login',L.ll);s('t-label-pass',L.lp);s('t-label-course',L.lc);s('t-label-group',L.lg);
@@ -3391,6 +3455,27 @@ function setLang(lang){
   s('t-teacher-title',L.tcT);s('t-teacher-sub',L.tcS);s('t-srv-login',L.sl);s('t-dept',L.dp);s('t-teacher-demo',L.td);
   s('t-dekanat-title',L.dkT);s('t-dekanat-sub',L.dkS);s('t-admin-login',L.al);
   s('t-investor-title',L.invT);s('t-investor-sub',L.invS);s('t-company',L.comp);s('t-investor-demo',L.id);
+  // Hero extras
+  s('lp-badge-text',L.lpBadge);
+  s('hero-primary-btn',L.heroPrimaryBtn);s('hero-secondary-btn',L.heroSecBtn);
+  s('pill1',L.pill1);s('pill2',L.pill2);s('pill3',L.pill3);s('pill4',L.pill4);
+  // Login modal left panel
+  s('ll-tagline-text',L.llTagline);
+  s('ll-badge1',L.llBadge1);s('ll-badge2',L.llBadge2);s('ll-badge3',L.llBadge3);
+  s('lr-title-main',L.lrTitle);s('lr-sub-main',L.lrSub);
+  // Modals
+  s('faq-modal-title-text',L.faqTitle);
+  s('about-modal-title',L.aboutTitle);s('feat-modal-title',L.featTitle);
+  s('about-modal-btn-text',L.modalBtnLogin);s('feat-modal-btn-text',L.modalBtnLogin);
+  s('about-stat1-label',L.aboutStat1);s('about-stat2-label',L.aboutStat2);
+  s('about-stat3-label',L.aboutStat3);s('about-stat4-label',L.aboutStat4);
+  s('about-modules-title',L.aboutModules);
+  s('fm1-title',L.fm1t);s('fm1-desc',L.fm1d);
+  s('fm2-title',L.fm2t);s('fm2-desc',L.fm2d);
+  s('fm3-title',L.fm3t);s('fm3-desc',L.fm3d);
+  s('fm4-title',L.fm4t);s('fm4-desc',L.fm4d);
+  s('fm5-title',L.fm5t);s('fm5-desc',L.fm5d);
+  s('fm6-title',L.fm6t);s('fm6-desc',L.fm6d);
 
   // ── App UI refresh (when user is already logged in) ──
   if(currentUser && currentRole){
@@ -3435,20 +3520,18 @@ function setLang(lang){
       u('th-fan',_L.appThFan);u('th-jn',_L.appThJn);u('th-on',_L.appThOn);u('th-yn',_L.appThYn);
       u('th-mi',_L.appThMi);u('th-jami',_L.appThJami);u('th-baho',_L.appThBaho);
       // Stat changes
-      var isRu=currentLang==='ru';
-      u('dash-gpa-change', isRu?'↑ +0.2 прошлый семестр':"↑ +0.2 o'tgan semestr");
-      u('dash-total-change', isRu?'↑ +23 эта неделя':'↑ +23 bu hafta');
-      u('dash-rating-change', isRu?'↑ из 156':'↑ 156 ichida');
+      u('dash-gpa-change', _L.dashGpaChange||"↑ +0.2 o'tgan semestr");
+      u('dash-total-change', _L.dashTotalChange||'↑ +23 bu hafta');
+      u('dash-rating-change', _L.dashRatingChange||'↑ 156 ichida');
       // Timetable page buttons
-      var isRuTT=currentLang==='ru';
-      u('tt-page-title', isRuTT?'📅 Расписание':'📅 Dars jadvali');
-      u('tt-btn-prev', isRuTT?'← Прошлая неделя':'← Oldingi hafta');
-      u('tt-btn-cur',  isRuTT?'Текущая неделя':'Joriy hafta');
-      u('tt-btn-next', isRuTT?'Следующая неделя →':'Keyingi hafta →');
-      u('tt-btn-weekly', isRuTT?'Недельный':'Haftalik');
-      u('tt-btn-daily',  isRuTT?'Дневной':'Kunlik');
+      u('tt-page-title', _L.ttTitle||'📅 Dars jadvali');
+      u('tt-btn-prev', _L.ttPrev||'← Oldingi hafta');
+      u('tt-btn-cur', _L.ttCur||'Joriy hafta');
+      u('tt-btn-next', _L.ttNext||'Keyingi hafta →');
+      u('tt-btn-weekly', _L.ttWeekly||'Haftalik');
+      u('tt-btn-daily', _L.ttDaily||'Kunlik');
       // Sidebar level name
-      u('sidebarLevelName', isRuTT?'Новичок':'Yangi boshlovchi');
+      u('sidebarLevelName', _L.sidebarLevel||'Yangi boshlovchi');
       // Chiqish / Выйти button
       var chiqishEl=document.querySelector('[onclick="logout()"]');
       if(chiqishEl) chiqishEl.textContent=_L.appChiqish||chiqishEl.textContent;
