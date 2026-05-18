@@ -217,14 +217,26 @@ router.post(
   (req, res, next) => {
     const multer = require('multer');
     const storage = multer.memoryStorage();
+    const ALLOWED_MIMES = new Set([
+      'application/pdf',
+      'text/plain',
+      'text/csv',
+      'application/msword',
+      'application/vnd.openxmlformats-officedocument.wordprocessingml.document',
+      'application/vnd.ms-excel',
+      'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
+      'application/octet-stream', // some browsers send this for .pdf/.docx
+    ]);
     const upload = multer({
       storage,
-      limits: { fileSize: 10 * 1024 * 1024 }, // 10MB
+      limits: { fileSize: 15 * 1024 * 1024 }, // 15MB
       fileFilter: (req, file, cb) => {
-        if (file.mimetype === 'application/pdf') {
+        const ext = (file.originalname || '').split('.').pop().toLowerCase();
+        const allowedExts = ['pdf','txt','csv','doc','docx','xls','xlsx'];
+        if (ALLOWED_MIMES.has(file.mimetype) || allowedExts.includes(ext)) {
           cb(null, true);
         } else {
-          cb(new Error('Faqat PDF fayl yuklanishi mumkin'));
+          cb(new Error('Faqat PDF, TXT, CSV, DOC/DOCX, XLS/XLSX fayl yuklanishi mumkin'));
         }
       }
     }).single('pdf');
@@ -236,36 +248,37 @@ router.post(
   ],
   validate,
   async (req, res) => {
-    if (!req.file) return res.status(400).json({ error: 'PDF fayl yuklanmadi' });
+    if (!req.file) return res.status(400).json({ error: 'Fayl yuklanmadi' });
 
     const { subject, type } = req.body;
+    const ext = (req.file.originalname || '').split('.').pop().toLowerCase();
 
-    let pdfText = '';
+    let rawText = '';
     try {
-      // Use internal path to avoid pdf-parse v1.1.1 test-file bug on Railway
-      let pdfParse;
-      try { pdfParse = require('pdf-parse/lib/pdf-parse'); }
-      catch(e) { pdfParse = require('pdf-parse'); }
-      const data = await pdfParse(req.file.buffer);
-      pdfText = data.text;
+      if (ext === 'pdf') {
+        let pdfParse;
+        try { pdfParse = require('pdf-parse/lib/pdf-parse'); }
+        catch(e) { pdfParse = require('pdf-parse'); }
+        const data = await pdfParse(req.file.buffer);
+        rawText = data.text;
+      } else {
+        // TXT, CSV, DOC (best-effort plain text)
+        rawText = req.file.buffer.toString('utf8');
+      }
     } catch (err) {
-      return res.status(422).json({ error: 'PDFni o\'qib bo\'lmadi: ' + err.message });
+      return res.status(422).json({ error: 'Faylni o\'qib bo\'lmadi: ' + err.message });
     }
 
-    // PDF savollarni parse qilish
-    // Format:
-    // 1. Savol matni?
-    // A) Javob
-    // B) Javob
-    // C) Javob
-    // D) Javob
-    // To'g'ri: A
-    // Izoh: (ixtiyoriy)
-    const questions = parsePdfQuestions(pdfText);
+    const questions = parsePdfQuestions(rawText);
 
     if (!questions.length) {
+      // Return debug info so admin can see what was extracted
+      const preview = rawText.replace(/\r/g, '').trim().slice(0, 500);
       return res.status(422).json({
-        error: 'PDFda savol topilmadi. Format: 1. Savol? A) B) C) D) To\'g\'ri: A'
+        error: 'Savollar topilmadi. Fayl formatini tekshiring.',
+        hint: 'Format: "1. Savol matni? A) ... B) ... C) ... D) ... To\'g\'ri: A"',
+        extractedLines: rawText.split('\n').filter(Boolean).length,
+        textPreview: preview
       });
     }
 
@@ -349,45 +362,141 @@ router.post(
   }
 );
 
-// PDF savollarni parse qilish funksiyasi
-function parsePdfQuestions(text) {
+// Robust PDF/text question parser — handles real-world messy PDFs
+function parsePdfQuestions(rawText) {
+  if (!rawText) return [];
+
+  // Normalise line endings and remove form-feed / page-break chars
+  const text = rawText.replace(/\r\n/g, '\n').replace(/\r/g, '\n').replace(/\f/g, '\n');
+
   const questions = [];
-  // Har bir savol raqam bilan boshlanadi: "1." yoki "1)"
-  const blocks = (() => { const result = []; text.split('\n').forEach(line => { if (/^\s*\d+[.)]/.test(line)) result.push(line); else if (result.length) result[result.length-1] += '\n' + line; }); return result; })();
 
-  for (const block of blocks) {
-    const lines = block.split('\n').map(l => l.trim()).filter(Boolean);
-    if (lines.length < 6) continue;
+  // ── STEP 1: split into numbered blocks ──────────────────────────────────────
+  // A new block starts at a line beginning with a number followed by . ) or :
+  // e.g. "1.", "1)", "1:", "  2.", "10."
+  const BLOCK_START = /^\s*(\d{1,3})[.):\s]\s*(.+)/;
 
-    // Savol matni (raqamdan keyin)
-    const qLine = lines[0].replace(/^\d+[.)\s]+/, '').trim();
-    if (!qLine || qLine.length < 10) continue;
+  const lines = text.split('\n');
+  const blocks = [];
+  let current = null;
 
-    // Javoblar A), B), C), D)
-    let a, b, c, d, correct, explanation;
-    for (const line of lines.slice(1)) {
-      const aMatch = line.match(/^[Aa][.)\s]+(.+)/);
-      const bMatch = line.match(/^[Bb][.)\s]+(.+)/);
-      const cMatch = line.match(/^[Cc][.)\s]+(.+)/);
-      const dMatch = line.match(/^[Dd][.)\s]+(.+)/);
-      const corrMatch = line.match(/to['']?g['']?ri[:\s]+([ABCD])/i) ||
-                        line.match(/answer[:\s]+([ABCD])/i) ||
-                        line.match(/correct[:\s]+([ABCD])/i);
-      const izohMatch = line.match(/izoh[:\s]+(.+)/i) ||
-                        line.match(/explanation[:\s]+(.+)/i);
-
-      if (aMatch) a = aMatch[1].trim();
-      if (bMatch) b = bMatch[1].trim();
-      if (cMatch) c = cMatch[1].trim();
-      if (dMatch) d = dMatch[1].trim();
-      if (corrMatch) correct = corrMatch[1].toUpperCase();
-      if (izohMatch) explanation = izohMatch[1].trim();
+  for (const line of lines) {
+    const m = line.match(BLOCK_START);
+    if (m) {
+      // Only treat as a new block if the number is sequential or > current block number
+      const num = parseInt(m[1], 10);
+      const lastNum = current ? current.num : 0;
+      // Allow jumps: new block if num === lastNum+1 OR it's line 1 OR large sequential gap ≤ 5
+      if (!current || num === lastNum + 1 || num === 1 || (num > lastNum && num <= lastNum + 5)) {
+        if (current) blocks.push(current);
+        current = { num, lines: [m[2].trim()] };
+        continue;
+      }
     }
-
-    if (a && b && c && d && correct && ['A','B','C','D'].includes(correct)) {
-      questions.push({ text: qLine, a, b, c, d, correct, explanation });
+    if (current) {
+      const trimmed = line.trim();
+      if (trimmed) current.lines.push(trimmed);
     }
   }
+  if (current) blocks.push(current);
+
+  // ── STEP 2: parse each block ─────────────────────────────────────────────────
+  // Answer-line patterns: A) A. A: (A) A - А) (Cyrillic А)
+  const OPT_RE = /^[(]?([AaBbCcDd]|[АБВГ])[.):\-\s]\s*(.+)/;
+
+  // Correct-answer patterns (various languages/typos)
+  const CORR_RE = [
+    /(?:to[''`]?g[''`]?ri|togri|javob|answer|correct|правильн[ыо]й?|to['']g['']ri)[:\s]+([ABCD])/i,
+    /^([ABCD])\s*[-–—]\s*(?:to[''`]?g[''`]?ri|javob|правильно)/i,
+    /\*\*([ABCD])\*\*/,        // markdown bold **A**
+    /\[([ABCD])\]/,            // [A]
+  ];
+
+  // Cyrillic-to-Latin letter map
+  const CYR = { 'А': 'A', 'В': 'B', 'С': 'C', 'Д': 'D', 'Б': 'B', 'а': 'A', 'б': 'B', 'в': 'B', 'с': 'C', 'д': 'D' };
+
+  function normLetter(ch) {
+    return CYR[ch] || ch.toUpperCase();
+  }
+
+  for (const block of blocks) {
+    if (!block.lines.length) continue;
+
+    // Question text = first non-empty line (may span multiple lines if options haven't started yet)
+    const qParts = [];
+    let optStartIdx = block.lines.length;
+
+    for (let i = 0; i < block.lines.length; i++) {
+      if (OPT_RE.test(block.lines[i])) { optStartIdx = i; break; }
+      qParts.push(block.lines[i]);
+    }
+
+    const qText = qParts.join(' ').trim();
+    if (!qText) continue; // no question text
+
+    let a, b, c, d, correct, explanation;
+
+    for (let i = optStartIdx; i < block.lines.length; i++) {
+      const line = block.lines[i];
+
+      // Option lines
+      const optM = line.match(OPT_RE);
+      if (optM) {
+        const letter = normLetter(optM[1]);
+        const val = optM[2].trim();
+        if (letter === 'A') a = val;
+        else if (letter === 'B') b = val;
+        else if (letter === 'C') c = val;
+        else if (letter === 'D') d = val;
+        continue;
+      }
+
+      // Correct-answer line
+      for (const re of CORR_RE) {
+        const cm = line.match(re);
+        if (cm) {
+          correct = normLetter(cm[1]);
+          break;
+        }
+      }
+
+      // Explanation / Izoh
+      const izM = line.match(/^(?:izoh|explanation|note|tushuntirish)[:\s]+(.+)/i);
+      if (izM) explanation = izM[1].trim();
+    }
+
+    // If no explicit "correct" marker found, try to detect starred/underlined option
+    // e.g. "A) *correct answer*" or "A) correct answer ✓"
+    if (!correct) {
+      for (const [idx, ll] of [['A', a], ['B', b], ['C', c], ['D', d]]) {
+        if (ll && (/\*/.test(ll) || /✓/.test(ll) || /\(correct\)/i.test(ll))) {
+          correct = idx;
+          // Clean the marker from the option text
+          if (idx === 'A') a = a.replace(/[*✓]|\(correct\)/gi, '').trim();
+          else if (idx === 'B') b = b.replace(/[*✓]|\(correct\)/gi, '').trim();
+          else if (idx === 'C') c = c.replace(/[*✓]|\(correct\)/gi, '').trim();
+          else if (idx === 'D') d = d.replace(/[*✓]|\(correct\)/gi, '').trim();
+          break;
+        }
+      }
+    }
+
+    // Require at least question + 2 options to save (lenient for partial data)
+    const hasEnoughOptions = !!(a && b && (c || d));
+    if (!qText || !hasEnoughOptions) continue;
+
+    // Fill missing options with placeholder so DB constraint is satisfied
+    questions.push({
+      text: qText,
+      a: a || '—',
+      b: b || '—',
+      c: c || '—',
+      d: d || '—',
+      correct: (['A','B','C','D'].includes(correct)) ? correct : 'A',
+      explanation: explanation || null
+    });
+  }
+
   return questions;
 }
 
