@@ -14,9 +14,9 @@
 <script src="https://cdnjs.cloudflare.com/ajax/libs/dompurify/3.0.8/purify.min.js"></script>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800&family=DM+Mono:wght@400;500;600&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="css/style.css?v=20260517c">
-<link rel="stylesheet" href="css/responsive.css?v=20260517c">
-<link rel="stylesheet" href="css/landing.css?v=20260517c">
+<link rel="stylesheet" href="css/style.css?v=20260517d">
+<link rel="stylesheet" href="css/responsive.css?v=20260517d">
+<link rel="stylesheet" href="css/landing.css?v=20260517d">
 <!-- KaTeX for math formula rendering -->
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/katex.min.css" crossorigin="anonymous">
 <script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/katex.min.js" crossorigin="anonymous"></script>
@@ -1187,7 +1187,32 @@
       <button class="btn btn-primary" onclick="showPage('teacher-grade')">✏️ Baho kiritish</button>
     </div>
   </div>
-  <div class="stats-grid">
+  <!-- Teacher filter bar -->
+  <div style="background:#fff;border:1.5px solid #E2E8F0;border-radius:14px;padding:10px 14px;margin-bottom:14px;display:flex;flex-wrap:wrap;gap:8px;align-items:center">
+    <span style="font-size:12px;font-weight:700;color:#64748B">🔍 Guruh:</span>
+    <select id="tcGroupFilter" class="form-select" style="width:150px;font-size:13px" onchange="refreshTeacherStats()">
+      <option value="">Barcha guruhlar</option>
+      <option value="AI-2301">AI-2301</option>
+      <option value="CS-2301">CS-2301</option>
+      <option value="IT-2301">IT-2301</option>
+      <option value="DB-2301">DB-2301</option>
+    </select>
+    <span style="font-size:12px;font-weight:700;color:#64748B;margin-left:4px">Fan:</span>
+    <select id="tcSubjectFilter" class="form-select" style="width:160px;font-size:13px" onchange="refreshTeacherStats()">
+      <option value="">Barcha fanlar</option>
+      <option value="algo">💻 Algoritmlar</option>
+      <option value="ai">🤖 Sun'iy Intellekt</option>
+      <option value="math">📐 Matematika</option>
+      <option value="db">🗄️ Ma'lumotlar Bazasi</option>
+      <option value="web">🌐 Web Dasturlash</option>
+    </select>
+    <div style="flex:1"></div>
+    <span id="tc-filter-info" style="font-size:11px;color:#94A3B8"></span>
+  </div>
+  <!-- Dynamic stats (replaces static cards) -->
+  <div id="tc-stat-dynamic" style="margin-bottom:14px"></div>
+  <!-- Static cards hidden — tc-stat-dynamic above is used instead -->
+  <div class="stats-grid" style="display:none">
     <div class="stat-card">
       <div class="stat-card-top"><div class="stat-card-label" id="tc-stat1-label">Jami talabalar</div>
         <div class="stat-card-icon" style="background:var(--primary-light)">👥</div></div>
@@ -1912,17 +1937,36 @@
   <div class="page-header">
     <div class="page-header-left">
       <div class="ph-title">📈 Tahlil va Hisobotlar</div>
-      <div class="ph-sub">2025–2026 o'quv yili · II semestr · Barcha guruhlar bo'yicha to'liq statistika</div>
+      <div class="ph-sub">2025–2026 · Kurs, guruh va semestr bo'yicha filtrlab ko'ring</div>
     </div>
     <div class="page-header-right export-btn-row">
-      <select class="form-select" style="width:auto" id="rptSemSelect" onchange="renderFullReport()">
+      <button class="btn btn-secondary" onclick="exportReportCSV()">📊 CSV</button>
+      <button class="print-btn" onclick="printReport()">🖨️ Chop</button>
+    </div>
+  </div>
+
+  <!-- Smart filter bar -->
+  <div style="background:#fff;border:1.5px solid #E2E8F0;border-radius:14px;padding:12px 16px;margin-bottom:16px;display:flex;flex-wrap:wrap;gap:10px;align-items:center">
+    <div style="font-size:12px;font-weight:700;color:#64748B;white-space:nowrap">🔍 Filtr:</div>
+    <div style="display:flex;gap:8px;flex-wrap:wrap;align-items:center;flex:1">
+      <select id="rptYearFilter" class="form-select" style="width:120px;font-size:13px" onchange="onRptYearChange()">
+        <option value="">Barcha kurslar</option>
+        <option value="1">1-kurs</option>
+        <option value="2">2-kurs</option>
+        <option value="3">3-kurs</option>
+        <option value="4">4-kurs</option>
+      </select>
+      <select id="rptGroupFilter" class="form-select" style="width:150px;font-size:13px" onchange="renderFullReport()">
+        <option value="">Barcha guruhlar</option>
+      </select>
+      <select id="rptSemSelect" class="form-select" style="width:190px;font-size:13px" onchange="renderFullReport()">
         <option value="2" selected>II semestr (2025–2026)</option>
         <option value="1">I semestr (2025–2026)</option>
         <option value="0">II semestr (2024–2025)</option>
       </select>
-      <button class="btn btn-secondary" onclick="exportReportCSV()">📊 CSV export</button>
-      <button class="print-btn" onclick="printReport()">🖨️ Chop etish</button>
+      <button onclick="clearRptFilters()" style="padding:6px 14px;background:#F1F5F9;border:1.5px solid #E2E8F0;border-radius:8px;font-size:12px;font-weight:600;color:#64748B;cursor:pointer">✕ Tozalash</button>
     </div>
+    <div id="rpt-filter-summary" style="font-size:12px;color:#94A3B8"></div>
   </div>
 
   <!-- Tabs -->
@@ -1936,34 +1980,8 @@
 
   <!-- PANEL 1: Overview -->
   <div class="report-panel active" id="rpanel-overview">
-    <!-- KPI row -->
-    <div class="rpt-kpi-row">
-      <div class="rpt-kpi">
-        <div class="rpt-kpi-val" style="color:#1B4FD8" id="rpt-total-students">0</div>
-        <div class="rpt-kpi-lbl">Jami talabalar</div>
-        <div class="rpt-kpi-trend" id="rpt-students-trend" style="color:#94A3B8">—</div>
-      </div>
-      <div class="rpt-kpi">
-        <div class="rpt-kpi-val" style="color:#16A34A" id="rpt-avg-score">0</div>
-        <div class="rpt-kpi-lbl">O'rtacha ball</div>
-        <div class="rpt-kpi-trend" id="rpt-score-trend" style="color:#94A3B8">Imtihon natijalari asosida</div>
-      </div>
-      <div class="rpt-kpi">
-        <div class="rpt-kpi-val" style="color:#7C3AED" id="rpt-total-exams">0</div>
-        <div class="rpt-kpi-lbl">Jami imtihonlar</div>
-        <div class="rpt-kpi-trend" id="rpt-exams-trend" style="color:#94A3B8">—</div>
-      </div>
-      <div class="rpt-kpi">
-        <div class="rpt-kpi-val" style="color:#16A34A" id="rpt-pass-rate">0%</div>
-        <div class="rpt-kpi-lbl">O'tish foizi</div>
-        <div class="rpt-kpi-trend" id="rpt-pass-trend" style="color:#94A3B8">—</div>
-      </div>
-      <div class="rpt-kpi">
-        <div class="rpt-kpi-val" style="color:#DC2626" id="rpt-fail-count">0</div>
-        <div class="rpt-kpi-lbl">Xavf guruhida (F)</div>
-        <div class="rpt-kpi-trend" style="color:#94A3B8" id="rpt-fail-trend">—</div>
-      </div>
-    </div>
+    <!-- Dynamic KPI row (populated by StatsEngine) -->
+    <div id="rpt-kpi-dynamic" style="margin-bottom:16px"></div>
 
     <div class="grid-2" style="margin-bottom:16px">
       <!-- Grade distribution bar chart -->
@@ -3494,26 +3512,27 @@
   </div>
 </div>
   <!-- ===== IDU Platform — Modular Architecture ===== -->
-  <script src="js/core/config.js?v=20260517c"></script>
-  <script src="js/core/auth.js?v=20260517c"></script>
-  <script src="js/core/router.js?v=20260517c"></script>
-  <script src="js/ui/toast.js?v=20260517c"></script>
-  <script src="js/ui/modal.js?v=20260517c"></script>
-  <script src="js/ui/effects.js?v=20260517c"></script>
-  <script src="js/pages/student.js?v=20260517c"></script>
-  <script src="js/pages/teacher.js?v=20260517c"></script>
-  <script src="js/pages/dekanat.js?v=20260517c"></script>
-  <script src="js/pages/investor.js?v=20260517c"></script>
-  <script src="js/features/schedule.js?v=20260517c"></script>
-  <script src="js/features/assignments.js?v=20260517c"></script>
-  <script src="js/features/grades.js?v=20260517c"></script>
-  <script src="js/features/ai-chat.js?v=20260517c"></script>
-  <script src="js/features/exams.js?v=20260517c"></script>
-  <script src="js/features/games.js?v=20260517c"></script>
-  <script src="js/features/reports.js?v=20260517c"></script>
-  <script src="js/features/notifications.js?v=20260517c"></script>
-  <script src="js/main.js?v=20260517c"></script>
-  <script src="js/enhancements.js?v=20260517c"></script>
+  <script src="js/core/config.js?v=20260517d"></script>
+  <script src="js/core/auth.js?v=20260517d"></script>
+  <script src="js/core/router.js?v=20260517d"></script>
+  <script src="js/ui/toast.js?v=20260517d"></script>
+  <script src="js/ui/modal.js?v=20260517d"></script>
+  <script src="js/ui/effects.js?v=20260517d"></script>
+  <script src="js/pages/student.js?v=20260517d"></script>
+  <script src="js/pages/teacher.js?v=20260517d"></script>
+  <script src="js/pages/dekanat.js?v=20260517d"></script>
+  <script src="js/pages/investor.js?v=20260517d"></script>
+  <script src="js/features/schedule.js?v=20260517d"></script>
+  <script src="js/features/assignments.js?v=20260517d"></script>
+  <script src="js/features/grades.js?v=20260517d"></script>
+  <script src="js/features/ai-chat.js?v=20260517d"></script>
+  <script src="js/features/exams.js?v=20260517d"></script>
+  <script src="js/features/games.js?v=20260517d"></script>
+  <script src="js/features/reports.js?v=20260517d"></script>
+  <script src="js/features/stats.js?v=20260517d"></script>
+  <script src="js/features/notifications.js?v=20260517d"></script>
+  <script src="js/main.js?v=20260517d"></script>
+  <script src="js/enhancements.js?v=20260517d"></script>
 
 <script>
 /* ── Landing page interactions ───────────────────────────────── */

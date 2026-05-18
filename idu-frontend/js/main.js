@@ -642,6 +642,7 @@ function showPage(id){
   // Lazy render — original pages
   if(id==='dashboard') renderStudentDashboard();
   else if(id==='timetable') renderTimetable();
+  else if(id==='teacher-dashboard') initTeacherStats();
   else if(id==='teacher-timetable') renderTeacherTimetable();
   else if(id==='grades') { renderGrades(); }
   else if(id==='tasks') renderTasks();
@@ -659,7 +660,7 @@ function showPage(id){
   else if(id==='dekanat-schedule') renderDekanatSchedule();
   else if(id==='dekanat-grades') renderDekanatGrades();
   else if(id==='dekanat-attendance') renderDekanatAttendance();
-  else if(id==='dekanat-report') renderFullReport();
+  else if(id==='dekanat-report') initDekanatStats();
   else if(id==='dekanat-groups') renderGroupsPage();
   else if(id==='dekanat-applications') renderDekanatApplications();
   else if(id==='dekanat-questions') renderDekanatQuestions();
@@ -3438,6 +3439,47 @@ var LD={
     tcGradeTitle:"✏️ Enter Grade",
   },
 };
+
+// ── Stats filter helpers ──────────────────────────────────────────────────────
+function onRptYearChange(){
+  if(typeof StatsEngine !== 'undefined'){
+    StatsEngine.populateGroupFilter('rptGroupFilter','rptYearFilter').then(function(){
+      renderFullReport();
+    });
+  } else renderFullReport();
+}
+
+function clearRptFilters(){
+  var y=document.getElementById('rptYearFilter');if(y)y.value='';
+  var g=document.getElementById('rptGroupFilter');if(g)g.innerHTML='<option value="">Barcha guruhlar</option>';
+  var s=document.getElementById('rptSemSelect');if(s)s.value='2';
+  renderFullReport();
+}
+
+function refreshTeacherStats(){
+  var grp=(document.getElementById('tcGroupFilter')||{}).value||'';
+  var sub=(document.getElementById('tcSubjectFilter')||{}).value||'';
+  var info=document.getElementById('tc-filter-info');
+  if(info) info.textContent=(grp||sub)?'Filtr faol: '+(grp||'')+(grp&&sub?' · ':'')+(sub||''):'';
+  if(typeof StatsEngine !== 'undefined'){
+    StatsEngine.renderTeacherStats({group:grp,subject:sub});
+  }
+}
+
+function initTeacherStats(){
+  if(typeof StatsEngine !== 'undefined'){
+    StatsEngine.populateGroupFilter('tcGroupFilter').then(function(){
+      refreshTeacherStats();
+    });
+  } else refreshTeacherStats();
+}
+
+function initDekanatStats(){
+  if(typeof StatsEngine !== 'undefined'){
+    StatsEngine.populateGroupFilter('rptGroupFilter','rptYearFilter');
+  }
+  renderFullReport();
+}
 
 function setLang(lang){
   currentLang=lang;
