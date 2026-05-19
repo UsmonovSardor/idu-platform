@@ -207,7 +207,19 @@ async function uploadQuestionsPDF() {
         body: formData
       });
       const data = await res.json();
-      if (!res.ok) throw new Error(data.error || 'Fayl yuklashda xato');
+      if (!res.ok) {
+        // Log debug info to console so admin can see what was extracted
+        if (data.textPreview) {
+          console.group('📄 PDF debug info');
+          console.log('Extracted lines:', data.extractedLines);
+          console.log('Hint:', data.hint);
+          console.log('Text preview:\n', data.textPreview);
+          console.groupEnd();
+        }
+        const hint = data.hint ? '\n\nFormat: ' + data.hint : '';
+        const lines = data.extractedLines != null ? ' (' + data.extractedLines + ' qator topildi)' : '';
+        throw new Error((data.error || 'Fayl yuklashda xato') + lines + hint);
+      }
       showToast('✅', 'Yuklandi', (data.inserted || 0) + ' savol kiritildi');
     }
 

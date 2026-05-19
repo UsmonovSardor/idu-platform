@@ -362,140 +362,176 @@ router.post(
   }
 );
 
-// Robust PDF/text question parser — handles real-world messy PDFs
+// ── Robust PDF/text question parser ────────────────────────────────────────────
+// Handles real-world messy Uzbek/Russian educational PDFs:
+//   • multi-line blocks          • single-line blocks
+//   • "1.", "1)", "1-savol."    • Cyrillic А/Б/В/Г options
+//   • To'g'ri / Javob / Answer  • ✓ / * markers in options
 function parsePdfQuestions(rawText) {
   if (!rawText) return [];
 
-  // Normalise line endings and remove form-feed / page-break chars
-  const text = rawText.replace(/\r\n/g, '\n').replace(/\r/g, '\n').replace(/\f/g, '\n');
+  // ── normalise text ──────────────────────────────────────────────────────────
+  const text = rawText
+    .replace(/\r\n/g, '\n').replace(/\r/g, '\n').replace(/\f/g, '\n')
+    // collapse multiple blank lines
+    .replace(/\n{3,}/g, '\n\n');
 
-  const questions = [];
+  // ── shared helpers ──────────────────────────────────────────────────────────
+  // Cyrillic option letters → Latin
+  const CYR = { 'А':'A','Б':'B','В':'B','Г':'C','С':'C','Д':'D','а':'A','б':'B','в':'B','г':'C','с':'C','д':'D' };
+  const normLetter = ch => CYR[ch] || ch.toUpperCase();
 
-  // ── STEP 1: split into numbered blocks ──────────────────────────────────────
-  // A new block starts at a line beginning with a number followed by . ) or :
-  // e.g. "1.", "1)", "1:", "  2.", "10."
-  const BLOCK_START = /^\s*(\d{1,3})[.):\s]\s*(.+)/;
+  // Option line: A) A. A: (A) А) etc.
+  const OPT_RE = /^[(]?\s*([AaBbCcDdАБВГ])\s*[.):\-]\s*(.+)/;
 
-  const lines = text.split('\n');
-  const blocks = [];
-  let current = null;
-
-  for (const line of lines) {
-    const m = line.match(BLOCK_START);
-    if (m) {
-      // Only treat as a new block if the number is sequential or > current block number
-      const num = parseInt(m[1], 10);
-      const lastNum = current ? current.num : 0;
-      // Allow jumps: new block if num === lastNum+1 OR it's line 1 OR large sequential gap ≤ 5
-      if (!current || num === lastNum + 1 || num === 1 || (num > lastNum && num <= lastNum + 5)) {
-        if (current) blocks.push(current);
-        current = { num, lines: [m[2].trim()] };
-        continue;
-      }
-    }
-    if (current) {
-      const trimmed = line.trim();
-      if (trimmed) current.lines.push(trimmed);
-    }
-  }
-  if (current) blocks.push(current);
-
-  // ── STEP 2: parse each block ─────────────────────────────────────────────────
-  // Answer-line patterns: A) A. A: (A) A - А) (Cyrillic А)
-  const OPT_RE = /^[(]?([AaBbCcDd]|[АБВГ])[.):\-\s]\s*(.+)/;
-
-  // Correct-answer patterns (various languages/typos)
+  // Correct-answer markers
   const CORR_RE = [
-    /(?:to[''`]?g[''`]?ri|togri|javob|answer|correct|правильн[ыо]й?|to['']g['']ri)[:\s]+([ABCD])/i,
-    /^([ABCD])\s*[-–—]\s*(?:to[''`]?g[''`]?ri|javob|правильно)/i,
-    /\*\*([ABCD])\*\*/,        // markdown bold **A**
-    /\[([ABCD])\]/,            // [A]
+    /(?:to[''`'′]?[gġ][''`'′]?ri|tog[''`'′]?ri|togri|javob|answer|correct|to['']g['']ri|правильн(?:ый|о|ая)?)\s*[:=]\s*([ABCD])/i,
+    /\bjavob\s*[:=]\s*([ABCD])/i,
+    /\*\*([ABCD])\*\*/,
+    /\[([ABCD])\]/,
+    /✓\s*([ABCD])|([ABCD])\s*✓/,
   ];
 
-  // Cyrillic-to-Latin letter map
-  const CYR = { 'А': 'A', 'В': 'B', 'С': 'C', 'Д': 'D', 'Б': 'B', 'а': 'A', 'б': 'B', 'в': 'B', 'с': 'C', 'д': 'D' };
-
-  function normLetter(ch) {
-    return CYR[ch] || ch.toUpperCase();
+  function findCorrect(text) {
+    for (const re of CORR_RE) {
+      const m = text.match(re);
+      if (m) return normLetter(m[1] || m[2] || '');
+    }
+    return null;
   }
 
-  for (const block of blocks) {
-    if (!block.lines.length) continue;
+  // ── parse one text block (list of trimmed lines) into a question object ─────
+  function parseBlock(bLines) {
+    if (!bLines.length) return null;
 
-    // Question text = first non-empty line (may span multiple lines if options haven't started yet)
     const qParts = [];
-    let optStartIdx = block.lines.length;
+    let optStart = bLines.length;
 
-    for (let i = 0; i < block.lines.length; i++) {
-      if (OPT_RE.test(block.lines[i])) { optStartIdx = i; break; }
-      qParts.push(block.lines[i]);
+    for (let i = 0; i < bLines.length; i++) {
+      if (OPT_RE.test(bLines[i]) || /^(?:to[''`']?g|togri|javob|answer|correct)/i.test(bLines[i])) {
+        optStart = i; break;
+      }
+      qParts.push(bLines[i]);
     }
 
-    const qText = qParts.join(' ').trim();
-    if (!qText) continue; // no question text
+    const qText = qParts.join(' ').replace(/\s+/g, ' ').trim();
+    if (!qText) return null;
 
     let a, b, c, d, correct, explanation;
 
-    for (let i = optStartIdx; i < block.lines.length; i++) {
-      const line = block.lines[i];
-
-      // Option lines
+    for (let i = optStart; i < bLines.length; i++) {
+      const line = bLines[i];
       const optM = line.match(OPT_RE);
       if (optM) {
         const letter = normLetter(optM[1]);
         const val = optM[2].trim();
-        if (letter === 'A') a = val;
-        else if (letter === 'B') b = val;
-        else if (letter === 'C') c = val;
-        else if (letter === 'D') d = val;
+        // Check for ✓ marker inside option value
+        if (/✓|\*/.test(val) && !correct) correct = letter;
+        const cleaned = val.replace(/[*✓]/g, '').trim();
+        if (letter === 'A') a = cleaned;
+        else if (letter === 'B') b = cleaned;
+        else if (letter === 'C') c = cleaned;
+        else if (letter === 'D') d = cleaned;
         continue;
       }
-
-      // Correct-answer line
-      for (const re of CORR_RE) {
-        const cm = line.match(re);
-        if (cm) {
-          correct = normLetter(cm[1]);
-          break;
-        }
-      }
-
-      // Explanation / Izoh
-      const izM = line.match(/^(?:izoh|explanation|note|tushuntirish)[:\s]+(.+)/i);
+      const corr = findCorrect(line);
+      if (corr && ['A','B','C','D'].includes(corr)) correct = corr;
+      const izM = line.match(/^(?:izoh|tushuntirish|explanation|note)\s*[:=]\s*(.+)/i);
       if (izM) explanation = izM[1].trim();
     }
 
-    // If no explicit "correct" marker found, try to detect starred/underlined option
-    // e.g. "A) *correct answer*" or "A) correct answer ✓"
-    if (!correct) {
-      for (const [idx, ll] of [['A', a], ['B', b], ['C', c], ['D', d]]) {
-        if (ll && (/\*/.test(ll) || /✓/.test(ll) || /\(correct\)/i.test(ll))) {
-          correct = idx;
-          // Clean the marker from the option text
-          if (idx === 'A') a = a.replace(/[*✓]|\(correct\)/gi, '').trim();
-          else if (idx === 'B') b = b.replace(/[*✓]|\(correct\)/gi, '').trim();
-          else if (idx === 'C') c = c.replace(/[*✓]|\(correct\)/gi, '').trim();
-          else if (idx === 'D') d = d.replace(/[*✓]|\(correct\)/gi, '').trim();
-          break;
-        }
-      }
-    }
-
-    // Require at least question + 2 options to save (lenient for partial data)
-    const hasEnoughOptions = !!(a && b && (c || d));
-    if (!qText || !hasEnoughOptions) continue;
-
-    // Fill missing options with placeholder so DB constraint is satisfied
-    questions.push({
+    if (!a && !b) return null; // need at least 2 options
+    return {
       text: qText,
-      a: a || '—',
-      b: b || '—',
-      c: c || '—',
-      d: d || '—',
+      a: a || '—', b: b || '—', c: c || '—', d: d || '—',
       correct: (['A','B','C','D'].includes(correct)) ? correct : 'A',
       explanation: explanation || null
-    });
+    };
   }
+
+  // ── STRATEGY 1: multi-line blocks (standard format) ─────────────────────────
+  function strategyMultiLine() {
+    const results = [];
+    // Block starter: line beginning with a number + punctuation OR "N-savol"
+    const START = /^\s*(\d{1,3})\s*[-.):\s]\s*(?:savol[.\s]*)?\s*(.+)/i;
+    const lines = text.split('\n');
+    const blocks = [];
+    let cur = null;
+
+    for (const line of lines) {
+      const trimmed = line.trim();
+      if (!trimmed) continue;
+      const m = trimmed.match(START);
+      if (m) {
+        const num = parseInt(m[1], 10);
+        const last = cur ? cur.num : 0;
+        if (!cur || num === 1 || num === last + 1 || (num > last && num <= last + 10)) {
+          if (cur) blocks.push(cur);
+          cur = { num, lines: [m[2].trim()] };
+          continue;
+        }
+      }
+      if (cur) cur.lines.push(trimmed);
+    }
+    if (cur) blocks.push(cur);
+
+    for (const b of blocks) {
+      const q = parseBlock(b.lines);
+      if (q) results.push(q);
+    }
+    return results;
+  }
+
+  // ── STRATEGY 2: single-line scan (PDF flattened everything to one line) ─────
+  // Splits by question number pattern embedded in continuous text
+  function strategySingleLine() {
+    const results = [];
+    // Split on question number patterns embedded in text
+    const parts = text
+      .replace(/\n/g, ' ')
+      .split(/(?=\s\d{1,3}\s*[.)]\s)/);
+
+    for (const part of parts) {
+      const trimmed = part.trim();
+      if (!trimmed) continue;
+      // Remove leading number
+      const noNum = trimmed.replace(/^\d{1,3}\s*[.)]\s*/, '');
+      // Split on option markers and correct-answer markers
+      const subLines = noNum
+        .split(/\s+(?=[ABCDАБВГabcdабвг]\s*[.):]|\bTo[''']?g|togri|javob|answer|correct)/i)
+        .map(s => s.trim()).filter(Boolean);
+      const q = parseBlock(subLines);
+      if (q) results.push(q);
+    }
+    return results;
+  }
+
+  // ── STRATEGY 3: regex scan across entire text (last resort) ─────────────────
+  // Looks for the pattern: question text + A)...B)...C)...D)...[correct marker]
+  function strategyRegexScan() {
+    const results = [];
+    const flat = text.replace(/\n/g, ' ').replace(/\s{2,}/g, ' ');
+    // Matches: (optional number.) question A) ... B) ... C) ... D) ... [To'g'ri: X]
+    const Q_PATTERN = /(?:\d{1,3}\s*[.)]\s*)?(.+?)\s+[АA]\s*[.)]\s*(.+?)\s+[ВB]\s*[.)]\s*(.+?)\s+[СC]\s*[.)]\s*(.+?)\s+[ДD]\s*[.)]\s*(.+?)(?:\s+(?:To[''']?g[''']?ri|Javob|Answer|Correct|Правильн[ыо]й?)\s*[:=]\s*([ABCD]))?(?=\s+\d{1,3}\s*[.)]|$)/gi;
+    let m;
+    while ((m = Q_PATTERN.exec(flat)) !== null) {
+      const qText = m[1].trim();
+      if (!qText || qText.length < 3) continue;
+      results.push({
+        text: qText,
+        a: m[2].trim(), b: m[3].trim(), c: m[4].trim(), d: m[5].trim(),
+        correct: m[6] ? m[6].toUpperCase() : 'A',
+        explanation: null
+      });
+    }
+    return results;
+  }
+
+  // ── Run strategies in order, return first that works ────────────────────────
+  let questions = strategyMultiLine();
+  if (!questions.length) questions = strategySingleLine();
+  if (!questions.length) questions = strategyRegexScan();
 
   return questions;
 }
