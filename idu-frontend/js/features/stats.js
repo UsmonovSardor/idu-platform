@@ -327,8 +327,8 @@ var StatsEngine = (function(){
     if(!sel) return;
     try {
       var year = yearFilterId ? (document.getElementById(yearFilterId)||{}).value : '';
-      var q = year ? '?year='+year : '?limit=1';
-      var students = await api('GET', '/students'+q+'&limit=500');
+      var q = year ? '?year='+year+'&limit=500' : '?limit=500';
+      var students = await api('GET', '/students'+q);
       var list = Array.isArray(students) ? students : (students.data||students.students||students.rows||[]);
       var groups = [];
       list.forEach(function(s){
