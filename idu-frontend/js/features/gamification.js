@@ -1,9 +1,9 @@
 'use strict';
 // IDU — Gamification module (XP, badges, leaderboard)
 
-var LEVEL_NAMES = ['Yangi boshlovchi','Izlanuvchi','Talaba','Faol talaba','Ilg\'or','Ekspert','Ustoz','Chempion','Legend','Grand Master'];
+var XP_LEVEL_NAMES = ['Yangi boshlovchi','Izlanuvchi','Talaba','Faol talaba','Ilg\'or','Ekspert','Ustoz','Chempion','Legend','Grand Master'];
 
-function getLevelName(level) { return LEVEL_NAMES[Math.min(level-1, LEVEL_NAMES.length-1)] || 'Grand Master'; }
+function getLevelName(level) { return XP_LEVEL_NAMES[Math.min(level-1, XP_LEVEL_NAMES.length-1)] || 'Grand Master'; }
 function getLevelColor(level) {
   var colors = ['#94A3B8','#22C55E','#3B82F6','#8B5CF6','#F59E0B','#EF4444','#EC4899','#F97316','#0EA5E9','#FFD700'];
   return colors[Math.min(level-1, colors.length-1)];
