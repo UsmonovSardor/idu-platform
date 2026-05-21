@@ -29,6 +29,7 @@ const aiRoutes          = require('./routes/ai');
 const examsRoutes       = require('./routes/exams');
 const assignmentsRoutes = require('./routes/assignments');
 const submissionsRoutes = require('./routes/submissions');
+const attendanceRoutes  = require('./routes/attendance');
 
 const app = express();
 
@@ -116,6 +117,7 @@ const routeMap = [
   ['/exams',        examsRoutes],
   ['/assignments',  assignmentsRoutes],
   ['/submissions',  submissionsRoutes],
+  ['/attendance',   attendanceRoutes],
 ];
 
 routeMap.forEach(([path, router]) => {

@@ -1043,8 +1043,8 @@ function renderDekanatTeachers(){
 }
 var _dekFilter='all';
 function renderDekanatAttendance(){
-  const el=document.getElementById('dekAttBody');if(!el)return;
-  el.innerHTML='<tr><td colspan="5" style="text-align:center;color:#94A3B8;padding:20px">Davomat ma\'lumotlari yo\'q</td></tr>';
+  // Delegate to the real attendance module
+  if(typeof renderAttendanceReport === 'function') renderAttendanceReport();
 }
 
 // ---- REPORT: tab switcher ----
