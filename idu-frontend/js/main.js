@@ -86,6 +86,14 @@ window.realAutoLogin = async function realAutoLogin() {
    else if (role === 'dekanat') showPage('dekanat-dashboard');
    else if (role === 'investor') showPage('investor-dashboard');
    else if (role === 'admin') showPage('dekanat-sesiya');
+    // Post-login extras
+    window.CURRENT_USER = { id: user.id, role: role, name: user.name || user.full_name };
+    var fab = document.getElementById('chatFab');
+    if (fab) fab.style.display = 'flex';
+    if (role === 'student') {
+      if (typeof renderXPWidget === 'function') renderXPWidget();
+    }
+    if (typeof initDefaultChatRooms === 'function') setTimeout(initDefaultChatRooms, 2000);
     stopLoading();
     return;
  
@@ -266,11 +274,18 @@ async function realLoginStart(role, loginInputId, passInputId, btnId) {
     if (realRole === 'student') showPage('dashboard');
     else if (realRole === 'teacher') showPage('teacher-dashboard');
     else if (realRole === 'dekanat') showPage('dekanat-dashboard');
-    else if (realRole === 'investor') showPage('investor-dashboard');
-    else if (realRole === 'admin') showPage('dekanat-sesiya');
+    else if (realRole === ‘investor’) showPage(‘investor-dashboard’);
+    else if (realRole === ‘admin’) showPage(‘dekanat-sesiya’);
+
+    // Post-login extras
+    window.CURRENT_USER = { id: user.id, role: realRole, name: user.full_name || user.name };
+    var fab2 = document.getElementById(‘chatFab’);
+    if (fab2) fab2.style.display = ‘flex’;
+    if (realRole === ‘student’ && typeof renderXPWidget === ‘function’) renderXPWidget();
+    if (typeof initDefaultChatRooms === ‘function’) setTimeout(initDefaultChatRooms, 2000);
 
   } catch (e) {
-    alert(e.message || 'Login yoki parol noto‘g‘ri');
+    alert(e.message || ‘Login yoki parol noto\’g\’ri’);
   } finally {
     _setLoginLoading(btnId, false);
   }
@@ -526,7 +541,7 @@ const NAV_TABS = {
     {id:'grades',icon:'📊',label:'Baholar',labelRu:'Оценки'},
     {id:'tasks',icon:'📝',label:'Vazifalar',labelRu:'Задания',badge:5},
     {id:'startup',icon:'🚀',label:'Startup',labelRu:'Стартап'},
-    {id:'rating',icon:'🏆',label:'Reyting',labelRu:'Рейтинг'},
+    {id:'leaderboard',icon:'🏆',label:'Reyting',labelRu:'Рейтинг'},
     {id:'aitutor',icon:'🤖',label:'AI Tutor',labelRu:'AI Репетитор'},
     {id:'professors',icon:'⭐',label:'Ustozlar',labelRu:'Преподаватели'},
     {id:'notifications',icon:'🔔',label:'Xabarlar',labelRu:'Уведомления',badge:3},
@@ -554,8 +569,8 @@ const NAV_TABS = {
     {id:'dekanat-applications',icon:'📬',label:'Arizalar',labelRu:'Заявки',badge:0,badgeId:'dekAppBadge'},
     {id:'dekanat-questions',icon:'📝',label:'Savollar',labelRu:'Вопросы'},
     {id:'dekanat-report',icon:'📈',label:'Hisobotlar',labelRu:'Отчёты'},
-    // Sesiya Boshqaruvi olib tashlandi — bu funksiya Proktor roli uchun
-    // {id:'dekanat-sesiya',icon:'🗝️',label:'Sesiya Boshqaruvi',labelRu:'Управление сессией'},
+    {id:'rector-dashboard',icon:'🏛️',label:'Rektor paneli',labelRu:'Ректор аналитика'},
+    {id:'leaderboard',icon:'🏆',label:'Reyting',labelRu:'Рейтинг'},
   ],
   investor: [
     {id:'investor-dashboard',icon:'💼',label:'Dashboard',labelRu:'Дашборд'},
@@ -670,6 +685,9 @@ function showPage(id){
   else if(id==='sesiya-test') renderSesiyaTest();
   else if(id==='sesiya-real') renderSesiyaReal();
   else if(id==='dekanat-sesiya') renderDekanatSesiya();
+  // New modules
+  else if(id==='rector-dashboard') { if(typeof renderRectorDashboard==='function') renderRectorDashboard(); }
+  else if(id==='leaderboard')      { if(typeof renderLeaderboard==='function') renderLeaderboard(); }
   // Lazy render — addon pages
   else if(id==='games') { if(typeof renderGameHub==='function') renderGameHub(); }
   else if(id==='gamification') { if(typeof renderGamification==='function') renderGamification(); }

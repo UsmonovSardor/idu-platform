@@ -803,6 +803,7 @@
     <div class="page-header-right">
       <button class="btn btn-secondary" onclick="showPage('timetable')" id="dash-btn-jadval">📅 Jadval</button>
       <button class="btn btn-secondary" onclick="openStudentAttModal()" style="background:linear-gradient(135deg,#16A34A,#22C55E);color:#fff;border:none">✅ Davomat</button>
+      <button class="btn btn-secondary" onclick="downloadMyTranscript()" style="background:linear-gradient(135deg,#7C3AED,#8B5CF6);color:#fff;border:none">📄 Transkript</button>
       <button class="btn btn-primary" onclick="openQuiz()" id="dash-btn-quiz">🧠 Quiz boshlash</button>
     </div>
   </div>
@@ -851,6 +852,9 @@
       <div class="stat-card-bar scb-blue"></div>
     </div>
   </div>
+  <!-- XP / Gamification widget -->
+  <div id="xpWidget" style="margin-bottom:14px"></div>
+
   <div class="grid-2" style="margin-bottom:16px">
     <div class="card">
       <div class="card-header">
@@ -2156,6 +2160,92 @@
   </div>
 
   <div id="ideasList"></div>
+</div>
+
+<!-- ═══ RECTOR: ANALYTICS DASHBOARD ═══ -->
+<div class="page" id="page-rector-dashboard">
+  <div class="page-header">
+    <div class="page-header-left">
+      <div class="ph-title">🏛️ Rektor Analytics</div>
+      <div class="ph-sub">Universitet bo'yicha real vaqt statistika</div>
+    </div>
+    <div class="page-header-right">
+      <button class="btn btn-secondary" onclick="recalcAllXP()" id="recalcXpBtn" style="font-size:12px">🔄 XP qayta hisoblash</button>
+      <button class="btn btn-primary" onclick="renderRectorDashboard()" style="font-size:12px">🔄 Yangilash</button>
+    </div>
+  </div>
+
+  <!-- KPI row -->
+  <div id="rectorKpiRow" style="margin-bottom:16px"></div>
+
+  <!-- Row 1: Grade dist + Group stats -->
+  <div style="display:grid;grid-template-columns:320px 1fr;gap:14px;margin-bottom:14px">
+    <div class="card">
+      <div class="card-header"><div class="card-title">📊 Baho taqsimoti</div></div>
+      <div id="rectorGradeDist" style="padding:4px 0"></div>
+    </div>
+    <div class="card">
+      <div class="card-header"><div class="card-title">👥 Guruh statistikasi</div></div>
+      <div style="overflow:auto">
+        <table class="dekanat-table">
+          <thead><tr><th>Guruh</th><th>Talaba</th><th>O'rt. ball</th><th>GPA</th><th>A'lo</th><th>Xavf</th></tr></thead>
+          <tbody id="rectorGroupTable"><tr><td colspan="6" style="text-align:center;color:#94A3B8;padding:16px">Yuklanmoqda...</td></tr></tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+
+  <!-- Row 2: Subject stats + Top students -->
+  <div style="display:grid;grid-template-columns:1fr 280px;gap:14px;margin-bottom:14px">
+    <div class="card">
+      <div class="card-header"><div class="card-title">📚 Fan statistikasi</div></div>
+      <div style="overflow:auto">
+        <table class="dekanat-table">
+          <thead><tr><th>Fan</th><th>Urinish</th><th>O'rt. ball</th><th>Max/Min</th><th>O'tish %</th></tr></thead>
+          <tbody id="rectorSubjectTable"><tr><td colspan="5" style="text-align:center;color:#94A3B8;padding:16px">Yuklanmoqda...</td></tr></tbody>
+        </table>
+      </div>
+    </div>
+    <div class="card">
+      <div class="card-header"><div class="card-title">🏆 Top 10 talaba</div></div>
+      <div id="rectorTopStudents" style="max-height:300px;overflow-y:auto;padding:4px 0"></div>
+    </div>
+  </div>
+
+  <!-- Row 3: Attendance by group + Risk students -->
+  <div style="display:grid;grid-template-columns:280px 1fr;gap:14px">
+    <div class="card">
+      <div class="card-header"><div class="card-title">📅 Davomat (guruh)</div></div>
+      <div id="rectorAttChart" style="padding:4px 0"></div>
+    </div>
+    <div class="card">
+      <div class="card-header"><div class="card-title" style="color:#DC2626">⚠️ Xavf guruhi talabalar</div></div>
+      <div style="overflow:auto">
+        <table class="dekanat-table">
+          <thead><tr><th>Talaba</th><th>Guruh</th><th>Email</th><th>O'rt. ball</th></tr></thead>
+          <tbody id="rectorRiskTable"><tr><td colspan="4" style="text-align:center;color:#94A3B8;padding:16px">Yuklanmoqda...</td></tr></tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ═══ LEADERBOARD PAGE ═══ -->
+<div class="page" id="page-leaderboard">
+  <div class="page-header">
+    <div class="page-header-left">
+      <div class="ph-title">🏆 Reyting</div>
+      <div class="ph-sub">XP va badge bo'yicha top talabalar</div>
+    </div>
+    <div class="page-header-right">
+      <select id="lbGroupFilter" class="form-select" style="width:140px;font-size:13px" onchange="renderLeaderboard()">
+        <option value="">Barcha guruhlar</option>
+      </select>
+    </div>
+  </div>
+  <div class="card" style="padding:16px">
+    <div id="leaderboardList"><div style="text-align:center;color:#94A3B8;padding:20px">Yuklanmoqda...</div></div>
+  </div>
 </div>
 
 <!-- ═══ INVESTOR: DASHBOARD ═══ -->
@@ -3522,9 +3612,12 @@
   <script src="js/features/reports.js?v=20260517d"></script>
   <script src="js/features/stats.js?v=20260517d"></script>
   <script src="js/features/notifications.js?v=20260517d"></script>
-  <script src="js/features/attendance.js?v=20260520a"></script>
-  <script src="js/main.js?v=20260520a"></script>
-  <script src="js/enhancements.js?v=20260520a"></script>
+  <script src="js/features/attendance.js?v=20260520b"></script>
+  <script src="js/features/chat.js?v=20260520b"></script>
+  <script src="js/features/gamification.js?v=20260520b"></script>
+  <script src="js/pages/rector.js?v=20260520b"></script>
+  <script src="js/main.js?v=20260520b"></script>
+  <script src="js/enhancements.js?v=20260520b"></script>
   <!-- QR code generator (teacher) -->
   <script src="https://cdn.jsdelivr.net/npm/qrcodejs@1.0.0/qrcode.min.js" crossorigin="anonymous"></script>
   <!-- QR code scanner (student camera) -->
@@ -3761,6 +3854,69 @@ window.renderMathInPage=renderMathInPage;
       <hr style="margin:20px 0;border-color:#F1F5F9">
       <div style="font-weight:700;font-size:13px;margin-bottom:10px;color:#374151">Mening davomatim:</div>
       <div id="myAttendanceList" style="max-height:220px;overflow-y:auto"></div>
+    </div>
+  </div>
+</div>
+
+<!-- ═══ CHAT FLOATING WIDGET ══════════════════════════════════════════════════ -->
+<!-- Floating button -->
+<button onclick="openChat()" id="chatFab"
+  style="display:none;position:fixed;bottom:24px;right:24px;z-index:3500;width:54px;height:54px;border-radius:50%;background:linear-gradient(135deg,#1B4FD8,#4F46E5);color:#fff;border:none;font-size:22px;cursor:pointer;box-shadow:0 4px 20px rgba(27,79,216,0.4);transition:transform 0.2s"
+  onmouseenter="this.style.transform='scale(1.1)'" onmouseleave="this.style.transform='scale(1)'">
+  💬
+  <span id="chatUnreadBadge" style="display:none;position:absolute;top:0;right:0;width:18px;height:18px;background:#DC2626;border-radius:50%;font-size:10px;font-weight:700;line-height:18px;text-align:center">0</span>
+</button>
+
+<!-- Chat widget panel -->
+<div id="chatWidget" style="display:none;position:fixed;bottom:88px;right:24px;z-index:3500;width:340px;height:480px;background:#fff;border-radius:20px;box-shadow:0 8px 40px rgba(0,0,0,0.18);flex-direction:column;overflow:hidden;border:1.5px solid #E2E8F0">
+  <!-- Chat header -->
+  <div style="background:linear-gradient(135deg,#1B4FD8,#4F46E5);padding:14px 16px;display:flex;justify-content:space-between;align-items:center;flex-shrink:0">
+    <div style="color:#fff;font-weight:800;font-size:15px">💬 Chat</div>
+    <div style="display:flex;gap:8px">
+      <button onclick="showCreateRoomModal()" style="background:rgba(255,255,255,0.15);border:none;color:#fff;padding:4px 10px;border-radius:8px;font-size:11px;cursor:pointer;font-weight:600">+ Xona</button>
+      <button onclick="openChat()" style="background:rgba(255,255,255,0.15);border:none;color:#fff;width:26px;height:26px;border-radius:50%;font-size:14px;cursor:pointer">✕</button>
+    </div>
+  </div>
+
+  <!-- Room list view -->
+  <div id="chatRoomView" style="display:flex;flex-direction:column;flex:1;overflow:hidden">
+    <div id="chatRoomList" style="flex:1;overflow-y:auto;padding:8px 0">
+      <div style="text-align:center;color:#94A3B8;padding:20px;font-size:12px">Yuklanmoqda...</div>
+    </div>
+    <div style="padding:10px;border-top:1px solid #F1F5F9;flex-shrink:0">
+      <button onclick="joinPublicRooms()" class="btn btn-secondary" style="width:100%;font-size:12px;padding:7px">🌐 Ommaviy xonalar</button>
+    </div>
+  </div>
+
+  <!-- Message view -->
+  <div id="chatMsgView" style="display:none;flex-direction:column;flex:1;overflow:hidden">
+    <!-- Room header -->
+    <div style="padding:10px 14px;border-bottom:1px solid #F1F5F9;display:flex;align-items:center;gap:8px;flex-shrink:0;background:#F8FAFC">
+      <button onclick="backToRooms()" style="background:none;border:none;font-size:16px;cursor:pointer;color:#64748B;padding:0 4px">←</button>
+      <div style="font-weight:700;font-size:13px" id="chatRoomNameEl">Chat</div>
+    </div>
+    <!-- Messages -->
+    <div id="chatMsgList" style="flex:1;overflow-y:auto;padding:12px"></div>
+    <!-- Input -->
+    <div style="padding:10px 12px;border-top:1px solid #F1F5F9;display:flex;gap:8px;flex-shrink:0">
+      <input id="chatInput" class="form-control" placeholder="Xabar yozing..." style="flex:1;font-size:13px;border-radius:20px;padding:8px 14px" onkeydown="chatInputKey(event)">
+      <button onclick="sendChatMessage()" style="background:#1B4FD8;color:#fff;border:none;border-radius:50%;width:36px;height:36px;font-size:16px;cursor:pointer;flex-shrink:0">↑</button>
+    </div>
+  </div>
+</div>
+
+<!-- Create room modal -->
+<div id="createRoomModal" style="display:none;position:fixed;inset:0;z-index:4500;background:rgba(15,23,42,0.5);align-items:center;justify-content:center;padding:16px" onclick="if(event.target===this)this.style.display='none'">
+  <div style="background:#fff;border-radius:16px;padding:24px;width:100%;max-width:360px;box-shadow:0 16px 60px rgba(0,0,0,0.2)">
+    <div style="font-weight:800;font-size:16px;margin-bottom:16px">+ Yangi chat xona</div>
+    <input id="newRoomName" class="form-control" placeholder="Xona nomi" style="margin-bottom:10px">
+    <select id="newRoomType" class="form-select" style="margin-bottom:16px">
+      <option value="group">👥 Guruh chat</option>
+      <option value="announce">📢 E'lonlar</option>
+    </select>
+    <div style="display:flex;gap:8px">
+      <button onclick="createChatRoom()" class="btn btn-primary" style="flex:1">Yaratish</button>
+      <button onclick="document.getElementById('createRoomModal').style.display='none'" class="btn btn-secondary" style="flex:1">Bekor</button>
     </div>
   </div>
 </div>
