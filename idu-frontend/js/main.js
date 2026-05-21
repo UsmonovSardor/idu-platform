@@ -756,6 +756,33 @@ function renderRoomStatus(grp){
 // ════════════════════════════════════
 var _dashLoaded = false;
 
+// ── Hero banner — universal real-data refresh ───────────────────────────────
+async function refreshHeroBanner() {
+  // Fetch all needed data in parallel
+  var [students, teachers, attStats, subjectsList] = await Promise.all([
+    window.IDU ? window.IDU.getAllStudents() : api('GET','/students?limit=500').then(function(r){return r.data||r;}).catch(function(){return [];}),
+    api('GET','/teachers?limit=200').then(function(r){return Array.isArray(r)?r:(r.data||[]);}).catch(function(){return [];}),
+    api('GET','/attendance/stats').then(function(r){return Array.isArray(r)?r:(r.data||[]);}).catch(function(){return [];}),
+    Promise.resolve(window.IDU ? window.IDU.getSubjects() : [{},{},{},{},{}])
+  ]);
+
+  var totalStudents = students.length;
+  var totalTeachers = teachers.length;
+  var totalSubjects = subjectsList.length;
+
+  var attPcts = attStats.map(function(a){return parseFloat(a.attendance_pct)||0;}).filter(function(x){return x>0;});
+  var avgAtt = attPcts.length ? Math.round(attPcts.reduce(function(a,b){return a+b;},0)/attPcts.length) : 0;
+
+  function setHb(id, val) {
+    var el = document.getElementById(id);
+    if (el) el.textContent = val;
+  }
+  setHb('hb-stat1', totalStudents || '—');
+  setHb('hb-stat2', totalSubjects || '—');
+  setHb('hb-stat3', avgAtt ? avgAtt + '%' : '—');
+  setHb('hb-stat4', totalTeachers || '—');
+}
+
 async function renderStudentDashboard() {
   // Skeleton ko'rsatish
   _setDashSkeleton();
@@ -769,9 +796,10 @@ async function renderStudentDashboard() {
     dateEl.textContent = days[now.getDay()] + ', ' + now.getDate() + ' ' + months[now.getMonth()] + ' ' + now.getFullYear();
   }
 
-  // Jadval va vazifalar (lokal)
+  // Jadval, vazifalar va hero banner (real API)
   renderDashboardSchedule();
   renderDashboardTasks();
+  refreshHeroBanner();
 
   // API dan baholar va statistika
   try {
@@ -889,52 +917,126 @@ function _renderRecentGrades(grades) {
   }).join('');
 }
 
-function renderDashboardTasks() {
+async function renderDashboardTasks() {
   var el = document.getElementById('upcomingTasks');
   if (!el) return;
-  if (!TASKS_DATA.length) {
-    el.innerHTML = '<div style="padding:20px;text-align:center;color:var(--text3)">' +
-      '<div style="font-size:24px;margin-bottom:6px">✅</div>' +
-      '<div style="font-size:13px">Vazifalar yo\'q</div>' +
-      '<div style="font-size:11px;margin-top:4px">O\'qituvchi vazifa berganda bu yerda ko\'rinadi</div>' +
-    '</div>';
+  if (window.IDU) window.IDU.showLoading(el, 'rows', 3);
+
+  var assignments = [];
+  try {
+    var res = await api('GET', '/assignments?status=pending&limit=10');
+    assignments = Array.isArray(res) ? res : (res.data || res.assignments || []);
+  } catch(e) {
+    // Fallback to old local data
+    if (typeof TASKS_DATA !== 'undefined' && TASKS_DATA.length) assignments = TASKS_DATA;
+  }
+
+  if (!assignments.length) {
+    if (window.IDU) window.IDU.showEmpty(el, {
+      icon: '✅',
+      title: 'Vazifa yo\'q',
+      desc: 'Hozircha topshiriqlar berilmagan'
+    });
     return;
   }
-  var urgent = TASKS_DATA.filter(function(t) { return t.urgent || t.status === 'pending'; }).slice(0, 4);
-  el.innerHTML = urgent.map(function(t) {
-    return '<div style="padding:10px 0;border-bottom:1px solid var(--border);display:flex;align-items:center;gap:10px">' +
-      '<div style="width:8px;height:8px;border-radius:50%;background:' + (t.urgent ? 'var(--red)' : 'var(--orange)') + ';flex-shrink:0"></div>' +
-      '<div style="flex:1"><div style="font-size:13px;font-weight:600;color:var(--text1)">' + (t.title || t.name) + '</div>' +
-      '<div style="font-size:11px;color:var(--text3)">' + (t.due || t.subject || '') + '</div></div>' +
-      '</div>';
+
+  // Sort by due date if available
+  assignments.sort(function(a,b){
+    var da = new Date(a.due_date || a.deadline || a.due || '2099-01-01');
+    var db = new Date(b.due_date || b.deadline || b.due || '2099-01-01');
+    return da - db;
+  });
+
+  var badge = document.getElementById('dash-tasks-badge');
+  if (badge) badge.textContent = assignments.length + ' ta';
+
+  el.innerHTML = assignments.slice(0,5).map(function(t) {
+    var due = t.due_date || t.deadline || t.due;
+    var daysLeft = '';
+    var urgent = false;
+    if (due) {
+      var diffMs = new Date(due) - Date.now();
+      var d = Math.ceil(diffMs / 86400000);
+      daysLeft = d < 0 ? 'Muddati o\'tib ketdi' : d === 0 ? 'Bugun' : d === 1 ? 'Ertaga' : d + ' kun qoldi';
+      urgent = d <= 1;
+    }
+    return '<div style="padding:12px 0;border-bottom:1px solid #F1F5F9;display:flex;align-items:center;gap:10px">' +
+      '<div style="width:8px;height:8px;border-radius:50%;background:' + (urgent ? '#DC2626' : '#D97706') + ';flex-shrink:0"></div>' +
+      '<div style="flex:1;min-width:0">' +
+        '<div style="font-size:13px;font-weight:700;color:#1E293B;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">' + (t.title || t.name || 'Vazifa') + '</div>' +
+        '<div style="font-size:11px;color:#94A3B8">' + (t.subject || t.course_name || '') + (daysLeft ? ' · ' + daysLeft : '') + '</div>' +
+      '</div>' +
+    '</div>';
   }).join('');
 }
 
 // ════════════════════════════════════
 //  DASHBOARD WIDGETS
 // ════════════════════════════════════
-function renderDashboardSchedule(){
+async function renderDashboardSchedule(){
   const el=document.getElementById('todaySchedule');if(!el)return;
-  const grp=currentUser?.group||'CS-2301';
-  const today=new Date().getDay()-1;
-  const todayIdx=Math.max(0,Math.min(today,4));
-  const lessons=(SCHEDULE[grp]||[])[todayIdx]||[];
-  const items=lessons.map((l,i)=>l?`
-    <div class="sched-item${i===1?' now':''}">
-      ${i===1?`<div class="sched-now-label">${currentLang==='ru'?'СЕЙЧАС':'HOZIR'}</div>`:''}
-      <div class="sched-stripe" style="background:${getDotColor(l.sub)}"></div>
-      <div class="sched-time">${TIMES[i]}</div>
-      <div class="sched-body">
-        <div class="sched-name">${l.sub}</div>
-        <div class="sched-meta">
-          <span>👨‍🏫 ${l.teacher}</span>
-          <span class="sched-room-tag">🚪 ${l.room}</span>
-          <span style="font-size:10.5px;color:var(--text3)">${_type(l.type)}</span>
-        </div>
-      </div>
-    </div>`:'').filter(Boolean).join('');
-  const noClass = currentLang==='ru'?'Сегодня нет занятий':'Bugun dars yo\'q';
-  el.innerHTML=items||`<div class="empty-state"><div class="empty-state-icon">😴</div><div>${noClass}</div></div>`;
+  if(window.IDU) window.IDU.showLoading(el, 'rows', 3);
+
+  // Try real API first
+  var apiLessons = [];
+  try {
+    var res = await api('GET', '/schedule');
+    var arr = Array.isArray(res) ? res : (res.data || res.schedule || []);
+    var dow = new Date().getDay();
+    var dowNames = ['sunday','monday','tuesday','wednesday','thursday','friday','saturday'];
+    var todayName = dowNames[dow];
+    var grp = currentUser && currentUser.group ? currentUser.group : null;
+    apiLessons = arr.filter(function(s){
+      var sd = (s.day_of_week || s.day || '').toString().toLowerCase();
+      var sameDay = sd === todayName || s.day_of_week === dow;
+      var sameGrp = !grp || s.group_name === grp || s.group === grp;
+      return sameDay && sameGrp;
+    });
+  } catch(e){}
+
+  // Fallback to local SCHEDULE if API empty
+  if (!apiLessons.length) {
+    const grp2 = currentUser && currentUser.group ? currentUser.group : 'CS-2301';
+    const today = new Date().getDay()-1;
+    const todayIdx = Math.max(0, Math.min(today, 4));
+    const local = (typeof SCHEDULE !== 'undefined' ? (SCHEDULE[grp2]||[])[todayIdx] : null) || [];
+    apiLessons = local.filter(Boolean).map(function(l, i){
+      return { subject: l.sub, teacher_name: l.teacher, room: l.room, start_time: (typeof TIMES!=='undefined'?TIMES[i]:''), type: l.type };
+    });
+  }
+
+  if (!apiLessons.length) {
+    if (window.IDU) window.IDU.showEmpty(el, {
+      icon: '😴',
+      title: currentLang==='ru'?'Сегодня нет занятий':'Bugun dars yo\'q',
+      desc: currentLang==='ru'?'Отдых или каникулы':'Dam olish kuni yoki ta\'til'
+    });
+    return;
+  }
+
+  // Determine "current" lesson by time
+  var nowMin = new Date().getHours()*60 + new Date().getMinutes();
+  el.innerHTML = apiLessons.slice(0, 6).map(function(l) {
+    var start = (l.start_time||l.time||'').toString();
+    var startMin = -1;
+    var m = start.match(/(\d{1,2}):(\d{2})/);
+    if (m) startMin = parseInt(m[1],10)*60 + parseInt(m[2],10);
+    var endMin = startMin + 90;
+    var isNow = startMin >= 0 && nowMin >= startMin && nowMin < endMin;
+    var subj = l.subject || l.title || l.course_name || 'Dars';
+    var teacher = l.teacher_name || l.teacher || '';
+    var room = l.room || '';
+    return '<div class="sched-item' + (isNow?' now':'') + '" style="margin-bottom:10px;padding:10px 12px;border-radius:10px;background:' + (isNow?'#EFF6FF':'#F8FAFC') + ';border-left:4px solid ' + (isNow?'#1B4FD8':'#94A3B8') + '">' +
+      (isNow ? '<div class="sched-now-label" style="font-size:10px;font-weight:800;color:#1B4FD8;margin-bottom:4px">' + (currentLang==='ru'?'СЕЙЧАС':'HOZIR') + '</div>' : '') +
+      '<div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:4px">' +
+        '<div style="font-weight:700;font-size:13px;color:#1E293B">' + subj + '</div>' +
+        '<div style="font-size:11px;font-weight:700;color:#64748B;font-family:monospace">' + (start.slice(0,5) || '') + '</div>' +
+      '</div>' +
+      '<div style="font-size:11px;color:#94A3B8">' +
+        (teacher ? '👨‍🏫 ' + teacher + ' · ' : '') + (room ? '🚪 ' + room : '') +
+      '</div>' +
+    '</div>';
+  }).join('');
 }
 let _stGradeFilter='all';
 

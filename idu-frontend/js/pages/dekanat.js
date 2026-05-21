@@ -11,42 +11,167 @@ var SUBJ_LABELS = {algo:'💻 Algo', ai:'🤖 AI', math:'📐 Math', db:'🗄️
 var TYPE_LABELS = {test:'🧪 Test', real:'📋 Sesiya', both:'📝 Ikkalasi'};
 
 async function renderDekanatDashboard() {
-  try {
-    const studData = await api('GET', '/students?limit=1');
-    const el1 = document.getElementById('dekStatStudents');
-    if (el1) el1.textContent = studData.total || 0;
-    const apps = await api('GET', '/applications?status=pending&limit=100');
-    const el3 = document.getElementById('dekStatApps');
-    if (el3) el3.textContent = Array.isArray(apps) ? apps.length : 0;
-    await renderGroupRanking();
-    await renderAtRiskFromApi();
-  } catch (e) { console.error('Dashboard xatosi:', e); }
+  // Fetch all data in parallel
+  const [allStudents, teachers, attStats, grades] = await Promise.all([
+    window.IDU ? window.IDU.getAllStudents() : api('GET','/students?limit=500').then(function(r){return r.data||r;}).catch(function(){return [];}),
+    api('GET','/teachers?limit=200').then(function(r){return Array.isArray(r)?r:(r.data||[]);}).catch(function(){return [];}),
+    api('GET','/attendance/stats').then(function(r){return Array.isArray(r)?r:(r.data||[]);}).catch(function(){return [];}),
+    api('GET','/grades?limit=1000').then(function(r){return Array.isArray(r)?r:(r.data||[]);}).catch(function(){return [];})
+  ]);
+
+  // Compute groups
+  const groupsSet = new Set();
+  allStudents.forEach(function(s){
+    var g = s.group_name || s.group;
+    if (g) groupsSet.add(g);
+  });
+  const totalGroups = groupsSet.size;
+
+  // Compute at-risk
+  const avgs = {};
+  grades.forEach(function(g){
+    var id = g.student_id;
+    if (!avgs[id]) avgs[id] = {sum:0, count:0};
+    avgs[id].sum += parseFloat(g.score) || 0;
+    avgs[id].count++;
+  });
+  const atRisk = allStudents.filter(function(s){
+    var st = avgs[s.id];
+    return st && st.count && (st.sum/st.count) < 56;
+  });
+
+  // Attendance avg
+  const attPcts = attStats.map(function(a){return parseFloat(a.attendance_pct)||0;}).filter(function(x){return x>0;});
+  const avgAtt = attPcts.length ? Math.round(attPcts.reduce(function(a,b){return a+b;},0)/attPcts.length) : 0;
+
+  // Subjects: use IDU.getSubjects() or count distinct from grades
+  const subjSet = new Set();
+  grades.forEach(function(g){ if(g.subject) subjSet.add(g.subject); });
+  const totalSubjects = subjSet.size || (window.IDU ? window.IDU.getSubjects().length : 5);
+
+  // ── Update DOM ──
+  function setVal(id, val){ var el = document.getElementById(id); if(el) el.textContent = val; }
+
+  // Hero banner
+  setVal('dek-hb-students',   allStudents.length);
+  setVal('dek-hb-teachers',   teachers.length);
+  setVal('dek-hb-subjects',   totalSubjects);
+  setVal('dek-hb-attendance', avgAtt ? avgAtt + '%' : '—');
+
+  // Stat cards
+  setVal('dekStatStudents',   allStudents.length);
+  setVal('dekStatTeachers',   teachers.length);
+  setVal('dekStatGroups',     totalGroups);
+  setVal('dekStatAtRisk',     atRisk.length);
+  setVal('dekStatGroupsSub',  totalGroups ? totalGroups + ' ta faol' : 'Yo\'q');
+  setVal('dekStatAtRiskSub',  atRisk.length ? 'Darhol diqqat' : 'Hammasi yaxshi');
+
+  // Optional applications badge (if element exists)
+  api('GET', '/applications?status=pending&limit=100').then(function(apps){
+    var n = Array.isArray(apps) ? apps.length : 0;
+    setVal('dekStatApps', n);
+    var badge = document.getElementById('dekAppBadge');
+    if (badge) badge.textContent = n ? n : '';
+  }).catch(function(){});
+
+  await renderGroupRanking();
+  await renderAtRiskFromApi();
 }
 
 async function renderGroupRanking() {
   const el = document.getElementById('groupRankingList');
   if (!el) return;
+  if (window.IDU) window.IDU.showLoading(el, 'rows', 4);
   try {
-    const history = await api('GET', '/exams/history');
-    if (!Array.isArray(history) || !history.length) {
-      el.innerHTML = '<div style="text-align:center;padding:20px;color:var(--text3)">Hali natijalar yoq</div>';
+    const [students, grades] = await Promise.all([
+      window.IDU ? window.IDU.getAllStudents() : api('GET','/students?limit=500').then(function(r){return r.data||r;}),
+      api('GET','/grades?limit=1000').then(function(r){return Array.isArray(r)?r:(r.data||[]);}).catch(function(){return [];})
+    ]);
+
+    // Map student → group
+    const stuGroup = {};
+    students.forEach(function(s){ stuGroup[s.id] = s.group_name || s.group; });
+
+    // Aggregate by group
+    const grpStats = {};
+    grades.forEach(function(g){
+      var grp = stuGroup[g.student_id];
+      if (!grp) return;
+      if (!grpStats[grp]) grpStats[grp] = {sum:0, count:0};
+      grpStats[grp].sum += parseFloat(g.score) || 0;
+      grpStats[grp].count++;
+    });
+
+    const ranked = Object.keys(grpStats).map(function(grp){
+      return { group: grp, avg: grpStats[grp].count ? grpStats[grp].sum/grpStats[grp].count : 0, count: grpStats[grp].count };
+    }).filter(function(r){return r.count>0;}).sort(function(a,b){return b.avg-a.avg;});
+
+    if (!ranked.length) {
+      if (window.IDU) window.IDU.showEmpty(el, {icon:'📊', title:'Reyting yo\'q', desc:'Hali baholar kiritilmagan'});
+      else el.innerHTML = '<div style="text-align:center;padding:24px;color:#94A3B8">Hali natijalar yo\'q</div>';
       return;
     }
-    const unique = [...new Set(history.map(r => r.student_name))];
-    el.innerHTML = '<div style="padding:16px;color:var(--text2);font-size:13px">Jami <strong>' + history.length + '</strong> ta imtihon, <strong>' + unique.length + '</strong> talaba</div>';
-  } catch (e) { el.innerHTML = '<div style="padding:12px;color:var(--text3)">Malumot yuklanmadi</div>'; }
+
+    el.innerHTML = ranked.slice(0,6).map(function(r, i){
+      var medal = i===0?'🥇':i===1?'🥈':i===2?'🥉':(i+1)+'.';
+      var c = r.avg>=86?'#16A34A':r.avg>=71?'#0891B2':r.avg>=56?'#D97706':'#DC2626';
+      return '<div style="display:flex;align-items:center;gap:10px;padding:10px 12px;border-bottom:1px solid #F1F5F9">' +
+        '<div style="width:30px;font-size:'+(i<3?'18px':'13px')+';text-align:center;font-weight:800;color:#94A3B8">'+medal+'</div>' +
+        '<div style="flex:1"><div style="font-weight:700;font-size:13px;color:#1E293B">'+r.group+'</div>' +
+        '<div style="font-size:11px;color:#94A3B8">'+r.count+' ta baho</div></div>' +
+        '<div style="background:'+c+'22;color:'+c+';font-weight:800;font-size:13px;padding:4px 12px;border-radius:14px">'+r.avg.toFixed(1)+'</div>' +
+      '</div>';
+    }).join('');
+  } catch (e) {
+    if (window.IDU) window.IDU.showError(el, e.message);
+    else el.innerHTML = '<div style="padding:12px;color:#DC2626">'+e.message+'</div>';
+  }
 }
 
 async function renderAtRiskFromApi() {
-  const el = document.getElementById('atRiskStudents');
+  const el = document.getElementById('atRiskStudents') || document.getElementById('topTeachersList');
   if (!el) return;
+  if (window.IDU) window.IDU.showLoading(el, 'rows', 3);
+
   try {
-    const history = await api('GET', '/exams/history');
-    if (!Array.isArray(history)) return;
-    const failed = history.filter(r => r.letter_grade === 'F');
-    if (!failed.length) { el.innerHTML = '<div style="padding:12px;color:var(--green);font-size:13px">✅ Hech kim xavf guruhida emas</div>'; return; }
-    el.innerHTML = failed.slice(0,5).map(r => '<div style="display:flex;align-items:center;gap:10px;padding:10px 0;border-bottom:1px solid #F8FAFC"><div class="dt-avatar" style="background:#DC2626">' + (r.student_name||'?').split(' ').map(x=>x[0]).join('').substring(0,2) + '</div><div style="flex:1"><div style="font-size:13.5px;font-weight:700">' + (r.student_name||'Noma\'lum') + '</div><div style="font-size:12px;color:var(--text2)">' + r.subject + ' · ' + r.score + '% · ' + r.exam_type + '</div></div><span class="status-tag st-warning">Xavf</span></div>').join('');
-  } catch (e) {}
+    const [students, grades] = await Promise.all([
+      window.IDU ? window.IDU.getAllStudents() : api('GET','/students?limit=500').then(function(r){return r.data||r;}),
+      api('GET','/grades?limit=1000').then(function(r){return Array.isArray(r)?r:(r.data||[]);}).catch(function(){return [];})
+    ]);
+
+    const avgs = {};
+    grades.forEach(function(g){
+      var id = g.student_id;
+      if (!avgs[id]) avgs[id] = {sum:0,count:0};
+      avgs[id].sum += parseFloat(g.score) || 0;
+      avgs[id].count++;
+    });
+
+    const risk = students.map(function(s){
+      var st = avgs[s.id];
+      return { stu: s, avg: st && st.count ? st.sum/st.count : 0, hasGrades: !!(st && st.count) };
+    }).filter(function(r){return r.hasGrades && r.avg < 56;})
+      .sort(function(a,b){return a.avg-b.avg;});
+
+    if (!risk.length) {
+      if (window.IDU) window.IDU.showEmpty(el, {icon:'✅', title:'Xavf guruhi yo\'q', desc:'Barcha talabalar yetarli ball to\'pladi'});
+      else el.innerHTML = '<div style="padding:12px;color:#16A34A;font-size:13px">✅ Hech kim xavf guruhida emas</div>';
+      return;
+    }
+
+    el.innerHTML = risk.slice(0,6).map(function(r){
+      var s = r.stu;
+      var initials = (s.full_name||'?').split(' ').map(function(x){return x[0];}).join('').substring(0,2);
+      return '<div style="display:flex;align-items:center;gap:10px;padding:10px 12px;border-bottom:1px solid #F1F5F9">' +
+        '<div style="width:36px;height:36px;border-radius:50%;background:#FEE2E2;color:#DC2626;font-weight:800;font-size:13px;display:flex;align-items:center;justify-content:center;flex-shrink:0">'+initials+'</div>' +
+        '<div style="flex:1;min-width:0"><div style="font-weight:700;font-size:13px;color:#1E293B;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">'+(s.full_name||'Noma\'lum')+'</div>' +
+        '<div style="font-size:11px;color:#94A3B8">'+(s.group_name||s.group||'—')+'</div></div>' +
+        '<div style="background:#FEE2E2;color:#DC2626;font-weight:800;font-size:12px;padding:4px 10px;border-radius:14px">'+r.avg.toFixed(1)+'</div>' +
+      '</div>';
+    }).join('');
+  } catch (e) {
+    if (window.IDU) window.IDU.showError(el, e.message);
+  }
 }
 
 async function renderDekanatStudents() {

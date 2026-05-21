@@ -17,7 +17,7 @@
 <link rel="stylesheet" href="css/style.css?v=20260517d">
 <link rel="stylesheet" href="css/responsive.css?v=20260517d">
 <link rel="stylesheet" href="css/landing.css?v=20260517d">
-<link rel="stylesheet" href="css/utilities.css?v=20260521a">
+<link rel="stylesheet" href="css/utilities.css?v=20260521b">
 <!-- KaTeX for math formula rendering -->
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/katex.min.css" crossorigin="anonymous">
 <script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/katex.min.js" crossorigin="anonymous"></script>
@@ -817,10 +817,10 @@
       </div>
     </div>
     <div class="hb-stats">
-      <div><div class="hb-stat-val">156</div><div class="hb-stat-key" id="dash-hb1">Talabalar</div></div>
-      <div><div class="hb-stat-val">24</div><div class="hb-stat-key" id="dash-hb2">Fanlar</div></div>
-      <div><div class="hb-stat-val">98%</div><div class="hb-stat-key" id="dash-hb3">Davomat</div></div>
-      <div><div class="hb-stat-val">14</div><div class="hb-stat-key" id="dash-hb4">O'qituvchilar</div></div>
+      <div><div class="hb-stat-val" id="hb-stat1">—</div><div class="hb-stat-key" id="dash-hb1">Talabalar</div></div>
+      <div><div class="hb-stat-val" id="hb-stat2">—</div><div class="hb-stat-key" id="dash-hb2">Fanlar</div></div>
+      <div><div class="hb-stat-val" id="hb-stat3">—</div><div class="hb-stat-key" id="dash-hb3">Davomat</div></div>
+      <div><div class="hb-stat-val" id="hb-stat4">—</div><div class="hb-stat-key" id="dash-hb4">O'qituvchilar</div></div>
     </div>
   </div>
   <div class="stats-grid">
@@ -1518,39 +1518,39 @@
       </div>
     </div>
     <div class="hb-stats">
-      <div><div class="hb-stat-val">312</div><div class="hb-stat-key">Talabalar</div></div>
-      <div><div class="hb-stat-val">18</div><div class="hb-stat-key">O'qituvchilar</div></div>
-      <div><div class="hb-stat-val">24</div><div class="hb-stat-key">Fanlar</div></div>
-      <div><div class="hb-stat-val">96%</div><div class="hb-stat-key">Davomat</div></div>
+      <div><div class="hb-stat-val" id="dek-hb-students">—</div><div class="hb-stat-key">Talabalar</div></div>
+      <div><div class="hb-stat-val" id="dek-hb-teachers">—</div><div class="hb-stat-key">O'qituvchilar</div></div>
+      <div><div class="hb-stat-val" id="dek-hb-subjects">—</div><div class="hb-stat-key">Fanlar</div></div>
+      <div><div class="hb-stat-val" id="dek-hb-attendance">—</div><div class="hb-stat-key">Davomat</div></div>
     </div>
   </div>
   <div class="stats-grid">
     <div class="stat-card">
       <div class="stat-card-top"><div class="stat-card-label">Jami talabalar</div>
         <div class="stat-card-icon" style="background:var(--primary-light)">🎓</div></div>
-      <div class="stat-card-val" style="color:var(--primary)">312</div>
-      <div class="stat-card-change sc-up">↑ +8 bu semestr</div>
+      <div class="stat-card-val" style="color:var(--primary)" id="dekStatStudents">—</div>
+      <div class="stat-card-change sc-flat" id="dekStatStudentsSub">Faol o'quvchilar</div>
       <div class="stat-card-bar scb-blue"></div>
     </div>
     <div class="stat-card">
       <div class="stat-card-top"><div class="stat-card-label">O'qituvchilar</div>
         <div class="stat-card-icon" style="background:var(--green-light)">👨‍🏫</div></div>
-      <div class="stat-card-val" style="color:var(--green)">18</div>
+      <div class="stat-card-val" style="color:var(--green)" id="dekStatTeachers">—</div>
       <div class="stat-card-change sc-flat">Joriy holat</div>
       <div class="stat-card-bar scb-green"></div>
     </div>
     <div class="stat-card">
       <div class="stat-card-top"><div class="stat-card-label">Guruhlar</div>
         <div class="stat-card-icon" style="background:var(--orange-light)">👥</div></div>
-      <div class="stat-card-val" style="color:var(--orange)">12</div>
-      <div class="stat-card-change sc-flat">4 kurs</div>
+      <div class="stat-card-val" style="color:var(--orange)" id="dekStatGroups">—</div>
+      <div class="stat-card-change sc-flat" id="dekStatGroupsSub">Faol guruhlar</div>
       <div class="stat-card-bar scb-orange"></div>
     </div>
     <div class="stat-card">
       <div class="stat-card-top"><div class="stat-card-label">Xavfli talabalar</div>
         <div class="stat-card-icon" style="background:var(--red-light)">⚠️</div></div>
-      <div class="stat-card-val" style="color:var(--red)">14</div>
-      <div class="stat-card-change sc-down">Darhol diqqat</div>
+      <div class="stat-card-val" style="color:var(--red)" id="dekStatAtRisk">—</div>
+      <div class="stat-card-change sc-flat" id="dekStatAtRiskSub">56 balldan past</div>
       <div class="stat-card-bar scb-red"></div>
     </div>
   </div>
@@ -3622,13 +3622,13 @@
   <script src="js/core/config.js?v=20260517d"></script>
   <script src="js/core/auth.js?v=20260517d"></script>
   <script src="js/core/router.js?v=20260517d"></script>
-  <script src="js/core/ui-utils.js?v=20260521a"></script>
+  <script src="js/core/ui-utils.js?v=20260521b"></script>
   <script src="js/ui/toast.js?v=20260517d"></script>
   <script src="js/ui/modal.js?v=20260517d"></script>
   <script src="js/ui/effects.js?v=20260517d"></script>
   <script src="js/pages/student.js?v=20260517d"></script>
   <script src="js/pages/teacher.js?v=20260517d"></script>
-  <script src="js/pages/dekanat.js?v=20260517d"></script>
+  <script src="js/pages/dekanat.js?v=20260521b"></script>
   <script src="js/pages/investor.js?v=20260517d"></script>
   <script src="js/features/schedule.js?v=20260517d"></script>
   <script src="js/features/assignments.js?v=20260517d"></script>
@@ -3644,7 +3644,7 @@
   <script src="js/features/gamification.js?v=20260520f"></script>
   <script src="js/pages/rector.js?v=20260520f"></script>
   <script src="js/features/teacher-exams.js?v=20260520f"></script>
-  <script src="js/main.js?v=20260521a"></script>
+  <script src="js/main.js?v=20260521b"></script>
   <script src="js/enhancements.js?v=20260520f"></script>
   <!-- QR code generator (teacher) -->
   <script src="https://cdn.jsdelivr.net/npm/qrcodejs@1.0.0/qrcode.min.js" crossorigin="anonymous"></script>
