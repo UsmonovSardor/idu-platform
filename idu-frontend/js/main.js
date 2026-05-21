@@ -274,18 +274,18 @@ async function realLoginStart(role, loginInputId, passInputId, btnId) {
     if (realRole === 'student') showPage('dashboard');
     else if (realRole === 'teacher') showPage('teacher-dashboard');
     else if (realRole === 'dekanat') showPage('dekanat-dashboard');
-    else if (realRole === ‘investor’) showPage(‘investor-dashboard’);
-    else if (realRole === ‘admin’) showPage(‘dekanat-sesiya’);
+    else if (realRole === 'investor') showPage('investor-dashboard');
+    else if (realRole === 'admin') showPage('dekanat-sesiya');
 
     // Post-login extras
     window.CURRENT_USER = { id: user.id, role: realRole, name: user.full_name || user.name };
-    var fab2 = document.getElementById(‘chatFab’);
-    if (fab2) fab2.style.display = ‘flex’;
-    if (realRole === ‘student’ && typeof renderXPWidget === ‘function’) renderXPWidget();
-    if (typeof initDefaultChatRooms === ‘function’) setTimeout(initDefaultChatRooms, 2000);
+    var fab2 = document.getElementById('chatFab');
+    if (fab2) fab2.style.display = 'flex';
+    if (realRole === 'student' && typeof renderXPWidget === 'function') renderXPWidget();
+    if (typeof initDefaultChatRooms === 'function') setTimeout(initDefaultChatRooms, 2000);
 
   } catch (e) {
-    alert(e.message || ‘Login yoki parol noto\’g\’ri’);
+    alert(e.message || 'Login yoki parol notogri');
   } finally {
     _setLoginLoading(btnId, false);
   }
