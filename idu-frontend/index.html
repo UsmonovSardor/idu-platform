@@ -1374,6 +1374,31 @@
 </div>
 
 <!-- ═══ TEACHER: ASSIGNMENTS ═══ -->
+<!-- ═══ TEACHER: EXAMS ═══ -->
+<div class="page" id="page-teacher-exams">
+  <div class="page-header">
+    <div class="page-header-left">
+      <div class="ph-title">🎯 Imtihonlar</div>
+      <div class="ph-sub">Oraliq · Joriy nazorat · Yakuniy · Mashq testlar</div>
+    </div>
+    <div class="page-header-right">
+      <button class="btn btn-primary" onclick="openCreateExamModal()">+ Yangi imtihon</button>
+    </div>
+  </div>
+  <div id="teacherExamsList"></div>
+</div>
+
+<!-- ═══ STUDENT: TEACHER EXAMS ═══ -->
+<div class="page" id="page-student-exams">
+  <div class="page-header">
+    <div class="page-header-left">
+      <div class="ph-title">🎯 Imtihonlar</div>
+      <div class="ph-sub">O'qituvchi tomonidan tayinlangan imtihonlar</div>
+    </div>
+  </div>
+  <div id="studentExamsList"></div>
+</div>
+
 <div class="page" id="page-teacher-assignments">
   <div class="page-header">
     <div class="page-header-left">
@@ -3615,9 +3640,10 @@
   <script src="js/features/attendance.js?v=20260520b"></script>
   <script src="js/features/chat.js?v=20260520b"></script>
   <script src="js/features/gamification.js?v=20260520b"></script>
-  <script src="js/pages/rector.js?v=20260520b"></script>
-  <script src="js/main.js?v=20260520b"></script>
-  <script src="js/enhancements.js?v=20260520b"></script>
+  <script src="js/pages/rector.js?v=20260520c"></script>
+  <script src="js/features/teacher-exams.js?v=20260520c"></script>
+  <script src="js/main.js?v=20260520c"></script>
+  <script src="js/enhancements.js?v=20260520c"></script>
   <!-- QR code generator (teacher) -->
   <script src="https://cdn.jsdelivr.net/npm/qrcodejs@1.0.0/qrcode.min.js" crossorigin="anonymous"></script>
   <!-- QR code scanner (student camera) -->
@@ -3854,6 +3880,190 @@ window.renderMathInPage=renderMathInPage;
       <hr style="margin:20px 0;border-color:#F1F5F9">
       <div style="font-weight:700;font-size:13px;margin-bottom:10px;color:#374151">Mening davomatim:</div>
       <div id="myAttendanceList" style="max-height:220px;overflow-y:auto"></div>
+    </div>
+  </div>
+</div>
+
+<!-- ═══ TEACHER: CREATE EXAM MODAL ═══════════════════════════════════════════ -->
+<div id="createExamModal" style="display:none;position:fixed;inset:0;z-index:4000;background:rgba(15,23,42,0.6);backdrop-filter:blur(6px);align-items:center;justify-content:center;padding:16px"
+     onclick="if(event.target===this)closeCreateExamModal()">
+  <div style="background:#fff;border-radius:20px;width:100%;max-width:580px;max-height:92vh;overflow:auto;box-shadow:0 24px 80px rgba(0,0,0,0.2)">
+    <div style="background:linear-gradient(135deg,#1B4FD8,#4F46E5);padding:20px 24px;display:flex;justify-content:space-between;align-items:center;position:sticky;top:0;z-index:2">
+      <div>
+        <div style="color:#fff;font-size:18px;font-weight:800">🎯 Yangi imtihon</div>
+        <div style="color:rgba(255,255,255,0.75);font-size:12px;margin-top:2px">Oraliq · Joriy · Yakuniy · Mashq</div>
+      </div>
+      <button onclick="closeCreateExamModal()" style="background:rgba(255,255,255,0.15);border:none;color:#fff;width:32px;height:32px;border-radius:50%;font-size:18px;cursor:pointer">✕</button>
+    </div>
+    <div style="padding:22px">
+      <div style="margin-bottom:12px">
+        <label style="font-size:12px;font-weight:700;color:#64748B;display:block;margin-bottom:4px">Imtihon nomi *</label>
+        <input id="ceTitle" class="form-control" placeholder="Masalan: Matematika oraliq nazorat 1" style="width:100%">
+      </div>
+      <div style="margin-bottom:12px">
+        <label style="font-size:12px;font-weight:700;color:#64748B;display:block;margin-bottom:4px">Tavsif</label>
+        <textarea id="ceDesc" class="form-control" rows="2" placeholder="Imtihon haqida qisqacha..." style="width:100%;resize:vertical"></textarea>
+      </div>
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:12px">
+        <div>
+          <label style="font-size:12px;font-weight:700;color:#64748B;display:block;margin-bottom:4px">Fan *</label>
+          <input id="ceSubject" class="form-control" placeholder="Matematika" style="width:100%">
+        </div>
+        <div>
+          <label style="font-size:12px;font-weight:700;color:#64748B;display:block;margin-bottom:4px">Guruh *</label>
+          <input id="ceGroup" class="form-control" placeholder="AI-2301" style="width:100%">
+        </div>
+      </div>
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:12px">
+        <div>
+          <label style="font-size:12px;font-weight:700;color:#64748B;display:block;margin-bottom:4px">Turi *</label>
+          <select id="ceType" class="form-select" style="width:100%">
+            <option value="practice">🔵 Mashq (baho qo'shilmaydi)</option>
+            <option value="joriy">🟢 Joriy nazorat</option>
+            <option value="oraliq">🟠 Oraliq nazorat</option>
+            <option value="yakuniy">🔴 Yakuniy nazorat</option>
+          </select>
+        </div>
+        <div>
+          <label style="font-size:12px;font-weight:700;color:#64748B;display:block;margin-bottom:4px">Muddat (daq)</label>
+          <input id="ceDuration" type="number" class="form-control" value="30" min="5" max="240" style="width:100%">
+        </div>
+      </div>
+      <div style="margin-bottom:14px">
+        <label style="font-size:12px;font-weight:700;color:#64748B;display:block;margin-bottom:4px">Maksimal ball</label>
+        <input id="ceTotal" type="number" class="form-control" value="100" min="10" max="100" style="width:100%">
+      </div>
+      <div style="background:#F8FAFC;border-radius:10px;padding:12px;margin-bottom:18px">
+        <label style="display:flex;align-items:center;gap:8px;font-size:12px;color:#475569;cursor:pointer;margin-bottom:6px">
+          <input type="checkbox" id="ceShuffleQ" checked> Savollarni aralashtirish
+        </label>
+        <label style="display:flex;align-items:center;gap:8px;font-size:12px;color:#475569;cursor:pointer;margin-bottom:6px">
+          <input type="checkbox" id="ceShuffleO" checked> Variantlarni aralashtirish
+        </label>
+        <label style="display:flex;align-items:center;gap:8px;font-size:12px;color:#475569;cursor:pointer">
+          <input type="checkbox" id="ceShowRes" checked> Talabaga natija ko'rsatish
+        </label>
+      </div>
+      <div style="display:flex;gap:8px">
+        <button onclick="submitCreateExam()" class="btn btn-primary" style="flex:1;padding:12px;font-weight:700">✓ Yaratish</button>
+        <button onclick="closeCreateExamModal()" class="btn btn-secondary" style="flex:1;padding:12px">Bekor</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ═══ TEACHER: EXAM EDITOR MODAL ═══════════════════════════════════════════ -->
+<div id="examEditorModal" style="display:none;position:fixed;inset:0;z-index:4000;background:rgba(15,23,42,0.6);backdrop-filter:blur(6px);align-items:center;justify-content:center;padding:16px"
+     onclick="if(event.target===this)closeExamEditor()">
+  <div style="background:#fff;border-radius:20px;width:100%;max-width:760px;max-height:92vh;overflow:hidden;display:flex;flex-direction:column;box-shadow:0 24px 80px rgba(0,0,0,0.2)">
+    <div style="background:linear-gradient(135deg,#1B4FD8,#4F46E5);padding:18px 22px;display:flex;justify-content:space-between;align-items:center;flex-shrink:0">
+      <div>
+        <div style="color:#fff;font-size:17px;font-weight:800">📝 Savollar tahriri</div>
+        <div style="color:rgba(255,255,255,0.75);font-size:12px;margin-top:2px"><span id="eeQCount">0 savol</span></div>
+      </div>
+      <button onclick="closeExamEditor()" style="background:rgba(255,255,255,0.15);border:none;color:#fff;width:32px;height:32px;border-radius:50%;font-size:18px;cursor:pointer">✕</button>
+    </div>
+    <div style="padding:18px;overflow-y:auto;flex:1">
+      <!-- Upload section -->
+      <div style="background:linear-gradient(135deg,#EFF6FF,#DBEAFE);border:1.5px solid #93C5FD;border-radius:12px;padding:14px;margin-bottom:16px">
+        <div style="font-weight:700;font-size:13px;margin-bottom:8px;color:#1D4ED8">📤 Fayldan import qilish</div>
+        <div style="font-size:11px;color:#475569;margin-bottom:8px;line-height:1.5">
+          Format: <code style="background:#fff;padding:1px 5px;border-radius:3px">1. Savol? A) ... B) ... C) ... D) ... To'g'ri: A</code><br>
+          Qabul qilinadi: <strong>PDF · TXT · CSV · DOC · DOCX · JSON</strong>
+        </div>
+        <div style="display:flex;gap:8px">
+          <input id="eeFileInput" type="file" accept=".pdf,.txt,.csv,.doc,.docx,.json" style="flex:1;font-size:12px;padding:6px;background:#fff;border:1px solid #BFDBFE;border-radius:6px">
+          <button id="eeUploadBtn" onclick="uploadExamFile()" class="btn btn-primary" style="padding:6px 14px;font-size:12px;font-weight:700">📤 Yuklash</button>
+        </div>
+      </div>
+
+      <!-- Manual add -->
+      <details style="background:#F8FAFC;border:1px solid #E2E8F0;border-radius:12px;margin-bottom:16px">
+        <summary style="cursor:pointer;padding:12px 14px;font-weight:700;font-size:13px;color:#1E293B">➕ Savol qo'lda qo'shish</summary>
+        <div style="padding:0 14px 14px">
+          <textarea id="mqText" class="form-control" rows="2" placeholder="Savol matni..." style="width:100%;margin-bottom:8px;resize:vertical"></textarea>
+          <div style="display:grid;grid-template-columns:1fr 1fr;gap:6px;margin-bottom:8px">
+            <input id="mqA" class="form-control" placeholder="A)">
+            <input id="mqB" class="form-control" placeholder="B)">
+            <input id="mqC" class="form-control" placeholder="C)">
+            <input id="mqD" class="form-control" placeholder="D)">
+          </div>
+          <div style="display:flex;gap:6px;margin-bottom:8px;align-items:center">
+            <span style="font-size:12px;color:#64748B">To'g'ri javob:</span>
+            <select id="mqCorrect" class="form-select" style="width:80px"><option>A</option><option>B</option><option>C</option><option>D</option></select>
+            <input id="mqExp" class="form-control" placeholder="Izoh (ixtiyoriy)" style="flex:1">
+            <button onclick="addManualQuestion()" class="btn btn-primary" style="font-size:12px;padding:6px 14px">+ Qo'shish</button>
+          </div>
+        </div>
+      </details>
+
+      <!-- Questions list -->
+      <div id="eeQuestionList"></div>
+    </div>
+    <div style="padding:12px 18px;border-top:1px solid #E2E8F0;flex-shrink:0;background:#F8FAFC">
+      <button onclick="closeExamEditor()" class="btn btn-primary" style="width:100%;padding:10px;font-weight:700">✓ Saqlash va yopish</button>
+    </div>
+  </div>
+</div>
+
+<!-- ═══ TEACHER: EXAM RESULTS MODAL ══════════════════════════════════════════ -->
+<div id="examResultsModal" style="display:none;position:fixed;inset:0;z-index:4000;background:rgba(15,23,42,0.6);backdrop-filter:blur(6px);align-items:center;justify-content:center;padding:16px"
+     onclick="if(event.target===this)closeExamResults()">
+  <div style="background:#fff;border-radius:20px;width:100%;max-width:760px;max-height:92vh;overflow:hidden;display:flex;flex-direction:column;box-shadow:0 24px 80px rgba(0,0,0,0.2)">
+    <div style="background:linear-gradient(135deg,#16A34A,#22C55E);padding:18px 22px;display:flex;justify-content:space-between;align-items:center;flex-shrink:0">
+      <div>
+        <div style="color:#fff;font-size:17px;font-weight:800">📊 Imtihon natijalari</div>
+        <div style="color:rgba(255,255,255,0.85);font-size:12px;margin-top:2px" id="erTitle"></div>
+      </div>
+      <button onclick="closeExamResults()" style="background:rgba(255,255,255,0.15);border:none;color:#fff;width:32px;height:32px;border-radius:50%;font-size:18px;cursor:pointer">✕</button>
+    </div>
+    <div style="padding:18px;overflow-y:auto;flex:1" id="erBody"></div>
+  </div>
+</div>
+
+<!-- ═══ STUDENT: FULLSCREEN ANTI-CHEAT EXAM OVERLAY ══════════════════════════ -->
+<div id="examTakeOverlay" style="display:none;position:fixed;inset:0;z-index:9999;background:linear-gradient(135deg,#0F172A,#1E293B);flex-direction:column;color:#fff;overflow:hidden">
+  <!-- Top bar -->
+  <div style="background:rgba(0,0,0,0.4);padding:14px 24px;display:flex;justify-content:space-between;align-items:center;border-bottom:1px solid rgba(255,255,255,0.1);flex-shrink:0">
+    <div>
+      <div style="font-weight:800;font-size:16px" id="etTitle">Imtihon</div>
+      <div style="font-size:11px;color:rgba(255,255,255,0.6)" id="etSubject"></div>
+    </div>
+    <div style="display:flex;gap:24px;align-items:center">
+      <div style="text-align:center">
+        <div style="font-size:10px;color:rgba(255,255,255,0.6);font-weight:700;text-transform:uppercase">Vaqt</div>
+        <div id="etTimer" style="font-size:24px;font-weight:900;font-family:monospace;color:#22C55E">00:00</div>
+      </div>
+      <div style="text-align:center">
+        <div style="font-size:10px;color:rgba(255,255,255,0.6);font-weight:700;text-transform:uppercase">Javoblar</div>
+        <div style="font-size:18px;font-weight:800"><span id="etAnsweredCount">0</span> / <span id="etProgress">1/1</span></div>
+      </div>
+      <button onclick="submitExam(false,false)" style="background:linear-gradient(135deg,#DC2626,#EF4444);color:#fff;border:none;padding:10px 18px;border-radius:10px;font-weight:700;font-size:13px;cursor:pointer">🚀 Topshirish</button>
+    </div>
+  </div>
+
+  <!-- Cheat banner -->
+  <div id="etCheatBanner" style="display:none;background:#DC2626;color:#fff;padding:10px 24px;font-weight:700;text-align:center;font-size:13px;border-bottom:2px solid #991B1B"></div>
+
+  <!-- Main content -->
+  <div style="flex:1;display:flex;overflow:hidden">
+    <!-- Question area -->
+    <div style="flex:1;padding:32px;overflow-y:auto;background:rgba(255,255,255,0.97);color:#1E293B">
+      <div id="etQuestion" style="max-width:760px;margin:0 auto"></div>
+      <div style="max-width:760px;margin:24px auto 0;display:flex;justify-content:space-between;gap:10px">
+        <button id="etPrevBtn" onclick="prevQ()" class="btn btn-secondary" style="padding:10px 22px;font-weight:700">← Oldingi</button>
+        <button id="etNextBtn" onclick="nextQ()" class="btn btn-primary" style="padding:10px 22px;font-weight:700">Keyingi →</button>
+      </div>
+    </div>
+    <!-- Question grid sidebar -->
+    <div style="width:200px;background:rgba(0,0,0,0.3);padding:20px;overflow-y:auto;flex-shrink:0">
+      <div style="font-size:11px;color:rgba(255,255,255,0.6);font-weight:700;text-transform:uppercase;margin-bottom:10px">Savollar</div>
+      <div id="etGrid" style="display:grid;grid-template-columns:repeat(5,1fr);gap:5px"></div>
+      <div style="margin-top:16px;padding-top:14px;border-top:1px solid rgba(255,255,255,0.1);font-size:10px;color:rgba(255,255,255,0.5);line-height:1.6">
+        🟢 Javob berildi<br>
+        ⚪ Bo'sh<br>
+        🔵 Joriy savol
+      </div>
     </div>
   </div>
 </div>

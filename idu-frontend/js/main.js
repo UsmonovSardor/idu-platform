@@ -409,7 +409,7 @@ let _pendingLaunchRole = null, _pendingLaunchUser = null;
 
 // XAVFSIZLIK: Sahifaga kirish tekshiruvi (talaba dekanat oynasini ochishga urinsa)
 function secureShowPage(pageId) {
-  const dekanatPages = ['dekanat-dashboard','dekanat-schedule','dekanat-students','dekanat-teachers','dekanat-grades','dekanat-attendance','dekanat-applications','dekanat-questions','dekanat-report'];
+  const dekanatPages = ['dekanat-dashboard','dekanat-schedule','dekanat-students','dekanat-teachers','dekanat-grades','dekanat-attendance','dekanat-applications','dekanat-questions','dekanat-report','rector-dashboard'];
   if (dekanatPages.includes(pageId)) {
     const role = currentUser && currentUser.role;
     // admin va dekanat dekanat sahifalarini ko'rishi mumkin
@@ -545,6 +545,7 @@ const NAV_TABS = {
     {id:'aitutor',icon:'🤖',label:'AI Tutor',labelRu:'AI Репетитор'},
     {id:'professors',icon:'⭐',label:'Ustozlar',labelRu:'Преподаватели'},
     {id:'notifications',icon:'🔔',label:'Xabarlar',labelRu:'Уведомления',badge:3},
+    {id:'student-exams',icon:'🎯',label:'Imtihonlar',labelRu:'Экзамены'},
     {id:'sesiya-test',icon:'🧪',label:'Test Rejim',labelRu:'Пробный экзамен'},
     {id:'sesiya-real',icon:'📝',label:'Sesiya',labelRu:'Сессия'},
   ],
@@ -554,6 +555,7 @@ const NAV_TABS = {
     {id:'teacher-students',icon:'👥',label:'Talabalar',labelRu:'Студенты'},
     {id:'teacher-grade',icon:'✏️',label:'Baholash',labelRu:'Оценивание'},
     {id:'teacher-attendance',icon:'📋',label:'Davomat',labelRu:'Посещаемость'},
+    {id:'teacher-exams',icon:'🎯',label:'Imtihonlar',labelRu:'Экзамены'},
     {id:'teacher-assignments',icon:'📝',label:'Vazifalar',labelRu:'Задания'},
     {id:'startup',icon:'🚀',label:'Startup',labelRu:'Стартап'},
     {id:'notifications',icon:'🔔',label:'Xabarlar',labelRu:'Уведомления',badge:2},
@@ -688,6 +690,8 @@ function showPage(id){
   // New modules
   else if(id==='rector-dashboard') { if(typeof renderRectorDashboard==='function') renderRectorDashboard(); }
   else if(id==='leaderboard')      { if(typeof renderLeaderboard==='function') renderLeaderboard(); }
+  else if(id==='teacher-exams')    { if(typeof renderTeacherExamsList==='function') renderTeacherExamsList(); }
+  else if(id==='student-exams')    { if(typeof renderStudentTeacherExams==='function') renderStudentTeacherExams(); }
   // Lazy render — addon pages
   else if(id==='games') { if(typeof renderGameHub==='function') renderGameHub(); }
   else if(id==='gamification') { if(typeof renderGamification==='function') renderGamification(); }

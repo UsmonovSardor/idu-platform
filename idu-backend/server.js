@@ -34,6 +34,7 @@ const messagesRoutes    = require('./routes/messages');
 const gamificationRoutes= require('./routes/gamification');
 const documentsRoutes   = require('./routes/documents');
 const rectorRoutes      = require('./routes/rector');
+const teacherExamsRoutes= require('./routes/teacherExams');
 
 const app = express();
 
@@ -126,6 +127,7 @@ const routeMap = [
   ['/gamification',  gamificationRoutes],
   ['/documents',     documentsRoutes],
   ['/rector',        rectorRoutes],
+  ['/teacher-exams', teacherExamsRoutes],
 ];
 
 routeMap.forEach(([path, router]) => {
