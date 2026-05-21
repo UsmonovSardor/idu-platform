@@ -94,6 +94,19 @@ window.realAutoLogin = async function realAutoLogin() {
       if (typeof renderXPWidget === 'function') renderXPWidget();
     }
     if (typeof initDefaultChatRooms === 'function') setTimeout(initDefaultChatRooms, 2000);
+    // Auto-populate all group/subject dropdowns + bind search boxes
+    if (window.IDU) {
+      setTimeout(function(){
+        window.IDU.initDynamicSelects();
+        // Wire common search boxes
+        if (typeof filterStudents === 'function') {
+          window.IDU.bindSearchBox('studentSearch', filterStudents);
+        }
+        if (typeof renderStudentList === 'function') {
+          window.IDU.bindSearchBox('studListSearch', renderStudentList);
+        }
+      }, 500);
+    }
     stopLoading();
     return;
  
@@ -283,6 +296,13 @@ async function realLoginStart(role, loginInputId, passInputId, btnId) {
     if (fab2) fab2.style.display = 'flex';
     if (realRole === 'student' && typeof renderXPWidget === 'function') renderXPWidget();
     if (typeof initDefaultChatRooms === 'function') setTimeout(initDefaultChatRooms, 2000);
+    if (window.IDU) {
+      setTimeout(function(){
+        window.IDU.initDynamicSelects();
+        if (typeof filterStudents === 'function') window.IDU.bindSearchBox('studentSearch', filterStudents);
+        if (typeof renderStudentList === 'function') window.IDU.bindSearchBox('studListSearch', renderStudentList);
+      }, 500);
+    }
 
   } catch (e) {
     alert(e.message || 'Login yoki parol notogri');

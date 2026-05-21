@@ -210,11 +210,85 @@ function invalidateCache(key) {
   else Object.keys(_cache).forEach(function(k){ _cache[k] = { data: null, ts: 0 }; });
 }
 
+// ── Auto-fill ALL group/subject dropdowns on the page ───────────────────────
+// Detects <select> elements by ID pattern: contains "Group"/"group"/"Grp" → group select
+// Contains "Subject"/"subject"/"Fan" → subject select. Preserves selected value.
+async function initDynamicSelects(opts) {
+  opts = opts || {};
+  var groupSelects = [];
+  var subjectSelects = [];
+
+  document.querySelectorAll('select').forEach(function(s){
+    if (!s.id) return;
+    if (s.dataset.iduFilled === '1' && !opts.force) return; // skip already done
+    // Skip the hidden helper select
+    if (s.id === 'sGroup') return;
+    // Skip subject-name selects (those that take "Algoritmlar" strings — different list)
+    var lid = s.id.toLowerCase();
+    if (/(group|grp|guruh)(filter|select|name)?$/i.test(s.id) || /group|grp|guruh/.test(lid)) {
+      // But skip the "move to group" and dir/course selects (different semantics)
+      if (/movetogroup|newgroupdir|newgroupcourse|editstudentgroup/i.test(s.id)) return;
+      // Skip group SUBJECT-related selects
+      if (/subject/i.test(lid)) return;
+      groupSelects.push(s);
+      return;
+    }
+    if (/(subject|fan)(filter|select)?$/i.test(s.id) && !/group/i.test(lid)) {
+      subjectSelects.push(s);
+    }
+  });
+
+  if (groupSelects.length) {
+    var groups = await getGroups();
+    groupSelects.forEach(function(sel){
+      var current = sel.value;
+      // Detect if it already has an "All" option (without value)
+      var firstOpt = sel.querySelector('option');
+      var hasAll = firstOpt && (!firstOpt.value || firstOpt.value === '');
+      var html = hasAll ? '<option value="">Barcha guruhlar</option>' : '';
+      groups.forEach(function(g){ html += '<option value="' + g + '">' + g + '</option>'; });
+      sel.innerHTML = html;
+      if (current && groups.indexOf(current) !== -1) sel.value = current;
+      sel.dataset.iduFilled = '1';
+    });
+  }
+
+  if (subjectSelects.length) {
+    subjectSelects.forEach(function(sel){
+      var current = sel.value;
+      var firstOpt = sel.querySelector('option');
+      var hasAll = firstOpt && (!firstOpt.value || firstOpt.value === '');
+      var html = hasAll ? '<option value="">Barcha fanlar</option>' : '';
+      SUBJECTS.forEach(function(s){
+        html += '<option value="' + s.code + '">' + s.icon + ' ' + s.name + '</option>';
+      });
+      sel.innerHTML = html;
+      if (current) sel.value = current;
+      sel.dataset.iduFilled = '1';
+    });
+  }
+}
+
+// ── Universal search-box binder ──────────────────────────────────────────────
+// Binds debounced input handler to a search box that calls a render function
+function bindSearchBox(inputId, renderFn, delay) {
+  var inp = document.getElementById(inputId);
+  if (!inp || inp.dataset.iduBound === '1') return;
+  inp.dataset.iduBound = '1';
+  var deb = debounce(renderFn, delay || 350);
+  inp.addEventListener('input', deb);
+  // Also handle Enter for immediate search
+  inp.addEventListener('keydown', function(e){
+    if (e.key === 'Enter') { e.preventDefault(); renderFn(); }
+  });
+}
+
 // ── Export to window ─────────────────────────────────────────────────────────
 window.IDU = window.IDU || {};
 Object.assign(window.IDU, {
   getAllStudents, getGroups, getSubjects,
   fillGroupSelect, fillSubjectSelect,
+  initDynamicSelects, bindSearchBox,
   showLoading, showEmpty, showError,
   fmtNum, fmtPct, fmtScore, gradeColor, gradeLetter,
   esc, debounce, invalidateCache
