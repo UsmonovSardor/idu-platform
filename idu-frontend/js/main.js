@@ -3478,22 +3478,177 @@ function clearRptFilters(){
   renderFullReport();
 }
 
-function refreshTeacherStats(){
+async function refreshTeacherStats(){
   var grp=(document.getElementById('tcGroupFilter')||{}).value||'';
   var sub=(document.getElementById('tcSubjectFilter')||{}).value||'';
   var info=document.getElementById('tc-filter-info');
-  if(info) info.textContent=(grp||sub)?'Filtr faol: '+(grp||'')+(grp&&sub?' · ':'')+(sub||''):'';
-  if(typeof StatsEngine !== 'undefined'){
-    StatsEngine.renderTeacherStats({group:grp,subject:sub});
+  if(info) info.textContent=(grp||sub)?'Filtr: '+(grp||'')+(grp&&sub?' · ':'')+(sub||''):'';
+
+  var cont = document.getElementById('tc-stat-dynamic');
+  if(cont && window.IDU) window.IDU.showLoading(cont, 'kpi', 4);
+
+  // ── Fetch everything in parallel ──
+  var [allStudents, gradesData, attStats, scheduleData, examsData] = await Promise.all([
+    window.IDU ? window.IDU.getAllStudents() : Promise.resolve([]),
+    api('GET', '/grades' + (sub ? '?subject=' + sub : '')).catch(function(){return [];}),
+    api('GET', '/attendance/stats').catch(function(){return [];}),
+    api('GET', '/schedule').catch(function(){return [];}),
+    api('GET', '/teacher-exams').catch(function(){return [];})
+  ]);
+
+  // ── Filter to group ──
+  var students = grp
+    ? allStudents.filter(function(s){return (s.group_name||s.group)===grp;})
+    : allStudents;
+
+  // Real grade list (filtered to group if needed)
+  var studentIds = new Set(students.map(function(s){return s.id;}));
+  var grades = (Array.isArray(gradesData) ? gradesData : (gradesData.data||[]))
+    .filter(function(g){return !grp || studentIds.has(g.student_id);});
+
+  // Compute REAL average score
+  var scores = grades.map(function(g){return parseFloat(g.score)||0;}).filter(function(x){return x>0;});
+  var avgScore = scores.length ? scores.reduce(function(a,b){return a+b;},0)/scores.length : 0;
+
+  // Attendance % for this group (or overall avg)
+  var attRows = Array.isArray(attStats) ? attStats : (attStats.data||[]);
+  var attForGrp = grp ? attRows.filter(function(a){return a.group_name===grp;}) : attRows;
+  var attPcts = attForGrp.map(function(a){return parseFloat(a.attendance_pct)||0;}).filter(function(x){return x>0;});
+  var avgAtt = attPcts.length ? Math.round(attPcts.reduce(function(a,b){return a+b;},0)/attPcts.length) : 0;
+
+  // Today's classes for this teacher
+  var todaySchedule = filterTodaySchedule(scheduleData, grp);
+
+  // At-risk students: real avg score < 56
+  var studentAvgs = {};
+  grades.forEach(function(g){
+    var id = g.student_id;
+    if(!studentAvgs[id]) studentAvgs[id]={sum:0,count:0};
+    studentAvgs[id].sum += parseFloat(g.score)||0;
+    studentAvgs[id].count++;
+  });
+  var atRisk = students.filter(function(s){
+    var st = studentAvgs[s.id];
+    if(!st || !st.count) return false;
+    return (st.sum/st.count) < 56;
+  });
+
+  // ── Render KPI cards ──
+  if(cont){
+    var ICUI = window.IDU || {};
+    var fmtScore = ICUI.fmtScore || function(n){return n?n.toFixed(1):'—';};
+    var fmtNum   = ICUI.fmtNum   || function(n){return String(n);};
+    var scoreColor = avgScore>=71?'#16A34A':avgScore>=56?'#D97706':'#DC2626';
+    var attColor   = avgAtt>=80?'#16A34A':avgAtt>=60?'#D97706':'#DC2626';
+
+    cont.innerHTML = '<div class="stats-grid" style="margin-bottom:0">'
+      + tcKpi('👥', 'Jami talabalar', fmtNum(students.length), '#1B4FD8', grp||"Barcha guruhlar")
+      + tcKpi('📊', "O'rtacha ball",  scores.length?fmtScore(avgScore):'—', scoreColor, scores.length+" ta baho")
+      + tcKpi('📅', "Bugungi darslar", todaySchedule.length, '#EA580C', dayName())
+      + tcKpi('⚠️', "Xavfli talabalar", atRisk.length, '#DC2626', atRisk.length?"56 balldan past":'Yo'+"'"+'q')
+      + '</div>';
+  }
+
+  // ── Render "Bugungi darslar" card ──
+  var todayBox = document.querySelector('#page-teacher-dashboard .grid-2 .card:nth-child(1)');
+  if(todayBox){
+    var todayBody = todayBox.querySelector('.card-header + div') || todayBox.querySelector('.tc-today-list');
+    if(!todayBody){
+      todayBody = document.createElement('div');
+      todayBody.className = 'tc-today-list';
+      todayBox.appendChild(todayBody);
+    }
+    renderTodayLessons(todayBody, todaySchedule);
+  }
+
+  // ── Render "Xavfli talabalar" card ──
+  var riskBox = document.querySelector('#page-teacher-dashboard .grid-2 .card:nth-child(2)');
+  if(riskBox){
+    var riskBody = riskBox.querySelector('.card-header + div') || riskBox.querySelector('.tc-risk-list');
+    if(!riskBody){
+      riskBody = document.createElement('div');
+      riskBody.className = 'tc-risk-list';
+      riskBox.appendChild(riskBody);
+    }
+    renderRiskList(riskBody, atRisk, studentAvgs);
   }
 }
 
-function initTeacherStats(){
-  if(typeof StatsEngine !== 'undefined'){
-    StatsEngine.populateGroupFilter('tcGroupFilter').then(function(){
-      refreshTeacherStats();
-    });
-  } else refreshTeacherStats();
+function tcKpi(icon, label, val, color, sub){
+  return '<div class="stat-card" style="border-top:3px solid '+color+'">'
+    + '<div class="stat-card-top"><div class="stat-card-label">'+label+'</div>'
+    + '<div class="stat-card-icon" style="background:'+color+'22;font-size:18px">'+icon+'</div></div>'
+    + '<div class="stat-card-val" style="color:'+color+'">'+val+'</div>'
+    + '<div class="stat-card-change" style="font-size:11px;color:#94A3B8">'+sub+'</div>'
+    + '<div class="stat-card-bar" style="background:'+color+'33;height:3px;border-radius:2px;margin-top:6px"></div>'
+    + '</div>';
+}
+
+function dayName(){
+  var days=["Yakshanba","Dushanba","Seshanba","Chorshanba","Payshanba","Juma","Shanba"];
+  return days[new Date().getDay()];
+}
+
+function filterTodaySchedule(scheduleData, grp){
+  var arr = Array.isArray(scheduleData) ? scheduleData : (scheduleData.data||[]);
+  var dow = new Date().getDay();
+  var dowNames = ['sunday','monday','tuesday','wednesday','thursday','friday','saturday'];
+  var today = dowNames[dow];
+  return arr.filter(function(s){
+    var sd = (s.day_of_week||s.day||'').toLowerCase();
+    var sameDay = sd===today || s.day_of_week===dow;
+    return sameDay && (!grp || s.group_name===grp || s.group===grp);
+  });
+}
+
+function renderTodayLessons(el, lessons){
+  if(!el) return;
+  if(!lessons.length){
+    if(window.IDU) window.IDU.showEmpty(el, {icon:'📅', title:'Bugun darslar yo'+"'"+'q', desc:'Bo'+"'"+'sh kun yoki jadval kiritilmagan'});
+    else el.innerHTML='<div style="text-align:center;color:#94A3B8;padding:24px">📅 Bugun darslar yo'+"'"+'q</div>';
+    return;
+  }
+  el.innerHTML = lessons.slice(0,5).map(function(l){
+    return '<div style="display:flex;align-items:center;gap:10px;padding:10px 12px;border-bottom:1px solid #F1F5F9">'
+      + '<div style="width:42px;height:42px;border-radius:10px;background:linear-gradient(135deg,#EFF6FF,#DBEAFE);display:flex;align-items:center;justify-content:center;font-weight:700;color:#1B4FD8;font-size:12px;flex-shrink:0">'+(l.start_time||l.time||'—').slice(0,5)+'</div>'
+      + '<div style="flex:1;min-width:0">'
+      + '<div style="font-weight:700;font-size:13px;color:#1E293B">'+(l.subject||l.title||'Dars')+'</div>'
+      + '<div style="font-size:11px;color:#94A3B8">'+(l.group_name||l.group||'')+(l.room?' · '+l.room:'')+'</div>'
+      + '</div></div>';
+  }).join('');
+}
+
+function renderRiskList(el, atRisk, studentAvgs){
+  if(!el) return;
+  if(!atRisk.length){
+    if(window.IDU) window.IDU.showEmpty(el, {icon:'✅', title:'Xavf guruhi yo'+"'"+'q', desc:'Barcha talabalar yetarli ball to'+"'"+'pladi'});
+    else el.innerHTML='<div style="text-align:center;color:#16A34A;padding:24px">✅ Hammasi yaxshi</div>';
+    return;
+  }
+  el.innerHTML = atRisk.slice(0,5).map(function(s){
+    var st = studentAvgs[s.id];
+    var avg = st ? (st.sum/st.count).toFixed(1) : '—';
+    return '<div style="display:flex;align-items:center;gap:10px;padding:10px 12px;border-bottom:1px solid #F1F5F9">'
+      + '<div style="width:36px;height:36px;border-radius:50%;background:#FEE2E2;display:flex;align-items:center;justify-content:center;color:#DC2626;font-weight:700;font-size:13px;flex-shrink:0">'+(s.full_name||'?').charAt(0)+'</div>'
+      + '<div style="flex:1;min-width:0">'
+      + '<div style="font-weight:700;font-size:13px;color:#1E293B">'+(s.full_name||'—')+'</div>'
+      + '<div style="font-size:11px;color:#94A3B8">'+(s.group_name||s.group||'')+'</div>'
+      + '</div>'
+      + '<div style="background:#FEE2E2;color:#DC2626;font-weight:800;font-size:12px;padding:4px 10px;border-radius:14px">'+avg+'</div>'
+      + '</div>';
+  }).join('');
+}
+
+async function initTeacherStats(){
+  // Populate group filter from real student data
+  var sel = document.getElementById('tcGroupFilter');
+  if(sel && window.IDU){
+    await window.IDU.fillGroupSelect(sel, {emptyLabel:'Barcha guruhlar'});
+  }
+  // Populate subject filter from canonical list
+  var subSel = document.getElementById('tcSubjectFilter');
+  if(subSel && window.IDU) window.IDU.fillSubjectSelect(subSel, {emptyLabel:'Barcha fanlar'});
+  refreshTeacherStats();
 }
 
 function initDekanatStats(){
