@@ -33,7 +33,7 @@ router.get('/transcript/:studentId', async (req, res) => {
      FROM grades g
      JOIN courses c ON c.id = g.course_id
      WHERE g.student_id=$1
-     ORDER BY g.academic_year, g.semester, g.subject`,
+     ORDER BY g.academic_year, g.semester, c.name`,
     [targetId]
   );
 
