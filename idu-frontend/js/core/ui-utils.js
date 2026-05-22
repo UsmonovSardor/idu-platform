@@ -17,8 +17,12 @@ var TTL = 5 * 60 * 1000;
 function _isFresh(c) { return c.data && (Date.now() - c.ts) < TTL; }
 
 // Fetch all students (cached). Returns flat array — auto-unwraps {data:[...]}
+// Students (role='student') cannot access this endpoint — return [] silently.
 async function getAllStudents(opts) {
   opts = opts || {};
+  // Guard: students are not allowed to fetch the full student list
+  var role = (window.CURRENT_USER && window.CURRENT_USER.role) || '';
+  if (role === 'student') return [];
   if (!opts.force && _isFresh(_cache.students)) return _cache.students.data;
   try {
     var res = await api('GET', '/students?limit=500');
