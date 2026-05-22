@@ -991,7 +991,7 @@
       <button class="xl-btn xl-export" onclick="exportStudentGrades()">📥 Excel yuklab olish</button>
     </div>
     <div class="xl-search-row">
-      <input class="xl-search" id="gradesSearch" placeholder="🔍 Fan nomi..." oninput="renderGrades()">
+      <input class="xl-search" id="gradesSearch" placeholder="🔍 Fan nomi..." oninput="_renderGradesTable()">
       <button class="xl-filter-chip active" onclick="filterGradesSt('all',this)">Barchasi</button>
       <button class="xl-filter-chip" onclick="filterGradesSt('alo',this)">⭐ A'lo (86+)</button>
       <button class="xl-filter-chip" onclick="filterGradesSt('yaxshi',this)">👍 Yaxshi (71-85)</button>
@@ -1752,7 +1752,7 @@
       <div class="ph-sub">Barcha talabalar ro'yxati — guruh va kurs boshqaruvi</div>
     </div>
     <div class="page-header-right">
-      <input class="form-input" style="width:200px" placeholder="🔍 Qidirish..." id="studentSearch" oninput="filterStudents()">
+      <input class="form-input" style="width:200px" placeholder="🔍 Qidirish..." id="studentSearch" oninput="if(window._dfs)clearTimeout(window._dfs);window._dfs=setTimeout(filterStudents,350)">
       <select class="form-select" style="width:auto" id="studentGroupFilter" onchange="filterStudents()">
         <option value="">Barcha guruhlar</option>
         <option>AI-2301</option><option>CS-2301</option><option>IT-2301</option><option>DB-2301</option>
@@ -1892,7 +1892,7 @@
       <button class="xl-btn xl-export" onclick="exportDekanatGrades()" style="margin-left:auto">📥 Excel yuklab olish</button>
     </div>
     <div class="xl-search-row">
-      <input class="xl-search" id="dekGradeSearch" placeholder="🔍 Talaba ismi..." oninput="renderDekanatGrades()">
+      <input class="xl-search" id="dekGradeSearch" placeholder="🔍 Talaba ismi..." oninput="if(window._ddg)clearTimeout(window._ddg);window._ddg=setTimeout(renderDekanatGrades,200)">
       <button class="xl-filter-chip active" onclick="dekGradeFilter('all',this)">Barchasi</button>
       <button class="xl-filter-chip" onclick="dekGradeFilter('alo',this)">⭐ A'lo</button>
       <button class="xl-filter-chip" onclick="dekGradeFilter('yaxshi',this)">👍 Yaxshi</button>
@@ -2623,7 +2623,7 @@
   <div class="prof-stats-row" id="profStatsRow"></div>
   <!-- Search + Filter -->
   <div class="prof-search-bar">
-    <input class="prof-search-input" id="profSearchInput" placeholder="🔍 Ustoz ismi yoki fan bo'yicha qidirish..." oninput="renderProfessorsPage()">
+    <input class="prof-search-input" id="profSearchInput" placeholder="🔍 Ustoz ismi yoki fan bo'yicha qidirish..." oninput="if(window._dpp)clearTimeout(window._dpp);window._dpp=setTimeout(renderProfessorsPage,200)">
   </div>
   <div class="prof-filter-row" id="profFilterRow"></div>
   <!-- Professor grid -->
@@ -2732,7 +2732,7 @@
     <!-- Search + filter -->
     <div class="partners-search-row">
       <div class="partners-search-wrap">
-        <input class="partners-search" id="vacancySearch" type="text" placeholder="Lavozim yoki texnologiya qidiring..." oninput="renderVacancies()">
+        <input class="partners-search" id="vacancySearch" type="text" placeholder="Lavozim yoki texnologiya qidiring..." oninput="if(window._dvs)clearTimeout(window._dvs);window._dvs=setTimeout(renderVacancies,200)">
       </div>
     </div>
     <div class="job-filters" id="jobFilters">

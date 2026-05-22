@@ -3,6 +3,7 @@
 const express = require('express');
 const db      = require('../config/database');
 const { authenticate, authorize } = require('../middleware/auth');
+const { cache } = require('../middleware/cache');
 
 const router = express.Router();
 router.use(authenticate);
@@ -10,7 +11,7 @@ router.use(authorize('admin', 'dekanat'));
 
 // ── GET /api/rector/kpi ───────────────────────────────────────────────────────
 // Top-level KPI cards for the rector dashboard
-router.get('/kpi', async (req, res) => {
+router.get('/kpi', cache(120), async (req, res) => {
   const [students, teachers, avgGpa, attRate, submissions, exams] = await Promise.all([
     db.query("SELECT COUNT(*) FROM users WHERE role='student' AND is_active=TRUE").catch(()=>({rows:[{count:0}]})),
     db.query("SELECT COUNT(*) FROM users WHERE role='teacher' AND is_active=TRUE").catch(()=>({rows:[{count:0}]})),
@@ -35,7 +36,7 @@ router.get('/kpi', async (req, res) => {
 });
 
 // ── GET /api/rector/grade-distribution ───────────────────────────────────────
-router.get('/grade-distribution', async (req, res) => {
+router.get('/grade-distribution', cache(300), async (req, res) => {
   const { rows } = await db.query(`
     WITH g2 AS (SELECT (jn+on_score+yn+mi) AS score FROM grades)
     SELECT
@@ -51,7 +52,7 @@ router.get('/grade-distribution', async (req, res) => {
 });
 
 // ── GET /api/rector/group-stats ───────────────────────────────────────────────
-router.get('/group-stats', async (req, res) => {
+router.get('/group-stats', cache(300), async (req, res) => {
   const { rows } = await db.query(`
     SELECT st.group_name,
            COUNT(DISTINCT u.id) AS student_count,
@@ -70,7 +71,7 @@ router.get('/group-stats', async (req, res) => {
 });
 
 // ── GET /api/rector/subject-stats ─────────────────────────────────────────────
-router.get('/subject-stats', async (req, res) => {
+router.get('/subject-stats', cache(300), async (req, res) => {
   const { rows } = await db.query(`
     SELECT c.name AS subject,
            COUNT(g.id) AS attempts,
@@ -87,7 +88,7 @@ router.get('/subject-stats', async (req, res) => {
 });
 
 // ── GET /api/rector/enrollment-trend ─────────────────────────────────────────
-router.get('/enrollment-trend', async (req, res) => {
+router.get('/enrollment-trend', cache(600), async (req, res) => {
   const { rows } = await db.query(`
     SELECT DATE_TRUNC('month', created_at) AS month,
            COUNT(*) AS new_students
@@ -101,7 +102,7 @@ router.get('/enrollment-trend', async (req, res) => {
 });
 
 // ── GET /api/rector/attendance-by-group ───────────────────────────────────────
-router.get('/attendance-by-group', async (req, res) => {
+router.get('/attendance-by-group', cache(180), async (req, res) => {
   const { rows } = await db.query(`
     SELECT s.group_name,
            COUNT(DISTINCT s.id) AS sessions,
@@ -118,7 +119,7 @@ router.get('/attendance-by-group', async (req, res) => {
 });
 
 // ── GET /api/rector/top-students ──────────────────────────────────────────────
-router.get('/top-students', async (req, res) => {
+router.get('/top-students', cache(180), async (req, res) => {
   const { rows } = await db.query(`
     SELECT u.id, u.full_name, st.group_name,
            ROUND(AVG(g.jn+g.on_score+g.yn+g.mi),1) AS avg_score,
@@ -139,7 +140,7 @@ router.get('/top-students', async (req, res) => {
 });
 
 // ── GET /api/rector/risk-students ─────────────────────────────────────────────
-router.get('/risk-students', async (req, res) => {
+router.get('/risk-students', cache(180), async (req, res) => {
   const { rows } = await db.query(`
     SELECT u.id, u.full_name, st.group_name, u.login AS email,
            ROUND(AVG(g.jn+g.on_score+g.yn+g.mi),1) AS avg_score,

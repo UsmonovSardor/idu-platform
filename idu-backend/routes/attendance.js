@@ -4,6 +4,7 @@ const express = require('express');
 const crypto  = require('crypto');
 const db      = require('../config/database');
 const { authenticate, authorize } = require('../middleware/auth');
+const { cache } = require('../middleware/cache');
 
 const router = express.Router();
 router.use(authenticate);
@@ -147,7 +148,7 @@ router.get('/my', authorize('student'), async (req, res) => {
 
 // ── GET /api/attendance/report ───────────────────────────────────────────────
 // Dekanat: full report with filters
-router.get('/report', authorize('dekanat', 'admin'), async (req, res) => {
+router.get('/report', authorize('dekanat', 'admin'), cache(60), async (req, res) => {
   const { group, subject, from, to } = req.query;
 
   let cond = ['1=1'];
@@ -177,7 +178,7 @@ router.get('/report', authorize('dekanat', 'admin'), async (req, res) => {
 // ── GET /api/attendance/stats ────────────────────────────────────────────────
 // KPI: overall attendance rate per group/subject
 // Open to all authenticated users — read-only aggregate stats
-router.get('/stats', async (req, res) => {
+router.get('/stats', cache(120), async (req, res) => {
   const { rows } = await db.query(
     `SELECT s.group_name, s.subject,
             COUNT(DISTINCT s.id)  AS sessions_total,
