@@ -56,41 +56,74 @@ app.use(compression({
 const IS_PROD = process.env.NODE_ENV === 'production';
 
 app.use(helmet({
-  // Content-Security-Policy — allow only our own origin + known CDNs
+  // Content-Security-Policy
+  // The frontend uses inline onclick=... handlers throughout, so unsafe-inline
+  // must stay for script-src and script-src-attr.
+  // All CDN domains used by the app are explicitly listed.
   contentSecurityPolicy: {
     directives: {
-      defaultSrc:  ["'self'"],
-      scriptSrc:   [
+      defaultSrc: ["'self'"],
+
+      // Scripts: self + CDNs + inline handlers (onclick=...)
+      scriptSrc: [
         "'self'",
-        // Allow inline scripts that use nonces/hashes on our own pages.
-        // Phase E can switch to strict-dynamic + nonces; for now allow CDNs.
+        "'unsafe-inline'",          // required: inline onclick/onchange handlers
         'https://cdn.jsdelivr.net',
         'https://cdnjs.cloudflare.com',
-        "'unsafe-inline'",   // kept for legacy inline handlers — remove when refactored
+        'https://fonts.googleapis.com',
       ],
-      styleSrc:    ["'self'", 'https://fonts.googleapis.com', 'https://cdn.jsdelivr.net',
-                    'https://cdnjs.cloudflare.com', "'unsafe-inline'"],
-      fontSrc:     ["'self'", 'https://fonts.gstatic.com', 'data:'],
-      imgSrc:      ["'self'", 'data:', 'blob:', 'https:'],
-      connectSrc:  [
+
+      // Inline onclick attr also needs this separate directive
+      scriptSrcAttr: ["'unsafe-inline'"],
+
+      // Styles: self + font CDNs + inline styles
+      styleSrc: [
+        "'self'",
+        "'unsafe-inline'",
+        'https://fonts.googleapis.com',
+        'https://cdn.jsdelivr.net',
+        'https://cdnjs.cloudflare.com',
+      ],
+
+      // Fonts: self + Google Fonts CDN + data URIs
+      fontSrc: [
+        "'self'",
+        'data:',
+        'https://fonts.gstatic.com',
+        'https://fonts.googleapis.com',
+        'https://cdn.jsdelivr.net',
+        'https://cdnjs.cloudflare.com',
+      ],
+
+      // Images: allow any HTTPS + data URIs + blob
+      imgSrc: ["'self'", 'data:', 'blob:', 'https:'],
+
+      // Fetch/XHR connections: self + AI APIs + CDNs (for source maps in dev)
+      connectSrc: [
         "'self'",
         'https://api.openai.com',
         'https://api.anthropic.com',
-        ...(process.env.CORS_ORIGIN ? process.env.CORS_ORIGIN.split(',') : []),
+        'https://cdn.jsdelivr.net',
+        'https://cdnjs.cloudflare.com',
+        ...(process.env.CORS_ORIGIN ? process.env.CORS_ORIGIN.split(',').map(s => s.trim()) : []),
       ],
-      frameSrc:    ["'none'"],
-      objectSrc:   ["'none'"],
-      baseUri:     ["'self'"],
-      formAction:  ["'self'"],
+
+      // Frames, objects — block entirely
+      frameSrc:   ["'none'"],
+      objectSrc:  ["'none'"],
+      baseUri:    ["'self'"],
+      formAction: ["'self'"],
+
+      // Force HTTPS in production
       upgradeInsecureRequests: IS_PROD ? [] : undefined,
     },
   },
-  // Prevent clickjacking — only allow framing from same origin
+  // Prevent clickjacking
   frameguard:               { action: 'sameorigin' },
-  // Strict HSTS: 1 year in prod
+  // HSTS — 1 year in production
   hsts:                     IS_PROD ? { maxAge: 31536000, includeSubDomains: true, preload: true } : false,
-  crossOriginEmbedderPolicy: false,   // keep false (CDN resources)
-  crossOriginResourcePolicy: { policy: 'cross-origin' }, // allow CDN fonts/images
+  crossOriginEmbedderPolicy: false,
+  crossOriginResourcePolicy: { policy: 'cross-origin' },
 }));
 
 // ── CORS ─────────────────────────────────────────────────────────────────────
