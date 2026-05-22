@@ -104,75 +104,131 @@ function moveStudentToGroup(){
   renderGroupsPage();
 }
 
-function openAddStudentModal(){
-  document.getElementById('studentModalTitle').textContent='➕ Yangi talaba qo\'shish';
-  document.getElementById('editStudentId').value='';
-  document.getElementById('editStudentName').value='';
-  document.getElementById('editStudentLogin').value='';
-  document.getElementById('editStudentAvg').value='';
-  document.getElementById('editStudentAtt').value='';
-  document.getElementById('editStudentGroup').value='AI-2301';
-  document.getElementById('editStudentCourse').value='1';
-  document.getElementById('deleteStudentBtn').style.display='none';
-  // Refresh group options
-  const sel=document.getElementById('editStudentGroup');
-  sel.innerHTML=getGroupNames().map(g=>`<option>${g}</option>`).join('');
-  document.getElementById('studentEditModal').style.display='flex';
-}
+// openAddStudentModal, openStudentEditModal, closeStudentModal
+// are defined in js/ui/modal.js — do not duplicate here.
 
-function openStudentEditModal(id){
-  const s=STUDENTS_DATA.find(s=>s.id===id);
-  if(!s) return;
-  document.getElementById('studentModalTitle').textContent='✏️ Talabani tahrirlash';
-  document.getElementById('editStudentId').value=id;
-  document.getElementById('editStudentName').value=s.name;
-  document.getElementById('editStudentLogin').value=s.name.split(' ').map(x=>x.toLowerCase()).join('')||'';
-  document.getElementById('editStudentAvg').value=s.avg;
-  document.getElementById('editStudentAtt').value=s.att;
-  document.getElementById('deleteStudentBtn').style.display='flex';
-  const grpSel=document.getElementById('editStudentGroup');
-  grpSel.innerHTML=getGroupNames().map(g=>`<option${g===s.group?' selected':''}>${g}</option>`).join('');
-  grpSel.value=s.group;
-  document.getElementById('editStudentCourse').value=s.course;
-  document.getElementById('studentEditModal').style.display='flex';
-}
+async function saveStudentEdit(){
+  const id       = parseInt(document.getElementById('editStudentId').value) || 0;
+  const name     = document.getElementById('editStudentName').value.trim();
+  const login    = document.getElementById('editStudentLogin').value.trim();
+  const password = document.getElementById('editStudentPassword')?.value || '';
+  const group    = document.getElementById('editStudentGroup').value;
+  const course   = parseInt(document.getElementById('editStudentCourse').value) || 1;
+  const phone    = document.getElementById('editStudentPhone')?.value.trim() || '';
+  const eduType  = document.getElementById('editStudentEduType')?.value || 'kunduzgi';
 
-function closeStudentModal(){
-  document.getElementById('studentEditModal').style.display='none';
-}
+  // Basic validation
+  if(!name)  { _showStudentError('Ism-familiya kiritish shart'); return; }
+  if(!login) { _showStudentError('Login kiritish shart'); return; }
+  if(!id && !password) { _showStudentError('Yangi talaba uchun parol kiritish shart'); return; }
+  if(!id && password.length < 8) { _showStudentError('Parol kamida 8 belgi bo\'lishi kerak'); return; }
+  if(!group) { _showStudentError('Guruh tanlash shart'); return; }
 
-function saveStudentEdit(){
-  const id=parseInt(document.getElementById('editStudentId').value);
-  const name=document.getElementById('editStudentName').value.trim();
-  const group=document.getElementById('editStudentGroup').value;
-  const course=parseInt(document.getElementById('editStudentCourse').value);
-  const avg=parseFloat(document.getElementById('editStudentAvg').value)||0;
-  const att=parseFloat(document.getElementById('editStudentAtt').value)||0;
-  if(!name){ showToast('⚠️','Xato','Ism kiritish shart'); return; }
-  if(id){
-    const s=STUDENTS_DATA.find(s=>s.id===id);
-    if(s){ s.name=name; s.group=group; s.course=course; s.avg=avg; s.att=att; s.gpa=+(avg/25).toFixed(1); }
-    showToast('✅','Saqlandi',`${name} ma'lumotlari yangilandi`);
-  } else {
-    const newId=Math.max(...STUDENTS_DATA.map(s=>s.id))+1;
-    STUDENTS_DATA.push({id:newId,name,group,course,avg,att,gpa:+(avg/25).toFixed(1)});
-    showToast('✅','Qo\'shildi',`${name} talabalar ro'yxatiga qo'shildi`);
+  const btn = document.getElementById('saveStudentBtnText');
+  btn.textContent = '⏳ Saqlanmoqda...';
+  _hideStudentError();
+
+  try {
+    if(id) {
+      // UPDATE existing student
+      await api('PUT', '/students/' + id, { full_name: name, phone: phone || null });
+      showToast('✅','Yangilandi', name + ' ma\'lumotlari yangilandi');
+    } else {
+      // CREATE new student — saves directly to DB
+      const result = await api('POST', '/students', {
+        fullName:    name,
+        login:       login,
+        password:    password,
+        groupName:   group,
+        yearOfStudy: course,
+        phone:       phone || null,
+        educationType: eduType,
+      });
+      showToast('✅','Qo\'shildi', name + ' (ID: ' + result.student_id_number + ') bazaga saqlandi');
+    }
+    closeStudentModal();
+    // Refresh the students list from API
+    if(typeof renderDekanatStudents === 'function') renderDekanatStudents();
+    if(typeof renderDekanatDashboard === 'function') renderDekanatDashboard();
+    if(currentPage === 'dekanat-groups' && typeof renderGroupsPage === 'function') renderGroupsPage();
+  } catch(e) {
+    _showStudentError(e.message || 'Saqlashda xato yuz berdi');
+  } finally {
+    btn.textContent = id ? '💾 Yangilash' : '💾 Saqlash';
   }
-  closeStudentModal();
-  renderDekanatStudents();
-  if(currentPage==='dekanat-groups') renderGroupsPage();
 }
 
-function deleteStudent(){
-  const id=parseInt(document.getElementById('editStudentId').value);
-  const s=STUDENTS_DATA.find(s=>s.id===id);
-  if(!s) return;
-  if(!confirm(`${s.name}ni o'chirishni tasdiqlaysizmi?`)) return;
-  const idx=STUDENTS_DATA.findIndex(s=>s.id===id);
-  STUDENTS_DATA.splice(idx,1);
-  closeStudentModal();
-  showToast('🗑️','O\'chirildi',`${s.name} ro'yxatdan o'chirildi`);
-  renderDekanatStudents();
+async function deleteStudent(){
+  const id = parseInt(document.getElementById('editStudentId').value);
+  if(!id) return;
+  const name = document.getElementById('editStudentName').value || 'Talaba';
+  if(!confirm(name + 'ni o\'chirishni tasdiqlaysizmi?\nU tizimdan deaktivatsiya qilinadi.')) return;
+  try {
+    await api('DELETE', '/students/' + id);
+    closeStudentModal();
+    showToast('🗑️','O\'chirildi', name + ' tizimdan o\'chirildi');
+    if(typeof renderDekanatStudents === 'function') renderDekanatStudents();
+  } catch(e) {
+    _showStudentError(e.message || 'O\'chirishda xato');
+  }
+}
+
+// ── Teacher save / delete (DB) ────────────────────────────────────────────────
+async function saveTeacherEdit(){
+  const id       = parseInt(document.getElementById('editTeacherId').value) || 0;
+  const name     = document.getElementById('editTeacherName').value.trim();
+  const login    = document.getElementById('editTeacherLogin').value.trim();
+  const password = document.getElementById('editTeacherPassword')?.value || '';
+  const dept     = document.getElementById('editTeacherDept').value;
+  const title    = document.getElementById('editTeacherTitle').value;
+  const phone    = document.getElementById('editTeacherPhone')?.value.trim() || '';
+
+  if(!name)  { _showTeacherError('Ism-familiya kiritish shart'); return; }
+  if(!login) { _showTeacherError('Login kiritish shart'); return; }
+  if(!id && !password) { _showTeacherError('Yangi o\'qituvchi uchun parol kiritish shart'); return; }
+  if(!id && password.length < 8) { _showTeacherError('Parol kamida 8 belgi bo\'lishi kerak'); return; }
+
+  const btn = document.getElementById('saveTeacherBtnText');
+  btn.textContent = '⏳ Saqlanmoqda...';
+  _hideTeacherError();
+
+  try {
+    if(id) {
+      await api('PUT', '/students/' + id, { full_name: name, phone: phone || null });
+      showToast('✅','Yangilandi', name + ' ma\'lumotlari yangilandi');
+    } else {
+      await api('POST', '/teachers', {
+        fullName:   name,
+        login:      login,
+        password:   password,
+        department: dept,
+        title:      title || null,
+        phone:      phone || null,
+      });
+      showToast('✅','Qo\'shildi', name + ' o\'qituvchilar ro\'yxatiga qo\'shildi va bazaga saqlandi');
+    }
+    closeTeacherModal();
+    if(typeof renderDekanatTeachers === 'function') renderDekanatTeachers();
+  } catch(e) {
+    _showTeacherError(e.message || 'Saqlashda xato yuz berdi');
+  } finally {
+    btn.textContent = id ? '💾 Yangilash' : '💾 Saqlash';
+  }
+}
+
+async function deleteTeacher(){
+  const id = parseInt(document.getElementById('editTeacherId').value);
+  if(!id) return;
+  const name = document.getElementById('editTeacherName').value || 'O\'qituvchi';
+  if(!confirm(name + 'ni o\'chirishni tasdiqlaysizmi?')) return;
+  try {
+    await api('DELETE', '/teachers/' + id);
+    closeTeacherModal();
+    showToast('🗑️','O\'chirildi', name + ' tizimdan o\'chirildi');
+    if(typeof renderDekanatTeachers === 'function') renderDekanatTeachers();
+  } catch(e) {
+    _showTeacherError(e.message || 'O\'chirishda xato');
+  }
 }
 
 function openStudentDetail(id){

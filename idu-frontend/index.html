@@ -1843,7 +1843,7 @@
       <div class="ph-sub">Kafedralar va o'quv yuki</div>
     </div>
     <div class="page-header-right">
-      <button class="btn btn-primary" onclick="showToast('✅','Qo\'shildi','O\'qituvchi ro\'yxatga qo\'shildi')">+ O'qituvchi qo'shish</button>
+      <button class="btn btn-primary" onclick="openAddTeacherModal()">+ O'qituvchi qo'shish</button>
     </div>
   </div>
   <div class="card">
@@ -2898,50 +2898,153 @@
 </div>
 
 <!-- ═══ ADD/EDIT STUDENT MODAL ═══ -->
-<div id="studentEditModal" style="display:none;position:fixed;inset:0;background:rgba(15,23,42,0.5);z-index:9999;align-items:center;justify-content:center;padding:16px">
-  <div style="background:white;border-radius:20px;padding:28px 28px 24px;width:100%;max-width:460px;box-shadow:0 24px 60px rgba(0,0,0,0.18);position:relative;animation:authIn 0.3s ease">
+<div id="studentEditModal" style="display:none;position:fixed;inset:0;background:rgba(15,23,42,0.55);z-index:9999;align-items:center;justify-content:center;padding:16px;overflow-y:auto">
+  <div style="background:white;border-radius:20px;padding:28px 28px 24px;width:100%;max-width:500px;box-shadow:0 24px 60px rgba(0,0,0,0.18);position:relative;animation:authIn 0.3s ease;margin:auto">
     <button onclick="closeStudentModal()" style="position:absolute;top:12px;right:12px;background:var(--bg2);border:none;border-radius:8px;width:30px;height:30px;cursor:pointer;font-size:15px">✕</button>
-    <div style="font-size:17px;font-weight:800;margin-bottom:18px" id="studentModalTitle">👤 Talaba ma'lumotlarini tahrirlash</div>
+    <div style="font-size:17px;font-weight:800;margin-bottom:6px" id="studentModalTitle">➕ Yangi talaba qo'shish</div>
+    <div style="font-size:12px;color:var(--text3);margin-bottom:18px">Barcha ma'lumotlar avtomatik ravishda bazaga saqlanadi</div>
     <input type="hidden" id="editStudentId">
+
+    <!-- Row 1: Ism + Login -->
     <div class="form-row" style="margin-bottom:13px">
       <div class="form-group" style="margin:0">
-        <label class="form-label">Familiya Ism</label>
+        <label class="form-label">Familiya Ism <span style="color:var(--red)">*</span></label>
         <input class="form-input" id="editStudentName" placeholder="Azimov Alisher">
       </div>
       <div class="form-group" style="margin:0">
-        <label class="form-label">Login</label>
-        <input class="form-input" id="editStudentLogin" placeholder="alisher">
+        <label class="form-label">Login <span style="color:var(--red)">*</span></label>
+        <input class="form-input" id="editStudentLogin" placeholder="alisher01">
       </div>
     </div>
+
+    <!-- Row 2: Parol (yangi talaba uchun) -->
+    <div id="studentPasswordRow" style="margin-bottom:13px">
+      <label class="form-label">Parol <span style="color:var(--red)">*</span> <span style="color:var(--text3);font-weight:400">(kamida 8 belgi)</span></label>
+      <div style="position:relative">
+        <input class="form-input" id="editStudentPassword" type="password" placeholder="Kuchli parol kiriting" style="padding-right:42px">
+        <button type="button" onclick="var p=document.getElementById('editStudentPassword');p.type=p.type==='password'?'text':'password'" style="position:absolute;right:10px;top:50%;transform:translateY(-50%);background:none;border:none;cursor:pointer;color:var(--text3);font-size:16px">👁</button>
+      </div>
+    </div>
+
+    <!-- Row 3: Ta'lim turi + Guruh -->
     <div class="form-row" style="margin-bottom:13px">
       <div class="form-group" style="margin:0">
-        <label class="form-label">Guruh</label>
-        <select class="form-select" id="editStudentGroup">
-          <option>AI-2301</option><option>CS-2301</option><option>IT-2301</option><option>DB-2301</option>
+        <label class="form-label">Ta'lim turi <span style="color:var(--red)">*</span></label>
+        <select class="form-select" id="editStudentEduType" onchange="updateStudentGroupsByType()">
+          <option value="kunduzgi">☀️ Kunduzgi</option>
+          <option value="kechki">🌙 Kechki</option>
+          <option value="sirtqi">📚 Sirtqi</option>
         </select>
       </div>
       <div class="form-group" style="margin:0">
-        <label class="form-label">Kurs</label>
+        <label class="form-label">Guruh <span style="color:var(--red)">*</span></label>
+        <select class="form-select" id="editStudentGroup"></select>
+      </div>
+    </div>
+
+    <!-- Row 4: Kurs + Telefon -->
+    <div class="form-row" style="margin-bottom:13px">
+      <div class="form-group" style="margin:0">
+        <label class="form-label">Kurs <span style="color:var(--red)">*</span></label>
         <select class="form-select" id="editStudentCourse">
-          <option value="1">1-kurs</option><option value="2">2-kurs</option>
-          <option value="3">3-kurs</option><option value="4">4-kurs</option>
+          <option value="1">1-kurs</option>
+          <option value="2">2-kurs</option>
+          <option value="3">3-kurs</option>
+          <option value="4">4-kurs</option>
         </select>
       </div>
-    </div>
-    <div class="form-row" style="margin-bottom:18px">
       <div class="form-group" style="margin:0">
-        <label class="form-label">O'rtacha ball</label>
-        <input class="form-input" id="editStudentAvg" type="number" min="0" max="100" placeholder="80">
-      </div>
-      <div class="form-group" style="margin:0">
-        <label class="form-label">Davomat %</label>
-        <input class="form-input" id="editStudentAtt" type="number" min="0" max="100" placeholder="95">
+        <label class="form-label">Telefon</label>
+        <input class="form-input" id="editStudentPhone" placeholder="+998 90 123 45 67" type="tel">
       </div>
     </div>
-    <div style="display:flex;gap:10px">
-      <button class="btn btn-primary" style="flex:1" onclick="saveStudentEdit()">💾 Saqlash</button>
+
+    <!-- Error / info -->
+    <div id="studentModalError" style="display:none;background:#FEF2F2;border:1px solid #FCA5A5;border-radius:8px;padding:10px 14px;font-size:13px;color:#DC2626;margin-bottom:13px"></div>
+
+    <!-- Actions -->
+    <div style="display:flex;gap:10px;margin-top:4px">
+      <button class="btn btn-primary" style="flex:1" onclick="saveStudentEdit()">
+        <span id="saveStudentBtnText">💾 Saqlash</span>
+      </button>
       <button id="deleteStudentBtn" class="btn" style="background:var(--red-light);color:var(--red);border:1px solid #FCA5A5;display:none" onclick="deleteStudent()">🗑️ O'chirish</button>
       <button class="btn btn-secondary" onclick="closeStudentModal()">Bekor</button>
+    </div>
+  </div>
+</div>
+
+<!-- ═══ ADD/EDIT TEACHER MODAL ═══ -->
+<div id="teacherEditModal" style="display:none;position:fixed;inset:0;background:rgba(15,23,42,0.55);z-index:9999;align-items:center;justify-content:center;padding:16px;overflow-y:auto">
+  <div style="background:white;border-radius:20px;padding:28px 28px 24px;width:100%;max-width:500px;box-shadow:0 24px 60px rgba(0,0,0,0.18);position:relative;animation:authIn 0.3s ease;margin:auto">
+    <button onclick="closeTeacherModal()" style="position:absolute;top:12px;right:12px;background:var(--bg2);border:none;border-radius:8px;width:30px;height:30px;cursor:pointer;font-size:15px">✕</button>
+    <div style="font-size:17px;font-weight:800;margin-bottom:6px" id="teacherModalTitle">➕ Yangi o'qituvchi qo'shish</div>
+    <div style="font-size:12px;color:var(--text3);margin-bottom:18px">Barcha ma'lumotlar avtomatik ravishda bazaga saqlanadi</div>
+    <input type="hidden" id="editTeacherId">
+
+    <!-- Row 1: Ism + Login -->
+    <div class="form-row" style="margin-bottom:13px">
+      <div class="form-group" style="margin:0">
+        <label class="form-label">Familiya Ism <span style="color:var(--red)">*</span></label>
+        <input class="form-input" id="editTeacherName" placeholder="Karimov Bobur">
+      </div>
+      <div class="form-group" style="margin:0">
+        <label class="form-label">Login <span style="color:var(--red)">*</span></label>
+        <input class="form-input" id="editTeacherLogin" placeholder="karimov.b">
+      </div>
+    </div>
+
+    <!-- Row 2: Parol -->
+    <div id="teacherPasswordRow" style="margin-bottom:13px">
+      <label class="form-label">Parol <span style="color:var(--red)">*</span> <span style="color:var(--text3);font-weight:400">(kamida 8 belgi)</span></label>
+      <div style="position:relative">
+        <input class="form-input" id="editTeacherPassword" type="password" placeholder="Kuchli parol kiriting" style="padding-right:42px">
+        <button type="button" onclick="var p=document.getElementById('editTeacherPassword');p.type=p.type==='password'?'text':'password'" style="position:absolute;right:10px;top:50%;transform:translateY(-50%);background:none;border:none;cursor:pointer;color:var(--text3);font-size:16px">👁</button>
+      </div>
+    </div>
+
+    <!-- Row 3: Bo'lim + Lavozim -->
+    <div class="form-row" style="margin-bottom:13px">
+      <div class="form-group" style="margin:0">
+        <label class="form-label">Bo'lim / Kafedra <span style="color:var(--red)">*</span></label>
+        <select class="form-select" id="editTeacherDept">
+          <option value="Sun'iy Intellekt">Sun'iy Intellekt</option>
+          <option value="Kiberxavfsizlik">Kiberxavfsizlik</option>
+          <option value="Computing &amp; IT">Computing &amp; IT</option>
+          <option value="Digital Business">Digital Business</option>
+          <option value="Matematika">Matematika</option>
+          <option value="Ingliz tili">Ingliz tili</option>
+          <option value="Umumta'lim">Umumta'lim</option>
+        </select>
+      </div>
+      <div class="form-group" style="margin:0">
+        <label class="form-label">Ilmiy daraja</label>
+        <select class="form-select" id="editTeacherTitle">
+          <option value="">— Tanlang —</option>
+          <option value="O'qituvchi">O'qituvchi</option>
+          <option value="Katta o'qituvchi">Katta o'qituvchi</option>
+          <option value="Dotsent">Dotsent</option>
+          <option value="Professor">Professor</option>
+          <option value="PhD">PhD</option>
+        </select>
+      </div>
+    </div>
+
+    <!-- Row 4: Telefon -->
+    <div class="form-group" style="margin-bottom:13px">
+      <label class="form-label">Telefon</label>
+      <input class="form-input" id="editTeacherPhone" placeholder="+998 90 123 45 67" type="tel">
+    </div>
+
+    <!-- Error -->
+    <div id="teacherModalError" style="display:none;background:#FEF2F2;border:1px solid #FCA5A5;border-radius:8px;padding:10px 14px;font-size:13px;color:#DC2626;margin-bottom:13px"></div>
+
+    <!-- Actions -->
+    <div style="display:flex;gap:10px;margin-top:4px">
+      <button class="btn btn-primary" style="flex:1" onclick="saveTeacherEdit()">
+        <span id="saveTeacherBtnText">💾 Saqlash</span>
+      </button>
+      <button id="deleteTeacherBtn" class="btn" style="background:var(--red-light);color:var(--red);border:1px solid #FCA5A5;display:none" onclick="deleteTeacher()">🗑️ O'chirish</button>
+      <button class="btn btn-secondary" onclick="closeTeacherModal()">Bekor</button>
     </div>
   </div>
 </div>
@@ -2959,12 +3062,22 @@
       <div class="form-group" style="margin:0">
         <label class="form-label">Yo'nalish</label>
         <select class="form-select" id="newGroupDir">
-          <option>Sun'iy Intellekt</option>
-          <option>Kiberxavfsizlik</option>
-          <option>Computing & IT</option>
-          <option>Digital Business</option>
+          <option value="Sun'iy Intellekt">Sun'iy Intellekt</option>
+          <option value="Kiberxavfsizlik">Kiberxavfsizlik</option>
+          <option value="Computing & IT">Computing &amp; IT</option>
+          <option value="Digital Business">Digital Business</option>
         </select>
       </div>
+      <div class="form-group" style="margin:0">
+        <label class="form-label">Ta'lim turi</label>
+        <select class="form-select" id="newGroupType">
+          <option value="kunduzgi">☀️ Kunduzgi</option>
+          <option value="kechki">🌙 Kechki</option>
+          <option value="sirtqi">📚 Sirtqi</option>
+        </select>
+      </div>
+    </div>
+    <div class="form-row" style="margin-bottom:13px">
       <div class="form-group" style="margin:0">
         <label class="form-label">Kurs</label>
         <select class="form-select" id="newGroupCourse">
@@ -2972,10 +3085,10 @@
           <option value="3">3-kurs</option><option value="4">4-kurs</option>
         </select>
       </div>
-    </div>
-    <div class="form-group" style="margin-bottom:18px">
-      <label class="form-label">Talabalar soni (taxminiy)</label>
-      <input class="form-input" id="newGroupCount" type="number" placeholder="25" min="1" max="50">
+      <div class="form-group" style="margin:0">
+        <label class="form-label">Talabalar soni</label>
+        <input class="form-input" id="newGroupCount" type="number" placeholder="25" min="1" max="60">
+      </div>
     </div>
     <div style="display:flex;gap:10px">
       <button class="btn btn-primary" style="flex:1" onclick="saveNewGroup()">✅ Yaratish</button>

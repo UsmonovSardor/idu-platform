@@ -1074,9 +1074,23 @@ const MATERIALS=[
 const SAVED_GRADES={};
 let _curSub='Machine Learning';
 let _curGrp='AI-2301';
-// Dynamic groups list (starts with defaults, dekanat can add more)
-// Guruhlar dekanat paneli orqali kiritiladi
-let GROUPS_LIST = [];
+// Dynamic groups list — 12 ta guruh (kunduzgi + kechki ta'lim)
+let GROUPS_LIST = [
+  // ── Kunduzgi (daytime) ──────────────────────────────────────────────────
+  { name:'AI-2501', dir:"Sun'iy Intellekt",  course:1, count:25, type:'kunduzgi' },
+  { name:'AI-2401', dir:"Sun'iy Intellekt",  course:2, count:25, type:'kunduzgi' },
+  { name:'AI-2301', dir:"Sun'iy Intellekt",  course:3, count:25, type:'kunduzgi' },
+  { name:'CS-2501', dir:'Kiberxavfsizlik',   course:1, count:25, type:'kunduzgi' },
+  { name:'CS-2401', dir:'Kiberxavfsizlik',   course:2, count:25, type:'kunduzgi' },
+  { name:'CS-2301', dir:'Kiberxavfsizlik',   course:3, count:25, type:'kunduzgi' },
+  { name:'IT-2501', dir:'Computing & IT',    course:1, count:25, type:'kunduzgi' },
+  { name:'IT-2401', dir:'Computing & IT',    course:2, count:25, type:'kunduzgi' },
+  // ── Kechki ta'lim (evening) ─────────────────────────────────────────────
+  { name:'AI-K2401', dir:"Sun'iy Intellekt", course:2, count:20, type:'kechki' },
+  { name:'AI-K2301', dir:"Sun'iy Intellekt", course:3, count:20, type:'kechki' },
+  { name:'CS-K2401', dir:'Kiberxavfsizlik',  course:2, count:20, type:'kechki' },
+  { name:'IT-K2401', dir:'Computing & IT',   course:2, count:20, type:'kechki' },
+];
 
 function getGroupNames(){ return GROUPS_LIST.map(g=>g.name); }
 
@@ -1093,9 +1107,13 @@ function renderGroupsOverview(){
     const avg=STUDENTS_DATA.filter(s=>s.group===g.name).reduce((a,s)=>a+s.avg,0)/Math.max(1,STUDENTS_DATA.filter(s=>s.group===g.name).length)||0;
     const colors={'Sun\'iy Intellekt':'var(--purple)','Kiberxavfsizlik':'var(--red)','Computing & IT':'var(--primary)','Digital Business':'var(--orange)'};
     const color=colors[g.dir]||'var(--primary)';
+    const typeLabel = g.type==='kechki'?'🌙 Kechki':g.type==='sirtqi'?'📚 Sirtqi':'☀️ Kunduzgi';
     return`<div class="card" style="border-left:4px solid ${color};padding:18px 20px">
       <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:10px">
-        <div style="font-size:18px;font-weight:800;color:${color}">${g.name}</div>
+        <div>
+          <div style="font-size:18px;font-weight:800;color:${color}">${g.name}</div>
+          <span style="font-size:11px;background:${g.type==='kechki'?'#EDE9FE':'#EFF6FF'};color:${g.type==='kechki'?'#7C3AED':'#1B4FD8'};padding:2px 8px;border-radius:10px;font-weight:600">${typeLabel}</span>
+        </div>
         <div style="display:flex;gap:6px">
           <button class="btn btn-sm btn-secondary" onclick="openEditGroupModal('${g.name}')" title="Tahrirlash">✏️</button>
           <button class="btn btn-sm" style="background:var(--red-light);color:var(--red);border:1px solid #FCA5A5" onclick="deleteGroup('${g.name}')" title="O'chirish">🗑️</button>
@@ -1129,23 +1147,25 @@ function quickChangeCourse(id, newCourse){
   showToast('✅','Kurs o\'zgardi',`${s.name}: ${newCourse}-kursga o'tkazildi`);
 }
 function saveNewGroup(){
-  const name=document.getElementById('newGroupName').value.trim().toUpperCase();
-  const dir=document.getElementById('newGroupDir').value;
-  const course=parseInt(document.getElementById('newGroupCourse').value);
-  const count=parseInt(document.getElementById('newGroupCount').value)||25;
+  const name  = document.getElementById('newGroupName').value.trim().toUpperCase();
+  const dir   = document.getElementById('newGroupDir').value;
+  const type  = document.getElementById('newGroupType')?.value || 'kunduzgi';
+  const course = parseInt(document.getElementById('newGroupCourse').value);
+  const count  = parseInt(document.getElementById('newGroupCount').value)||25;
   if(!name){ showToast('⚠️','Xato','Guruh nomini kiriting'); return; }
   const existing=GROUPS_LIST.findIndex(g=>g.name===name);
   if(existing>=0){
-    GROUPS_LIST[existing]={name,dir,course,count};
+    GROUPS_LIST[existing]={name,dir,course,count,type};
     showToast('✅','Yangilandi',`${name} guruhi yangilandi`);
   } else {
-    GROUPS_LIST.push({name,dir,course,count});
+    GROUPS_LIST.push({name,dir,course,count,type});
     showToast('✅','Yaratildi',`${name} yangi guruh yaratildi`);
   }
   document.getElementById('addGroupModal').style.display='none';
   renderGroupsPage();
-  // Also update all group dropdowns
   refreshAllGroupDropdowns();
+  // Also update ALL_GROUPS in modal.js so it appears in student dropdown
+  if(window.ALL_GROUPS) window.ALL_GROUPS[type] = (window.ALL_GROUPS[type]||[]).concat([name]);
 }
 function deleteGroup(name){
   const inUse=STUDENTS_DATA.some(s=>s.group===name);

@@ -64,41 +64,123 @@ function closeAddLessonModal(){
   document.getElementById('addLessonModal').style.display = 'none';
 }
 
+// ── 12 ta guruh (kunduzgi + kechki + sirtqi) ─────────────────────────────────
+var ALL_GROUPS = {
+  kunduzgi: [
+    'AI-2501','AI-2401','AI-2301','AI-2201',
+    'CS-2501','CS-2401','CS-2301','CS-2201',
+    'IT-2501','IT-2401','IT-2301','IT-2201'
+  ],
+  kechki: [
+    'AI-K2501','AI-K2401','AI-K2301',
+    'CS-K2501','CS-K2401','CS-K2301',
+    'IT-K2501','IT-K2401','IT-K2301',
+    'DB-K2501','DB-K2401','DB-K2301'
+  ],
+  sirtqi: [
+    'AI-S2501','AI-S2401','AI-S2301',
+    'CS-S2501','IT-S2501','DB-S2501'
+  ]
+};
+
+function updateStudentGroupsByType(){
+  var type = document.getElementById('editStudentEduType')?.value || 'kunduzgi';
+  var groups = ALL_GROUPS[type] || ALL_GROUPS.kunduzgi;
+  var sel = document.getElementById('editStudentGroup');
+  if(!sel) return;
+  sel.innerHTML = groups.map(function(g){ return '<option value="'+g+'">'+g+'</option>'; }).join('');
+}
+
+function _hideStudentError(){ var e=document.getElementById('studentModalError'); if(e) e.style.display='none'; }
+function _showStudentError(msg){ var e=document.getElementById('studentModalError'); if(e){e.textContent=msg;e.style.display='block';} }
+
 function openAddStudentModal(){
   document.getElementById('studentModalTitle').textContent='➕ Yangi talaba qo\'shish';
   document.getElementById('editStudentId').value='';
   document.getElementById('editStudentName').value='';
   document.getElementById('editStudentLogin').value='';
-  document.getElementById('editStudentAvg').value='';
-  document.getElementById('editStudentAtt').value='';
-  document.getElementById('editStudentGroup').value='AI-2301';
+  document.getElementById('editStudentPassword').value='';
+  document.getElementById('editStudentPhone').value='';
   document.getElementById('editStudentCourse').value='1';
+  document.getElementById('editStudentEduType').value='kunduzgi';
+  updateStudentGroupsByType();
+  document.getElementById('studentPasswordRow').style.display='block';
   document.getElementById('deleteStudentBtn').style.display='none';
-  // Refresh group options
-  const sel=document.getElementById('editStudentGroup');
-  sel.innerHTML=getGroupNames().map(g=>`<option>${g}</option>`).join('');
+  document.getElementById('saveStudentBtnText').textContent='💾 Saqlash';
+  _hideStudentError();
   document.getElementById('studentEditModal').style.display='flex';
 }
 
 function openStudentEditModal(id){
-  const s=STUDENTS_DATA.find(s=>s.id===id);
-  if(!s) return;
-  document.getElementById('studentModalTitle').textContent='✏️ Talabani tahrirlash';
-  document.getElementById('editStudentId').value=id;
-  document.getElementById('editStudentName').value=s.name;
-  document.getElementById('editStudentLogin').value=s.name.split(' ').map(x=>x.toLowerCase()).join('')||'';
-  document.getElementById('editStudentAvg').value=s.avg;
-  document.getElementById('editStudentAtt').value=s.att;
-  document.getElementById('deleteStudentBtn').style.display='flex';
-  const grpSel=document.getElementById('editStudentGroup');
-  grpSel.innerHTML=getGroupNames().map(g=>`<option${g===s.group?' selected':''}>${g}</option>`).join('');
-  grpSel.value=s.group;
-  document.getElementById('editStudentCourse').value=s.course;
-  document.getElementById('studentEditModal').style.display='flex';
+  // For editing existing: load from API
+  api('GET', '/students/' + id).then(function(s){
+    document.getElementById('studentModalTitle').textContent='✏️ Talabani tahrirlash';
+    document.getElementById('editStudentId').value=s.id;
+    document.getElementById('editStudentName').value=s.full_name||'';
+    document.getElementById('editStudentLogin').value=s.login||'';
+    document.getElementById('editStudentPhone').value=s.phone||'';
+    document.getElementById('editStudentCourse').value=s.year_of_study||'1';
+    // Detect education type from group name
+    var grp = s.group_name || '';
+    var eduType = grp.includes('-K') ? 'kechki' : grp.includes('-S') ? 'sirtqi' : 'kunduzgi';
+    document.getElementById('editStudentEduType').value = eduType;
+    updateStudentGroupsByType();
+    var grpSel = document.getElementById('editStudentGroup');
+    for(var i=0;i<grpSel.options.length;i++){ if(grpSel.options[i].value===grp){ grpSel.selectedIndex=i; break; } }
+    // Password not shown when editing
+    document.getElementById('studentPasswordRow').style.display='none';
+    document.getElementById('deleteStudentBtn').style.display='flex';
+    document.getElementById('saveStudentBtnText').textContent='💾 Yangilash';
+    _hideStudentError();
+    document.getElementById('studentEditModal').style.display='flex';
+  }).catch(function(e){
+    // Fallback to local data
+    var s=STUDENTS_DATA.find(function(x){return x.id===id;});
+    if(!s) return;
+    document.getElementById('studentModalTitle').textContent='✏️ Talabani tahrirlash';
+    document.getElementById('editStudentId').value=id;
+    document.getElementById('editStudentName').value=s.name||'';
+    document.getElementById('editStudentLogin').value=s.login||'';
+    document.getElementById('editStudentPhone').value=s.phone||'';
+    document.getElementById('editStudentCourse').value=s.course||'1';
+    document.getElementById('editStudentEduType').value='kunduzgi';
+    updateStudentGroupsByType();
+    var grpSel=document.getElementById('editStudentGroup');
+    for(var i=0;i<grpSel.options.length;i++){ if(grpSel.options[i].value===s.group){ grpSel.selectedIndex=i; break; } }
+    document.getElementById('studentPasswordRow').style.display='none';
+    document.getElementById('deleteStudentBtn').style.display='flex';
+    document.getElementById('saveStudentBtnText').textContent='💾 Yangilash';
+    _hideStudentError();
+    document.getElementById('studentEditModal').style.display='flex';
+  });
 }
 
 function closeStudentModal(){
   document.getElementById('studentEditModal').style.display='none';
+}
+
+// ── Teacher modal ────────────────────────────────────────────────────────────
+function _hideTeacherError(){ var e=document.getElementById('teacherModalError'); if(e) e.style.display='none'; }
+function _showTeacherError(msg){ var e=document.getElementById('teacherModalError'); if(e){e.textContent=msg;e.style.display='block';} }
+
+function openAddTeacherModal(){
+  document.getElementById('teacherModalTitle').textContent='➕ Yangi o\'qituvchi qo\'shish';
+  document.getElementById('editTeacherId').value='';
+  document.getElementById('editTeacherName').value='';
+  document.getElementById('editTeacherLogin').value='';
+  document.getElementById('editTeacherPassword').value='';
+  document.getElementById('editTeacherPhone').value='';
+  document.getElementById('editTeacherDept').value="Sun'iy Intellekt";
+  document.getElementById('editTeacherTitle').value='';
+  document.getElementById('teacherPasswordRow').style.display='block';
+  document.getElementById('deleteTeacherBtn').style.display='none';
+  document.getElementById('saveTeacherBtnText').textContent='💾 Saqlash';
+  _hideTeacherError();
+  document.getElementById('teacherEditModal').style.display='flex';
+}
+
+function closeTeacherModal(){
+  document.getElementById('teacherEditModal').style.display='none';
 }
 
 function openAddGroupModal(){

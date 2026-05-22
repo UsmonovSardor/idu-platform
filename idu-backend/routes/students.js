@@ -110,6 +110,119 @@ router.get(
   }
 );
 
+// ── POST /api/students — create new student account ──────────────────────────
+// Dekanat/admin only. Creates users row + students row in one transaction.
+router.post(
+  '/',
+  authorize('dekanat', 'admin'),
+  [
+    body('fullName')
+      .isLength({ min: 2, max: 100 }).trim()
+      .withMessage('Ism-familiya 2–100 belgi bo\'lishi kerak'),
+    body('login')
+      .isLength({ min: 3, max: 50 }).trim()
+      .matches(/^[a-zA-Z0-9._-]+$/)
+      .withMessage('Login faqat harf, raqam, nuqta, tire va pastki chiziqdan iborat bo\'lishi kerak'),
+    body('password')
+      .isLength({ min: 8, max: 128 })
+      .withMessage('Parol kamida 8 belgi bo\'lishi kerak'),
+    body('groupName').isLength({ min: 2, max: 50 }).trim()
+      .withMessage('Guruh nomi kiritish shart'),
+    body('yearOfStudy').isInt({ min: 1, max: 6 }).toInt()
+      .withMessage('Kurs 1–6 oraliqda bo\'lishi kerak'),
+    body('faculty').optional().isLength({ max: 100 }).trim(),
+    body('department').optional().isLength({ max: 100 }).trim(),
+    body('phone').optional({ nullable: true })
+      .custom(v => !v || /^\+?[\d\s\-().]{7,20}$/.test(v))
+      .withMessage('Telefon raqam noto\'g\'ri'),
+    body('educationType').optional().isIn(['kunduzgi', 'kechki', 'sirtqi'])
+      .withMessage('Ta\'lim turi noto\'g\'ri'),
+  ],
+  validate,
+  async (req, res) => {
+    const bcrypt = require('bcryptjs');
+    const {
+      fullName, login, password, groupName, yearOfStudy,
+      faculty, department, phone, educationType = 'kunduzgi'
+    } = req.body;
+
+    // Derive faculty from group name if not provided
+    const autoFaculty = faculty || (() => {
+      if (groupName.startsWith('AI'))  return 'Sun\'iy Intellekt';
+      if (groupName.startsWith('CS'))  return 'Kiberxavfsizlik';
+      if (groupName.startsWith('IT'))  return 'Computing & IT';
+      if (groupName.startsWith('DB'))  return 'Digital Business';
+      return 'Boshqa';
+    })();
+
+    const hash = await bcrypt.hash(password, 12);
+
+    // Generate student ID: group prefix + year + random 3 digits
+    const year2 = String(new Date().getFullYear()).slice(2);
+    const rand  = String(Math.floor(Math.random() * 900) + 100);
+    const studentIdNumber = `IDU-${year2}${rand}`;
+
+    const client = await db.getClient();
+    try {
+      await client.query('BEGIN');
+
+      const { rows: userRows } = await client.query(
+        `INSERT INTO users (full_name, login, password_hash, role, phone, is_active)
+         VALUES ($1, $2, $3, 'student', $4, TRUE)
+         RETURNING id, full_name, login, role`,
+        [fullName, login.toLowerCase(), hash, phone || null]
+      );
+      const userId = userRows[0].id;
+
+      await client.query(
+        `INSERT INTO students
+           (user_id, student_id_number, faculty, department, year_of_study, group_name, enrollment_date)
+         VALUES ($1, $2, $3, $4, $5, $6, CURRENT_DATE)`,
+        [userId, studentIdNumber, autoFaculty, department || autoFaculty, yearOfStudy, groupName]
+      );
+
+      await client.query('COMMIT');
+
+      res.status(201).json({
+        id:               userId,
+        full_name:        fullName,
+        login:            login.toLowerCase(),
+        role:             'student',
+        group_name:       groupName,
+        year_of_study:    yearOfStudy,
+        faculty:          autoFaculty,
+        student_id_number: studentIdNumber,
+        education_type:   educationType,
+      });
+    } catch (err) {
+      await client.query('ROLLBACK');
+      if (err.code === '23505') {
+        return res.status(409).json({ error: 'Bu login allaqachon band. Boshqa login tanlang.' });
+      }
+      throw err;
+    } finally {
+      client.release();
+    }
+  }
+);
+
+// ── DELETE /api/students/:id ──────────────────────────────────────────────────
+router.delete(
+  '/:id',
+  authorize('dekanat', 'admin'),
+  [param('id').isInt({ min: 1 }).toInt()],
+  validate,
+  async (req, res) => {
+    const { rowCount } = await db.query(
+      `UPDATE users SET is_active = FALSE, updated_at = NOW()
+       WHERE id = $1 AND role = 'student'`,
+      [req.params.id]
+    );
+    if (!rowCount) return res.status(404).json({ error: 'Talaba topilmadi' });
+    res.json({ message: 'Talaba o\'chirildi (deaktivatsiya)' });
+  }
+);
+
 // ?? GET /api/students/:id ?????????????????????????????????????????????????????
 router.get(
   '/:id',
