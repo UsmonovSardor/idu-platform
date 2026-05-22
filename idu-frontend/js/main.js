@@ -778,10 +778,15 @@ var _dashLoaded = false;
 
 // ── Hero banner — universal real-data refresh ───────────────────────────────
 async function refreshHeroBanner() {
-  // Fetch all needed data in parallel
+  // Students cannot access /students or /teachers endpoints (403)
+  var isStudent = currentRole === 'student';
+
+  // Fetch all needed data in parallel (role-aware)
   var [students, teachers, attStats, subjectsList] = await Promise.all([
-    window.IDU ? window.IDU.getAllStudents() : api('GET','/students?limit=500').then(function(r){return r.data||r;}).catch(function(){return [];}),
-    api('GET','/teachers?limit=200').then(function(r){return Array.isArray(r)?r:(r.data||[]);}).catch(function(){return [];}),
+    isStudent ? Promise.resolve([]) :
+      (window.IDU ? window.IDU.getAllStudents() : api('GET','/students?limit=500').then(function(r){return r.data||r;}).catch(function(){return [];})),
+    isStudent ? Promise.resolve([]) :
+      api('GET','/teachers?limit=200').then(function(r){return Array.isArray(r)?r:(r.data||[]);}).catch(function(){return [];}),
     api('GET','/attendance/stats').then(function(r){return Array.isArray(r)?r:(r.data||[]);}).catch(function(){return [];}),
     Promise.resolve(window.IDU ? window.IDU.getSubjects() : [{},{},{},{},{}])
   ]);
