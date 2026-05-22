@@ -6,6 +6,7 @@ const { body, param, query } = require('express-validator');
 const db                    = require('../config/database');
 const validate              = require('../middleware/validate');
 const { authenticate, authorize } = require('../middleware/auth');
+const { logger }            = require('../middleware/logger');
 
 const router = express.Router();
 router.use(authenticate);
@@ -269,16 +270,62 @@ router.post(
       return res.status(422).json({ error: 'Faylni o\'qib bo\'lmadi: ' + err.message });
     }
 
-    const questions = parsePdfQuestions(rawText);
+    let questions = parsePdfQuestions(rawText);
+    let aiParsed = false;
+
+    // ── AI fallback: if regex parser finds nothing, try OpenAI ────────────────
+    if (!questions.length && process.env.OPENAI_API_KEY) {
+      try {
+        const OpenAI = require('openai');
+        const openai = new OpenAI({ apiKey: process.env.OPENAI_API_KEY });
+        const textChunk = rawText.replace(/[□■▪▫◻◼]/g, '').replace(/\s{3,}/g, ' ').slice(0, 7000);
+
+        const completion = await openai.chat.completions.create({
+          model: 'gpt-4o-mini',
+          messages: [{
+            role: 'user',
+            content: `Quyida PDF fayldan olingan o'zbek tili yoki matematika test savollari matni.
+Matritsalar, formulalar va boshqa matematik ifodalarni o'z ichiga olishi mumkin.
+Savollarni topib, JSON massiv qaytar. Faqat JSON, boshqa matn yo'q.
+Har element: {"question_text":"...","option_a":"...","option_b":"...","option_c":"...","option_d":"...","correct_option":"A"}
+LaTeX ishlatish mumkin: $...$ yoki $$...$$ matritsalar uchun \\begin{pmatrix}...\\end{pmatrix}
+MATN:\n${textChunk}`
+          }],
+          max_tokens: 4000,
+          temperature: 0.1,
+        });
+
+        const raw = completion.choices[0].message.content || '';
+        const match = raw.match(/\[[\s\S]*\]/);
+        if (match) {
+          const aiList = JSON.parse(match[0]);
+          if (Array.isArray(aiList) && aiList.length) {
+            questions = aiList.map(q => ({
+              text: q.question_text || q.text || '',
+              a: q.option_a || q.a || '—',
+              b: q.option_b || q.b || '—',
+              c: q.option_c || q.c || '—',
+              d: q.option_d || q.d || '—',
+              correct: (['A','B','C','D'].includes((q.correct_option||q.correct||'A').toUpperCase()))
+                       ? (q.correct_option||q.correct||'A').toUpperCase() : 'A',
+              explanation: q.explanation || null,
+            })).filter(q => q.text && q.a !== '—');
+            aiParsed = true;
+          }
+        }
+      } catch (aiErr) {
+        logger.warn('AI PDF parse urinishi muvaffaqiyatsiz:', aiErr.message);
+      }
+    }
 
     if (!questions.length) {
-      // Return debug info so admin can see what was extracted
       const preview = rawText.replace(/\r/g, '').trim().slice(0, 500);
       return res.status(422).json({
         error: 'Savollar topilmadi. Fayl formatini tekshiring.',
         hint: 'Format: "1. Savol matni? A) ... B) ... C) ... D) ... To\'g\'ri: A"',
         extractedLines: rawText.split('\n').filter(Boolean).length,
-        textPreview: preview
+        textPreview: preview,
+        aiAttempted: !!process.env.OPENAI_API_KEY,
       });
     }
 
@@ -319,8 +366,112 @@ router.post(
       inserted: inserted.length,
       failed: errors.length,
       insertedIds: inserted,
+      aiParsed,
       errors: errors.length ? errors : undefined
     });
+  }
+);
+
+// ── POST /api/questions/ai-parse — AI yordamida matritsali PDF matnini parse qilish ──
+router.post(
+  '/ai-parse',
+  authorize('dekanat', 'admin', 'teacher'),
+  async (req, res) => {
+    const { rawText, subject, type } = req.body;
+    if (!rawText || rawText.trim().length < 20) {
+      return res.status(400).json({ error: 'rawText bo\'sh yoki juda qisqa' });
+    }
+    const VALID_SUBJECTS = ['algo','ai','math','db','web','matematika','Matematika'];
+    const VALID_TYPES    = ['test','real','both'];
+
+    // Use existing OpenAI key
+    const OpenAI = require('openai');
+    const openai = new OpenAI({ apiKey: process.env.OPENAI_API_KEY });
+
+    // Truncate to avoid token limits (max ~6000 chars)
+    const textChunk = rawText.slice(0, 6000);
+
+    const prompt = `Quyida PDF fayldan olingan matematik test savollari matni berilgan.
+Matn matritsalar, formulalar va boshqa matematik ifodalarni o'z ichiga oladi.
+Ular PDF dan noto'g'ri chiqib kelgan (□ belgilar, tartibsiz raqamlar va h.k.).
+
+Vazifang: ushbu matndan test savollarini topib, ularni to'g'ri JSON formatiga o'tkazish.
+Har bir savol uchun LaTeX notatsiyasidan foydalaning:
+- Matritsalar uchun: $\\begin{pmatrix} a & b \\\\ c & d \\end{pmatrix}$
+- Kasrlar uchun: $\\frac{a}{b}$
+- Inline math: $...$ delimiters
+- Display math: $$...$$ delimiters
+
+JSON massiv qaytar, har bir element:
+{
+  "question_text": "Savol matni (LaTeX bilan)",
+  "option_a": "A javob (LaTeX bilan)",
+  "option_b": "B javob",
+  "option_c": "C javob",
+  "option_d": "D javob",
+  "correct_option": "A" (yoki B, C, D — agar ma'lum bo'lsa, aks holda "A"),
+  "explanation": null
+}
+
+Faqat JSON massiv qaytar, boshqa matn yo'q.
+
+MATN:
+${textChunk}`;
+
+    try {
+      const completion = await openai.chat.completions.create({
+        model: 'gpt-4o',
+        messages: [{ role: 'user', content: prompt }],
+        max_tokens: 4000,
+        temperature: 0.1,
+        response_format: { type: 'json_object' },
+      });
+
+      let parsed;
+      try {
+        const content = completion.choices[0].message.content;
+        // Try to extract array from possible wrapper object
+        const obj = JSON.parse(content);
+        parsed = Array.isArray(obj) ? obj : (obj.questions || obj.savollar || Object.values(obj)[0] || []);
+      } catch (e) {
+        return res.status(422).json({ error: 'AI javobini parse qilib bo\'lmadi', raw: completion.choices[0].message.content?.slice(0,500) });
+      }
+
+      if (!Array.isArray(parsed) || !parsed.length) {
+        return res.status(422).json({ error: 'AI savollar topilmadi', hint: 'PDF matnini tekshiring' });
+      }
+
+      // Optionally import directly into DB if subject/type provided
+      if (subject && VALID_TYPES.includes(type)) {
+        const realSubject = subject.toLowerCase().replace('matematika','math');
+        const client = await db.getClient();
+        const inserted = [], errors = [];
+        try {
+          await client.query('BEGIN');
+          for (const q of parsed) {
+            if (!q.question_text || !q.option_a || !q.option_b) continue;
+            try {
+              const { rows } = await client.query(
+                `INSERT INTO questions (subject,type,question_text,option_a,option_b,option_c,option_d,correct_option,explanation,created_by)
+                 VALUES ($1,$2,$3,$4,$5,$6,$7,$8,$9,$10) RETURNING id`,
+                [realSubject, type, q.question_text, q.option_a, q.option_b, q.option_c||'—', q.option_d||'—',
+                 (q.correct_option||'A').toUpperCase(), q.explanation||null, req.user.id]
+              );
+              inserted.push(rows[0].id);
+            } catch(e) { errors.push({ q: q.question_text?.substring(0,50), err: e.message }); }
+          }
+          await client.query('COMMIT');
+        } catch(err) { await client.query('ROLLBACK'); throw err; }
+        finally { client.release(); }
+        return res.status(201).json({ parsed: parsed.length, inserted: inserted.length, failed: errors.length, questions: parsed });
+      }
+
+      // Otherwise just return parsed questions for preview
+      return res.json({ parsed: parsed.length, questions: parsed });
+    } catch (err) {
+      if (err.code === 'insufficient_quota') return res.status(402).json({ error: 'OpenAI quota tugagan' });
+      throw err;
+    }
   }
 );
 

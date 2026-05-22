@@ -4296,6 +4296,8 @@ function renderActiveTestQuestions() {
     var html = '';
     _currentTestQuestions.forEach(function(q, i) { html += _buildTestQHtml(q, i, 'test'); });
     container.innerHTML = html;
+    // Render LaTeX formulas (KaTeX) in question texts and options
+    if (typeof renderMathInPage === 'function') renderMathInPage(container);
   }
   // Start timer
   if (_testTimer) clearInterval(_testTimer);
@@ -4535,6 +4537,8 @@ function startRealWithSubject(subj) {
     });
 
     container.innerHTML = html;
+    // Render LaTeX formulas (KaTeX) in question texts and options
+    if (typeof renderMathInPage === 'function') renderMathInPage(container);
 
     document.getElementById('sreal-instructions').style.display = 'none';
     document.getElementById('sreal-active').style.display = 'block';
