@@ -1794,8 +1794,23 @@ function renderInvestorDashboard(){
 //  MISC
 // ════════════════════════════════════
 function syncData(){
-  showToast('🔄','Yangilanmoqda...','HEMIS tizimiga ulanildi');
-  setTimeout(()=>showToast('✅','Yangilandi!','Barcha ma\'lumotlar joriy'),2000);
+  showToast('🔄','Yangilanmoqda...','Ma\'lumotlar yangilanmoqda');
+  // Invalidate all IDU caches (students, groups, etc.)
+  if (window.IDU && window.IDU.invalidateCache) window.IDU.invalidateCache();
+  // Find current active page and re-render it
+  var active = document.querySelector('.page.active');
+  if (active) {
+    var pageId = active.id ? active.id.replace(/^page-/, '') : null;
+    if (pageId && typeof showPage === 'function') {
+      // Re-trigger the page handler
+      showPage(pageId);
+    }
+  }
+  // Re-fill dropdowns from fresh data
+  if (window.IDU && window.IDU.initDynamicSelects) {
+    setTimeout(function(){ window.IDU.initDynamicSelects({force:true}); }, 300);
+  }
+  setTimeout(function(){ showToast('✅','Yangilandi','Barcha ma\'lumotlar joriy'); }, 800);
 }
 
 // ════════════════════════════════════
