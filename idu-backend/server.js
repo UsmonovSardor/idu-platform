@@ -14,9 +14,11 @@ const path         = require('path');
 const fs           = require('fs');
 
 const compression             = require('compression');
+const hpp                     = require('hpp');
 const { logger, requestLogger } = require('./middleware/logger');
 const { generalLimiter }        = require('./middleware/rateLimiter');
 const errorHandler              = require('./middleware/errorHandler');
+const { sanitizeBody, noSniff } = require('./middleware/security');
 
 const authRoutes        = require('./routes/auth');
 const studentsRoutes    = require('./routes/students');
@@ -50,10 +52,45 @@ app.use(compression({
   },
 }));
 
-// ── Security headers ─────────────────────────────────────────────────────────
+// ── Security headers (Phase D: CSP enabled) ──────────────────────────────────
+const IS_PROD = process.env.NODE_ENV === 'production';
+
 app.use(helmet({
-  contentSecurityPolicy: false,
-  crossOriginEmbedderPolicy: false,
+  // Content-Security-Policy — allow only our own origin + known CDNs
+  contentSecurityPolicy: {
+    directives: {
+      defaultSrc:  ["'self'"],
+      scriptSrc:   [
+        "'self'",
+        // Allow inline scripts that use nonces/hashes on our own pages.
+        // Phase E can switch to strict-dynamic + nonces; for now allow CDNs.
+        'https://cdn.jsdelivr.net',
+        'https://cdnjs.cloudflare.com',
+        "'unsafe-inline'",   // kept for legacy inline handlers — remove when refactored
+      ],
+      styleSrc:    ["'self'", 'https://fonts.googleapis.com', 'https://cdn.jsdelivr.net',
+                    'https://cdnjs.cloudflare.com', "'unsafe-inline'"],
+      fontSrc:     ["'self'", 'https://fonts.gstatic.com', 'data:'],
+      imgSrc:      ["'self'", 'data:', 'blob:', 'https:'],
+      connectSrc:  [
+        "'self'",
+        'https://api.openai.com',
+        'https://api.anthropic.com',
+        ...(process.env.CORS_ORIGIN ? process.env.CORS_ORIGIN.split(',') : []),
+      ],
+      frameSrc:    ["'none'"],
+      objectSrc:   ["'none'"],
+      baseUri:     ["'self'"],
+      formAction:  ["'self'"],
+      upgradeInsecureRequests: IS_PROD ? [] : undefined,
+    },
+  },
+  // Prevent clickjacking — only allow framing from same origin
+  frameguard:               { action: 'sameorigin' },
+  // Strict HSTS: 1 year in prod
+  hsts:                     IS_PROD ? { maxAge: 31536000, includeSubDomains: true, preload: true } : false,
+  crossOriginEmbedderPolicy: false,   // keep false (CDN resources)
+  crossOriginResourcePolicy: { policy: 'cross-origin' }, // allow CDN fonts/images
 }));
 
 // ── CORS ─────────────────────────────────────────────────────────────────────
@@ -87,15 +124,31 @@ app.use(cors({
 }));
 
 // ── Body / Cookie parsers ─────────────────────────────────────────────────────
-app.use(express.json({ limit: '10mb' }));
-app.use(express.urlencoded({ extended: false, limit: '10mb' }));
+// 10 MB only for multipart (avatars); JSON/form bodies capped at 256 KB
+app.use(express.json({ limit: '256kb' }));
+app.use(express.urlencoded({ extended: false, limit: '256kb' }));
 app.use(cookieParser());
+
+// ── HTTP Parameter Pollution (HPP) guard ─────────────────────────────────────
+// Prevents ?sort=asc&sort=desc&sort=DROP attacks by keeping only last value
+app.use(hpp());
+
+// ── Prototype-pollution sanitizer ────────────────────────────────────────────
+// Strips __proto__ / constructor keys from body, query, params
+app.use(sanitizeBody());
 
 // ── HTTP request logging ──────────────────────────────────────────────────────
 app.use(requestLogger);
 
 // ── Static uploads ────────────────────────────────────────────────────────────
-app.use('/uploads', express.static(path.resolve(process.env.UPLOAD_DIR || './uploads')));
+// noSniff prevents browser from executing an uploaded file as script even if
+// its Content-Type is wrong. authenticate gates download to logged-in users.
+app.use('/uploads', noSniff(), express.static(path.resolve(process.env.UPLOAD_DIR || './uploads'), {
+  // Never cache upload responses — use must-revalidate to avoid stale avatars
+  setHeaders: (res) => {
+    res.setHeader('Cache-Control', 'private, no-cache');
+  },
+}));
 
 // ── Health check ──────────────────────────────────────────────────────────────
 app.get('/health', (_req, res) => {

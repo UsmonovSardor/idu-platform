@@ -1,56 +1,88 @@
 'use strict';
 const express = require('express');
+const { body, param } = require('express-validator');
 const router  = express.Router();
 const db      = require('../config/database');
 const { authenticate, authorize } = require('../middleware/auth');
+const validate                    = require('../middleware/validate');
+const { promptSanitize }          = require('../middleware/security');
+const { logger }                  = require('../middleware/logger');
 
 router.use(authenticate);
 
-// AI grading via Anthropic claude-haiku
+// ── AI grading via Anthropic claude-haiku (Phase D: prompt injection hardened) ──
 async function gradeWithAI(title, description, answer) {
   const key = process.env.ANTHROPIC_API_KEY;
   if (!key) return { ball: 0, xatolar: 'AI kalit topilmadi', ijobiy: '', tavsiyalar: '' };
 
-  const prompt = `Sen IDU universitetining professional o'qituvchisisiz. Quyidagi vazifaga berilgan talaba javobini baholang.
+  // Sanitize ALL user-controlled text before embedding in prompt.
+  // title + description come from the DB (teacher-entered), but could have been
+  // injected at creation time, so sanitize them too.
+  const safeTitle  = promptSanitize(title,       200);
+  const safeDesc   = promptSanitize(description, 500);
+  const safeAnswer = promptSanitize(answer,      3000);
 
-Vazifa: "${title}"
-Vazifa tavsifi: "${description}"
-Talaba javobi: "${answer.substring(0, 3000)}"
-
-Quyidagi JSON formatida o'zbek tilida javob bering (faqat JSON, hech qanday qo'shimcha matn yo'q):
-{"ball": <0-100 son>, "xatolar": "<nima yetishmayapti yoki noto'g'ri>", "ijobiy": "<nima yaxshi qilingan>", "tavsiyalar": "<qanday yaxshilash mumkin>"}`;
+  // Use a structured prompt with XML-style delimiters so the model can
+  // clearly distinguish data from instructions (reduces injection risk).
+  const prompt =
+    `Sen IDU universitetining professional o'qituvchisisiz. ` +
+    `Quyidagi vazifaga berilgan talaba javobini baholang.\n\n` +
+    `<vazifa_nomi>${safeTitle}</vazifa_nomi>\n` +
+    `<vazifa_tavsifi>${safeDesc}</vazifa_tavsifi>\n` +
+    `<talaba_javobi>${safeAnswer}</talaba_javobi>\n\n` +
+    `MUHIM: Faqat quyidagi JSON formatida javob ber, hech qanday qo'shimcha matn yo'q:\n` +
+    `{"ball":<0-100>,"xatolar":"...","ijobiy":"...","tavsiyalar":"..."}`;
 
   try {
     const resp = await fetch('https://api.anthropic.com/v1/messages', {
       method: 'POST',
       headers: {
-        'Content-Type': 'application/json',
-        'x-api-key': key,
-        'anthropic-version': '2023-06-01'
+        'Content-Type':      'application/json',
+        'x-api-key':         key,
+        'anthropic-version': '2023-06-01',
       },
       body: JSON.stringify({
-        model: 'claude-haiku-4-5-20251001',
+        model:      'claude-haiku-4-5-20251001',
         max_tokens: 600,
-        messages: [{ role: 'user', content: prompt }]
-      })
+        messages:   [{ role: 'user', content: prompt }],
+      }),
     });
-    const data = await resp.json();
-    const text = data.content?.[0]?.text || '{}';
-    const clean = text.replace(/```json|```/g, '').trim();
-    const parsed = JSON.parse(clean);
+
+    if (!resp.ok) {
+      logger.warn(`Anthropic API ${resp.status} in gradeWithAI`);
+      return { ball: 0, xatolar: 'AI baholashda vaqtinchalik xato', ijobiy: '', tavsiyalar: '' };
+    }
+
+    const data   = await resp.json();
+    const text   = data.content?.[0]?.text || '{}';
+    // Extract only the JSON object — reject anything outside braces
+    const match  = text.match(/\{[\s\S]*\}/);
+    const parsed = match ? JSON.parse(match[0]) : {};
     return {
       ball:        Math.min(100, Math.max(0, Number(parsed.ball) || 0)),
-      xatolar:     parsed.xatolar || '',
-      ijobiy:      parsed.ijobiy  || '',
-      tavsiyalar:  parsed.tavsiyalar || ''
+      xatolar:     String(parsed.xatolar   || '').slice(0, 500),
+      ijobiy:      String(parsed.ijobiy    || '').slice(0, 500),
+      tavsiyalar:  String(parsed.tavsiyalar|| '').slice(0, 500),
     };
-  } catch(e) {
-    return { ball: 0, xatolar: 'AI tekshirishda xato: ' + e.message, ijobiy: '', tavsiyalar: '' };
+  } catch (e) {
+    logger.error('gradeWithAI error:', e.message);
+    // Never expose internal error detail to client
+    return { ball: 0, xatolar: 'AI baholash vaqtincha mavjud emas', ijobiy: '', tavsiyalar: '' };
   }
 }
 
 // POST /api/submissions — talaba javob yuboradi
-router.post('/', async (req, res) => {
+router.post(
+  '/',
+  [
+    body('assignment_id').isInt({ min: 1 }).toInt().withMessage('assignment_id noto\'g\'ri'),
+    body('content')
+      .isString().withMessage('content majburiy')
+      .isLength({ min: 10, max: 20000 }).withMessage('Javob 10–20 000 belgi bo\'lishi kerak')
+      .trim(),
+  ],
+  validate,
+  async (req, res) => {
   const { assignment_id, content } = req.body;
   if (!assignment_id || !content) return res.status(400).json({ error: 'assignment_id va content majburiy' });
 
@@ -83,7 +115,8 @@ router.post('/', async (req, res) => {
   }
 
   res.status(201).json({ submission: row, ai_feedback: ai });
-});
+  }
+);
 
 // GET /api/submissions/my — talaba o'z javoblarini ko'radi
 router.get('/my', async (req, res) => {

@@ -5,10 +5,11 @@ const bcrypt  = require('bcryptjs');
 const jwt     = require('jsonwebtoken');
 const { body } = require('express-validator');
 
-const db           = require('../config/database');
-const validate     = require('../middleware/validate');
+const db               = require('../config/database');
+const validate         = require('../middleware/validate');
 const { authenticate } = require('../middleware/auth');
 const { authLimiter }  = require('../middleware/rateLimiter');
+const { logger }       = require('../middleware/logger');
 
 const router = express.Router();
 
@@ -105,19 +106,18 @@ router.post(
     }
     if (!user.is_active)  return res.status(403).json({ error: 'Account deactivated' });
 
-    // Check password — support plaintext with auto-upgrade to bcrypt on login
-    let isValid = false;
-    const isBcrypt = user.password_hash && user.password_hash.startsWith('$2');
-
-    if (isBcrypt) {
-      isValid = await bcrypt.compare(password, user.password_hash);
-    } else {
-      isValid = password === user.password_hash;
-      if (isValid) {
-        const newHash = await bcrypt.hash(password, 12);
-        db.query('UPDATE users SET password_hash=$1 WHERE id=$2', [newHash, user.id]).catch(() => {});
-      }
+    // ── Password check — bcrypt ONLY (Phase D: plaintext fallback removed) ──
+    // Accounts whose password_hash is still plaintext are blocked until
+    // an admin resets their password. This removes the timing-attack surface
+    // and ensures all credentials are hashed at rest.
+    if (!user.password_hash || !user.password_hash.startsWith('$2')) {
+      // Log the anomaly without revealing details to the caller
+      logger.warn(`Login attempt on non-bcrypt account: ${login}`);
+      await recordFailure('non_bcrypt_account');
+      return res.status(401).json({ error: "Login yoki parol noto'g'ri" });
     }
+
+    const isValid = await bcrypt.compare(password, user.password_hash);
 
     if (!isValid) {
       const locked = await recordFailure('wrong_password');

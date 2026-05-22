@@ -9,7 +9,9 @@ const fs       = require('fs');
 const db                    = require('../config/database');
 const validate              = require('../middleware/validate');
 const { authenticate, authorize } = require('../middleware/auth');
-const { cache, invalidate } = require('../middleware/cache');
+const { cache, invalidate }       = require('../middleware/cache');
+const { validateMime }            = require('../middleware/security');
+const { uploadLimiter }           = require('../middleware/rateLimiter');
 
 const router = express.Router();
 
@@ -135,12 +137,23 @@ router.get(
 );
 
 // ?? PUT /api/students/:id ?????????????????????????????????????????????????????
+// Strict field whitelist — only full_name and phone are writable.
+// Any attempt to send role, is_active, password_hash, etc. is silently ignored.
+// Students can only update their own profile; dekanat/admin can update anyone.
 router.put(
   '/:id',
   [
     param('id').isInt({ min: 1 }).toInt(),
-    body('phone').optional().isMobilePhone().withMessage('Invalid phone number'),
-    body('full_name').optional().isLength({ min: 2, max: 100 }).trim(),
+    // Whitelist — validate ONLY the two allowed fields
+    body('full_name').optional().isLength({ min: 2, max: 100 }).trim()
+      .withMessage('Ism 2–100 belgi bo\'lishi kerak'),
+    body('phone').optional({ nullable: true })
+      .custom(v => !v || /^\+?[\d\s\-().]{7,20}$/.test(v))
+      .withMessage('Telefon raqam noto\'g\'ri'),
+    // Reject attempts to set privileged fields
+    body('role').not().exists().withMessage('role o\'zgartirish ta\'qiqlangan'),
+    body('is_active').not().exists().withMessage('is_active o\'zgartirish ta\'qiqlangan'),
+    body('password_hash').not().exists().withMessage('password_hash o\'zgartirish ta\'qiqlangan'),
   ],
   validate,
   async (req, res) => {
@@ -148,14 +161,17 @@ router.put(
       return res.status(403).json({ error: 'Access denied' });
     }
 
-    const { full_name, phone } = req.body;
+    // Explicitly pick only the safe fields — never spread req.body
+    const full_name = req.body.full_name ?? null;
+    const phone     = req.body.phone     ?? null;
+
     await db.query(
       `UPDATE users SET
          full_name  = COALESCE($1, full_name),
          phone      = COALESCE($2, phone),
          updated_at = NOW()
        WHERE id = $3`,
-      [full_name || null, phone || null, req.params.id]
+      [full_name, phone, req.params.id]
     );
 
     res.json({ message: 'Profile updated' });
@@ -167,6 +183,7 @@ router.post(
   '/:id/avatar',
   [param('id').isInt({ min: 1 }).toInt()],
   validate,
+  uploadLimiter,           // ← 5 uploads per minute per user
   (req, res, next) => {
     if (req.user.role === 'student' && req.user.id !== req.params.id) {
       return res.status(403).json({ error: 'Access denied' });
@@ -174,6 +191,7 @@ router.post(
     next();
   },
   upload.single('avatar'),
+  validateMime(),          // ← magic-byte MIME check (extension spoofing guard)
   async (req, res) => {
     if (!req.file) return res.status(400).json({ error: 'No file uploaded' });
 
