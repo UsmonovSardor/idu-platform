@@ -54,7 +54,7 @@ router.get('/session/:id', authorize('teacher', 'dekanat', 'admin'), async (req,
   if (!session) return res.status(404).json({ error: 'Sessiya topilmadi' });
 
   const { rows: records } = await db.query(
-    `SELECT r.student_id, r.marked_at, r.method, u.full_name, u.email
+    `SELECT r.student_id, r.marked_at, r.method, u.full_name, u.login AS email
      FROM attendance_records r
      JOIN users u ON u.id = r.student_id
      WHERE r.session_id = $1
@@ -63,10 +63,11 @@ router.get('/session/:id', authorize('teacher', 'dekanat', 'admin'), async (req,
   );
 
   const totalStudents = await db.query(
-    `SELECT COUNT(*) FROM users
-     WHERE role = 'student'
-       AND (group_name = $1 OR $1 = '')`,
-    [session.group_name]
+    `SELECT COUNT(*) FROM users u
+     LEFT JOIN students st ON st.user_id = u.id
+     WHERE u.role = 'student'
+       AND ($1 = '' OR st.group_name = $1)`,
+    [session.group_name || '']
   );
 
   res.json({
@@ -183,8 +184,9 @@ router.get('/stats', authorize('teacher', 'dekanat', 'admin'), async (req, res) 
             ROUND(
               100.0 * COUNT(r.id) /
               NULLIF(COUNT(DISTINCT s.id) * NULLIF(
-                (SELECT COUNT(*) FROM users u2
-                 WHERE u2.role='student' AND u2.group_name = s.group_name), 0), 0)
+                (SELECT COUNT(*) FROM students st2
+                 JOIN users u2 ON u2.id = st2.user_id
+                 WHERE u2.role='student' AND st2.group_name = s.group_name), 0), 0)
             , 1) AS attendance_pct
      FROM attendance_sessions s
      LEFT JOIN attendance_records r ON r.session_id = s.id

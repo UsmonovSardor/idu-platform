@@ -496,7 +496,7 @@ router.get('/:id/results', authorize('teacher','dekanat','admin'), async (req, r
   const { rows } = await db.query(
     `SELECT a.student_id, a.score, a.correct_count, a.total_count, a.status,
             a.cheat_warnings, a.started_at, a.submitted_at,
-            u.full_name, u.email
+            u.full_name, u.login AS email
      FROM teacher_exam_attempts a
      JOIN users u ON u.id=a.student_id
      WHERE a.exam_id=$1

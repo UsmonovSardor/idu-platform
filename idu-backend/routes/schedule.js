@@ -50,7 +50,7 @@ router.get(
        FROM schedule sc
        JOIN courses c ON c.id=sc.course_id
        JOIN users u ON u.id=c.teacher_id ${where}
-       ORDER BY sw.weekday,sc.start_time`,
+       ORDER BY sc.weekday,sc.start_time`,
       params
     );
     res.json(rows);

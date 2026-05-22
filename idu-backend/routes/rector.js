@@ -12,15 +12,15 @@ router.use(authorize('admin', 'dekanat'));
 // Top-level KPI cards for the rector dashboard
 router.get('/kpi', async (req, res) => {
   const [students, teachers, avgGpa, attRate, submissions, exams] = await Promise.all([
-    db.query("SELECT COUNT(*) FROM users WHERE role='student' AND is_active=TRUE"),
-    db.query("SELECT COUNT(*) FROM users WHERE role='teacher' AND is_active=TRUE"),
-    db.query("SELECT ROUND(AVG(score),1) AS avg FROM grades"),
+    db.query("SELECT COUNT(*) FROM users WHERE role='student' AND is_active=TRUE").catch(()=>({rows:[{count:0}]})),
+    db.query("SELECT COUNT(*) FROM users WHERE role='teacher' AND is_active=TRUE").catch(()=>({rows:[{count:0}]})),
+    db.query("SELECT ROUND(AVG(jn+on_score+yn+mi),1) AS avg FROM grades").catch(()=>({rows:[{avg:0}]})),
     db.query(`SELECT ROUND(100.0*COUNT(r.id)/NULLIF(
                 (SELECT COUNT(DISTINCT s2.id)*
                  (SELECT COUNT(*) FROM users WHERE role='student')
                  FROM attendance_sessions s2),0),1) AS pct
               FROM attendance_records r`).catch(()=>({rows:[{pct:null}]})),
-    db.query("SELECT COUNT(*) FROM submissions WHERE status='graded'"),
+    db.query("SELECT COUNT(*) FROM submissions WHERE status='graded'").catch(()=>({rows:[{count:0}]})),
     db.query("SELECT COUNT(*) FROM exams WHERE is_active=TRUE").catch(()=>({rows:[{count:0}]})),
   ]);
 
@@ -37,6 +37,7 @@ router.get('/kpi', async (req, res) => {
 // ── GET /api/rector/grade-distribution ───────────────────────────────────────
 router.get('/grade-distribution', async (req, res) => {
   const { rows } = await db.query(`
+    WITH g2 AS (SELECT (jn+on_score+yn+mi) AS score FROM grades)
     SELECT
       SUM(CASE WHEN score>=86 THEN 1 ELSE 0 END) AS a_count,
       SUM(CASE WHEN score>=71 AND score<86 THEN 1 ELSE 0 END) AS b_count,
@@ -44,43 +45,44 @@ router.get('/grade-distribution', async (req, res) => {
       SUM(CASE WHEN score>=41 AND score<56 THEN 1 ELSE 0 END) AS d_count,
       SUM(CASE WHEN score<41 THEN 1 ELSE 0 END) AS f_count,
       COUNT(*) AS total
-    FROM grades
-  `);
+    FROM g2
+  `).catch((e)=>{console.error('grade-dist:', e.message); return {rows:[{a_count:0,b_count:0,c_count:0,d_count:0,f_count:0,total:0}]};});
   res.json(rows[0]);
 });
 
 // ── GET /api/rector/group-stats ───────────────────────────────────────────────
 router.get('/group-stats', async (req, res) => {
   const { rows } = await db.query(`
-    SELECT u.group_name,
+    SELECT st.group_name,
            COUNT(DISTINCT u.id) AS student_count,
-           ROUND(AVG(g.score),1) AS avg_score,
-           ROUND(AVG(CASE WHEN u2.gpa IS NOT NULL THEN u2.gpa::numeric ELSE NULL END),2) AS avg_gpa,
-           SUM(CASE WHEN g.score>=86 THEN 1 ELSE 0 END) AS excellent,
-           SUM(CASE WHEN g.score<56 THEN 1 ELSE 0 END) AS failing
+           ROUND(AVG(g.jn+g.on_score+g.yn+g.mi),1) AS avg_score,
+           ROUND(AVG(CASE WHEN st.gpa IS NOT NULL THEN st.gpa::numeric ELSE NULL END),2) AS avg_gpa,
+           SUM(CASE WHEN (g.jn+g.on_score+g.yn+g.mi)>=86 THEN 1 ELSE 0 END) AS excellent,
+           SUM(CASE WHEN (g.jn+g.on_score+g.yn+g.mi)<56 THEN 1 ELSE 0 END) AS failing
     FROM users u
+    JOIN students st ON st.user_id=u.id
     LEFT JOIN grades g ON g.student_id=u.id
-    LEFT JOIN users u2 ON u2.id=u.id
-    WHERE u.role='student' AND u.group_name IS NOT NULL
-    GROUP BY u.group_name
+    WHERE u.role='student' AND st.group_name IS NOT NULL
+    GROUP BY st.group_name
     ORDER BY avg_score DESC NULLS LAST
-  `).catch(()=>({rows:[]}));
+  `).catch((e)=>{console.error('group-stats:', e.message); return {rows:[]};});
   res.json(rows);
 });
 
 // ── GET /api/rector/subject-stats ─────────────────────────────────────────────
 router.get('/subject-stats', async (req, res) => {
   const { rows } = await db.query(`
-    SELECT subject,
-           COUNT(*) AS attempts,
-           ROUND(AVG(score),1) AS avg_score,
-           MAX(score) AS max_score,
-           MIN(score) AS min_score,
-           SUM(CASE WHEN score>=56 THEN 1 ELSE 0 END) AS passed
-    FROM grades
-    GROUP BY subject
+    SELECT c.name AS subject,
+           COUNT(g.id) AS attempts,
+           ROUND(AVG(g.jn+g.on_score+g.yn+g.mi),1) AS avg_score,
+           MAX(g.jn+g.on_score+g.yn+g.mi) AS max_score,
+           MIN(g.jn+g.on_score+g.yn+g.mi) AS min_score,
+           SUM(CASE WHEN (g.jn+g.on_score+g.yn+g.mi)>=56 THEN 1 ELSE 0 END) AS passed
+    FROM grades g
+    JOIN courses c ON c.id = g.course_id
+    GROUP BY c.name
     ORDER BY avg_score DESC
-  `).catch(()=>({rows:[]}));
+  `).catch((e)=>{console.error('subject-stats:', e.message); return {rows:[]};});
   res.json(rows);
 });
 
@@ -105,8 +107,8 @@ router.get('/attendance-by-group', async (req, res) => {
            COUNT(DISTINCT s.id) AS sessions,
            COUNT(r.id) AS total_marks,
            ROUND(100.0*COUNT(r.id)/NULLIF(COUNT(DISTINCT s.id)*
-             (SELECT COUNT(*) FROM users u2
-              WHERE u2.role='student' AND u2.group_name=s.group_name),0),1) AS pct
+             (SELECT COUNT(*) FROM students st2 JOIN users u2 ON u2.id=st2.user_id
+              WHERE u2.role='student' AND st2.group_name=s.group_name),0),1) AS pct
     FROM attendance_sessions s
     LEFT JOIN attendance_records r ON r.session_id=s.id
     GROUP BY s.group_name
@@ -118,34 +120,36 @@ router.get('/attendance-by-group', async (req, res) => {
 // ── GET /api/rector/top-students ──────────────────────────────────────────────
 router.get('/top-students', async (req, res) => {
   const { rows } = await db.query(`
-    SELECT u.id, u.full_name, u.group_name,
-           ROUND(AVG(g.score),1) AS avg_score,
+    SELECT u.id, u.full_name, st.group_name,
+           ROUND(AVG(g.jn+g.on_score+g.yn+g.mi),1) AS avg_score,
            COALESCE(x.xp,0) AS xp,
            COALESCE(x.level,1) AS level,
            (SELECT COUNT(*) FROM user_badges b WHERE b.user_id=u.id) AS badges
     FROM users u
+    LEFT JOIN students st ON st.user_id=u.id
     LEFT JOIN grades g ON g.student_id=u.id
     LEFT JOIN user_xp x ON x.user_id=u.id
     WHERE u.role='student'
-    GROUP BY u.id, u.full_name, u.group_name, x.xp, x.level
+    GROUP BY u.id, u.full_name, st.group_name, x.xp, x.level
     HAVING COUNT(g.id)>0
     ORDER BY avg_score DESC
     LIMIT 10
-  `).catch(()=>({rows:[]}));
+  `).catch((e)=>{console.error('top-students:', e.message); return {rows:[]};});
   res.json(rows);
 });
 
 // ── GET /api/rector/risk-students ─────────────────────────────────────────────
 router.get('/risk-students', async (req, res) => {
   const { rows } = await db.query(`
-    SELECT u.id, u.full_name, u.group_name, u.email,
-           ROUND(AVG(g.score),1) AS avg_score,
+    SELECT u.id, u.full_name, st.group_name, u.login AS email,
+           ROUND(AVG(g.jn+g.on_score+g.yn+g.mi),1) AS avg_score,
            COUNT(g.id) AS grade_count
     FROM users u
+    LEFT JOIN students st ON st.user_id=u.id
     LEFT JOIN grades g ON g.student_id=u.id
     WHERE u.role='student'
-    GROUP BY u.id, u.full_name, u.group_name, u.email
-    HAVING AVG(g.score)<56 OR COUNT(g.id)=0
+    GROUP BY u.id, u.full_name, st.group_name, u.login
+    HAVING AVG(g.jn+g.on_score+g.yn+g.mi)<56 OR COUNT(g.id)=0
     ORDER BY avg_score ASC NULLS FIRST
     LIMIT 30
   `).catch(()=>({rows:[]}));

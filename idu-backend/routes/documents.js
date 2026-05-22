@@ -18,17 +18,20 @@ router.get('/transcript/:studentId', async (req, res) => {
   }
 
   const { rows: [student] } = await db.query(
-    `SELECT u.id, u.full_name, u.email, u.group_name, u.year,
+    `SELECT u.id, u.full_name, u.login AS email, st.group_name, st.year_of_study AS year,
             u.created_at AS enrolled_at
      FROM users u
+     LEFT JOIN students st ON st.user_id = u.id
      WHERE u.id=$1 AND u.role='student'`,
     [targetId]
   );
   if (!student) return res.status(404).json({ error: 'Talaba topilmadi' });
 
   const { rows: grades } = await db.query(
-    `SELECT g.subject, g.score, g.semester, g.academic_year, g.created_at
+    `SELECT c.name AS subject, (g.jn+g.on_score+g.yn+g.mi) AS score,
+            g.semester, g.academic_year, g.created_at
      FROM grades g
+     JOIN courses c ON c.id = g.course_id
      WHERE g.student_id=$1
      ORDER BY g.academic_year, g.semester, g.subject`,
     [targetId]
@@ -155,7 +158,9 @@ router.get('/certificate/:studentId', authorize('dekanat', 'admin'), async (req,
   const targetId = parseInt(req.params.studentId, 10);
 
   const { rows: [student] } = await db.query(
-    `SELECT u.full_name, u.group_name, u.year FROM users u WHERE u.id=$1 AND u.role='student'`,
+    `SELECT u.full_name, st.group_name, st.year_of_study AS year FROM users u
+     LEFT JOIN students st ON st.user_id=u.id
+     WHERE u.id=$1 AND u.role='student'`,
     [targetId]
   );
   if (!student) return res.status(404).json({ error: 'Talaba topilmadi' });

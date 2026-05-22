@@ -67,19 +67,20 @@ router.get('/leaderboard', async (req, res) => {
   const { group } = req.query;
   let cond = "u.role='student'";
   const params = [];
-  if (group) { params.push(group); cond += ` AND u.group_name=$${params.length}`; }
+  if (group) { params.push(group); cond += ` AND st.group_name=$${params.length}`; }
 
   const { rows } = await db.query(
-    `SELECT u.id, u.full_name, u.group_name, COALESCE(x.xp,0) AS xp,
+    `SELECT u.id, u.full_name, st.group_name, COALESCE(x.xp,0) AS xp,
             COALESCE(x.level,1) AS level,
             (SELECT COUNT(*) FROM user_badges b WHERE b.user_id=u.id) AS badge_count
      FROM users u
+     LEFT JOIN students st ON st.user_id=u.id
      LEFT JOIN user_xp x ON x.user_id=u.id
      WHERE ${cond}
      ORDER BY xp DESC
      LIMIT 50`,
     params
-  );
+  ).catch((e)=>{console.error('leaderboard:', e.message); return {rows:[]};});
   res.json(rows.map((r, i) => ({ ...r, rank: i + 1 })));
 });
 
@@ -138,7 +139,7 @@ async function recalculateStudent(userId) {
 
   // XP from grades (submitted grades)
   const { rows: grades } = await db.query(
-    `SELECT g.score FROM grades g WHERE g.student_id=$1`, [userId]
+    `SELECT (g.jn+g.on_score+g.yn+g.mi) AS score FROM grades g WHERE g.student_id=$1`, [userId]
   );
   for (const g of grades) {
     const score = parseFloat(g.score) || 0;
