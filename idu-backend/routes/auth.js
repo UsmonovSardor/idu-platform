@@ -45,6 +45,23 @@ router.post(
   async (req, res) => {
     const login    = String(req.body.login    || '').trim().toLowerCase();
     const password = String(req.body.password || '');
+    const ip       = req.ip || req.headers['x-forwarded-for'] || null;
+
+    // ── 1. Check if account is locked ──
+    try {
+      const { rows: lockRows } = await db.query(
+        'SELECT locked_until FROM account_lockouts WHERE login=$1 AND locked_until > NOW()',
+        [login]
+      );
+      if (lockRows.length) {
+        const until = new Date(lockRows[0].locked_until);
+        const minLeft = Math.ceil((until - Date.now()) / 60000);
+        return res.status(429).json({
+          error: `Hisob bloklangan. ${minLeft} daqiqadan keyin urinib ko'ring.`,
+          locked_until: until.toISOString()
+        });
+      }
+    } catch (e) { /* table may not exist yet on cold start */ }
 
     const { rows } = await db.query(
       `SELECT id, full_name, login, password_hash, role, is_active
@@ -53,7 +70,39 @@ router.post(
     );
 
     const user = rows[0];
-    if (!user)            return res.status(401).json({ error: "Login yoki parol noto'g'ri" });
+
+    // ── 2. Fail-handler: record failure, check threshold, optionally lock ──
+    async function recordFailure(reason) {
+      try {
+        await db.query(
+          'INSERT INTO failed_logins (login, ip_address) VALUES ($1, $2)',
+          [login, ip]
+        );
+        // Count last 15 min
+        const { rows: cnt } = await db.query(
+          `SELECT COUNT(*)::int AS n FROM failed_logins
+           WHERE login=$1 AND attempted_at > NOW() - INTERVAL '15 minutes'`,
+          [login]
+        );
+        if (cnt[0] && cnt[0].n >= 5) {
+          await db.query(
+            `INSERT INTO account_lockouts (login, locked_until, reason)
+             VALUES ($1, NOW() + INTERVAL '15 minutes', $2)
+             ON CONFLICT (login) DO UPDATE
+               SET locked_until = NOW() + INTERVAL '15 minutes',
+                   reason = $2`,
+            [login, reason]
+          );
+          return true; // locked
+        }
+      } catch(e) {}
+      return false;
+    }
+
+    if (!user) {
+      await recordFailure('user_not_found');
+      return res.status(401).json({ error: "Login yoki parol noto'g'ri" });
+    }
     if (!user.is_active)  return res.status(403).json({ error: 'Account deactivated' });
 
     // Check password — support plaintext with auto-upgrade to bcrypt on login
@@ -63,16 +112,28 @@ router.post(
     if (isBcrypt) {
       isValid = await bcrypt.compare(password, user.password_hash);
     } else {
-      // Legacy plaintext — compare directly, then upgrade hash
       isValid = password === user.password_hash;
       if (isValid) {
-        // Silently upgrade to bcrypt so plaintext is never stored again
         const newHash = await bcrypt.hash(password, 12);
         db.query('UPDATE users SET password_hash=$1 WHERE id=$2', [newHash, user.id]).catch(() => {});
       }
     }
 
-    if (!isValid) return res.status(401).json({ error: "Login yoki parol noto'g'ri" });
+    if (!isValid) {
+      const locked = await recordFailure('wrong_password');
+      if (locked) {
+        return res.status(429).json({
+          error: '5 marta noto\'g\'ri urinish. Hisob 15 daqiqaga bloklandi.'
+        });
+      }
+      return res.status(401).json({ error: "Login yoki parol noto'g'ri" });
+    }
+
+    // ── 3. Success — clear lockout & failed attempts ──
+    try {
+      await db.query('DELETE FROM failed_logins WHERE login=$1', [login]);
+      await db.query('DELETE FROM account_lockouts WHERE login=$1', [login]);
+    } catch(e) {}
 
     await db.query('UPDATE users SET last_login = NOW(), updated_at = NOW() WHERE id = $1', [user.id]);
 
@@ -80,7 +141,7 @@ router.post(
     setCookieToken(res, token);
 
     return res.json({
-      token, // also in response body for localStorage fallback in dev
+      token,
       user: { id: user.id, name: user.full_name, login: user.login, role: user.role },
     });
   }

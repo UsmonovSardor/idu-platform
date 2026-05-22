@@ -35,6 +35,8 @@ const gamificationRoutes= require('./routes/gamification');
 const documentsRoutes   = require('./routes/documents');
 const rectorRoutes      = require('./routes/rector');
 const teacherExamsRoutes= require('./routes/teacherExams');
+const auditLogRoutes    = require('./routes/auditLog');
+const { audit }         = require('./middleware/audit');
 
 const app = express();
 
@@ -108,6 +110,8 @@ app.get('/health', (_req, res) => {
 // ── API routes (v1 + legacy /api/* aliases) ──────────────────────────────────
 app.use('/api/v1', generalLimiter);
 app.use('/api',    generalLimiter);
+// Audit log middleware — fire-and-forget, after rate limiter
+app.use('/api', audit());
 
 // Register each router under both /api/v1/* and /api/* (backwards compat)
 const routeMap = [
@@ -128,6 +132,7 @@ const routeMap = [
   ['/documents',     documentsRoutes],
   ['/rector',        rectorRoutes],
   ['/teacher-exams', teacherExamsRoutes],
+  ['/audit-log',     auditLogRoutes],
 ];
 
 routeMap.forEach(([path, router]) => {
