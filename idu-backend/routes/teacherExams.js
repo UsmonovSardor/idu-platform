@@ -86,8 +86,10 @@ function parseQuestions(rawText) {
 // Teacher: list own exams · Student: list exams for their group
 router.get('/', async (req, res) => {
   if (req.user.role === 'student') {
-    // Find student's group
-    const { rows: [me] } = await db.query('SELECT group_name FROM users WHERE id=$1', [req.user.id]);
+    // Find student's group via students table
+    const { rows: [me] } = await db.query(
+      'SELECT st.group_name FROM students st WHERE st.user_id=$1', [req.user.id]
+    );
     const grp = me ? me.group_name : '';
     const { rows } = await db.query(
       `SELECT e.id, e.title, e.subject, e.exam_type, e.duration_min, e.total_score,
@@ -365,8 +367,10 @@ router.post('/:id/start', authorize('student'), async (req, res) => {
   );
   if (!exam) return res.status(404).json({ error: 'Imtihon topilmadi yoki yopilgan' });
 
-  // Check group
-  const { rows: [me] } = await db.query('SELECT group_name FROM users WHERE id=$1', [req.user.id]);
+  // Check group via students table
+  const { rows: [me] } = await db.query(
+    'SELECT st.group_name FROM students st WHERE st.user_id=$1', [req.user.id]
+  );
   if (me && me.group_name !== exam.group_name) {
     return res.status(403).json({ error: 'Bu imtihon sizning guruhingiz uchun emas' });
   }

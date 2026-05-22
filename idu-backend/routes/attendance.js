@@ -176,7 +176,8 @@ router.get('/report', authorize('dekanat', 'admin'), async (req, res) => {
 
 // ── GET /api/attendance/stats ────────────────────────────────────────────────
 // KPI: overall attendance rate per group/subject
-router.get('/stats', authorize('teacher', 'dekanat', 'admin'), async (req, res) => {
+// Open to all authenticated users — read-only aggregate stats
+router.get('/stats', async (req, res) => {
   const { rows } = await db.query(
     `SELECT s.group_name, s.subject,
             COUNT(DISTINCT s.id)  AS sessions_total,
