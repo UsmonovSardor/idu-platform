@@ -207,6 +207,8 @@ async function openStudentDetail(id) {
 async function renderDekanatQuestions() {
   await _updateQStats();
   await _renderQTable(_currentQFilter || 'all');
+  // Refresh global DEKANAT_QUESTIONS so student/teacher panels see new questions
+  await loadDekanatQuestions();
 }
 
 async function _updateQStats() {
@@ -491,6 +493,30 @@ function filterQs(filter,el){_currentQFilter=filter;document.querySelectorAll('#
 function renderDekanatSchedule(){const grp=document.getElementById('dekScheduleGroup')?.value||'AI-2301';currentDekScheduleGroup=grp;if(typeof buildTTTable==='function')buildTTTable('dekTTHead','dekTTBody',grp,true);if(typeof renderRoomStatus==='function')renderRoomStatus(grp);}
 function fillDekanat(l,p){const dl=document.getElementById('dLogin');const dp=document.getElementById('dPass');if(dl)dl.value=l;if(dp)dp.value=p;}
 function clearAllDekanatQuestions(){if(!confirm('Hamma savollarni ochirmoqchimisiz?'))return;showToast('ℹ️','Malumot','Savollar faqat API orqali ochirish mumkin');}
-function loadDekanatQuestions(){}
+// Loads all questions from API and populates the global DEKANAT_QUESTIONS
+// array that student/teacher panels read for tests and real exams.
+async function loadDekanatQuestions() {
+  try {
+    const all = await api('GET', '/questions?limit=500');
+    const list = Array.isArray(all) ? all : [];
+    const corrMap = { A: 0, B: 1, C: 2, D: 3 };
+
+    // Transform to the format expected by the exam engine:
+    // { id, subject, type, q, opts:[a,b,c,d], ans }
+    window.DEKANAT_QUESTIONS = list.map(function(q) {
+      return {
+        id:      q.id,
+        subject: q.subject,
+        type:    q.type,
+        q:       q.question_text,
+        opts:    [q.option_a, q.option_b, q.option_c, q.option_d],
+        ans:     corrMap[(q.correct_option || 'A').toUpperCase()] ?? 0,
+        explanation: q.explanation || null,
+      };
+    });
+  } catch(e) {
+    console.warn('loadDekanatQuestions failed:', e.message);
+  }
+}
 function saveDekanatQuestions(){}
 function renderDekanatQuestions_OLD(){}
