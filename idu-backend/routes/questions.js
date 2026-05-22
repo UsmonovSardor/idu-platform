@@ -454,7 +454,8 @@ function parsePdfQuestions(rawText) {
   function strategyMultiLine() {
     const results = [];
     // Block starter: line beginning with a number + punctuation OR "N-savol"
-    const START = /^\s*(\d{1,3})\s*[-.):\s]\s*(?:savol[.\s]*)?\s*(.+)/i;
+    // Also handles "1." with nothing after (question text on next line)
+    const START = /^\s*(\d{1,3})\s*[-.):#\s]\s*(?:savol[.\s]*)?\s*(.*)/i;
     const lines = text.split('\n');
     const blocks = [];
     let cur = null;
@@ -528,10 +529,99 @@ function parsePdfQuestions(rawText) {
     return results;
   }
 
+  // ── STRATEGY 4: standalone option labels (matrix/table PDFs) ────────────────
+  // Handles PDFs where options are just "A", "B", "C", "D" on their own line,
+  // followed by multi-line content (matrices, numbers, formulas).
+  // Question blocks are separated by lines starting with a digit.
+  function strategyStandaloneOptions() {
+    const results = [];
+    const lines = text.split('\n').map(l => l.trim()).filter(Boolean);
+
+    // Standalone option: line is exactly one of A B C D (with optional . ) :)
+    const STANDALONE_OPT = /^([ABCD])\s*[.):]?\s*$/i;
+    // Block start: line begins with a number (question number)
+    const BLOCK_START = /^(\d{1,3})\s*[-.):#\s]/;
+    // Correct answer line
+    const CORR_LINE = /(?:to[''`]?g[''`]?ri|javob|answer|correct)\s*[:=]\s*([ABCD])/i;
+
+    // Split into question blocks
+    const blocks = [];
+    let cur = null;
+    for (const line of lines) {
+      if (BLOCK_START.test(line)) {
+        if (cur) blocks.push(cur);
+        cur = { lines: [line.replace(BLOCK_START, '').trim()] };
+      } else if (cur) {
+        cur.lines.push(line);
+      }
+    }
+    if (cur) blocks.push(cur);
+
+    for (const block of blocks) {
+      const bLines = block.lines;
+      if (!bLines.length) continue;
+
+      // Find where first standalone option appears
+      let firstOptIdx = -1;
+      for (let i = 0; i < bLines.length; i++) {
+        if (STANDALONE_OPT.test(bLines[i])) { firstOptIdx = i; break; }
+      }
+      if (firstOptIdx === -1) continue; // no standalone options → skip
+
+      // Question text = everything before first option (strip box chars, collapse spaces)
+      const qText = bLines.slice(0, firstOptIdx)
+        .join(' ')
+        .replace(/[□■▪▫◻◼]/g, '')
+        .replace(/\s{2,}/g, ' ')
+        .trim();
+      if (!qText || qText.length < 3) continue;
+
+      // Collect option segments
+      const opts = { A: [], B: [], C: [], D: [] };
+      let curOpt = null;
+      let correct = null;
+      let explanation = null;
+
+      for (let i = firstOptIdx; i < bLines.length; i++) {
+        const line = bLines[i];
+        const optM = line.match(STANDALONE_OPT);
+        if (optM) {
+          curOpt = optM[1].toUpperCase();
+          continue;
+        }
+        const corrM = line.match(CORR_LINE);
+        if (corrM) { correct = corrM[1].toUpperCase(); continue; }
+        const izM = line.match(/^(?:izoh|tushuntirish|explanation)\s*[:=]\s*(.+)/i);
+        if (izM) { explanation = izM[1]; continue; }
+        if (curOpt && opts[curOpt] !== undefined) {
+          // Skip lines that are mostly box chars (□□□)
+          const cleaned = line.replace(/[□■▪▫◻◼\s]/g, '');
+          if (cleaned.length > 0) opts[curOpt].push(line.replace(/[□■▪▫◻◼]/g, '').trim());
+        }
+      }
+
+      const optA = opts.A.join(' ').trim();
+      const optB = opts.B.join(' ').trim();
+      if (!optA && !optB) continue; // need at least 2 options
+
+      results.push({
+        text: qText,
+        a: optA || '—',
+        b: optB || '—',
+        c: opts.C.join(' ').trim() || '—',
+        d: opts.D.join(' ').trim() || '—',
+        correct: (['A','B','C','D'].includes(correct)) ? correct : 'A',
+        explanation: explanation || null
+      });
+    }
+    return results;
+  }
+
   // ── Run strategies in order, return first that works ────────────────────────
   let questions = strategyMultiLine();
   if (!questions.length) questions = strategySingleLine();
   if (!questions.length) questions = strategyRegexScan();
+  if (!questions.length) questions = strategyStandaloneOptions();
 
   return questions;
 }
