@@ -3564,6 +3564,55 @@
         &nbsp;&nbsp;• "Jami 20 ta bob" → 20 ta bob (har birida 10)
       </div>
     </div>
+
+    <!-- ── Talabaga ko'rsatish sozlamalari (random + jadval + ruxsat) ──── -->
+    <div style="background:#EEF3FF;border:1px solid #93C5FD;border-radius:10px;padding:12px 14px;margin-bottom:14px">
+      <div style="font-size:12px;font-weight:700;color:#1B4FD8;margin-bottom:8px">🎓 Talabaga ko'rsatish sozlamalari (ixtiyoriy)</div>
+
+      <!-- Random savol soni -->
+      <div style="margin-bottom:10px">
+        <div style="font-size:11px;color:#1E3A8A;margin-bottom:4px">🎲 Har safar tasodifiy nechta savol ko'rsatilsin?</div>
+        <input id="pdfRandomCount" type="number" min="1" max="500" placeholder="Bo'sh = hammasi" style="width:100%;padding:8px 10px;border:1.5px solid #93C5FD;border-radius:8px;font-family:'Outfit',sans-serif;font-size:13px;background:#fff">
+        <div style="font-size:10.5px;color:#475569;margin-top:3px">Masalan: bobda 50 savol bo'lsa, "10" yozsangiz talabaga har safar 10 ta tasodifiy savol chiqadi.</div>
+      </div>
+
+      <!-- Boshlanish / Tugash kalendar -->
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:10px">
+        <div>
+          <div style="font-size:11px;color:#1E3A8A;margin-bottom:4px">📅 Boshlanish</div>
+          <input id="pdfAvailableFrom" type="datetime-local" style="width:100%;padding:8px 10px;border:1.5px solid #93C5FD;border-radius:8px;font-family:'Outfit',sans-serif;font-size:12.5px;background:#fff">
+        </div>
+        <div>
+          <div style="font-size:11px;color:#1E3A8A;margin-bottom:4px">⏳ Tugash</div>
+          <input id="pdfAvailableTo" type="datetime-local" style="width:100%;padding:8px 10px;border:1.5px solid #93C5FD;border-radius:8px;font-family:'Outfit',sans-serif;font-size:12.5px;background:#fff">
+        </div>
+      </div>
+
+      <!-- Kurs / Guruh -->
+      <div style="display:grid;grid-template-columns:1fr 2fr;gap:10px">
+        <div>
+          <div style="font-size:11px;color:#1E3A8A;margin-bottom:4px">👥 Kurs</div>
+          <select id="pdfAllowedYear" style="width:100%;padding:8px 10px;border:1.5px solid #93C5FD;border-radius:8px;font-family:'Outfit',sans-serif;font-size:13px;background:#fff">
+            <option value="">Hammasi</option>
+            <option value="1">1-kurs</option>
+            <option value="2">2-kurs</option>
+            <option value="3">3-kurs</option>
+            <option value="4">4-kurs</option>
+            <option value="5">5-kurs</option>
+            <option value="6">6-kurs</option>
+          </select>
+        </div>
+        <div>
+          <div style="font-size:11px;color:#1E3A8A;margin-bottom:4px">🏷 Guruhlar (vergul bilan)</div>
+          <input id="pdfAllowedGroups" type="text" placeholder="masalan: 101, 102, 201A — bo'sh = hammasi" style="width:100%;padding:8px 10px;border:1.5px solid #93C5FD;border-radius:8px;font-family:'Outfit',sans-serif;font-size:13px;background:#fff">
+        </div>
+      </div>
+
+      <div style="font-size:10.5px;color:#1E3A8A;margin-top:8px;line-height:1.4">
+        ℹ️ Bo'sh qoldirilgan maydonlar — <strong>hech qanday cheklov yo'q</strong> degan ma'noni anglatadi.
+        Qisman to'ldirsangiz, faqat shu shartlar amal qiladi.
+      </div>
+    </div>
     <div style="border:2px dashed #CBD5E1;border-radius:12px;padding:24px;text-align:center;margin-bottom:16px;background:#F8FAFC">
       <div style="font-size:32px;margin-bottom:8px">📄</div>
       <div style="font-size:14px;font-weight:600;margin-bottom:4px">Fayl tanlang</div>
@@ -3756,7 +3805,7 @@
   </div>
 </div>
   <!-- ===== IDU Platform — Modular Architecture ===== -->
-  <script defer src="js/core/config.js?v=20260523o"></script>
+  <script defer src="js/core/config.js?v=20260523p"></script>
   <script defer src="js/core/auth.js?v=20260517d"></script>
   <script defer src="js/core/router.js?v=20260517d"></script>
   <script defer src="js/core/ui-utils.js?v=20260522a"></script>
@@ -3765,13 +3814,13 @@
   <script defer src="js/ui/effects.js?v=20260517d"></script>
   <script defer src="js/pages/student.js?v=20260517d"></script>
   <script defer src="js/pages/teacher.js?v=20260517d"></script>
-  <script defer src="js/pages/dekanat.js?v=20260523o"></script>
+  <script defer src="js/pages/dekanat.js?v=20260523p"></script>
   <script defer src="js/pages/investor.js?v=20260517d"></script>
   <script defer src="js/features/schedule.js?v=20260517d"></script>
   <script defer src="js/features/assignments.js?v=20260517d"></script>
   <script defer src="js/features/grades.js?v=20260517d"></script>
   <script defer src="js/features/ai-chat.js?v=20260520f"></script>
-  <script defer src="js/features/exams.js?v=20260523o"></script>
+  <script defer src="js/features/exams.js?v=20260523p"></script>
   <script defer src="js/features/games.js?v=20260517d"></script>
   <script defer src="js/features/reports.js?v=20260517d"></script>
   <script defer src="js/features/stats.js?v=20260521a"></script>
@@ -4364,12 +4413,12 @@ document.addEventListener('DOMContentLoaded', function () {
 ──────────────────────────────────────────────────────────────────────────── -->
 <script>
 (function () {
-  var EXPECTED = 'v=20260523o';
+  var EXPECTED = 'v=20260523p';
   var dekEl = document.querySelector('script[src*="dekanat.js"]');
   if (dekEl && dekEl.getAttribute('src').indexOf(EXPECTED) === -1) {
     // Old index.html — force a fresh fetch
     var base = window.location.href.split('?')[0].split('#')[0];
-    window.location.replace(base + '?_bust=20260523o' + (window.location.hash || ''));
+    window.location.replace(base + '?_bust=20260523p' + (window.location.hash || ''));
   }
 }());
 </script>

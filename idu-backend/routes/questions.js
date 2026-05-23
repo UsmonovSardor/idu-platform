@@ -23,6 +23,44 @@ async function getValidSubjects() {
   } catch { return FALLBACK_SUBJECTS; }
 }
 
+// ── Helper: fetch the student's profile (year + group) once per request ─────
+async function getStudentProfile(userId) {
+  try {
+    const { rows } = await db.query(
+      `SELECT year_of_study, group_name FROM students WHERE user_id = $1`,
+      [userId]
+    );
+    return rows[0] || {};
+  } catch { return {}; }
+}
+
+// ── Helper: is a chapter visible to this student? ───────────────────────────
+// Returns { visible: bool, settings: {...}|null }
+function isChapterVisibleToStudent(settings, profile, now = new Date()) {
+  if (!settings) return { visible: true, settings: null }; // no rules → open
+  if (settings.available_from && new Date(settings.available_from) > now) return { visible: false, settings };
+  if (settings.available_to   && new Date(settings.available_to)   < now) return { visible: false, settings };
+  if (settings.allowed_year && Number(settings.allowed_year) !== Number(profile.year_of_study || 0)) {
+    return { visible: false, settings };
+  }
+  if (Array.isArray(settings.allowed_groups) && settings.allowed_groups.length > 0) {
+    const g = String(profile.group_name || '').trim();
+    if (!g || !settings.allowed_groups.map(x => String(x).trim()).includes(g)) {
+      return { visible: false, settings };
+    }
+  }
+  return { visible: true, settings };
+}
+
+// Shuffle (Fisher-Yates) — used for random_count slicing
+function shuffleInPlace(arr) {
+  for (let i = arr.length - 1; i > 0; i--) {
+    const j = Math.floor(Math.random() * (i + 1));
+    [arr[i], arr[j]] = [arr[j], arr[i]];
+  }
+  return arr;
+}
+
 // ?? GET /api/questions ????????????????????????????????????????????????????????
 router.get(
   '/',
@@ -60,8 +98,7 @@ router.get(
     const where = 'WHERE ' + conditions.join(' AND ');
     params.push(limit, offset);
 
-    // Use COALESCE for chapter_num in case the column was just added / migration pending
-    const { rows } = await db.query(
+    let { rows } = await db.query(
       `SELECT q.id, q.subject, q.type,
               COALESCE(q.chapter_num, 1) AS chapter_num,
               q.question_text,
@@ -76,10 +113,49 @@ router.get(
       params
     );
 
-    // For student role: hide correct_option and explanation
+    // For students: apply per-chapter visibility (time window + group/year) and random slicing
     if (req.user.role === 'student') {
+      const profile = await getStudentProfile(req.user.id);
+
+      // Load all settings rows for the subject+chapter pairs we have
+      const pairs = [...new Set(rows.map(r => `${r.subject}|${r.chapter_num}`))];
+      let settingsByKey = new Map();
+      if (pairs.length) {
+        try {
+          const subs = [...new Set(rows.map(r => r.subject))];
+          const { rows: sRows } = await db.query(
+            `SELECT subject, chapter_num, random_count, available_from, available_to,
+                    allowed_year, allowed_groups
+             FROM chapter_settings
+             WHERE subject = ANY($1::text[])`,
+            [subs]
+          );
+          sRows.forEach(s => settingsByKey.set(`${s.subject}|${s.chapter_num}`, s));
+        } catch { /* table missing → defaults */ }
+      }
+
+      // Group by (subject, chapter), filter visibility, then random-slice
+      const grouped = new Map(); // key → array of q
+      rows.forEach(q => {
+        const key = `${q.subject}|${q.chapter_num}`;
+        if (!grouped.has(key)) grouped.set(key, []);
+        grouped.get(key).push(q);
+      });
+
+      const out = [];
+      for (const [key, qs] of grouped.entries()) {
+        const settings = settingsByKey.get(key) || null;
+        const { visible } = isChapterVisibleToStudent(settings, profile);
+        if (!visible) continue; // hide entire chapter
+        let arr = qs;
+        if (settings && settings.random_count > 0 && settings.random_count < arr.length) {
+          arr = shuffleInPlace(arr.slice()).slice(0, settings.random_count);
+        }
+        out.push(...arr);
+      }
+
       return res.json(
-        rows.map(q => ({ ...q, correct_option: undefined, explanation: undefined }))
+        out.map(q => ({ ...q, correct_option: undefined, explanation: undefined }))
       );
     }
 
@@ -90,15 +166,114 @@ router.get(
 // ?? GET /api/questions/chapters — list available chapters per subject ??????????
 router.get('/chapters', async (req, res) => {
   const { rows } = await db.query(
-    `SELECT subject, chapter_num,
-            COUNT(*) AS question_count
-     FROM questions
-     WHERE is_active = TRUE
-     GROUP BY subject, chapter_num
-     ORDER BY subject, chapter_num`
-  );
+    `SELECT q.subject, COALESCE(q.chapter_num,1) AS chapter_num,
+            COUNT(*)::int AS question_count,
+            cs.random_count, cs.available_from, cs.available_to,
+            cs.allowed_year, cs.allowed_groups
+     FROM questions q
+     LEFT JOIN chapter_settings cs
+       ON cs.subject = q.subject AND cs.chapter_num = COALESCE(q.chapter_num,1)
+     WHERE q.is_active = TRUE
+     GROUP BY q.subject, q.chapter_num, cs.random_count, cs.available_from,
+              cs.available_to, cs.allowed_year, cs.allowed_groups
+     ORDER BY q.subject, COALESCE(q.chapter_num,1)`
+  ).catch(async () => {
+    // Fallback if chapter_settings table missing
+    return db.query(
+      `SELECT subject, COALESCE(chapter_num,1) AS chapter_num,
+              COUNT(*)::int AS question_count
+       FROM questions WHERE is_active = TRUE
+       GROUP BY subject, chapter_num ORDER BY subject, chapter_num`
+    );
+  });
+
+  // Students: hide chapters they cannot access
+  if (req.user.role === 'student') {
+    const profile = await getStudentProfile(req.user.id);
+    const visible = rows.filter(r => {
+      const settings = {
+        available_from: r.available_from,
+        available_to:   r.available_to,
+        allowed_year:   r.allowed_year,
+        allowed_groups: r.allowed_groups,
+      };
+      return isChapterVisibleToStudent(settings, profile).visible;
+    });
+    return res.json(visible);
+  }
+
   res.json(rows);
 });
+
+// ?? GET /api/questions/chapter-settings — admin view of all settings ────────
+router.get('/chapter-settings',
+  authorize('dekanat', 'admin', 'teacher'),
+  async (req, res) => {
+    try {
+      const { rows } = await db.query(
+        `SELECT subject, chapter_num, random_count, available_from, available_to,
+                allowed_year, allowed_groups, updated_at
+         FROM chapter_settings ORDER BY subject, chapter_num`
+      );
+      res.json(rows);
+    } catch { res.json([]); }
+  }
+);
+
+// ?? PUT /api/questions/chapter-settings — upsert single chapter's rules ─────
+router.put('/chapter-settings',
+  authorize('dekanat', 'admin'),
+  [
+    body('subject').trim().notEmpty(),
+    body('chapter_num').isInt({ min: 1 }).toInt(),
+    body('random_count').optional({ nullable: true }).isInt({ min: 1, max: 1000 }).toInt(),
+    body('available_from').optional({ nullable: true }).isISO8601(),
+    body('available_to').optional({ nullable: true }).isISO8601(),
+    body('allowed_year').optional({ nullable: true }).isInt({ min: 1, max: 6 }).toInt(),
+    body('allowed_groups').optional({ nullable: true }).isArray(),
+  ],
+  validate,
+  async (req, res) => {
+    const { subject, chapter_num, random_count, available_from, available_to,
+            allowed_year, allowed_groups } = req.body;
+    const { rows } = await db.query(
+      `INSERT INTO chapter_settings
+         (subject, chapter_num, random_count, available_from, available_to,
+          allowed_year, allowed_groups, created_by, updated_at)
+       VALUES ($1,$2,$3,$4,$5,$6,$7,$8, NOW())
+       ON CONFLICT (subject, chapter_num) DO UPDATE SET
+         random_count   = EXCLUDED.random_count,
+         available_from = EXCLUDED.available_from,
+         available_to   = EXCLUDED.available_to,
+         allowed_year   = EXCLUDED.allowed_year,
+         allowed_groups = EXCLUDED.allowed_groups,
+         updated_at     = NOW()
+       RETURNING *`,
+      [subject, chapter_num, random_count || null, available_from || null,
+       available_to || null, allowed_year || null,
+       Array.isArray(allowed_groups) && allowed_groups.length ? allowed_groups : null,
+       req.user.id]
+    );
+    res.json(rows[0]);
+  }
+);
+
+// ?? DELETE /api/questions/bulk — wipe all (optionally per subject/chapter) ─
+router.delete('/bulk',
+  authorize('dekanat', 'admin'),
+  async (req, res) => {
+    const { subject, chapter } = req.query;
+    const params = [];
+    let where = 'is_active = TRUE';
+    if (subject) { params.push(subject); where += ` AND subject = $${params.length}`; }
+    if (chapter) { params.push(parseInt(chapter, 10)); where += ` AND chapter_num = $${params.length}`; }
+    const { rowCount } = await db.query(
+      `UPDATE questions SET is_active = FALSE, updated_at = NOW() WHERE ${where}`,
+      params
+    );
+    res.json({ message: 'Savollar o\'chirildi', deleted: rowCount });
+  }
+);
 
 // ?? POST /api/questions ???????????????????????????????????????????????????????
 router.post(
@@ -543,6 +718,62 @@ MATN:\n${textChunk}`
     const chaptersCreated = Math.ceil(inserted.length / CHAPTER_SIZE) || 0;
     if (errors.length) {
       logger.warn(`[upload-pdf] ${errors.length} insert(s) failed. First error: ${errors[0]?.error}`);
+    }
+
+    // ── Persist per-chapter settings (random count, schedule, group access) ──
+    // All optional. When provided, applied to every chapter just created.
+    try {
+      const rndC = parseInt(req.body.randomCount, 10);
+      const avFrom = req.body.availableFrom ? new Date(req.body.availableFrom) : null;
+      const avTo   = req.body.availableTo   ? new Date(req.body.availableTo)   : null;
+      const allowedYear = parseInt(req.body.allowedYear, 10) || null;
+      // allowedGroups arrives as csv "101,102,201A" or JSON array
+      let allowedGroups = req.body.allowedGroups;
+      if (typeof allowedGroups === 'string') {
+        allowedGroups = allowedGroups.split(',').map(s => s.trim()).filter(Boolean);
+      }
+      if (!Array.isArray(allowedGroups) || !allowedGroups.length) allowedGroups = null;
+
+      const hasAnySetting = (rndC > 0) || avFrom || avTo || allowedYear || allowedGroups;
+      if (hasAnySetting && chaptersCreated > 0) {
+        // Ensure table exists (defensive — migration 010 may not have run yet)
+        await db.query(`
+          CREATE TABLE IF NOT EXISTS chapter_settings (
+            id SERIAL PRIMARY KEY,
+            subject VARCHAR(50) NOT NULL,
+            chapter_num INTEGER NOT NULL,
+            random_count INTEGER,
+            available_from TIMESTAMPTZ,
+            available_to TIMESTAMPTZ,
+            allowed_year SMALLINT,
+            allowed_groups TEXT[],
+            created_by INTEGER,
+            created_at TIMESTAMPTZ NOT NULL DEFAULT NOW(),
+            updated_at TIMESTAMPTZ NOT NULL DEFAULT NOW(),
+            UNIQUE(subject, chapter_num)
+          )`).catch(()=>{});
+        for (let c = 0; c < chaptersCreated; c++) {
+          const chNum = startChapter + c;
+          await db.query(
+            `INSERT INTO chapter_settings
+               (subject, chapter_num, random_count, available_from, available_to,
+                allowed_year, allowed_groups, created_by, updated_at)
+             VALUES ($1,$2,$3,$4,$5,$6,$7,$8, NOW())
+             ON CONFLICT (subject, chapter_num) DO UPDATE SET
+               random_count   = EXCLUDED.random_count,
+               available_from = EXCLUDED.available_from,
+               available_to   = EXCLUDED.available_to,
+               allowed_year   = EXCLUDED.allowed_year,
+               allowed_groups = EXCLUDED.allowed_groups,
+               updated_at     = NOW()`,
+            [subject, chNum, rndC > 0 ? rndC : null, avFrom, avTo,
+             allowedYear, allowedGroups, req.user.id]
+          ).catch(err => logger.warn(`[upload-pdf] chapter_settings upsert failed: ${err.message}`));
+        }
+        logger.info(`[upload-pdf] chapter_settings written for chapters ${startChapter}-${startChapter+chaptersCreated-1}`);
+      }
+    } catch (sErr) {
+      logger.warn(`[upload-pdf] chapter_settings block failed: ${sErr.message}`);
     }
     res.status(201).json({
       message: `PDF muvaffaqiyatli qayta ishlandi`,

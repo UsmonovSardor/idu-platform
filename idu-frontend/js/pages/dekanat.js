@@ -547,6 +547,20 @@ async function uploadQuestionsPDF() {
       formData.append('chapterMode', chMode); // 'size' | 'count' | 'auto'
       if (chMode === 'size'  && chVal > 0) formData.append('chapterSize',  chVal);
       if (chMode === 'count' && chVal > 0) formData.append('chapterCount', chVal);
+
+      // Talabaga ko'rsatish sozlamalari (random + jadval + ruxsat) — barchasi ixtiyoriy
+      var _v = function(id){ var el=document.getElementById(id); return el ? el.value.trim() : ''; };
+      var rndCount    = _v('pdfRandomCount');
+      var availFrom   = _v('pdfAvailableFrom');
+      var availTo     = _v('pdfAvailableTo');
+      var allowedYear = _v('pdfAllowedYear');
+      var allowedGrps = _v('pdfAllowedGroups');
+      if (rndCount)    formData.append('randomCount',    rndCount);
+      // datetime-local → ISO (browser local TZ). Backend stores as TIMESTAMPTZ.
+      if (availFrom)   formData.append('availableFrom',  new Date(availFrom).toISOString());
+      if (availTo)     formData.append('availableTo',    new Date(availTo).toISOString());
+      if (allowedYear) formData.append('allowedYear',    allowedYear);
+      if (allowedGrps) formData.append('allowedGroups',  allowedGrps); // server splits csv
       const token = (typeof _apiToken !== 'undefined' && _apiToken) || localStorage.getItem('idu_jwt');
       // Derive upload base from API_BASE so it works on any Railway subdomain
       const _uploadBase = (typeof API_BASE !== 'undefined' && API_BASE.startsWith('http'))
@@ -728,7 +742,15 @@ function filterApps(filter,el){currentAppFilter=filter;document.querySelectorAll
 function filterQs(filter,el){_currentQFilter=filter;document.querySelectorAll('#page-dekanat-questions .filter-chip').forEach(c=>c.classList.remove('active'));if(el)el.classList.add('active');_renderQTable(filter);}
 function renderDekanatSchedule(){const grp=document.getElementById('dekScheduleGroup')?.value||'AI-2301';currentDekScheduleGroup=grp;if(typeof buildTTTable==='function')buildTTTable('dekTTHead','dekTTBody',grp,true);if(typeof renderRoomStatus==='function')renderRoomStatus(grp);}
 function fillDekanat(l,p){const dl=document.getElementById('dLogin');const dp=document.getElementById('dPass');if(dl)dl.value=l;if(dp)dp.value=p;}
-function clearAllDekanatQuestions(){if(!confirm('Hamma savollarni ochirmoqchimisiz?'))return;showToast('ℹ️','Malumot','Savollar faqat API orqali ochirish mumkin');}
+async function clearAllDekanatQuestions(){
+  if(!confirm('DIQQAT: BARCHA savollar (hamma fan, hamma bob) o\'chiriladi. Davom etilsinmi?'))return;
+  if(!confirm('Rostdan ham hammasini o\'chirmoqchimisiz? Bu amal ortga qaytarib bo\'lmaydi.'))return;
+  try {
+    var res = await api('DELETE', '/questions/bulk');
+    showToast('🗑️','Tozalandi', (res.deleted||0)+' ta savol o\'chirildi');
+    renderDekanatQuestions();
+  } catch(e) { showToast('❌','Xato', e.message); }
+}
 // Loads all questions from API and populates the global DEKANAT_QUESTIONS
 // array that student/teacher panels read for tests and real exams.
 async function loadDekanatQuestions() {
