@@ -8,7 +8,7 @@
  */
 'use strict';
 
-const VERSION       = 'v5';
+const VERSION       = 'v6';
 const STATIC_CACHE  = 'idu-static-' + VERSION;
 const IMG_CACHE     = 'idu-img-' + VERSION;
 const SHELL_CACHE   = 'idu-shell-' + VERSION;
