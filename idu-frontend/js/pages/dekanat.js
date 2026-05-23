@@ -28,6 +28,7 @@ async function loadSubjects(force) {
 }
 
 function _fillSubjectDropdowns() {
+  // Fill <select> dropdowns
   var ids = ['pdfSubject','qModalSubject','gradeSubjectFilter','dekGradeSubject'];
   ids.forEach(function(id) {
     var sel = document.getElementById(id);
@@ -36,9 +37,16 @@ function _fillSubjectDropdowns() {
     sel.innerHTML = _subjects.map(function(s) {
       return '<option value="'+s.code+'">'+ s.icon +' '+ s.label +'</option>';
     }).join('');
-    // Restore previous selection if still valid
     if (cur && _subjects.find(function(s){return s.code===cur;})) sel.value = cur;
   });
+
+  // Fill filter chips in questions page
+  var chipsEl = document.getElementById('qf-subjects-chips');
+  if (chipsEl) {
+    chipsEl.innerHTML = _subjects.map(function(s) {
+      return '<button class="filter-chip" onclick="filterQs(\''+s.code+'\',this)">'+s.icon+' '+s.label.split(' ')[0]+'</button>';
+    }).join('');
+  }
 }
 
 function openSubjectsManager() {
@@ -322,10 +330,10 @@ async function openStudentDetail(id) {
 }
 
 async function renderDekanatQuestions() {
+  await loadSubjects();          // fill dropdowns + filter chips
   await _updateQStats();
   await _renderQTable(_currentQFilter || 'all');
-  // Refresh global DEKANAT_QUESTIONS so student/teacher panels see new questions
-  await loadDekanatQuestions();
+  await loadDekanatQuestions();  // sync student/teacher exam engine
 }
 
 async function _updateQStats() {
@@ -379,13 +387,16 @@ async function editQuestion(id) {
   document.getElementById('addQuestionModal').style.display='flex';
 }
 
-function openAddQuestionModal() {
+async function openAddQuestionModal() {
   _editingQId = null;
   ['qModalText','qOpt0','qOpt1','qOpt2','qOpt3','qModalIzoh'].forEach(id=>{const el=document.getElementById(id);if(el)el.value='';});
-  const subj=document.getElementById('qModalSubject'); if(subj)subj.value='algo';
   const type=document.getElementById('qModalType'); if(type)type.value='test';
   const r=document.querySelector('input[name="qModalCorrect"][value="0"]'); if(r)r.checked=true;
   document.getElementById('addQuestionModal').style.display='flex';
+  // Load subjects from DB to fill dropdown
+  await loadSubjects();
+  const subj=document.getElementById('qModalSubject');
+  if(subj && subj.options.length) subj.selectedIndex=0;
 }
 
 async function saveQuestionModal() {
