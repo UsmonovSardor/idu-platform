@@ -4773,10 +4773,15 @@ loadDekanatQuestions();
 // Both test rejim and sesiya now use openRealExam for fullscreen + full security
 var _examSubjectNames = {algo:'Algoritmlar va Dasturlash', ai:"Sun'iy Intellekt", math:'Matematika (AI uchun)', db:"Ma'lumotlar Bazasi", web:'Web Dasturlash'};
 
-startTestWithSubject = function(subj) {
+startTestWithSubject = async function(subj) {
+  // Ensure questions are loaded from DB (handles race condition on page load)
+  if (!DEKANAT_QUESTIONS.length && typeof loadDekanatQuestions === 'function') {
+    await loadDekanatQuestions();
+  }
+
   var dekQs = DEKANAT_QUESTIONS.filter(function(q) { return q.subject === subj && (q.type === 'test' || q.type === 'both'); });
-  var qs = dekQs.length >= 10
-    ? dekQs.slice(0, 20)
+  var qs = dekQs.length > 0
+    ? dekQs.slice(0, 30)
     : (TEST_QUESTIONS_DB[subj] || []).slice(0, 20);
 
   if (!qs.length) { alert('Bu fan uchun test savollari topilmadi'); return; }
