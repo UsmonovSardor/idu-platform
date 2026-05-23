@@ -424,7 +424,12 @@ MATN:\n${textChunk}`
       startChapter,
       insertedIds: inserted,
       aiParsed,
-      errors: errors.length ? errors.slice(0, 5) : undefined  // return up to 5 errors for debugging
+      errors: errors.length ? errors.slice(0, 5) : undefined,
+      debug: {
+        rawLines: rawText.split('\n').filter(Boolean).length,
+        textPreview: rawText.trim().slice(0, 300),
+        firstParsed: questions.slice(0, 2).map(q => ({ q: q.text?.slice(0,60), a: q.a?.slice(0,30) })),
+      }
     });
   }
 );

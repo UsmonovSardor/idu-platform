@@ -520,12 +520,18 @@ async function uploadQuestionsPDF() {
       }
       const aiTag = data.aiParsed ? ' · 🤖 AI' : '';
       const chTag = (data.chaptersCreated || 0) > 0 ? ' · ' + data.chaptersCreated + ' bob' : '';
-      if (!data.inserted && data.parsed > 0) {
+      if (data.inserted > 0) {
+        showToast('✅', 'Yuklandi', data.inserted + ' savol' + chTag + aiTag + ' saqlandi');
+      } else if (data.parsed > 0 && data.inserted === 0) {
         // Parser found questions but none were saved — show the first DB error
         const firstErr = data.errors && data.errors[0] ? data.errors[0].error : 'DB xatosi';
-        showToast('⚠️', 'Diqqat', data.parsed + ' savol topildi, lekin saqlanmadi: ' + firstErr);
+        showToast('❌', 'DB xatosi', data.parsed + ' savol topildi, lekin saqlanmadi. ' + firstErr);
+        console.error('[upload-pdf] Insert errors:', data.errors);
+        console.error('[upload-pdf] Debug:', data.debug);
       } else {
-        showToast('✅', 'Yuklandi', (data.inserted || 0) + ' savol' + chTag + aiTag + ' saqlandi');
+        // 0 parsed — should have been 422, but just in case
+        showToast('⚠️', 'Savol topilmadi', 'PDF formatini tekshiring. ' + (data.debug ? data.debug.rawLines + ' qator o\'qildi' : ''));
+        console.warn('[upload-pdf] Response:', data);
       }
     }
 
