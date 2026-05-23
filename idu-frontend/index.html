@@ -3541,6 +3541,29 @@
       📋 <strong>JSON:</strong> <code>[{"question_text":"...","option_a":"...","option_b":"...","option_c":"...","option_d":"...","correct_option":"A"}]</code><br>
       📐 <strong>LaTeX/Math:</strong> <code>$E=mc^2$ yoki \frac{a}{b}</code> — formulalar avtomatik ko'rsatiladi
     </div>
+    <!-- ── Bob (chapter) bo'lish sozlamalari ────────────────────────────── -->
+    <div style="background:#FEF3C7;border:1px solid #FCD34D;border-radius:10px;padding:12px 14px;margin-bottom:14px">
+      <div style="font-size:12px;font-weight:700;color:#92400E;margin-bottom:8px">📚 Boblarga bo'lish tartibi</div>
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:8px">
+        <div>
+          <div style="font-size:11px;color:#78350F;margin-bottom:4px">Rejim</div>
+          <select id="pdfChapterMode" onchange="(function(v){var l=document.getElementById('pdfChapterValueLabel');var i=document.getElementById('pdfChapterValue');if(v==='size'){l.textContent='Har bobda savollar soni';i.value=i.value||'20';}else if(v==='count'){l.textContent='Jami boblar soni';i.value=i.value||'20';}else{l.textContent='—';i.value='';}})(this.value)" style="width:100%;padding:8px 10px;border:1.5px solid #FCD34D;border-radius:8px;font-family:'Outfit',sans-serif;font-size:13px;background:#fff">
+            <option value="size">🔢 Har bobda N ta savol</option>
+            <option value="count">📦 Jami N ta bob bo'lsin</option>
+            <option value="auto">⚡ Avtomatik (har 20 = 1 bob)</option>
+          </select>
+        </div>
+        <div>
+          <div style="font-size:11px;color:#78350F;margin-bottom:4px" id="pdfChapterValueLabel">Har bobda savollar soni</div>
+          <input id="pdfChapterValue" type="number" min="1" max="500" value="20" style="width:100%;padding:8px 10px;border:1.5px solid #FCD34D;border-radius:8px;font-family:'Outfit',sans-serif;font-size:13px;background:#fff">
+        </div>
+      </div>
+      <div style="font-size:11px;color:#92400E;line-height:1.4">
+        💡 <strong>Misol:</strong> 200 savol yuklasangiz —<br>
+        &nbsp;&nbsp;• "Har bobda 20 ta" → 10 ta bob (har birida 20)<br>
+        &nbsp;&nbsp;• "Jami 20 ta bob" → 20 ta bob (har birida 10)
+      </div>
+    </div>
     <div style="border:2px dashed #CBD5E1;border-radius:12px;padding:24px;text-align:center;margin-bottom:16px;background:#F8FAFC">
       <div style="font-size:32px;margin-bottom:8px">📄</div>
       <div style="font-size:14px;font-weight:600;margin-bottom:4px">Fayl tanlang</div>
@@ -3733,7 +3756,7 @@
   </div>
 </div>
   <!-- ===== IDU Platform — Modular Architecture ===== -->
-  <script defer src="js/core/config.js?v=20260523n"></script>
+  <script defer src="js/core/config.js?v=20260523o"></script>
   <script defer src="js/core/auth.js?v=20260517d"></script>
   <script defer src="js/core/router.js?v=20260517d"></script>
   <script defer src="js/core/ui-utils.js?v=20260522a"></script>
@@ -3742,13 +3765,13 @@
   <script defer src="js/ui/effects.js?v=20260517d"></script>
   <script defer src="js/pages/student.js?v=20260517d"></script>
   <script defer src="js/pages/teacher.js?v=20260517d"></script>
-  <script defer src="js/pages/dekanat.js?v=20260523n"></script>
+  <script defer src="js/pages/dekanat.js?v=20260523o"></script>
   <script defer src="js/pages/investor.js?v=20260517d"></script>
   <script defer src="js/features/schedule.js?v=20260517d"></script>
   <script defer src="js/features/assignments.js?v=20260517d"></script>
   <script defer src="js/features/grades.js?v=20260517d"></script>
   <script defer src="js/features/ai-chat.js?v=20260520f"></script>
-  <script defer src="js/features/exams.js?v=20260523n"></script>
+  <script defer src="js/features/exams.js?v=20260523o"></script>
   <script defer src="js/features/games.js?v=20260517d"></script>
   <script defer src="js/features/reports.js?v=20260517d"></script>
   <script defer src="js/features/stats.js?v=20260521a"></script>
@@ -4341,12 +4364,12 @@ document.addEventListener('DOMContentLoaded', function () {
 ──────────────────────────────────────────────────────────────────────────── -->
 <script>
 (function () {
-  var EXPECTED = 'v=20260523n';
+  var EXPECTED = 'v=20260523o';
   var dekEl = document.querySelector('script[src*="dekanat.js"]');
   if (dekEl && dekEl.getAttribute('src').indexOf(EXPECTED) === -1) {
     // Old index.html — force a fresh fetch
     var base = window.location.href.split('?')[0].split('#')[0];
-    window.location.replace(base + '?_bust=20260523n' + (window.location.hash || ''));
+    window.location.replace(base + '?_bust=20260523o' + (window.location.hash || ''));
   }
 }());
 </script>

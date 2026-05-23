@@ -484,8 +484,30 @@ MATN:\n${textChunk}`
       startChapter = (chRows[0]?.max_ch || 0) + 1;
     } catch (_) { startChapter = 1; }
 
-    // Savollarni bazaga kiritish — har 20 tasi yangi bob (chapter_num)
-    const CHAPTER_SIZE = 20;
+    // ── Bob (chapter) bo'lish strategiyasi ──────────────────────────────
+    // Frontend uchta rejimni jo'natishi mumkin:
+    //   chapterMode='size'  + chapterSize  → har bobda N savol
+    //   chapterMode='count' + chapterCount → jami N ta bob (teng taqsim)
+    //   chapterMode='auto'  (default)      → har 20 savolda 1 bob
+    const chapterMode = String(req.body.chapterMode || 'auto').toLowerCase();
+    const reqSize  = parseInt(req.body.chapterSize,  10);
+    const reqCount = parseInt(req.body.chapterCount, 10);
+
+    // Effective size per chapter (clamped to a sane range)
+    let effectiveSize;
+    if (chapterMode === 'count' && reqCount > 0) {
+      effectiveSize = Math.max(1, Math.ceil(questions.length / reqCount));
+    } else if (chapterMode === 'size' && reqSize > 0) {
+      effectiveSize = reqSize;
+    } else {
+      effectiveSize = 20; // auto / fallback
+    }
+    // Hard guardrails: 1 ≤ size ≤ 1000
+    effectiveSize = Math.min(1000, Math.max(1, effectiveSize));
+
+    logger.info(`[upload-pdf] chapter strategy: mode=${chapterMode} size=${effectiveSize} (${questions.length} questions → ${Math.ceil(questions.length/effectiveSize)} chapters)`);
+
+    const CHAPTER_SIZE = effectiveSize;
     const client = await db.getClient();
     const inserted = [];
     const errors = [];

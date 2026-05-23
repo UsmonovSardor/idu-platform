@@ -540,6 +540,13 @@ async function uploadQuestionsPDF() {
       formData.append('pdf', file);
       formData.append('subject', subject);
       formData.append('type', type || 'test');
+      // Bob bo'lish sozlamalari
+      var chMode  = (document.getElementById('pdfChapterMode')||{}).value || 'auto';
+      var chValRaw= (document.getElementById('pdfChapterValue')||{}).value;
+      var chVal   = parseInt(chValRaw, 10);
+      formData.append('chapterMode', chMode); // 'size' | 'count' | 'auto'
+      if (chMode === 'size'  && chVal > 0) formData.append('chapterSize',  chVal);
+      if (chMode === 'count' && chVal > 0) formData.append('chapterCount', chVal);
       const token = (typeof _apiToken !== 'undefined' && _apiToken) || localStorage.getItem('idu_jwt');
       // Derive upload base from API_BASE so it works on any Railway subdomain
       const _uploadBase = (typeof API_BASE !== 'undefined' && API_BASE.startsWith('http'))
