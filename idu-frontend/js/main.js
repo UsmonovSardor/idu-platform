@@ -704,7 +704,7 @@ function showPage(id){
   else if(id==='my-applications') renderMyApplications();
   else if(id==='dekanat-dashboard') renderDekanatDashboard();
   else if(id==='investor-dashboard') renderInvestorDashboard();
-  else if(id==='sesiya-test') renderSesiyaTest();
+  else if(id==='sesiya-test') { renderSesiyaTest(); if(typeof renderTestSubjectGrid==='function') renderTestSubjectGrid(); }
   else if(id==='sesiya-real') renderSesiyaReal();
   else if(id==='dekanat-sesiya') renderDekanatSesiya();
   // New modules
@@ -4763,42 +4763,223 @@ updateAppStatus = function(id, status) {
 loadApplications();
 
 // ═══════════════════════════════════════════════
-// DEKANAT QUESTIONS — LOCALSTORAGE
+// DEKANAT QUESTIONS — DB backed, chapter-aware
 // ═══════════════════════════════════════════════
 var DEKANAT_QUESTIONS = [];
-// _editingQId, _currentQFilter — dekanat.js da let bilan e'lon qilingan, takrorlanmaydi
-loadDekanatQuestions();
+var DEKANAT_CHAPTERS  = {};   // { subject: { chapterNum: count } }
+var _chapterPickerSubj = null; // currently selected subject in chapter picker
 
-// Override question sources: use dekanat questions when available
-// Both test rejim and sesiya now use openRealExam for fullscreen + full security
-var _examSubjectNames = {algo:'Algoritmlar va Dasturlash', ai:"Sun'iy Intellekt", math:'Matematika (AI uchun)', db:"Ma'lumotlar Bazasi", web:'Web Dasturlash'};
-
-startTestWithSubject = async function(subj) {
-  // Ensure questions are loaded from DB (handles race condition on page load)
-  if (!DEKANAT_QUESTIONS.length && typeof loadDekanatQuestions === 'function') {
+// Load all questions on startup (dekanat.js fills window.DEKANAT_QUESTIONS)
+(async function() {
+  if (typeof loadDekanatQuestions === 'function') {
     await loadDekanatQuestions();
+    renderTestSubjectGrid();
+  }
+})();
+
+// ── Subject display helpers ──────────────────────────────────────────────────
+var _examSubjectNames = {
+  algo: 'Algoritmlar va Dasturlash',
+  ai:   "Sun'iy Intellekt",
+  math: 'Matematika',
+  db:   "Ma'lumotlar Bazasi",
+  web:  'Web Dasturlash',
+};
+var _examSubjectIcons = {
+  algo:'💻', ai:'🤖', math:'📐', db:'🗄️', web:'🌐',
+};
+var _examSubjectColors = {
+  algo:'#1B4FD8', ai:'#7C3AED', math:'#059669', db:'#EA580C', web:'#0891B2',
+};
+
+// ── Render dynamic subject grid ──────────────────────────────────────────────
+function renderTestSubjectGrid() {
+  var grid = document.getElementById('testSubjectGrid');
+  if (!grid) return;
+
+  // Subjects that have questions in DB
+  var dbSubjects = Object.keys(window.DEKANAT_CHAPTERS || {});
+
+  // Merge with dynamic _subjects (from dekanat.js)
+  var allSubjects = (typeof _subjects !== 'undefined' && _subjects.length)
+    ? _subjects
+    : dbSubjects.map(function(code) {
+        return { code: code, label: _examSubjectNames[code] || code, icon: _examSubjectIcons[code] || '📚' };
+      });
+
+  // Always include subjects that have DB questions (may not be in _subjects yet)
+  dbSubjects.forEach(function(code) {
+    if (!allSubjects.find(function(s) { return s.code === code; })) {
+      allSubjects.push({ code: code, label: _examSubjectNames[code] || code, icon: _examSubjectIcons[code] || '📚' });
+    }
+  });
+
+  if (!allSubjects.length) {
+    grid.innerHTML = '<div style="text-align:center;color:#94A3B8;padding:30px;grid-column:1/-1;font-size:13px">📭 Hali savollar yuklanmagan</div>';
+    return;
   }
 
-  var dekQs = DEKANAT_QUESTIONS.filter(function(q) { return q.subject === subj && (q.type === 'test' || q.type === 'both'); });
-  var qs = dekQs.length > 0
-    ? dekQs.slice(0, 30)
-    : (TEST_QUESTIONS_DB[subj] || []).slice(0, 20);
+  var chs = window.DEKANAT_CHAPTERS || {};
+  grid.innerHTML = allSubjects.map(function(s) {
+    var chMap   = chs[s.code] || {};
+    var chCount = Object.keys(chMap).length;
+    var qTotal  = Object.values(chMap).reduce(function(a, b) { return a + b; }, 0);
+    var color   = _examSubjectColors[s.code] || '#1B4FD8';
+    var colorLight = color + '18';
+    var meta = chCount > 0
+      ? chCount + ' bob · ' + qTotal + ' savol'
+      : '20 savol · 30 daqiqa';
+    var badge = chCount > 0
+      ? '<div style="margin-top:8px;padding:4px 10px;background:' + colorLight + ';border-radius:20px;font-size:11px;font-weight:700;color:' + color + ';display:inline-block">' + chCount + ' ta bob</div>'
+      : '<div style="margin-top:8px;padding:4px 10px;background:' + colorLight + ';border-radius:20px;font-size:11px;font-weight:700;color:' + color + ';display:inline-block">Boshlash →</div>';
 
-  if (!qs.length) { alert('Bu fan uchun test savollari topilmadi'); return; }
+    return '<div onclick="startTestWithSubject(\'' + s.code + '\')" '
+      + 'style="background:white;border:2px solid #E2E8F0;border-radius:14px;padding:20px;cursor:pointer;transition:all 0.18s;text-align:center" '
+      + 'onmouseover="this.style.borderColor=\'' + color + '\';this.style.transform=\'translateY(-2px)\';this.style.boxShadow=\'0 6px 20px ' + color + '22\'" '
+      + 'onmouseout="this.style.borderColor=\'#E2E8F0\';this.style.transform=\'\';this.style.boxShadow=\'\'">'
+      + '<div style="font-size:32px;margin-bottom:10px">' + s.icon + '</div>'
+      + '<div style="font-size:14px;font-weight:800;color:#0F172A">' + s.label + '</div>'
+      + '<div style="font-size:12px;color:#64748B;margin-top:4px">' + meta + '</div>'
+      + badge
+      + '</div>';
+  }).join('');
+}
 
-  _currentTestSubject = subj;
-  _currentTestQuestions = qs;
-  _testAnswers = {};
+// ── Show chapter picker for a subject ───────────────────────────────────────
+function showChapterPicker(subj) {
+  _chapterPickerSubj = subj;
+
+  // Find subject label/icon
+  var subList = (typeof _subjects !== 'undefined') ? _subjects : [];
+  var subjObj = subList.find(function(s) { return s.code === subj; }) || {};
+  var icon    = subjObj.icon || _examSubjectIcons[subj] || '📚';
+  var label   = subjObj.label || _examSubjectNames[subj] || subj;
+  var color   = _examSubjectColors[subj] || '#1B4FD8';
+
+  var nameEl = document.getElementById('chapterPickerSubjName');
+  var metaEl = document.getElementById('chapterPickerSubjMeta');
+  if (nameEl) nameEl.textContent = icon + ' ' + label;
+
+  var chMap = (window.DEKANAT_CHAPTERS || {})[subj] || {};
+  var chapters = Object.keys(chMap).map(Number).sort(function(a,b){return a-b;});
+  var totalQ = Object.values(chMap).reduce(function(a,b){return a+b;},0);
+  if (metaEl) metaEl.textContent = chapters.length + ' bob · ' + totalQ + ' ta savol';
+
+  // Build chapter cards
+  var grid = document.getElementById('chapterCardsGrid');
+  if (grid) {
+    if (!chapters.length) {
+      grid.innerHTML = '<div style="text-align:center;color:#94A3B8;padding:20px;grid-column:1/-1">Bu fan uchun savollar topilmadi</div>';
+    } else {
+      grid.innerHTML = chapters.map(function(ch) {
+        var cnt = chMap[ch] || 0;
+        return '<div onclick="startTestWithChapter(\'' + subj + '\',' + ch + ')" '
+          + 'style="background:white;border:2px solid #E2E8F0;border-radius:14px;padding:16px;cursor:pointer;text-align:center;transition:all 0.15s" '
+          + 'onmouseover="this.style.borderColor=\'' + color + '\';this.style.background=\'#F8FAFF\'" '
+          + 'onmouseout="this.style.borderColor=\'#E2E8F0\';this.style.background=\'white\'">'
+          + '<div style="font-size:24px;margin-bottom:6px">📖</div>'
+          + '<div style="font-size:14px;font-weight:800;color:#0F172A">Bob ' + ch + '</div>'
+          + '<div style="font-size:11px;color:#64748B;margin-top:3px">' + cnt + ' ta savol</div>'
+          + '<div style="margin-top:8px;padding:4px 10px;background:#EEF3FF;border-radius:20px;font-size:11px;font-weight:700;color:' + color + ';display:inline-block">Boshlash →</div>'
+          + '</div>';
+      }).join('');
+    }
+  }
+
+  // Switch views
+  document.getElementById('stest-instructions').style.display = 'none';
+  document.getElementById('stest-chapters').style.display     = 'block';
+}
+
+function backToSubjectGrid() {
+  document.getElementById('stest-chapters').style.display    = 'none';
+  document.getElementById('stest-instructions').style.display = 'block';
+}
+
+// ── Start exam for a specific chapter (or random if chapterNum === 0) ────────
+function startTestWithChapter(subj, chapterNum) {
+  var dekQs = DEKANAT_QUESTIONS.filter(function(q) {
+    return q.subject === subj && (q.type === 'test' || q.type === 'both');
+  });
+
+  var pool;
+  if (chapterNum === 0) {
+    // Random 20 from all chapters
+    pool = dekQs.slice();
+    // Fisher-Yates shuffle
+    for (var i = pool.length - 1; i > 0; i--) {
+      var j = Math.floor(Math.random() * (i + 1));
+      var tmp = pool[i]; pool[i] = pool[j]; pool[j] = tmp;
+    }
+    pool = pool.slice(0, 20);
+  } else {
+    pool = dekQs.filter(function(q) { return q.chapter_num === chapterNum; });
+  }
+
+  // Fallback: built-in questions
+  if (!pool.length) pool = (TEST_QUESTIONS_DB[subj] || []).slice(0, 20);
+  if (!pool.length) { alert('Bu bob uchun savollar topilmadi'); return; }
+
+  var subList = (typeof _subjects !== 'undefined') ? _subjects : [];
+  var subjObj = subList.find(function(s) { return s.code === subj; }) || {};
+  var icon    = subjObj.icon || _examSubjectIcons[subj] || '📚';
+  var label   = subjObj.label || _examSubjectNames[subj] || subj;
+  var chapName = chapterNum === 0 ? '🎲 Aralash' : 'Bob ' + chapterNum;
+
+  _currentTestSubject    = subj;
+  _currentTestQuestions  = pool;
+  _testAnswers           = {};
 
   openRealExam({
-    id: 'test_' + subj + '_' + Date.now(),
-    questions: qs,
+    id: 'test_' + subj + '_ch' + chapterNum + '_' + Date.now(),
+    questions: pool,
     duration: 30 * 60,
     maxWarnings: 2,
     maxSuspicion: 200,
     isTestMode: true,
-    subjectName: _examSubjectNames[subj] || subj,
+    subjectName: icon + ' ' + label + ' — ' + chapName,
   });
+}
+
+// ── Override: startTestWithSubject now shows chapter picker if chapters exist ─
+startTestWithSubject = async function(subj) {
+  // Ensure questions loaded
+  if (!DEKANAT_QUESTIONS.length && typeof loadDekanatQuestions === 'function') {
+    await loadDekanatQuestions();
+    renderTestSubjectGrid();
+  }
+
+  var chMap = (window.DEKANAT_CHAPTERS || {})[subj] || {};
+  var chCount = Object.keys(chMap).length;
+
+  if (chCount > 1) {
+    // Multiple chapters: show chapter picker
+    showChapterPicker(subj);
+  } else if (chCount === 1) {
+    // Only one chapter: start directly
+    var chNum = parseInt(Object.keys(chMap)[0], 10);
+    startTestWithChapter(subj, chNum);
+  } else {
+    // No DB questions: use built-in questions or show chapter picker with fallback
+    var builtIn = (TEST_QUESTIONS_DB[subj] || []).slice(0, 20);
+    if (!builtIn.length) { showToast('ℹ️', 'Savollar', 'Bu fan uchun savollar topilmadi'); return; }
+
+    _currentTestSubject   = subj;
+    _currentTestQuestions = builtIn;
+    _testAnswers          = {};
+
+    var subList = (typeof _subjects !== 'undefined') ? _subjects : [];
+    var subjObj = subList.find(function(s) { return s.code === subj; }) || {};
+    openRealExam({
+      id: 'test_' + subj + '_' + Date.now(),
+      questions: builtIn,
+      duration: 30 * 60,
+      maxWarnings: 2,
+      maxSuspicion: 200,
+      isTestMode: true,
+      subjectName: (subjObj.icon || '📚') + ' ' + (subjObj.label || _examSubjectNames[subj] || subj),
+    });
+  }
 };
 
 startRealWithSubject = async function(subj) {
@@ -4815,6 +4996,8 @@ startRealWithSubject = async function(subj) {
         });
         _currentRealSubject = subj;
         _currentRealQuestions = apiQs;
+        var subList2 = (typeof _subjects !== 'undefined') ? _subjects : [];
+        var sObj2 = subList2.find(function(s) { return s.code === subj; }) || {};
         openRealExam({
           id: started.attemptId,
           questions: apiQs,
@@ -4824,7 +5007,7 @@ startRealWithSubject = async function(subj) {
           isTestMode: false,
           isRealSesiya: true,
           subject: subj,
-          subjectName: _examSubjectNames[subj] || subj,
+          subjectName: (sObj2.label || _examSubjectNames[subj] || subj),
         });
         return;
       }
@@ -4834,7 +5017,13 @@ startRealWithSubject = async function(subj) {
   // Mahalliy savollar bilan (sesiya ochilmagan yoki API yo'q)
   var qs;
   if (dekQs.length >= 20) {
-    qs = dekQs.slice(0, 30);
+    // Random 30 from all chapters
+    var shuffled = dekQs.slice();
+    for (var si = shuffled.length - 1; si > 0; si--) {
+      var sj = Math.floor(Math.random() * (si + 1));
+      var st = shuffled[si]; shuffled[si] = shuffled[sj]; shuffled[sj] = st;
+    }
+    qs = shuffled.slice(0, 30);
   } else {
     qs = [];
     for (var i = 0; i < 30; i++) qs.push(baseQs[i % baseQs.length]);
@@ -4844,6 +5033,8 @@ startRealWithSubject = async function(subj) {
   _currentRealQuestions = qs;
   _realAnswers = {};
 
+  var subList3 = (typeof _subjects !== 'undefined') ? _subjects : [];
+  var sObj3 = subList3.find(function(s) { return s.code === subj; }) || {};
   openRealExam({
     id: 'local_real_' + subj + '_' + Date.now(),
     questions: qs,
@@ -4853,7 +5044,7 @@ startRealWithSubject = async function(subj) {
     isTestMode: true,
     isRealSesiya: true,
     subject: subj,
-    subjectName: (_examSubjectNames[subj] || subj) + ' — Mashq sesiyasi',
+    subjectName: (sObj3.label || _examSubjectNames[subj] || subj) + ' — Mashq sesiyasi',
   });
 };
 
@@ -4902,10 +5093,14 @@ function _updateQStats() {
   var testQ = DEKANAT_QUESTIONS.filter(function(q) { return q.type === 'test' || q.type === 'both'; }).length;
   var realQ = DEKANAT_QUESTIONS.filter(function(q) { return q.type === 'real' || q.type === 'both'; }).length;
   var subjs = [...new Set(DEKANAT_QUESTIONS.map(function(q) { return q.subject; }))].length;
-  var e1 = document.getElementById('qStatTotal'); if(e1) e1.textContent = total;
-  var e2 = document.getElementById('qStatTest'); if(e2) e2.textContent = testQ;
-  var e3 = document.getElementById('qStatReal'); if(e3) e3.textContent = realQ;
+  // Chapter count across all subjects
+  var chapSet = new Set(DEKANAT_QUESTIONS.map(function(q) { return q.subject + '_' + q.chapter_num; }));
+  var chaps = chapSet.size;
+  var e1 = document.getElementById('qStatTotal');    if(e1) e1.textContent = total;
+  var e2 = document.getElementById('qStatTest');     if(e2) e2.textContent = testQ;
+  var e3 = document.getElementById('qStatReal');     if(e3) e3.textContent = realQ;
   var e4 = document.getElementById('qStatSubjects'); if(e4) e4.textContent = subjs;
+  var e5 = document.getElementById('qStatChapters'); if(e5) e5.textContent = chaps;
 }
 
 function filterQs(filter, el) {
@@ -4919,7 +5114,7 @@ function _renderQTable(filter) {
   var qs = [...DEKANAT_QUESTIONS];
   if (filter === 'test') qs = qs.filter(function(q) { return q.type === 'test' || q.type === 'both'; });
   else if (filter === 'real') qs = qs.filter(function(q) { return q.type === 'real' || q.type === 'both'; });
-  else if (['algo','ai','math','db','web'].includes(filter)) qs = qs.filter(function(q) { return q.subject === filter; });
+  else if (filter && filter !== 'all' && filter !== 'test' && filter !== 'real') qs = qs.filter(function(q) { return q.subject === filter; });
   var tbody = document.getElementById('questionsTableBody');
   if (!tbody) return;
   if (!qs.length) {
@@ -4927,9 +5122,10 @@ function _renderQTable(filter) {
     return;
   }
   tbody.innerHTML = qs.map(function(q, i) {
+    var chBadge = q.chapter_num ? '<span style="padding:2px 6px;background:#FEF3C7;border-radius:5px;font-size:10.5px;font-weight:700;color:#D97706">Bob ' + q.chapter_num + '</span>' : '';
     return '<tr>' +
       '<td><strong>' + (i+1) + '</strong></td>' +
-      '<td><span style="padding:3px 8px;background:#EEF3FF;border-radius:6px;font-size:11.5px;font-weight:700;color:#1B4FD8">' + (SUBJ_LABELS[q.subject] || q.subject) + '</span></td>' +
+      '<td><span style="padding:3px 8px;background:#EEF3FF;border-radius:6px;font-size:11.5px;font-weight:700;color:#1B4FD8">' + (SUBJ_LABELS[q.subject] || q.subject) + '</span>' + (chBadge ? '&nbsp;' + chBadge : '') + '</td>' +
       '<td><span style="padding:3px 8px;border-radius:6px;font-size:11.5px;font-weight:700;background:' + (q.type==='test'?'#DCFCE7':q.type==='real'?'#FEE2E2':'#F3E8FF') + ';color:' + (q.type==='test'?'#16A34A':q.type==='real'?'#DC2626':'#7C3AED') + '">' + (TYPE_LABELS[q.type] || q.type) + '</span></td>' +
       '<td style="max-width:300px"><div style="font-weight:600;font-size:13px;line-height:1.4">' + q.q.substring(0,80) + (q.q.length>80?'...':'') + '</div>' +
         '<div style="font-size:11px;color:#64748B;margin-top:3px">✅ ' + (q.opts[q.ans]||'').substring(0,50) + '</div></td>' +

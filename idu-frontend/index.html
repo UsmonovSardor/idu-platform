@@ -3236,38 +3236,34 @@
       </div>
     </div>
 
+    <!-- Dynamic subject grid: populated by renderTestSubjectGrid() in main.js -->
     <div style="font-size:16px;font-weight:800;color:#0F172A;margin-bottom:16px">📚 Fanni tanlang:</div>
-    <div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(220px,1fr));gap:14px;margin-bottom:24px">
-      <div onclick="startTestWithSubject('algo')" style="background:white;border:2px solid #E2E8F0;border-radius:14px;padding:20px;cursor:pointer;transition:all 0.18s;text-align:center" onmouseover="this.style.borderColor='#1B4FD8';this.style.transform='translateY(-2px)';this.style.boxShadow='0 6px 20px rgba(27,79,216,0.12)'" onmouseout="this.style.borderColor='#E2E8F0';this.style.transform='';this.style.boxShadow=''">
-        <div style="font-size:32px;margin-bottom:10px">💻</div>
-        <div style="font-size:14px;font-weight:800;color:#0F172A">Algoritmlar va Dasturlash</div>
-        <div style="font-size:12px;color:#64748B;margin-top:4px">20 savol · 30 daqiqa</div>
-        <div style="margin-top:10px;padding:5px 12px;background:#EEF3FF;border-radius:20px;font-size:11px;font-weight:700;color:#1B4FD8;display:inline-block">Boshlash →</div>
+    <div id="testSubjectGrid" style="display:grid;grid-template-columns:repeat(auto-fill,minmax(200px,1fr));gap:14px;margin-bottom:24px">
+      <!-- Loaded dynamically -->
+      <div style="text-align:center;color:#94A3B8;padding:30px;grid-column:1/-1;font-size:13px">⏳ Fanlar yuklanmoqda...</div>
+    </div>
+  </div>
+
+  <!-- PHASE 1b: CHAPTER PICKER (after subject selected) -->
+  <div id="stest-chapters" style="display:none">
+    <div style="display:flex;align-items:center;gap:12px;margin-bottom:20px">
+      <button onclick="backToSubjectGrid()" style="background:#F1F5F9;border:none;padding:8px 14px;border-radius:10px;font-family:'Outfit',sans-serif;font-size:13px;font-weight:700;color:#475569;cursor:pointer">← Ortga</button>
+      <div>
+        <div style="font-size:18px;font-weight:800;color:#0F172A" id="chapterPickerSubjName">Fan</div>
+        <div style="font-size:12px;color:#64748B" id="chapterPickerSubjMeta">Bobni tanlang</div>
       </div>
-      <div onclick="startTestWithSubject('ai')" style="background:white;border:2px solid #E2E8F0;border-radius:14px;padding:20px;cursor:pointer;transition:all 0.18s;text-align:center" onmouseover="this.style.borderColor='#7C3AED';this.style.transform='translateY(-2px)';this.style.boxShadow='0 6px 20px rgba(124,58,237,0.12)'" onmouseout="this.style.borderColor='#E2E8F0';this.style.transform='';this.style.boxShadow=''">
-        <div style="font-size:32px;margin-bottom:10px">🤖</div>
-        <div style="font-size:14px;font-weight:800;color:#0F172A">Sun'iy Intellekt</div>
-        <div style="font-size:12px;color:#64748B;margin-top:4px">20 savol · 30 daqiqa</div>
-        <div style="margin-top:10px;padding:5px 12px;background:#F3E8FF;border-radius:20px;font-size:11px;font-weight:700;color:#7C3AED;display:inline-block">Boshlash →</div>
+    </div>
+    <!-- Random 20 shortcut -->
+    <div onclick="startTestWithChapter(_chapterPickerSubj, 0)" style="background:linear-gradient(135deg,#1B4FD8,#4338CA);border-radius:14px;padding:16px 20px;cursor:pointer;display:flex;align-items:center;justify-content:space-between;margin-bottom:16px;transition:transform 0.15s" onmouseover="this.style.transform='translateY(-2px)'" onmouseout="this.style.transform=''">
+      <div>
+        <div style="color:#fff;font-size:15px;font-weight:800">🎲 Aralash 20 savol</div>
+        <div style="color:rgba(255,255,255,0.75);font-size:12px;margin-top:2px">Barcha boblardan tasodifiy</div>
       </div>
-      <div onclick="startTestWithSubject('math')" style="background:white;border:2px solid #E2E8F0;border-radius:14px;padding:20px;cursor:pointer;transition:all 0.18s;text-align:center" onmouseover="this.style.borderColor='#059669';this.style.transform='translateY(-2px)';this.style.boxShadow='0 6px 20px rgba(5,150,105,0.12)'" onmouseout="this.style.borderColor='#E2E8F0';this.style.transform='';this.style.boxShadow=''">
-        <div style="font-size:32px;margin-bottom:10px">📐</div>
-        <div style="font-size:14px;font-weight:800;color:#0F172A">Matematika (AI uchun)</div>
-        <div style="font-size:12px;color:#64748B;margin-top:4px">20 savol · 30 daqiqa</div>
-        <div style="margin-top:10px;padding:5px 12px;background:#DCFCE7;border-radius:20px;font-size:11px;font-weight:700;color:#059669;display:inline-block">Boshlash →</div>
-      </div>
-      <div onclick="startTestWithSubject('db')" style="background:white;border:2px solid #E2E8F0;border-radius:14px;padding:20px;cursor:pointer;transition:all 0.18s;text-align:center" onmouseover="this.style.borderColor='#EA580C';this.style.transform='translateY(-2px)';this.style.boxShadow='0 6px 20px rgba(234,88,12,0.12)'" onmouseout="this.style.borderColor='#E2E8F0';this.style.transform='';this.style.boxShadow=''">
-        <div style="font-size:32px;margin-bottom:10px">🗄️</div>
-        <div style="font-size:14px;font-weight:800;color:#0F172A">Ma'lumotlar Bazasi</div>
-        <div style="font-size:12px;color:#64748B;margin-top:4px">20 savol · 30 daqiqa</div>
-        <div style="margin-top:10px;padding:5px 12px;background:#FFF7ED;border-radius:20px;font-size:11px;font-weight:700;color:#EA580C;display:inline-block">Boshlash →</div>
-      </div>
-      <div onclick="startTestWithSubject('web')" style="background:white;border:2px solid #E2E8F0;border-radius:14px;padding:20px;cursor:pointer;transition:all 0.18s;text-align:center" onmouseover="this.style.borderColor='#0891B2';this.style.transform='translateY(-2px)';this.style.boxShadow='0 6px 20px rgba(8,145,178,0.12)'" onmouseout="this.style.borderColor='#E2E8F0';this.style.transform='';this.style.boxShadow=''">
-        <div style="font-size:32px;margin-bottom:10px">🌐</div>
-        <div style="font-size:14px;font-weight:800;color:#0F172A">Web Dasturlash</div>
-        <div style="font-size:12px;color:#64748B;margin-top:4px">20 savol · 30 daqiqa</div>
-        <div style="margin-top:10px;padding:5px 12px;background:#ECFEFF;border-radius:20px;font-size:11px;font-weight:700;color:#0891B2;display:inline-block">Boshlash →</div>
-      </div>
+      <div style="color:#fff;font-size:22px">→</div>
+    </div>
+    <!-- Chapter cards grid -->
+    <div id="chapterCardsGrid" style="display:grid;grid-template-columns:repeat(auto-fill,minmax(160px,1fr));gap:12px">
+      <!-- filled dynamically -->
     </div>
   </div>
 
@@ -3469,6 +3465,7 @@
     <div class="stat-card"><div class="stat-card-top"><div class="stat-card-label">Test savollari</div><div class="stat-card-icon" style="background:#DCFCE7">🧪</div></div><div class="stat-card-val" style="color:var(--green)" id="qStatTest">0</div><div class="stat-card-change sc-flat">Mashq uchun</div><div class="stat-card-bar scb-green"></div></div>
     <div class="stat-card"><div class="stat-card-top"><div class="stat-card-label">Sesiya savollari</div><div class="stat-card-icon" style="background:#FEE2E2">📋</div></div><div class="stat-card-val" style="color:var(--red)" id="qStatReal">0</div><div class="stat-card-change sc-flat">Rasmiy imtihon</div><div class="stat-card-bar scb-red"></div></div>
     <div class="stat-card"><div class="stat-card-top"><div class="stat-card-label">Fanlar</div><div class="stat-card-icon" style="background:#F3E8FF">📚</div></div><div class="stat-card-val" style="color:var(--purple)" id="qStatSubjects">0</div><div class="stat-card-change sc-flat">Aktiv fanlar</div><div class="stat-card-bar scb-purple"></div></div>
+    <div class="stat-card"><div class="stat-card-top"><div class="stat-card-label">Boblar</div><div class="stat-card-icon" style="background:#FEF3C7">📖</div></div><div class="stat-card-val" style="color:#D97706" id="qStatChapters">0</div><div class="stat-card-change sc-flat">Jami boblar</div><div class="stat-card-bar" style="background:linear-gradient(90deg,#F59E0B,#D97706)"></div></div>
   </div>
 
   <!-- Filter row -->
@@ -3746,7 +3743,7 @@
   <script defer src="js/ui/effects.js?v=20260517d"></script>
   <script defer src="js/pages/student.js?v=20260517d"></script>
   <script defer src="js/pages/teacher.js?v=20260517d"></script>
-  <script defer src="js/pages/dekanat.js?v=20260522d"></script>
+  <script defer src="js/pages/dekanat.js?v=20260523b"></script>
   <script defer src="js/pages/investor.js?v=20260517d"></script>
   <script defer src="js/features/schedule.js?v=20260517d"></script>
   <script defer src="js/features/assignments.js?v=20260517d"></script>
@@ -3762,7 +3759,7 @@
   <script defer src="js/features/gamification.js?v=20260520f"></script>
   <script defer src="js/pages/rector.js?v=20260520f"></script>
   <script defer src="js/features/teacher-exams.js?v=20260520f"></script>
-  <script defer src="js/main.js?v=20260522b"></script>
+  <script defer src="js/main.js?v=20260523a"></script>
   <script defer src="js/enhancements.js?v=20260520f"></script>
   <!-- QR code generator (teacher) -->
   <script defer src="https://cdn.jsdelivr.net/npm/qrcodejs@1.0.0/qrcode.min.js" crossorigin="anonymous"></script>

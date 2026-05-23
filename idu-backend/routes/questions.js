@@ -29,12 +29,14 @@ router.get(
   [
     query('subject').optional(),
     query('type').optional().isIn(VALID_TYPES),
+    query('chapter').optional().isInt({ min: 1 }).toInt(),
     query('page').optional().isInt({ min: 1 }).toInt(),
-    query('limit').optional().isInt({ min: 1, max: 1000 }).toInt(),
+    query('limit').optional().isInt({ min: 1, max: 5000 }).toInt(),
   ],
   validate,
   async (req, res) => {
     const { subject, type } = req.query;
+    const chapter = req.query.chapter || null;
     const page   = req.query.page  || 1;
     const limit  = req.query.limit || 50;
     const offset = (page - 1) * limit;
@@ -50,25 +52,28 @@ router.get(
       params.push(type);
       conditions.push(`(q.type = $${params.length} OR q.type = 'both')`);
     }
+    if (chapter) {
+      params.push(chapter);
+      conditions.push(`q.chapter_num = $${params.length}`);
+    }
 
     const where = 'WHERE ' + conditions.join(' AND ');
     params.push(limit, offset);
 
     const { rows } = await db.query(
-      `SELECT q.id, q.subject, q.type, q.question_text,
+      `SELECT q.id, q.subject, q.type, q.chapter_num, q.question_text,
               q.option_a, q.option_b, q.option_c, q.option_d,
               q.correct_option, q.explanation,
               u.full_name AS created_by_name, q.created_at
        FROM questions q
        LEFT JOIN users u ON u.id = q.created_by
        ${where}
-       ORDER BY q.subject, q.created_at DESC
+       ORDER BY q.subject, q.chapter_num, q.id ASC
        LIMIT $${params.length - 1} OFFSET $${params.length}`,
       params
     );
 
-    // For student role: hide correct_option and explanation while exam is active
-    // (Exam endpoint handles this; here we only return full data to dekanat/teacher)
+    // For student role: hide correct_option and explanation
     if (req.user.role === 'student') {
       return res.json(
         rows.map(q => ({ ...q, correct_option: undefined, explanation: undefined }))
@@ -78,6 +83,19 @@ router.get(
     res.json(rows);
   }
 );
+
+// ?? GET /api/questions/chapters — list available chapters per subject ??????????
+router.get('/chapters', async (req, res) => {
+  const { rows } = await db.query(
+    `SELECT subject, chapter_num,
+            COUNT(*) AS question_count
+     FROM questions
+     WHERE is_active = TRUE
+     GROUP BY subject, chapter_num
+     ORDER BY subject, chapter_num`
+  );
+  res.json(rows);
+});
 
 // ?? POST /api/questions ???????????????????????????????????????????????????????
 router.post(
@@ -174,7 +192,7 @@ router.post(
   '/bulk',
   authorize('dekanat', 'admin'),
   [
-    body('questions').isArray({ min: 1, max: 100 }).withMessage('Provide 1-100 questions'),
+    body('questions').isArray({ min: 1, max: 500 }).withMessage('Provide 1-500 questions'),
     body('questions.*.subject').optional().trim(),
     body('questions.*.type').isIn(VALID_TYPES),
     body('questions.*.questionText').isLength({ min: 10, max: 2000 }).trim(),
@@ -338,22 +356,35 @@ MATN:\n${textChunk}`
       });
     }
 
-    // Savollarni bazaga kiritish
+    // Determine starting chapter_num: find max chapter already in DB for this subject
+    let startChapter = 1;
+    try {
+      const { rows: chRows } = await db.query(
+        `SELECT COALESCE(MAX(chapter_num), 0) AS max_ch FROM questions WHERE subject = $1 AND is_active = TRUE`,
+        [subject]
+      );
+      startChapter = (chRows[0]?.max_ch || 0) + 1;
+    } catch (_) { startChapter = 1; }
+
+    // Savollarni bazaga kiritish — har 20 tasi yangi bob (chapter_num)
+    const CHAPTER_SIZE = 20;
     const client = await db.getClient();
     const inserted = [];
     const errors = [];
 
     try {
       await client.query('BEGIN');
-      for (const q of questions) {
+      for (let i = 0; i < questions.length; i++) {
+        const q = questions[i];
+        const chapterNum = startChapter + Math.floor(i / CHAPTER_SIZE);
         try {
           const { rows } = await client.query(
             `INSERT INTO questions
-               (subject, type, question_text, option_a, option_b, option_c, option_d,
+               (subject, type, chapter_num, question_text, option_a, option_b, option_c, option_d,
                 correct_option, explanation, created_by)
-             VALUES ($1,$2,$3,$4,$5,$6,$7,$8,$9,$10)
+             VALUES ($1,$2,$3,$4,$5,$6,$7,$8,$9,$10,$11)
              RETURNING id`,
-            [subject, type, q.text, q.a, q.b, q.c, q.d,
+            [subject, type, chapterNum, q.text, q.a, q.b, q.c, q.d,
              q.correct, q.explanation || null, req.user.id]
           );
           inserted.push(rows[0].id);
@@ -369,11 +400,14 @@ MATN:\n${textChunk}`
       client.release();
     }
 
+    const chaptersCreated = Math.ceil(questions.length / CHAPTER_SIZE);
     res.status(201).json({
       message: `PDF muvaffaqiyatli qayta ishlandi`,
       parsed: questions.length,
       inserted: inserted.length,
       failed: errors.length,
+      chaptersCreated,
+      startChapter,
       insertedIds: inserted,
       aiParsed,
       errors: errors.length ? errors : undefined
@@ -525,24 +559,22 @@ router.post(
 //   • multi-line blocks          • single-line blocks
 //   • "1.", "1)", "1-savol."    • Cyrillic А/Б/В/Г options
 //   • To'g'ri / Javob / Answer  • ✓ / * markers in options
+//   • Matrix/table PDFs         • chapter-separated PDFs
 function parsePdfQuestions(rawText) {
   if (!rawText) return [];
 
   // ── normalise text ──────────────────────────────────────────────────────────
   const text = rawText
     .replace(/\r\n/g, '\n').replace(/\r/g, '\n').replace(/\f/g, '\n')
-    // collapse multiple blank lines
     .replace(/\n{3,}/g, '\n\n');
 
   // ── shared helpers ──────────────────────────────────────────────────────────
-  // Cyrillic option letters → Latin
-  const CYR = { 'А':'A','Б':'B','В':'B','Г':'C','С':'C','Д':'D','а':'A','б':'B','в':'B','г':'C','с':'C','д':'D' };
+  const CYR = { 'А':'A','Б':'B','В':'C','Г':'D','С':'C','Д':'D','а':'A','б':'B','в':'C','г':'D','с':'C','д':'D' };
   const normLetter = ch => CYR[ch] || ch.toUpperCase();
 
   // Option line: A) A. A: (A) А) etc.
   const OPT_RE = /^[(]?\s*([AaBbCcDdАБВГ])\s*[.):\-]\s*(.+)/;
 
-  // Correct-answer markers
   const CORR_RE = [
     /(?:to[''`'′]?[gġ][''`'′]?ri|tog[''`'′]?ri|togri|javob|answer|correct|to['']g['']ri|правильн(?:ый|о|ая)?)\s*[:=]\s*([ABCD])/i,
     /\bjavob\s*[:=]\s*([ABCD])/i,
@@ -551,9 +583,9 @@ function parsePdfQuestions(rawText) {
     /✓\s*([ABCD])|([ABCD])\s*✓/,
   ];
 
-  function findCorrect(text) {
+  function findCorrect(txt) {
     for (const re of CORR_RE) {
-      const m = text.match(re);
+      const m = txt.match(re);
       if (m) return normLetter(m[1] || m[2] || '');
     }
     return null;
@@ -574,7 +606,7 @@ function parsePdfQuestions(rawText) {
     }
 
     const qText = qParts.join(' ').replace(/\s+/g, ' ').trim();
-    if (!qText) return null;
+    if (!qText || qText.length < 3) return null;
 
     let a, b, c, d, correct, explanation;
 
@@ -584,7 +616,6 @@ function parsePdfQuestions(rawText) {
       if (optM) {
         const letter = normLetter(optM[1]);
         const val = optM[2].trim();
-        // Check for ✓ marker inside option value
         if (/✓|\*/.test(val) && !correct) correct = letter;
         const cleaned = val.replace(/[*✓]/g, '').trim();
         if (letter === 'A') a = cleaned;
@@ -599,7 +630,7 @@ function parsePdfQuestions(rawText) {
       if (izM) explanation = izM[1].trim();
     }
 
-    if (!a && !b) return null; // need at least 2 options
+    if (!a && !b) return null;
     return {
       text: qText,
       a: a || '—', b: b || '—', c: c || '—', d: d || '—',
@@ -609,14 +640,19 @@ function parsePdfQuestions(rawText) {
   }
 
   // ── STRATEGY 1: multi-line blocks (standard format) ─────────────────────────
+  // KEY FIX: removed \s from delimiter class — only punctuation triggers new block.
+  // This prevents "33 ta" or page numbers like "34" from splitting blocks.
+  // Also increased gap tolerance from 10 → 100 to handle chapter restarts.
   function strategyMultiLine() {
     const results = [];
-    // Block starter: line beginning with a number + punctuation OR "N-savol"
-    // Also handles "1." with nothing after (question text on next line)
-    const START = /^\s*(\d{1,3})\s*[-.):#\s]\s*(?:savol[.\s]*)?\s*(.*)/i;
+    // Delimiter MUST be punctuation (., ), :, -, #) — NOT a plain space.
+    // This is the critical fix: \s was causing "number + space" to split mid-question.
+    const START = /^\s*(\d{1,3})\s*[-.):#]\s*(?:savol[.\s]*)?\s*(.*)/i;
     const lines = text.split('\n');
     const blocks = [];
     let cur = null;
+    let lastNum = 0;
+    let globalMax = 0;
 
     for (const line of lines) {
       const trimmed = line.trim();
@@ -624,10 +660,19 @@ function parsePdfQuestions(rawText) {
       const m = trimmed.match(START);
       if (m) {
         const num = parseInt(m[1], 10);
-        const last = cur ? cur.num : 0;
-        if (!cur || num === 1 || num === last + 1 || (num > last && num <= last + 10)) {
+        // Accept as new question block if:
+        // - It's the very first block
+        // - Resets to 1 (new chapter/section starts)
+        // - Is sequential (±1) or within reasonable gap (up to 100)
+        // - Is greater than the global max seen (handles large gaps in numbering)
+        const isReset   = num === 1 && lastNum > 5;      // new section
+        const isSeq     = num > lastNum && num <= lastNum + 100;
+        const isFirst   = cur === null;
+        if (isFirst || isReset || isSeq) {
           if (cur) blocks.push(cur);
-          cur = { num, lines: [m[2].trim()] };
+          cur = { num, lines: m[2].trim() ? [m[2].trim()] : [] };
+          lastNum = num;
+          if (num > globalMax) globalMax = num;
           continue;
         }
       }
@@ -643,10 +688,8 @@ function parsePdfQuestions(rawText) {
   }
 
   // ── STRATEGY 2: single-line scan (PDF flattened everything to one line) ─────
-  // Splits by question number pattern embedded in continuous text
   function strategySingleLine() {
     const results = [];
-    // Split on question number patterns embedded in text
     const parts = text
       .replace(/\n/g, ' ')
       .split(/(?=\s\d{1,3}\s*[.)]\s)/);
@@ -654,9 +697,7 @@ function parsePdfQuestions(rawText) {
     for (const part of parts) {
       const trimmed = part.trim();
       if (!trimmed) continue;
-      // Remove leading number
       const noNum = trimmed.replace(/^\d{1,3}\s*[.)]\s*/, '');
-      // Split on option markers and correct-answer markers
       const subLines = noNum
         .split(/\s+(?=[ABCDАБВГabcdабвг]\s*[.):]|\bTo[''']?g|togri|javob|answer|correct)/i)
         .map(s => s.trim()).filter(Boolean);
@@ -667,11 +708,9 @@ function parsePdfQuestions(rawText) {
   }
 
   // ── STRATEGY 3: regex scan across entire text (last resort) ─────────────────
-  // Looks for the pattern: question text + A)...B)...C)...D)...[correct marker]
   function strategyRegexScan() {
     const results = [];
     const flat = text.replace(/\n/g, ' ').replace(/\s{2,}/g, ' ');
-    // Matches: (optional number.) question A) ... B) ... C) ... D) ... [To'g'ri: X]
     const Q_PATTERN = /(?:\d{1,3}\s*[.)]\s*)?(.+?)\s+[АA]\s*[.)]\s*(.+?)\s+[ВB]\s*[.)]\s*(.+?)\s+[СC]\s*[.)]\s*(.+?)\s+[ДD]\s*[.)]\s*(.+?)(?:\s+(?:To[''']?g[''']?ri|Javob|Answer|Correct|Правильн[ыо]й?)\s*[:=]\s*([ABCD]))?(?=\s+\d{1,3}\s*[.)]|$)/gi;
     let m;
     while ((m = Q_PATTERN.exec(flat)) !== null) {
@@ -688,21 +727,14 @@ function parsePdfQuestions(rawText) {
   }
 
   // ── STRATEGY 4: standalone option labels (matrix/table PDFs) ────────────────
-  // Handles PDFs where options are just "A", "B", "C", "D" on their own line,
-  // followed by multi-line content (matrices, numbers, formulas).
-  // Question blocks are separated by lines starting with a digit.
   function strategyStandaloneOptions() {
     const results = [];
     const lines = text.split('\n').map(l => l.trim()).filter(Boolean);
 
-    // Standalone option: line is exactly one of A B C D (with optional . ) :)
     const STANDALONE_OPT = /^([ABCD])\s*[.):]?\s*$/i;
-    // Block start: line begins with a number (question number)
-    const BLOCK_START = /^(\d{1,3})\s*[-.):#\s]/;
-    // Correct answer line
+    const BLOCK_START = /^(\d{1,3})\s*[-.):#]/;
     const CORR_LINE = /(?:to[''`]?g[''`]?ri|javob|answer|correct)\s*[:=]\s*([ABCD])/i;
 
-    // Split into question blocks
     const blocks = [];
     let cur = null;
     for (const line of lines) {
@@ -719,14 +751,12 @@ function parsePdfQuestions(rawText) {
       const bLines = block.lines;
       if (!bLines.length) continue;
 
-      // Find where first standalone option appears
       let firstOptIdx = -1;
       for (let i = 0; i < bLines.length; i++) {
         if (STANDALONE_OPT.test(bLines[i])) { firstOptIdx = i; break; }
       }
-      if (firstOptIdx === -1) continue; // no standalone options → skip
+      if (firstOptIdx === -1) continue;
 
-      // Question text = everything before first option (strip box chars, collapse spaces)
       const qText = bLines.slice(0, firstOptIdx)
         .join(' ')
         .replace(/[□■▪▫◻◼]/g, '')
@@ -734,7 +764,6 @@ function parsePdfQuestions(rawText) {
         .trim();
       if (!qText || qText.length < 3) continue;
 
-      // Collect option segments
       const opts = { A: [], B: [], C: [], D: [] };
       let curOpt = null;
       let correct = null;
@@ -743,16 +772,12 @@ function parsePdfQuestions(rawText) {
       for (let i = firstOptIdx; i < bLines.length; i++) {
         const line = bLines[i];
         const optM = line.match(STANDALONE_OPT);
-        if (optM) {
-          curOpt = optM[1].toUpperCase();
-          continue;
-        }
+        if (optM) { curOpt = optM[1].toUpperCase(); continue; }
         const corrM = line.match(CORR_LINE);
         if (corrM) { correct = corrM[1].toUpperCase(); continue; }
         const izM = line.match(/^(?:izoh|tushuntirish|explanation)\s*[:=]\s*(.+)/i);
         if (izM) { explanation = izM[1]; continue; }
         if (curOpt && opts[curOpt] !== undefined) {
-          // Skip lines that are mostly box chars (□□□)
           const cleaned = line.replace(/[□■▪▫◻◼\s]/g, '');
           if (cleaned.length > 0) opts[curOpt].push(line.replace(/[□■▪▫◻◼]/g, '').trim());
         }
@@ -760,12 +785,11 @@ function parsePdfQuestions(rawText) {
 
       const optA = opts.A.join(' ').trim();
       const optB = opts.B.join(' ').trim();
-      if (!optA && !optB) continue; // need at least 2 options
+      if (!optA && !optB) continue;
 
       results.push({
         text: qText,
-        a: optA || '—',
-        b: optB || '—',
+        a: optA || '—', b: optB || '—',
         c: opts.C.join(' ').trim() || '—',
         d: opts.D.join(' ').trim() || '—',
         correct: (['A','B','C','D'].includes(correct)) ? correct : 'A',
@@ -775,11 +799,38 @@ function parsePdfQuestions(rawText) {
     return results;
   }
 
-  // ── Run strategies in order, return first that works ────────────────────────
+  // ── Run all strategies; merge unique results ─────────────────────────────────
+  // This ensures questions from different sections/chapters are all captured,
+  // even when different parts of the PDF use different formatting.
+  function dedupByText(arr) {
+    const seen = new Set();
+    return arr.filter(q => {
+      const key = q.text.slice(0, 60).toLowerCase();
+      if (seen.has(key)) return false;
+      seen.add(key);
+      return true;
+    });
+  }
+
   let questions = strategyMultiLine();
-  if (!questions.length) questions = strategySingleLine();
-  if (!questions.length) questions = strategyRegexScan();
-  if (!questions.length) questions = strategyStandaloneOptions();
+
+  // If strategy 1 gave too few results, supplement with other strategies
+  if (questions.length < 10) {
+    const s2 = strategySingleLine();
+    const s3 = strategyRegexScan();
+    const s4 = strategyStandaloneOptions();
+    const merged = dedupByText([...questions, ...s2, ...s3, ...s4]);
+    if (merged.length > questions.length) questions = merged;
+  }
+
+  // If still nothing, try all strategies merged
+  if (!questions.length) {
+    questions = dedupByText([
+      ...strategySingleLine(),
+      ...strategyRegexScan(),
+      ...strategyStandaloneOptions(),
+    ]);
+  }
 
   return questions;
 }

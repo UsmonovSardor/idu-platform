@@ -479,8 +479,9 @@ async function uploadQuestionsPDF() {
         const aiNote = data.aiAttempted ? ' (AI ham urinib ko\'rdi)' : '';
         throw new Error((data.error || 'Fayl yuklashda xato') + lines + aiNote + hint);
       }
-      const aiTag = data.aiParsed ? ' (🤖 AI bilan)' : '';
-      showToast('✅', 'Yuklandi', (data.inserted || 0) + ' savol kiritildi' + aiTag);
+      const aiTag = data.aiParsed ? ' · 🤖 AI' : '';
+      const chTag = data.chaptersCreated > 1 ? ' · ' + data.chaptersCreated + ' bob' : '';
+      showToast('✅', 'Yuklandi', (data.inserted || 0) + ' savol' + chTag + aiTag + ' saqlandi');
     }
 
     if (fileInput) fileInput.value = '';
@@ -636,22 +637,32 @@ function clearAllDekanatQuestions(){if(!confirm('Hamma savollarni ochirmoqchimis
 // array that student/teacher panels read for tests and real exams.
 async function loadDekanatQuestions() {
   try {
-    const all = await api('GET', '/questions?limit=500');
+    // Load ALL questions (up to 5000) so students see all uploaded chapters
+    const all = await api('GET', '/questions?limit=5000');
     const list = Array.isArray(all) ? all : [];
     const corrMap = { A: 0, B: 1, C: 2, D: 3 };
 
     // Transform to the format expected by the exam engine:
-    // { id, subject, type, q, opts:[a,b,c,d], ans }
+    // { id, subject, type, chapter_num, q, opts:[a,b,c,d], ans }
     window.DEKANAT_QUESTIONS = list.map(function(q) {
       return {
-        id:      q.id,
-        subject: q.subject,
-        type:    q.type,
-        q:       q.question_text,
-        opts:    [q.option_a, q.option_b, q.option_c, q.option_d],
-        ans:     corrMap[(q.correct_option || 'A').toUpperCase()] ?? 0,
+        id:          q.id,
+        subject:     q.subject,
+        type:        q.type,
+        chapter_num: q.chapter_num || 1,
+        q:           q.question_text,
+        opts:        [q.option_a, q.option_b, q.option_c, q.option_d],
+        ans:         corrMap[(q.correct_option || 'A').toUpperCase()] ?? 0,
         explanation: q.explanation || null,
       };
+    });
+
+    // Also cache chapter map: { 'math': {1:20, 2:20, ...}, ... }
+    window.DEKANAT_CHAPTERS = {};
+    window.DEKANAT_QUESTIONS.forEach(function(q) {
+      if (!window.DEKANAT_CHAPTERS[q.subject]) window.DEKANAT_CHAPTERS[q.subject] = {};
+      var ch = q.chapter_num || 1;
+      window.DEKANAT_CHAPTERS[q.subject][ch] = (window.DEKANAT_CHAPTERS[q.subject][ch] || 0) + 1;
     });
   } catch(e) {
     console.warn('loadDekanatQuestions failed:', e.message);
