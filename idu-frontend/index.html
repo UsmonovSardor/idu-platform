@@ -9,6 +9,8 @@
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
 <meta name="apple-mobile-web-app-title" content="IDU">
+<!-- API base: always same-origin — overrides any config.js hostname detection -->
+<meta name="api-base" content="/api/v1">
 <title>IDU — International Digital University</title>
 <link rel="manifest" href="/manifest.json">
 <!-- Performance hints — open connections to CDNs early in parallel with HTML parse -->
@@ -3731,7 +3733,7 @@
   </div>
 </div>
   <!-- ===== IDU Platform — Modular Architecture ===== -->
-  <script defer src="js/core/config.js?v=20260523l"></script>
+  <script defer src="js/core/config.js?v=20260523m"></script>
   <script defer src="js/core/auth.js?v=20260517d"></script>
   <script defer src="js/core/router.js?v=20260517d"></script>
   <script defer src="js/core/ui-utils.js?v=20260522a"></script>
@@ -3740,7 +3742,7 @@
   <script defer src="js/ui/effects.js?v=20260517d"></script>
   <script defer src="js/pages/student.js?v=20260517d"></script>
   <script defer src="js/pages/teacher.js?v=20260517d"></script>
-  <script defer src="js/pages/dekanat.js?v=20260523l"></script>
+  <script defer src="js/pages/dekanat.js?v=20260523m"></script>
   <script defer src="js/pages/investor.js?v=20260517d"></script>
   <script defer src="js/features/schedule.js?v=20260517d"></script>
   <script defer src="js/features/assignments.js?v=20260517d"></script>
@@ -4339,12 +4341,12 @@ document.addEventListener('DOMContentLoaded', function () {
 ──────────────────────────────────────────────────────────────────────────── -->
 <script>
 (function () {
-  var EXPECTED = 'v=20260523l';
+  var EXPECTED = 'v=20260523m';
   var dekEl = document.querySelector('script[src*="dekanat.js"]');
   if (dekEl && dekEl.getAttribute('src').indexOf(EXPECTED) === -1) {
     // Old index.html — force a fresh fetch
     var base = window.location.href.split('?')[0].split('#')[0];
-    window.location.replace(base + '?_bust=20260523l' + (window.location.hash || ''));
+    window.location.replace(base + '?_bust=20260523m' + (window.location.hash || ''));
   }
 }());
 </script>
