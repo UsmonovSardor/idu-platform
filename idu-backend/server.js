@@ -38,6 +38,7 @@ const documentsRoutes   = require('./routes/documents');
 const rectorRoutes      = require('./routes/rector');
 const teacherExamsRoutes= require('./routes/teacherExams');
 const auditLogRoutes    = require('./routes/auditLog');
+const subjectsRoutes    = require('./routes/subjects');
 const { audit }         = require('./middleware/audit');
 
 const app = express();
@@ -219,6 +220,7 @@ const routeMap = [
   ['/rector',        rectorRoutes],
   ['/teacher-exams', teacherExamsRoutes],
   ['/audit-log',     auditLogRoutes],
+  ['/subjects',      subjectsRoutes],
 ];
 
 routeMap.forEach(([path, router]) => {

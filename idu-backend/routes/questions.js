@@ -11,14 +11,23 @@ const { logger }            = require('../middleware/logger');
 const router = express.Router();
 router.use(authenticate);
 
-const VALID_SUBJECTS = ['algo', 'ai', 'math', 'db', 'web'];
-const VALID_TYPES    = ['test', 'real', 'both'];
+// VALID_SUBJECTS is now loaded dynamically from DB (see getValidSubjects())
+// Kept as fallback in case DB is unavailable
+const FALLBACK_SUBJECTS = ['algo', 'ai', 'math', 'db', 'web'];
+const VALID_TYPES       = ['test', 'real', 'both'];
+
+async function getValidSubjects() {
+  try {
+    const { rows } = await db.query(`SELECT code FROM subjects WHERE is_active = TRUE`);
+    return rows.map(r => r.code);
+  } catch { return FALLBACK_SUBJECTS; }
+}
 
 // ?? GET /api/questions ????????????????????????????????????????????????????????
 router.get(
   '/',
   [
-    query('subject').optional().isIn(VALID_SUBJECTS),
+    query('subject').optional(),
     query('type').optional().isIn(VALID_TYPES),
     query('page').optional().isInt({ min: 1 }).toInt(),
     query('limit').optional().isInt({ min: 1, max: 1000 }).toInt(),
@@ -75,7 +84,7 @@ router.post(
   '/',
   authorize('dekanat', 'admin'),
   [
-    body('subject').isIn(VALID_SUBJECTS).withMessage('Invalid subject'),
+    body('subject').trim().notEmpty().withMessage('Fan tanlang'),
     body('type').isIn(VALID_TYPES).withMessage('Invalid type'),
     body('questionText').isLength({ min: 10, max: 2000 }).trim().withMessage('Question text required (10-2000 chars)'),
     body('optionA').isLength({ min: 1, max: 500 }).trim(),
@@ -106,7 +115,7 @@ router.put(
   authorize('dekanat', 'admin'),
   [
     param('id').isInt({ min: 1 }).toInt(),
-    body('subject').optional().isIn(VALID_SUBJECTS),
+    body('subject').optional().trim(),
     body('type').optional().isIn(VALID_TYPES),
     body('questionText').optional().isLength({ min: 10, max: 2000 }).trim(),
     body('optionA').optional().isLength({ min: 1, max: 500 }).trim(),
@@ -166,7 +175,7 @@ router.post(
   authorize('dekanat', 'admin'),
   [
     body('questions').isArray({ min: 1, max: 100 }).withMessage('Provide 1-100 questions'),
-    body('questions.*.subject').isIn(VALID_SUBJECTS),
+    body('questions.*.subject').optional().trim(),
     body('questions.*.type').isIn(VALID_TYPES),
     body('questions.*.questionText').isLength({ min: 10, max: 2000 }).trim(),
     body('questions.*.optionA').isLength({ min: 1, max: 500 }).trim(),
@@ -244,7 +253,7 @@ router.post(
     upload(req, res, next);
   },
   [
-    require('express-validator').body('subject').isIn(VALID_SUBJECTS).withMessage('Noto\'g\'ri fan'),
+    require('express-validator').body('subject').trim().notEmpty().withMessage('Fan tanlang'),
     require('express-validator').body('type').isIn(VALID_TYPES).withMessage('Noto\'g\'ri tur'),
   ],
   validate,
@@ -381,7 +390,6 @@ router.post(
     if (!rawText || rawText.trim().length < 20) {
       return res.status(400).json({ error: 'rawText bo\'sh yoki juda qisqa' });
     }
-    const VALID_SUBJECTS = ['algo','ai','math','db','web','matematika','Matematika'];
     const VALID_TYPES    = ['test','real','both'];
 
     // Use existing OpenAI key
@@ -481,9 +489,8 @@ router.post(
   authorize('dekanat', 'admin', 'teacher'),
   async (req, res) => {
     const { subject, type, questions } = req.body;
-    const VALID_SUBJECTS = ['algo','ai','math','db','web'];
     const VALID_TYPES = ['test','real','both'];
-    if (!VALID_SUBJECTS.includes(subject)) return res.status(400).json({ error: 'Noto\'g\'ri fan' });
+    if (!subject || !subject.trim()) return res.status(400).json({ error: 'Fan tanlang' });
     if (!VALID_TYPES.includes(type)) return res.status(400).json({ error: 'Noto\'g\'ri tur' });
     if (!Array.isArray(questions) || !questions.length) return res.status(400).json({ error: 'questions massivi bo\'sh' });
 

@@ -10,6 +10,123 @@ let _currentQFilter = 'all';
 var SUBJ_LABELS = {algo:'💻 Algo', ai:'🤖 AI', math:'📐 Math', db:'🗄️ DB', web:'🌐 Web'};
 var TYPE_LABELS = {test:'🧪 Test', real:'📋 Sesiya', both:'📝 Ikkalasi'};
 
+// ── Subjects: dynamic load & management ──────────────────────────────────────
+var _subjects = []; // cached from API
+
+async function loadSubjects(force) {
+  if (_subjects.length && !force) return _subjects;
+  try {
+    const rows = await api('GET', '/subjects');
+    _subjects = Array.isArray(rows) ? rows : [];
+    // Rebuild SUBJ_LABELS from DB
+    SUBJ_LABELS = {};
+    _subjects.forEach(function(s) { SUBJ_LABELS[s.code] = s.icon + ' ' + s.label; });
+    // Fill all subject dropdowns
+    _fillSubjectDropdowns();
+  } catch(e) { console.warn('loadSubjects failed:', e.message); }
+  return _subjects;
+}
+
+function _fillSubjectDropdowns() {
+  var ids = ['pdfSubject','qModalSubject','gradeSubjectFilter','dekGradeSubject'];
+  ids.forEach(function(id) {
+    var sel = document.getElementById(id);
+    if (!sel) return;
+    var cur = sel.value;
+    sel.innerHTML = _subjects.map(function(s) {
+      return '<option value="'+s.code+'">'+ s.icon +' '+ s.label +'</option>';
+    }).join('');
+    // Restore previous selection if still valid
+    if (cur && _subjects.find(function(s){return s.code===cur;})) sel.value = cur;
+  });
+}
+
+function openSubjectsManager() {
+  var existing = document.getElementById('subjectsMgrModal');
+  if (existing) { existing.style.display='flex'; _renderSubjectsList(); return; }
+
+  var modal = document.createElement('div');
+  modal.id = 'subjectsMgrModal';
+  modal.style.cssText = 'position:fixed;top:0;left:0;width:100%;height:100%;background:rgba(0,0,0,0.5);z-index:4000;display:flex;align-items:center;justify-content:center';
+  modal.onclick = function(e){ if(e.target===modal) modal.style.display='none'; };
+  modal.innerHTML = `
+    <div style="background:white;border-radius:18px;padding:28px;width:500px;max-width:95vw;max-height:85vh;overflow-y:auto">
+      <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:20px">
+        <div style="font-size:18px;font-weight:800;color:#0F172A">📚 Fanlarni boshqarish</div>
+        <button onclick="document.getElementById('subjectsMgrModal').style.display='none'" style="background:none;border:none;font-size:20px;cursor:pointer;color:#94A3B8">✕</button>
+      </div>
+      <div id="subjectsList" style="margin-bottom:16px"></div>
+      <div style="border-top:1.5px solid #E2E8F0;padding-top:16px">
+        <div style="font-size:13px;font-weight:700;color:#1E293B;margin-bottom:10px">➕ Yangi fan qo'shish</div>
+        <div style="display:grid;grid-template-columns:80px 1fr 60px;gap:8px;margin-bottom:8px">
+          <input id="newSubjIcon"  placeholder="Emoji" value="📚" style="padding:9px;border:1.5px solid #E2E8F0;border-radius:8px;font-size:16px;text-align:center;outline:none">
+          <input id="newSubjLabel" placeholder="Fan nomi (masalan: Fizika)" style="padding:9px;border:1.5px solid #E2E8F0;border-radius:8px;font-size:13px;outline:none">
+          <input id="newSubjCode"  placeholder="kod" style="padding:9px;border:1.5px solid #E2E8F0;border-radius:8px;font-size:12px;outline:none">
+        </div>
+        <div style="font-size:11px;color:#94A3B8;margin-bottom:10px">Kod: faqat kichik harf va _ (masalan: fizika, chizmachilik)</div>
+        <button onclick="addNewSubject()" style="width:100%;padding:11px;background:linear-gradient(135deg,#1B4FD8,#3B82F6);color:white;border:none;border-radius:10px;font-size:14px;font-weight:700;cursor:pointer;font-family:'Outfit',sans-serif">➕ Qo'shish</button>
+      </div>
+    </div>`;
+  document.body.appendChild(modal);
+  _renderSubjectsList();
+}
+
+async function _renderSubjectsList() {
+  await loadSubjects(true);
+  var list = document.getElementById('subjectsList');
+  if (!list) return;
+  if (!_subjects.length) { list.innerHTML='<div style="text-align:center;color:#94A3B8;padding:20px">Fanlar yo\'q</div>'; return; }
+  list.innerHTML = _subjects.map(function(s) {
+    return `<div style="display:flex;align-items:center;gap:10px;padding:10px 12px;background:#F8FAFC;border-radius:10px;margin-bottom:8px">
+      <span style="font-size:20px">${s.icon}</span>
+      <div style="flex:1">
+        <div style="font-weight:700;font-size:13px;color:#0F172A">${s.label}</div>
+        <div style="font-size:11px;color:#94A3B8">kod: <code>${s.code}</code></div>
+      </div>
+      <button onclick="editSubject(${s.id},'${s.code}','${s.label.replace(/'/g,"\\'")}','${s.icon}')"
+        style="padding:5px 10px;background:#EEF3FF;border:none;border-radius:6px;color:#1B4FD8;font-size:12px;cursor:pointer">✏️</button>
+      <button onclick="deleteSubject(${s.id},'${s.label.replace(/'/g,"\\'")}')"
+        style="padding:5px 10px;background:#FEE2E2;border:none;border-radius:6px;color:#DC2626;font-size:12px;cursor:pointer">🗑️</button>
+    </div>`;
+  }).join('');
+}
+
+async function addNewSubject() {
+  var icon  = (document.getElementById('newSubjIcon')?.value || '📚').trim();
+  var label = (document.getElementById('newSubjLabel')?.value || '').trim();
+  var code  = (document.getElementById('newSubjCode')?.value || '').trim().toLowerCase();
+  if (!label) { showToast('⚠️','Xato','Fan nomini kiriting'); return; }
+  if (!code)  { code = label.toLowerCase().replace(/[^a-z0-9]/g,'_').replace(/__+/g,'_').slice(0,20); }
+  try {
+    await api('POST', '/subjects', { code, label, icon });
+    document.getElementById('newSubjLabel').value='';
+    document.getElementById('newSubjCode').value='';
+    document.getElementById('newSubjIcon').value='📚';
+    await _renderSubjectsList();
+    showToast('✅','Qo\'shildi', label + ' qo\'shildi');
+  } catch(e) { showToast('❌','Xato', e.message); }
+}
+
+async function editSubject(id, code, label, icon) {
+  var newLabel = prompt('Fan nomini o\'zgartiring:', label);
+  if (!newLabel || newLabel.trim()===label) return;
+  var newIcon  = prompt('Emoji:', icon) || icon;
+  try {
+    await api('PUT', '/subjects/'+id, { label: newLabel.trim(), icon: newIcon });
+    await _renderSubjectsList();
+    showToast('✅','Yangilandi', newLabel);
+  } catch(e) { showToast('❌','Xato', e.message); }
+}
+
+async function deleteSubject(id, label) {
+  if (!confirm('"'+label+'" fanini o\'chirmoqchimisiz?\nBu fandagi savollar o\'chib ketmaydi.')) return;
+  try {
+    await api('DELETE', '/subjects/'+id);
+    await _renderSubjectsList();
+    showToast('🗑️','O\'chirildi', label);
+  } catch(e) { showToast('❌','Xato', e.message); }
+}
+
 async function renderDekanatDashboard() {
   // Fetch all data in parallel
   const [allStudents, teachers, attStats, grades] = await Promise.all([
@@ -381,7 +498,7 @@ function parseTxtQuestions(text) {
   return questions;
 }
 
-function openPdfUploadModal(){const m=document.getElementById('pdfUploadModal');if(m)m.style.display='flex';}
+function openPdfUploadModal(){const m=document.getElementById('pdfUploadModal');if(m){m.style.display='flex';loadSubjects();}}
 function closePdfUploadModal(){const m=document.getElementById('pdfUploadModal');if(m)m.style.display='none';}
 
 async function toggleExamSession(examType, isOpen) {
