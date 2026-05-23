@@ -60,15 +60,18 @@ router.get(
     const where = 'WHERE ' + conditions.join(' AND ');
     params.push(limit, offset);
 
+    // Use COALESCE for chapter_num in case the column was just added / migration pending
     const { rows } = await db.query(
-      `SELECT q.id, q.subject, q.type, q.chapter_num, q.question_text,
+      `SELECT q.id, q.subject, q.type,
+              COALESCE(q.chapter_num, 1) AS chapter_num,
+              q.question_text,
               q.option_a, q.option_b, q.option_c, q.option_d,
               q.correct_option, q.explanation,
               u.full_name AS created_by_name, q.created_at
        FROM questions q
        LEFT JOIN users u ON u.id = q.created_by
        ${where}
-       ORDER BY q.subject, q.chapter_num, q.id ASC
+       ORDER BY q.subject, COALESCE(q.chapter_num, 1), q.id ASC
        LIMIT $${params.length - 1} OFFSET $${params.length}`,
       params
     );
@@ -356,6 +359,14 @@ MATN:\n${textChunk}`
       });
     }
 
+    // Ensure chapter_num column exists — defensive guard in case migration 008 hasn't run yet
+    try {
+      await db.query(`ALTER TABLE questions ADD COLUMN IF NOT EXISTS chapter_num INTEGER NOT NULL DEFAULT 1`);
+      await db.query(`CREATE INDEX IF NOT EXISTS idx_questions_subject_chapter ON questions (subject, chapter_num) WHERE is_active = TRUE`);
+    } catch (migrErr) {
+      logger.warn('[upload-pdf] chapter_num migration guard failed:', migrErr.message);
+    }
+
     // Determine starting chapter_num: find max chapter already in DB for this subject
     let startChapter = 1;
     try {
@@ -400,7 +411,10 @@ MATN:\n${textChunk}`
       client.release();
     }
 
-    const chaptersCreated = Math.ceil(questions.length / CHAPTER_SIZE);
+    const chaptersCreated = Math.ceil(inserted.length / CHAPTER_SIZE) || 0;
+    if (errors.length) {
+      logger.warn(`[upload-pdf] ${errors.length} insert(s) failed. First error: ${errors[0]?.error}`);
+    }
     res.status(201).json({
       message: `PDF muvaffaqiyatli qayta ishlandi`,
       parsed: questions.length,
@@ -410,7 +424,7 @@ MATN:\n${textChunk}`
       startChapter,
       insertedIds: inserted,
       aiParsed,
-      errors: errors.length ? errors : undefined
+      errors: errors.length ? errors.slice(0, 5) : undefined  // return up to 5 errors for debugging
     });
   }
 );

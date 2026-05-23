@@ -519,8 +519,14 @@ async function uploadQuestionsPDF() {
         throw new Error((data.error || 'Fayl yuklashda xato') + lines + aiNote + hint);
       }
       const aiTag = data.aiParsed ? ' · 🤖 AI' : '';
-      const chTag = data.chaptersCreated > 1 ? ' · ' + data.chaptersCreated + ' bob' : '';
-      showToast('✅', 'Yuklandi', (data.inserted || 0) + ' savol' + chTag + aiTag + ' saqlandi');
+      const chTag = (data.chaptersCreated || 0) > 0 ? ' · ' + data.chaptersCreated + ' bob' : '';
+      if (!data.inserted && data.parsed > 0) {
+        // Parser found questions but none were saved — show the first DB error
+        const firstErr = data.errors && data.errors[0] ? data.errors[0].error : 'DB xatosi';
+        showToast('⚠️', 'Diqqat', data.parsed + ' savol topildi, lekin saqlanmadi: ' + firstErr);
+      } else {
+        showToast('✅', 'Yuklandi', (data.inserted || 0) + ' savol' + chTag + aiTag + ' saqlandi');
+      }
     }
 
     if (fileInput) fileInput.value = '';
