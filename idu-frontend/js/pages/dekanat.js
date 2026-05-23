@@ -403,10 +403,10 @@ async function _renderQTable(filter) {
   if (!tbody) return;
   tbody.innerHTML = '<tr><td colspan="6" style="text-align:center;padding:20px">⏳ Yuklanmoqda...</td></tr>';
   try {
-    let url = '/questions?limit=100';
+    let url = '/questions?limit=500';
     if (filter==='test') url+='&type=test';
-    else if (filter==='real') url+='&type=real';
-    else if (filter) url+='&subject='+filter; // dynamic subject filter
+    else if (filter==='real' || filter==='sesiya') url+='&type=real';
+    else if (filter && filter!=='barchasi') url+='&subject='+filter;
     const qs = await api('GET', url);
     if (!qs.length) { tbody.innerHTML='<tr><td colspan="6" style="text-align:center;color:var(--text3);padding:40px">Hali savol kiritilmagan</td></tr>'; return; }
     const opts = ['option_a','option_b','option_c','option_d'];
