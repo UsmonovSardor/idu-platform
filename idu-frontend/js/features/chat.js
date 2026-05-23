@@ -57,18 +57,31 @@ async function openChatRoom(roomId, roomName, roomType) {
 var _roomColors = ['#1B4FD8','#7C3AED','#059669','#DC2626','#D97706','#0891B2','#BE185D'];
 function _roomColor(id) { return _roomColors[id % _roomColors.length]; }
 
+// Global rooms cache — avoids putting room names directly into onclick strings.
+// Room names can contain apostrophes (E'lonlar) which break onclick="...('name')..."
+var _chatRoomCache = {};
+
+function openChatRoomById(id) {
+  var r = _chatRoomCache[id];
+  if (r) openChatRoom(r.id, r.name, r.type);
+}
+
 function _renderRoomList(rooms, listEl) {
   if (!rooms || !rooms.length) {
     listEl.innerHTML = '<div style="text-align:center;color:#94A3B8;padding:30px 16px"><div style="font-size:36px;margin-bottom:10px">💬</div><div style="font-size:13px;font-weight:600">Xonalar yo\'q</div><div style="font-size:12px;margin-top:4px">Yangi xona yarating</div></div>';
     return;
   }
+  // Cache rooms by id so onclick only passes the id (no string injection risk)
+  rooms.forEach(function(r) { _chatRoomCache[r.id] = r; });
+
   listEl.innerHTML = rooms.map(function(r) {
     var last = r.last_msg ? r.last_msg.slice(0,38) + (r.last_msg.length>38?'…':'') : '<i>Hali xabar yo\'q</i>';
     var t = r.last_at ? _chatTime(r.last_at) : '';
     var initials = r.name.substring(0,2).toUpperCase();
     var color = _roomColor(r.id);
     var typeIcon = r.type === 'announce' ? '📢' : r.type === 'direct' ? '👤' : '👥';
-    return '<div class="chat-room-item" onclick="openChatRoom('+r.id+',\''+escHtml(r.name)+'\',\''+r.type+'\')">'
+    // Safe: only pass numeric id — room name stays in cache, never embedded in JS string
+    return '<div class="chat-room-item" onclick="openChatRoomById('+r.id+')">'
       + '<div class="chat-room-avatar" style="background:'+color+';color:#fff">'+initials+'</div>'
       + '<div class="chat-room-info">'
       +   '<div class="chat-room-name">'+typeIcon+' '+escHtml(r.name)+'</div>'
