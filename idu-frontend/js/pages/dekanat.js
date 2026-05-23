@@ -406,7 +406,7 @@ async function _renderQTable(filter) {
     let url = '/questions?limit=100';
     if (filter==='test') url+='&type=test';
     else if (filter==='real') url+='&type=real';
-    else if (['algo','ai','math','db','web'].includes(filter)) url+='&subject='+filter;
+    else if (filter) url+='&subject='+filter; // dynamic subject filter
     const qs = await api('GET', url);
     if (!qs.length) { tbody.innerHTML='<tr><td colspan="6" style="text-align:center;color:var(--text3);padding:40px">Hali savol kiritilmagan</td></tr>'; return; }
     const opts = ['option_a','option_b','option_c','option_d'];
@@ -424,6 +424,9 @@ async function editQuestion(id) {
   const q = _allDekQuestions.find(x=>x.id===id);
   if (!q) return;
   _editingQId = id;
+  // Force-refresh so all fans appear in dropdown
+  await loadSubjects(true);
+  const title=document.getElementById('questionModalTitle'); if(title)title.textContent='✏️ Savolni tahrirlash';
   const subj=document.getElementById('qModalSubject'); if(subj)subj.value=q.subject;
   const type=document.getElementById('qModalType'); if(type)type.value=q.type;
   const text=document.getElementById('qModalText'); if(text)text.value=q.question_text;
@@ -442,11 +445,12 @@ async function openAddQuestionModal() {
   ['qModalText','qOpt0','qOpt1','qOpt2','qOpt3','qModalIzoh'].forEach(id=>{const el=document.getElementById(id);if(el)el.value='';});
   const type=document.getElementById('qModalType'); if(type)type.value='test';
   const r=document.querySelector('input[name="qModalCorrect"][value="0"]'); if(r)r.checked=true;
+  // Force-refresh subjects so newly added fans appear in dropdown
+  await loadSubjects(true);
   document.getElementById('addQuestionModal').style.display='flex';
-  // Load subjects from DB to fill dropdown
-  await loadSubjects();
+  const title=document.getElementById('questionModalTitle'); if(title)title.textContent='➕ Yangi savol qo\'shish';
   const subj=document.getElementById('qModalSubject');
-  if(subj && subj.options.length) subj.selectedIndex=0;
+  if(subj && subj.options.length > 0) subj.selectedIndex=0;
 }
 
 async function saveQuestionModal() {

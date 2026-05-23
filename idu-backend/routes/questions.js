@@ -303,7 +303,84 @@ router.post(
     let questions = parsePdfQuestions(rawText);
     let aiParsed = false;
 
-    // ── AI fallback: if regex parser finds nothing, try OpenAI ────────────────
+    // ── Detect matrix/formula PDF (delimited by '#') ──────────────────────────
+    // These PDFs contain mathematical matrices and cannot be parsed by regex.
+    // Use GPT-4 with a matrix-specific prompt to reconstruct LaTeX from garbled text.
+    const hashBlocks = rawText.split(/\n?#+\s*/).filter(s => s.trim().length > 15);
+    const isMatrixPdf = hashBlocks.length >= 3 && process.env.OPENAI_API_KEY;
+
+    if ((isMatrixPdf && questions.length < hashBlocks.length / 2) && process.env.OPENAI_API_KEY) {
+      try {
+        const OpenAI = require('openai');
+        const openai = new OpenAI({ apiKey: process.env.OPENAI_API_KEY });
+        logger.info(`[upload-pdf] Matrix PDF detected: ${hashBlocks.length} blocks. Using GPT-4 parser.`);
+
+        const BATCH = 10; // questions per GPT-4 request
+        const allAiQuestions = [];
+
+        for (let b = 0; b < hashBlocks.length; b += BATCH) {
+          const chunk = hashBlocks.slice(b, b + BATCH)
+            .map((block, i) => `SAVOL ${b + i + 1}:\n${block.trim().replace(/\s{3,}/g, ' ')}`)
+            .join('\n\n---\n\n')
+            .slice(0, 8000);
+
+          const completion = await openai.chat.completions.create({
+            model: 'gpt-4o',
+            messages: [{
+              role: 'system',
+              content: `Sen matematik test savollarini PDF matnidan tuzatuvchi yordamchisan.
+PDF dan olingan matn matritsa va formulalarni buzilgan holda ko'rsatadi.
+Har bir savolni to'g'ri LaTeX formatida qaytarishing kerak.
+Matritsalar uchun: $\\begin{pmatrix} a & b \\\\ c & d \\end{pmatrix}$
+Kasrlar: $\\frac{a}{b}$, inline: $x$, display: $$x$$
+To'g'ri javobni aniqlashga urinib ko'r, bilmasang "A" deb qo'y.
+FAQAT JSON massiv qaytarilsin — boshqa matn yo'q.`
+            }, {
+              role: 'user',
+              content: `Quyidagi PDF matnidagi savollarni to'g'ri LaTeX formatiga o'tkazib, JSON massiv qaytargil.
+Har element: {"question_text":"...","option_a":"...","option_b":"...","option_c":"...","option_d":"...","correct_option":"A"}
+Matritsa variantlari LaTeX da yozilsin.
+
+${chunk}`
+            }],
+            max_tokens: 4000,
+            temperature: 0.1,
+            response_format: { type: 'json_object' },
+          });
+
+          try {
+            const obj = JSON.parse(completion.choices[0].message.content || '{}');
+            const list = Array.isArray(obj) ? obj : (obj.questions || obj.savollar || Object.values(obj)[0] || []);
+            if (Array.isArray(list)) {
+              list.forEach(q => {
+                if (q.question_text && (q.option_a || q.option_b)) {
+                  allAiQuestions.push({
+                    text: q.question_text.trim(),
+                    a: q.option_a || '—', b: q.option_b || '—',
+                    c: q.option_c || '—', d: q.option_d || '—',
+                    correct: (['A','B','C','D'].includes((q.correct_option||'A').toUpperCase()))
+                             ? (q.correct_option||'A').toUpperCase() : 'A',
+                    explanation: q.explanation || null,
+                  });
+                }
+              });
+            }
+          } catch(parseErr) {
+            logger.warn('[upload-pdf] GPT-4 batch parse error:', parseErr.message);
+          }
+        }
+
+        if (allAiQuestions.length > questions.length) {
+          questions = allAiQuestions;
+          aiParsed = true;
+          logger.info(`[upload-pdf] GPT-4 matrix parser: ${questions.length} questions extracted`);
+        }
+      } catch (aiErr) {
+        logger.warn('[upload-pdf] Matrix AI parse failed:', aiErr.message);
+      }
+    }
+
+    // ── Standard AI fallback: if regex parser finds nothing ────────────────────
     if (!questions.length && process.env.OPENAI_API_KEY) {
       try {
         const OpenAI = require('openai');
@@ -315,10 +392,8 @@ router.post(
           messages: [{
             role: 'user',
             content: `Quyida PDF fayldan olingan o'zbek tili yoki matematika test savollari matni.
-Matritsalar, formulalar va boshqa matematik ifodalarni o'z ichiga olishi mumkin.
-Savollarni topib, JSON massiv qaytar. Faqat JSON, boshqa matn yo'q.
+Savollarni topib, JSON massiv qaytar. Faqat JSON massiv, boshqa matn yo'q.
 Har element: {"question_text":"...","option_a":"...","option_b":"...","option_c":"...","option_d":"...","correct_option":"A"}
-LaTeX ishlatish mumkin: $...$ yoki $$...$$ matritsalar uchun \\begin{pmatrix}...\\end{pmatrix}
 MATN:\n${textChunk}`
           }],
           max_tokens: 4000,
