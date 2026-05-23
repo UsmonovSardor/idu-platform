@@ -591,17 +591,13 @@ function parsePdfQuestions(rawText) {
   const CYR = { 'А':'A','Б':'B','В':'C','Г':'D','С':'C','Д':'D','а':'A','б':'B','в':'C','г':'D','с':'C','д':'D' };
   const normLetter = ch => CYR[ch] || ch.toUpperCase();
 
-  // Option line: A) A. A: (A) А) and also "A " (space only, some PDFs)
-  // Require option text to be at least 1 char; space-only delimiter needs 3+ chars to avoid false matches
-  const OPT_RE = /^[(]?\s*([AaBbCcDdАБВГСДсд])\s*(?:[.):\-]\s*(.+)|(?=[.):\-])|[.):\-]\s*(.+)|\s{1,3}(\S.{2,}))/;
+  // Option line: A) A. A: (A) А) А. etc. — ONLY punctuation delimiter (never bare space)
+  // Bare-space matching (e.g. "A some text") is too risky: question text itself can start with A/B/C/D.
+  const OPT_RE = /^[(]?\s*([AaBbCcDdАБВГСДсд])\s*[.):\-]\s*(.+)/;
 
   function parseOpt(line) {
-    // Try strict form first: A) text, A. text, A: text, (A) text
-    const strict = line.match(/^[(]?\s*([AaBbCcDdАБВГСДсд])\s*[.):\-]\s*(.+)/);
-    if (strict) return { letter: strict[1], val: strict[2].trim() };
-    // Try space-only form: "A some text" — but only if it starts the line
-    const loose = line.match(/^([AaBbCcDdАБВГ])\s{1,4}(\S.{2,})/);
-    if (loose) return { letter: loose[1], val: loose[2].trim() };
+    const m = line.match(OPT_RE);
+    if (m) return { letter: m[1], val: m[2].trim() };
     return null;
   }
 
@@ -678,9 +674,12 @@ function parsePdfQuestions(rawText) {
 
     // Primary: number + punctuation delimiter (most reliable)
     const START_PUNCT = /^\s*(\d{1,3})\s*[-.):#]\s*(?:savol[.\s]*)?\s*(.*)/i;
-    // Secondary: number + space + real question text (≥8 chars, not a common false-positive word)
-    // Negative lookahead: skip "N ta", "N yil", "N kun", "N oy", "N nchi", standalone page numbers
-    const START_SPACE = /^\s*(\d{1,3})\s+(?!(?:ta|yil|kun|oy|soat|nchi|inch|bet|sahifa|variant|bob|guruh|sinf)\b)(.{8,})/i;
+    // Secondary: number + space + real question text
+    // Rules to avoid false positives like "33 ta" / "12 yil" / page numbers:
+    //   - Skip common non-question words (ta, yil, kun, oy, ...)
+    //   - Text must be ≥10 chars
+    //   - Must NOT start with A/B/C/D (would confuse with option lines if question restarts)
+    const START_SPACE = /^\s*(\d{1,3})\s+(?!(?:ta|yil|kun|oy|soat|nchi|inch|bet|sahifa|variant|bob|guruh|sinf|[ABCD][\s.):\-])\b)([A-ZА-ЯҚҒҲЎa-zа-яқғҳўЀ-ӿ].{9,})/;
 
     const lines = text.split('\n');
     const blocks = [];
