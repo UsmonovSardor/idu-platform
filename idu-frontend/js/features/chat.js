@@ -33,32 +33,66 @@ async function loadChatRooms() {
       listEl.innerHTML = '<div style="text-align:center;color:#94A3B8;padding:16px;font-size:12px">Chat xonalari yo\'q</div>';
       return;
     }
-    listEl.innerHTML = rooms.map(function(r) {
-      var last = r.last_msg ? r.last_msg.slice(0, 35) + (r.last_msg.length > 35 ? '…' : '') : 'Xabar yo\'q';
-      var t = r.last_at ? new Date(r.last_at).toLocaleTimeString([], {hour:'2-digit',minute:'2-digit'}) : '';
-      return '<div class="chat-room-item" onclick="openChatRoom(' + r.id + ',\''+escHtml(r.name)+'\')" style="padding:10px 14px;cursor:pointer;border-bottom:1px solid #F1F5F9;display:flex;gap:10px;align-items:center">'
-        + '<div style="width:38px;height:38px;border-radius:50%;background:linear-gradient(135deg,#1B4FD8,#4F46E5);display:flex;align-items:center;justify-content:center;color:#fff;font-size:14px;flex-shrink:0">'
-        + r.name.charAt(0).toUpperCase() + '</div>'
-        + '<div style="flex:1;min-width:0">'
-        + '<div style="font-weight:700;font-size:13px;display:flex;justify-content:space-between"><span>' + escHtml(r.name) + '</span><span style="font-size:10px;color:#94A3B8">' + t + '</span></div>'
-        + '<div style="font-size:11px;color:#94A3B8;white-space:nowrap;overflow:hidden;text-overflow:ellipsis">' + escHtml(last) + '</div>'
-        + '</div></div>';
-    }).join('');
+    // Save rooms for search filtering
+    listEl._allRooms = rooms;
+    _renderRoomList(rooms, listEl);
   } catch(e) {
     listEl.innerHTML = '<div style="color:#DC2626;padding:16px;font-size:12px">Xato: ' + e.message + '</div>';
   }
 }
 
-async function openChatRoom(roomId, roomName) {
+async function openChatRoom(roomId, roomName, roomType) {
   _chatRoomId = roomId;
-  // Switch to message view
   document.getElementById('chatRoomView').style.display = 'none';
   document.getElementById('chatMsgView').style.display  = 'flex';
   document.getElementById('chatRoomNameEl').textContent = roomName;
-  document.getElementById('chatMsgList').innerHTML = '<div style="text-align:center;color:#94A3B8;padding:16px;font-size:12px">Yuklanmoqda...</div>';
-
+  var meta = document.getElementById('chatRoomMeta');
+  if (meta) meta.textContent = roomType === 'announce' ? '📢 E\'lonlar kanali' : roomType === 'direct' ? '👤 Shaxsiy' : '👥 Guruh chat';
+  document.getElementById('chatMsgList').innerHTML = '<div style="text-align:center;color:#94A3B8;padding:30px;font-size:13px"><div style="font-size:24px;margin-bottom:8px">⏳</div>Yuklanmoqda...</div>';
   await loadMessages(roomId);
   subscribeSSE(roomId);
+}
+
+// Room colors palette
+var _roomColors = ['#1B4FD8','#7C3AED','#059669','#DC2626','#D97706','#0891B2','#BE185D'];
+function _roomColor(id) { return _roomColors[id % _roomColors.length]; }
+
+function _renderRoomList(rooms, listEl) {
+  if (!rooms || !rooms.length) {
+    listEl.innerHTML = '<div style="text-align:center;color:#94A3B8;padding:30px 16px"><div style="font-size:36px;margin-bottom:10px">💬</div><div style="font-size:13px;font-weight:600">Xonalar yo\'q</div><div style="font-size:12px;margin-top:4px">Yangi xona yarating</div></div>';
+    return;
+  }
+  listEl.innerHTML = rooms.map(function(r) {
+    var last = r.last_msg ? r.last_msg.slice(0,38) + (r.last_msg.length>38?'…':'') : '<i>Hali xabar yo\'q</i>';
+    var t = r.last_at ? _chatTime(r.last_at) : '';
+    var initials = r.name.substring(0,2).toUpperCase();
+    var color = _roomColor(r.id);
+    var typeIcon = r.type === 'announce' ? '📢' : r.type === 'direct' ? '👤' : '👥';
+    return '<div class="chat-room-item" onclick="openChatRoom('+r.id+',\''+escHtml(r.name)+'\',\''+r.type+'\')">'
+      + '<div class="chat-room-avatar" style="background:'+color+';color:#fff">'+initials+'</div>'
+      + '<div class="chat-room-info">'
+      +   '<div class="chat-room-name">'+typeIcon+' '+escHtml(r.name)+'</div>'
+      +   '<div class="chat-room-last">'+last+'</div>'
+      + '</div>'
+      + (t ? '<div style="font-size:10px;color:#CBD5E1;flex-shrink:0">'+t+'</div>' : '')
+      + '</div>';
+  }).join('');
+}
+
+function _chatTime(iso) {
+  var d = new Date(iso), now = new Date();
+  if (d.toDateString() === now.toDateString()) return d.toLocaleTimeString([],{hour:'2-digit',minute:'2-digit'});
+  var diff = Math.floor((now-d)/86400000);
+  if (diff === 1) return 'Kecha';
+  if (diff < 7) return ['Yak','Du','Se','Cho','Pay','Ju','Sha'][d.getDay()];
+  return d.toLocaleDateString([],{day:'numeric',month:'short'});
+}
+
+function filterChatRooms(q) {
+  var listEl = document.getElementById('chatRoomList');
+  if (!listEl || !listEl._allRooms) return;
+  var filtered = q ? listEl._allRooms.filter(function(r){ return r.name.toLowerCase().includes(q.toLowerCase()); }) : listEl._allRooms;
+  _renderRoomList(filtered, listEl);
 }
 
 function backToRooms() {
@@ -78,46 +112,37 @@ async function loadMessages(roomId) {
   }
 }
 
+function _msgHtml(m, myId) {
+  var isMe = m.sender_id === myId;
+  var t = new Date(m.created_at).toLocaleTimeString([],{hour:'2-digit',minute:'2-digit'});
+  var init = (m.sender_name||'?').charAt(0).toUpperCase();
+  return '<div class="chat-msg-wrap' + (isMe?' me':'') + '">'
+    + '<div class="chat-msg-avatar" style="background:' + (isMe?'linear-gradient(135deg,#1B4FD8,#3B82F6)':'#E2E8F0') + ';color:' + (isMe?'#fff':'#475569') + '">' + init + '</div>'
+    + '<div class="chat-msg-body">'
+    +   (isMe?'':'<div class="chat-msg-name">'+escHtml(m.sender_name||'')+'</div>')
+    +   '<div class="chat-bubble ' + (isMe?'me':'other') + '">'+escHtml(m.content)+'</div>'
+    +   '<div class="chat-bubble-time">'+t+'</div>'
+    + '</div></div>';
+}
+
 function renderMessages(msgs, el) {
   if (!el) return;
   var myId = window.CURRENT_USER ? window.CURRENT_USER.id : null;
   if (!msgs.length) {
-    el.innerHTML = '<div style="text-align:center;color:#94A3B8;padding:20px;font-size:12px">Hali xabar yo\'q. Birinchi xabar yozing!</div>';
+    el.innerHTML = '<div style="text-align:center;color:#94A3B8;padding:30px 16px"><div style="font-size:32px;margin-bottom:10px">💬</div><div style="font-size:13px;font-weight:600">Hali xabar yo\'q</div><div style="font-size:12px;margin-top:4px">Birinchi bo\'lib xabar yozing!</div></div>';
     return;
   }
-  el.innerHTML = msgs.map(function(m) {
-    var isMe = m.sender_id === myId;
-    var t = new Date(m.created_at).toLocaleTimeString([], {hour:'2-digit',minute:'2-digit'});
-    return '<div style="display:flex;flex-direction:' + (isMe?'row-reverse':'row') + ';gap:6px;margin-bottom:8px;align-items:flex-end">'
-      + '<div style="width:28px;height:28px;border-radius:50%;background:' + (isMe?'#1B4FD8':'#E2E8F0') + ';flex-shrink:0;display:flex;align-items:center;justify-content:center;font-size:11px;color:' + (isMe?'#fff':'#64748B') + '">'
-      + (m.sender_name||'?').charAt(0).toUpperCase() + '</div>'
-      + '<div style="max-width:75%">'
-      + (isMe?'':'<div style="font-size:10px;color:#94A3B8;margin-bottom:2px;' + (isMe?'text-align:right':'') + '">' + escHtml(m.sender_name||'') + '</div>')
-      + '<div style="background:' + (isMe?'#1B4FD8':'#F1F5F9') + ';color:' + (isMe?'#fff':'#1E293B') + ';border-radius:' + (isMe?'12px 12px 2px 12px':'12px 12px 12px 2px') + ';padding:8px 12px;font-size:13px;line-height:1.4">'
-      + escHtml(m.content) + '</div>'
-      + '<div style="font-size:10px;color:#94A3B8;margin-top:2px;text-align:' + (isMe?'right':'left') + '">' + t + '</div>'
-      + '</div></div>';
-  }).join('');
+  el.innerHTML = msgs.map(function(m){ return _msgHtml(m, myId); }).join('');
   el.scrollTop = el.scrollHeight;
 }
 
 function appendMessage(m) {
   var el = document.getElementById('chatMsgList');
   if (!el) return;
-  // Remove "no messages" placeholder
-  if (el.querySelector('[style*="Hali xabar"]')) el.innerHTML = '';
+  if (el.querySelector('.chat-msg-body') === null && el.innerHTML.includes('Hali xabar')) el.innerHTML = '';
   var myId = window.CURRENT_USER ? window.CURRENT_USER.id : null;
-  var isMe = m.sender_id === myId;
-  var t = new Date(m.created_at).toLocaleTimeString([], {hour:'2-digit',minute:'2-digit'});
   var div = document.createElement('div');
-  div.style.cssText = 'display:flex;flex-direction:' + (isMe?'row-reverse':'row') + ';gap:6px;margin-bottom:8px;align-items:flex-end';
-  div.innerHTML = '<div style="width:28px;height:28px;border-radius:50%;background:' + (isMe?'#1B4FD8':'#E2E8F0') + ';flex-shrink:0;display:flex;align-items:center;justify-content:center;font-size:11px;color:' + (isMe?'#fff':'#64748B') + '">'
-    + (m.sender_name||'?').charAt(0).toUpperCase() + '</div>'
-    + '<div style="max-width:75%">'
-    + (isMe?'':'<div style="font-size:10px;color:#94A3B8;margin-bottom:2px">' + escHtml(m.sender_name||'') + '</div>')
-    + '<div style="background:' + (isMe?'#1B4FD8':'#F1F5F9') + ';color:' + (isMe?'#fff':'#1E293B') + ';border-radius:12px;padding:8px 12px;font-size:13px">' + escHtml(m.content) + '</div>'
-    + '<div style="font-size:10px;color:#94A3B8;margin-top:2px;text-align:' + (isMe?'right':'left') + '">' + t + '</div>'
-    + '</div>';
+  div.innerHTML = _msgHtml(m, myId);
   el.appendChild(div);
   el.scrollTop = el.scrollHeight;
 }

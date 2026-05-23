@@ -13,17 +13,28 @@ var TYPE_LABELS = {test:'🧪 Test', real:'📋 Sesiya', both:'📝 Ikkalasi'};
 // ── Subjects: dynamic load & management ──────────────────────────────────────
 var _subjects = []; // cached from API
 
+// Hardcoded fallback subjects (used if DB subjects table not yet created)
+var _FALLBACK_SUBJECTS = [
+  {id:1, code:'algo', label:'Algoritmlar va Dasturlash', icon:'💻'},
+  {id:2, code:'ai',   label:"Sun'iy Intellekt",          icon:'🤖'},
+  {id:3, code:'math', label:'Matematika',                icon:'📐'},
+  {id:4, code:'db',   label:"Ma'lumotlar Bazasi",        icon:'🗄️'},
+  {id:5, code:'web',  label:'Web Texnologiya',           icon:'🌐'},
+];
+
 async function loadSubjects(force) {
   if (_subjects.length && !force) return _subjects;
   try {
     const rows = await api('GET', '/subjects');
-    _subjects = Array.isArray(rows) ? rows : [];
-    // Rebuild SUBJ_LABELS from DB
-    SUBJ_LABELS = {};
-    _subjects.forEach(function(s) { SUBJ_LABELS[s.code] = s.icon + ' ' + s.label; });
-    // Fill all subject dropdowns
-    _fillSubjectDropdowns();
-  } catch(e) { console.warn('loadSubjects failed:', e.message); }
+    _subjects = (Array.isArray(rows) && rows.length) ? rows : _FALLBACK_SUBJECTS;
+  } catch(e) {
+    console.warn('loadSubjects: API xato, fallback ishlatilmoqda');
+    _subjects = _FALLBACK_SUBJECTS;
+  }
+  // Rebuild SUBJ_LABELS
+  SUBJ_LABELS = {};
+  _subjects.forEach(function(s) { SUBJ_LABELS[s.code] = s.icon + ' ' + s.label; });
+  _fillSubjectDropdowns();
   return _subjects;
 }
 
