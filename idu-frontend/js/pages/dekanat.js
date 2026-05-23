@@ -26,16 +26,22 @@ async function loadSubjects(force) {
   if (_subjects.length && !force) return _subjects;
   try {
     const rows = await api('GET', '/subjects');
-    _subjects = (Array.isArray(rows) && rows.length) ? rows : _FALLBACK_SUBJECTS;
+    // Only use fallback if API completely fails (not if it returns fewer items)
+    _subjects = Array.isArray(rows) ? rows : _FALLBACK_SUBJECTS;
+    // First-time load: if DB table empty, seed with fallback but don't overwrite if > 0
+    if (_subjects.length === 0) _subjects = _FALLBACK_SUBJECTS.slice();
   } catch(e) {
     console.warn('loadSubjects: API xato, fallback ishlatilmoqda');
-    _subjects = _FALLBACK_SUBJECTS;
+    if (!_subjects.length) _subjects = _FALLBACK_SUBJECTS.slice();
   }
-  // Rebuild SUBJ_LABELS
+  _rebuildSubjHelpers();
+  return _subjects;
+}
+
+function _rebuildSubjHelpers() {
   SUBJ_LABELS = {};
   _subjects.forEach(function(s) { SUBJ_LABELS[s.code] = s.icon + ' ' + s.label; });
   _fillSubjectDropdowns();
-  return _subjects;
 }
 
 function _fillSubjectDropdowns() {
@@ -117,11 +123,18 @@ async function addNewSubject() {
   if (!label) { showToast('⚠️','Xato','Fan nomini kiriting'); return; }
   if (!code)  { code = label.toLowerCase().replace(/[^a-z0-9]/g,'_').replace(/__+/g,'_').slice(0,20); }
   try {
-    await api('POST', '/subjects', { code, label, icon });
+    const created = await api('POST', '/subjects', { code, label, icon });
     document.getElementById('newSubjLabel').value='';
     document.getElementById('newSubjCode').value='';
     document.getElementById('newSubjIcon').value='📚';
-    await _renderSubjectsList();
+    // Add to local cache immediately; avoid full re-fetch
+    if (created && created.id) {
+      // Remove duplicate (same code) then add fresh
+      _subjects = _subjects.filter(function(s){ return s.code !== created.code; });
+      _subjects.push({ id: created.id, code: created.code, label: created.label, icon: created.icon, sort_order: created.sort_order || 99 });
+    }
+    _rebuildSubjHelpers();
+    await _renderSubjectsList(); // still re-render modal to show updated list
     showToast('✅','Qo\'shildi', label + ' qo\'shildi');
   } catch(e) { showToast('❌','Xato', e.message); }
 }
@@ -131,7 +144,12 @@ async function editSubject(id, code, label, icon) {
   if (!newLabel || newLabel.trim()===label) return;
   var newIcon  = prompt('Emoji:', icon) || icon;
   try {
-    await api('PUT', '/subjects/'+id, { label: newLabel.trim(), icon: newIcon });
+    const updated = await api('PUT', '/subjects/'+id, { label: newLabel.trim(), icon: newIcon });
+    // Update in local cache immediately
+    _subjects = _subjects.map(function(s) {
+      return s.id === id ? Object.assign({}, s, { label: updated.label || newLabel.trim(), icon: updated.icon || newIcon }) : s;
+    });
+    _rebuildSubjHelpers();
     await _renderSubjectsList();
     showToast('✅','Yangilandi', newLabel);
   } catch(e) { showToast('❌','Xato', e.message); }
@@ -141,7 +159,28 @@ async function deleteSubject(id, label) {
   if (!confirm('"'+label+'" fanini o\'chirmoqchimisiz?\nBu fandagi savollar o\'chib ketmaydi.')) return;
   try {
     await api('DELETE', '/subjects/'+id);
-    await _renderSubjectsList();
+    // Remove immediately from local cache — no re-fetch to avoid fallback race
+    _subjects = _subjects.filter(function(s) { return s.id !== id; });
+    _rebuildSubjHelpers();
+    // Re-draw the modal list without hitting the API again
+    var list = document.getElementById('subjectsList');
+    if (list) {
+      if (!_subjects.length) {
+        list.innerHTML = '<div style="text-align:center;color:#94A3B8;padding:20px">Fanlar yo\'q</div>';
+      } else {
+        list.innerHTML = _subjects.map(function(s) {
+          return '<div style="display:flex;align-items:center;gap:10px;padding:10px 12px;background:#F8FAFC;border-radius:10px;margin-bottom:8px">'
+            + '<span style="font-size:20px">'+s.icon+'</span>'
+            + '<div style="flex:1">'
+            +   '<div style="font-weight:700;font-size:13px;color:#0F172A">'+escHtml(s.label)+'</div>'
+            +   '<div style="font-size:11px;color:#94A3B8">kod: <code>'+s.code+'</code></div>'
+            + '</div>'
+            + '<button onclick="editSubject('+s.id+',\''+s.code+'\',\''+s.label.replace(/\\/g,'\\\\').replace(/'/g,"\\'")+'\',\''+s.icon+'\')" style="padding:5px 10px;background:#EEF3FF;border:none;border-radius:6px;color:#1B4FD8;font-size:12px;cursor:pointer">✏️</button>'
+            + '<button onclick="deleteSubject('+s.id+',\''+s.label.replace(/\\/g,'\\\\').replace(/'/g,"\\'")+'\' )" style="padding:5px 10px;background:#FEE2E2;border:none;border-radius:6px;color:#DC2626;font-size:12px;cursor:pointer">🗑️</button>'
+            + '</div>';
+        }).join('');
+      }
+    }
     showToast('🗑️','O\'chirildi', label);
   } catch(e) { showToast('❌','Xato', e.message); }
 }
