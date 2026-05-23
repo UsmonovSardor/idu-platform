@@ -3511,122 +3511,232 @@
 
 
 <!-- MODAL: PDF savollar yuklash -->
-<div id="pdfUploadModal" style="display:none;position:fixed;top:0;left:0;width:100%;height:100%;background:rgba(0,0,0,0.5);z-index:3000;overflow:auto" onclick="if(event.target===this)closePdfUploadModal()">
-  <div style="background:white;border-radius:18px;padding:28px;max-width:500px;margin:60px auto;position:relative">
-    <div style="font-size:18px;font-weight:800;color:#0F172A;margin-bottom:6px">📂 Savollar yuklash</div>
-    <div style="font-size:12.5px;color:#64748B;margin-bottom:20px">Quyidagi formatlardan birini tanlang:<br>
-    <code style="background:#F1F5F9;padding:2px 6px;border-radius:4px;font-size:11px">1. Savol matni?<br>A) Javob A<br>B) Javob B<br>C) Javob C<br>D) Javob D<br>To'g'ri: A<br>Izoh: (ixtiyoriy)</code></div>
-    <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:16px">
+<!-- ═══ MODAL: Savollar yuklash (professional redesign) ════════════════ -->
+<style>
+  .upm-modal{display:none;position:fixed;inset:0;background:rgba(15,23,42,.55);z-index:3000;overflow:auto;backdrop-filter:blur(4px)}
+  .upm-card{background:#fff;border-radius:16px;width:100%;max-width:720px;margin:40px auto;box-shadow:0 24px 64px rgba(15,23,42,.18);overflow:hidden;font-family:'Outfit',sans-serif}
+  .upm-head{display:flex;align-items:center;justify-content:space-between;padding:22px 28px;border-bottom:1px solid #EEF2F7;background:linear-gradient(180deg,#FAFBFD 0%,#FFFFFF 100%)}
+  .upm-head h3{margin:0;font-size:17px;font-weight:700;color:#0F172A;letter-spacing:-.01em}
+  .upm-head p{margin:3px 0 0;font-size:12.5px;color:#64748B;font-weight:500}
+  .upm-x{width:34px;height:34px;border:none;background:#F1F5F9;border-radius:10px;font-size:16px;color:#475569;cursor:pointer;transition:.15s}
+  .upm-x:hover{background:#E2E8F0;color:#0F172A}
+  .upm-body{padding:24px 28px;max-height:calc(100vh - 200px);overflow-y:auto}
+  .upm-tabs{display:flex;gap:4px;margin-bottom:20px;padding:4px;background:#F1F5F9;border-radius:11px}
+  .upm-tab{flex:1;padding:9px 12px;border:none;background:transparent;border-radius:8px;font:600 12.5px 'Outfit',sans-serif;color:#64748B;cursor:pointer;transition:.15s;display:flex;align-items:center;justify-content:center;gap:6px}
+  .upm-tab.active{background:#fff;color:#0F172A;box-shadow:0 1px 3px rgba(15,23,42,.08)}
+  .upm-tab:hover:not(.active){color:#0F172A}
+  .upm-section{margin-bottom:18px}
+  .upm-section:last-child{margin-bottom:0}
+  .upm-label{display:flex;align-items:center;justify-content:space-between;font-size:12px;font-weight:600;color:#334155;margin-bottom:7px;letter-spacing:.01em}
+  .upm-label .upm-hint{font-size:11px;font-weight:500;color:#94A3B8}
+  .upm-input,.upm-select{width:100%;padding:10px 13px;border:1.5px solid #E2E8F0;border-radius:9px;font:500 13px 'Outfit',sans-serif;color:#0F172A;background:#fff;outline:none;transition:.15s;box-sizing:border-box}
+  .upm-input:focus,.upm-select:focus{border-color:#1B4FD8;box-shadow:0 0 0 3px rgba(27,79,216,.1)}
+  .upm-input::placeholder{color:#94A3B8;font-weight:400}
+  .upm-grid-2{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+  .upm-grid-3{display:grid;grid-template-columns:1fr 1fr 1fr;gap:12px}
+  .upm-help{font-size:11.5px;color:#64748B;margin-top:5px;line-height:1.45}
+  .upm-banner{padding:10px 12px;border-radius:9px;font-size:11.5px;line-height:1.5;display:flex;gap:8px;align-items:flex-start}
+  .upm-banner-blue{background:#F0F6FF;color:#1E40AF;border:1px solid #DBEAFE}
+  .upm-banner-amber{background:#FFFBEB;color:#92400E;border:1px solid #FEF3C7}
+  .upm-dropzone{border:2px dashed #CBD5E1;border-radius:12px;padding:28px 20px;text-align:center;background:linear-gradient(180deg,#FAFBFD 0%,#fff 100%);transition:.15s}
+  .upm-dropzone:hover{border-color:#93C5FD;background:linear-gradient(180deg,#F0F6FF 0%,#fff 100%)}
+  .upm-dropzone.has-file{border-color:#10B981;border-style:solid;background:linear-gradient(180deg,#F0FDF4 0%,#fff 100%)}
+  .upm-file-btn{padding:9px 18px;background:#1B4FD8;border:none;border-radius:9px;color:#fff;font:600 13px 'Outfit',sans-serif;cursor:pointer;transition:.15s}
+  .upm-file-btn:hover{background:#1740B5}
+  .upm-foot{display:flex;gap:10px;padding:18px 28px;border-top:1px solid #EEF2F7;background:#FAFBFD}
+  .upm-btn-primary{flex:1;padding:12px 18px;background:linear-gradient(135deg,#1B4FD8 0%,#3B82F6 100%);color:#fff;border:none;border-radius:10px;font:700 14px 'Outfit',sans-serif;cursor:pointer;transition:.15s;box-shadow:0 4px 12px rgba(27,79,216,.25)}
+  .upm-btn-primary:hover{transform:translateY(-1px);box-shadow:0 6px 16px rgba(27,79,216,.3)}
+  .upm-btn-primary:disabled{opacity:.6;cursor:not-allowed;transform:none}
+  .upm-btn-ghost{padding:12px 20px;background:#fff;border:1.5px solid #E2E8F0;border-radius:10px;color:#475569;font:600 14px 'Outfit',sans-serif;cursor:pointer;transition:.15s}
+  .upm-btn-ghost:hover{background:#F8FAFC;border-color:#CBD5E1}
+  .upm-tabpanel{display:none}
+  .upm-tabpanel.active{display:block;animation:upmFade .2s ease}
+  @keyframes upmFade{from{opacity:0;transform:translateY(4px)}to{opacity:1;transform:translateY(0)}}
+  .upm-pill{display:inline-flex;align-items:center;gap:5px;padding:3px 9px;background:#F0F6FF;color:#1E40AF;border-radius:6px;font-size:11px;font-weight:600;margin-left:6px}
+  @media(max-width:640px){
+    .upm-card{margin:0;border-radius:0;min-height:100vh;max-width:100%}
+    .upm-grid-2,.upm-grid-3{grid-template-columns:1fr}
+    .upm-body{padding:18px 20px;max-height:calc(100vh - 180px)}
+    .upm-head,.upm-foot{padding:16px 20px}
+  }
+</style>
+
+<div id="pdfUploadModal" class="upm-modal" onclick="if(event.target===this)closePdfUploadModal()">
+  <div class="upm-card">
+    <!-- Header -->
+    <div class="upm-head">
       <div>
-        <div style="font-size:12px;font-weight:700;color:#64748B;margin-bottom:6px">Fan</div>
-        <select id="pdfSubject" style="width:100%;padding:10px 12px;border:1.5px solid #E2E8F0;border-radius:8px;font-family:'Outfit',sans-serif;font-size:13px;outline:none">
-          <option value="algo">💻 Algoritmlar</option>
-          <option value="ai">🤖 Sun'iy Intellekt</option>
-          <option value="math">📐 Matematika</option>
-          <option value="db">🗄️ Ma'lumotlar Bazasi</option>
-          <option value="web">🌐 Web Dasturlash</option>
-        </select>
+        <h3>📂 Savollar yuklash</h3>
+        <p>PDF, Word, JSON yoki TXT fayldan savollarni bazaga kiritish</p>
       </div>
-      <div>
-        <div style="font-size:12px;font-weight:700;color:#64748B;margin-bottom:6px">Tur</div>
-        <select id="pdfType" style="width:100%;padding:10px 12px;border:1.5px solid #E2E8F0;border-radius:8px;font-family:'Outfit',sans-serif;font-size:13px;outline:none">
-          <option value="test">🧪 Test</option>
-          <option value="real">📋 Sesiya</option>
-          <option value="both">📝 Ikkalasi</option>
-        </select>
-      </div>
-    </div>
-    <div style="background:#F0FDF4;border:1px solid #86EFAC;border-radius:10px;padding:10px 14px;margin-bottom:14px;font-size:12px;color:#166534">
-      📄 <strong>PDF / TXT / Word:</strong> <code>1. Savol? A) ... B) ... C) ... D) ... To'g'ri: A</code><br>
-      📋 <strong>JSON:</strong> <code>[{"question_text":"...","option_a":"...","option_b":"...","option_c":"...","option_d":"...","correct_option":"A"}]</code><br>
-      📐 <strong>LaTeX/Math:</strong> <code>$E=mc^2$ yoki \frac{a}{b}</code> — formulalar avtomatik ko'rsatiladi
-    </div>
-    <!-- ── Bob (chapter) bo'lish sozlamalari ────────────────────────────── -->
-    <div style="background:#FEF3C7;border:1px solid #FCD34D;border-radius:10px;padding:12px 14px;margin-bottom:14px">
-      <div style="font-size:12px;font-weight:700;color:#92400E;margin-bottom:8px">📚 Boblarga bo'lish tartibi</div>
-      <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:8px">
-        <div>
-          <div style="font-size:11px;color:#78350F;margin-bottom:4px">Rejim</div>
-          <select id="pdfChapterMode" onchange="(function(v){var l=document.getElementById('pdfChapterValueLabel');var i=document.getElementById('pdfChapterValue');if(v==='size'){l.textContent='Har bobda savollar soni';i.value=i.value||'20';}else if(v==='count'){l.textContent='Jami boblar soni';i.value=i.value||'20';}else{l.textContent='—';i.value='';}})(this.value)" style="width:100%;padding:8px 10px;border:1.5px solid #FCD34D;border-radius:8px;font-family:'Outfit',sans-serif;font-size:13px;background:#fff">
-            <option value="size">🔢 Har bobda N ta savol</option>
-            <option value="count">📦 Jami N ta bob bo'lsin</option>
-            <option value="auto">⚡ Avtomatik (har 20 = 1 bob)</option>
-          </select>
-        </div>
-        <div>
-          <div style="font-size:11px;color:#78350F;margin-bottom:4px" id="pdfChapterValueLabel">Har bobda savollar soni</div>
-          <input id="pdfChapterValue" type="number" min="1" max="500" value="20" style="width:100%;padding:8px 10px;border:1.5px solid #FCD34D;border-radius:8px;font-family:'Outfit',sans-serif;font-size:13px;background:#fff">
-        </div>
-      </div>
-      <div style="font-size:11px;color:#92400E;line-height:1.4">
-        💡 <strong>Misol:</strong> 200 savol yuklasangiz —<br>
-        &nbsp;&nbsp;• "Har bobda 20 ta" → 10 ta bob (har birida 20)<br>
-        &nbsp;&nbsp;• "Jami 20 ta bob" → 20 ta bob (har birida 10)
-      </div>
+      <button class="upm-x" onclick="closePdfUploadModal()" aria-label="Yopish">✕</button>
     </div>
 
-    <!-- ── Talabaga ko'rsatish sozlamalari (random + jadval + ruxsat) ──── -->
-    <div style="background:#EEF3FF;border:1px solid #93C5FD;border-radius:10px;padding:12px 14px;margin-bottom:14px">
-      <div style="font-size:12px;font-weight:700;color:#1B4FD8;margin-bottom:8px">🎓 Talabaga ko'rsatish sozlamalari (ixtiyoriy)</div>
-
-      <!-- Random savol soni -->
-      <div style="margin-bottom:10px">
-        <div style="font-size:11px;color:#1E3A8A;margin-bottom:4px">🎲 Har safar tasodifiy nechta savol ko'rsatilsin?</div>
-        <input id="pdfRandomCount" type="number" min="1" max="500" placeholder="Bo'sh = hammasi" style="width:100%;padding:8px 10px;border:1.5px solid #93C5FD;border-radius:8px;font-family:'Outfit',sans-serif;font-size:13px;background:#fff">
-        <div style="font-size:10.5px;color:#475569;margin-top:3px">Masalan: bobda 50 savol bo'lsa, "10" yozsangiz talabaga har safar 10 ta tasodifiy savol chiqadi.</div>
+    <!-- Tabs -->
+    <div class="upm-body">
+      <div class="upm-tabs" role="tablist">
+        <button type="button" class="upm-tab active" data-upm-tab="basic"    onclick="upmTab('basic')">📋 Asosiy</button>
+        <button type="button" class="upm-tab"        data-upm-tab="chapters" onclick="upmTab('chapters')">📚 Boblar</button>
+        <button type="button" class="upm-tab"        data-upm-tab="access"   onclick="upmTab('access')">🎓 Ruxsat</button>
+        <button type="button" class="upm-tab"        data-upm-tab="file"     onclick="upmTab('file')">📄 Fayl</button>
       </div>
 
-      <!-- Boshlanish / Tugash kalendar -->
-      <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:10px">
-        <div>
-          <div style="font-size:11px;color:#1E3A8A;margin-bottom:4px">📅 Boshlanish</div>
-          <input id="pdfAvailableFrom" type="datetime-local" style="width:100%;padding:8px 10px;border:1.5px solid #93C5FD;border-radius:8px;font-family:'Outfit',sans-serif;font-size:12.5px;background:#fff">
+      <!-- TAB: Basic ──────────────────────────────────────────────── -->
+      <div class="upm-tabpanel active" data-upm-panel="basic">
+        <div class="upm-section">
+          <div class="upm-grid-2">
+            <div>
+              <div class="upm-label">Fan</div>
+              <select id="pdfSubject" class="upm-select">
+                <option value="algo">💻 Algoritmlar</option>
+                <option value="ai">🤖 Sun'iy Intellekt</option>
+                <option value="math">📐 Matematika</option>
+                <option value="db">🗄️ Ma'lumotlar Bazasi</option>
+                <option value="web">🌐 Web Dasturlash</option>
+              </select>
+            </div>
+            <div>
+              <div class="upm-label">Tur</div>
+              <select id="pdfType" class="upm-select">
+                <option value="test">🧪 Test (mashq)</option>
+                <option value="real">📋 Sesiya (rasmiy)</option>
+                <option value="both">📝 Ikkalasi</option>
+              </select>
+            </div>
+          </div>
         </div>
-        <div>
-          <div style="font-size:11px;color:#1E3A8A;margin-bottom:4px">⏳ Tugash</div>
-          <input id="pdfAvailableTo" type="datetime-local" style="width:100%;padding:8px 10px;border:1.5px solid #93C5FD;border-radius:8px;font-family:'Outfit',sans-serif;font-size:12.5px;background:#fff">
+        <div class="upm-section">
+          <div class="upm-label">Qabul qilinadigan formatlar</div>
+          <div class="upm-banner upm-banner-blue">
+            <span>💡</span>
+            <div>
+              <strong>PDF / Word / TXT:</strong> <code style="background:#fff;padding:1px 5px;border-radius:4px;font-size:11px">1. Savol? A) ... B) ... C) ... D) ... To'g'ri: A</code><br>
+              <strong>JSON:</strong> massiv ko'rinishida — <code style="background:#fff;padding:1px 5px;border-radius:4px;font-size:11px">[{"question_text":"...","option_a":"...","correct_option":"A"}]</code><br>
+              <strong>Formulalar:</strong> <code style="background:#fff;padding:1px 5px;border-radius:4px;font-size:11px">$E=mc^2$</code> avtomatik tahlil qilinadi
+            </div>
+          </div>
         </div>
       </div>
 
-      <!-- Kurs / Guruh -->
-      <div style="display:grid;grid-template-columns:1fr 2fr;gap:10px">
-        <div>
-          <div style="font-size:11px;color:#1E3A8A;margin-bottom:4px">👥 Kurs</div>
-          <select id="pdfAllowedYear" style="width:100%;padding:8px 10px;border:1.5px solid #93C5FD;border-radius:8px;font-family:'Outfit',sans-serif;font-size:13px;background:#fff">
-            <option value="">Hammasi</option>
-            <option value="1">1-kurs</option>
-            <option value="2">2-kurs</option>
-            <option value="3">3-kurs</option>
-            <option value="4">4-kurs</option>
-            <option value="5">5-kurs</option>
-            <option value="6">6-kurs</option>
-          </select>
+      <!-- TAB: Chapters ───────────────────────────────────────────── -->
+      <div class="upm-tabpanel" data-upm-panel="chapters">
+        <div class="upm-section">
+          <div class="upm-grid-2">
+            <div>
+              <div class="upm-label">Bo'lish rejimi</div>
+              <select id="pdfChapterMode" class="upm-select"
+                onchange="(function(v){var l=document.getElementById('pdfChapterValueLabel');var i=document.getElementById('pdfChapterValue');if(v==='size'){l.textContent='Har bobdagi savollar soni';i.value=i.value||'20';i.disabled=false;}else if(v==='count'){l.textContent='Boblar soni';i.value=i.value||'20';i.disabled=false;}else{l.textContent='Avtomatik';i.value='';i.disabled=true;}})(this.value)">
+                <option value="size">🔢 Har bobda N savol</option>
+                <option value="count">📦 Jami N ta bob</option>
+                <option value="auto">⚡ Avtomatik (20/bob)</option>
+              </select>
+            </div>
+            <div>
+              <div class="upm-label" id="pdfChapterValueLabel">Har bobdagi savollar soni</div>
+              <input id="pdfChapterValue" type="number" min="1" max="500" value="20" class="upm-input">
+            </div>
+          </div>
         </div>
-        <div>
-          <div style="font-size:11px;color:#1E3A8A;margin-bottom:4px">🏷 Guruhlar (vergul bilan)</div>
-          <input id="pdfAllowedGroups" type="text" placeholder="masalan: 101, 102, 201A — bo'sh = hammasi" style="width:100%;padding:8px 10px;border:1.5px solid #93C5FD;border-radius:8px;font-family:'Outfit',sans-serif;font-size:13px;background:#fff">
+        <div class="upm-banner upm-banner-amber">
+          <span>📊</span>
+          <div>
+            <strong>Misol:</strong> 200 savol yuklasangiz —
+            <strong>"Har bobda 20"</strong> → 10 bob × 20 savol;
+            <strong>"Jami 20 ta bob"</strong> → 20 bob × 10 savol.
+          </div>
         </div>
       </div>
 
-      <div style="font-size:10.5px;color:#1E3A8A;margin-top:8px;line-height:1.4">
-        ℹ️ Bo'sh qoldirilgan maydonlar — <strong>hech qanday cheklov yo'q</strong> degan ma'noni anglatadi.
-        Qisman to'ldirsangiz, faqat shu shartlar amal qiladi.
+      <!-- TAB: Access ─────────────────────────────────────────────── -->
+      <div class="upm-tabpanel" data-upm-panel="access">
+        <div class="upm-section">
+          <div class="upm-label">🎲 Tasodifiy savol soni <span class="upm-hint">ixtiyoriy</span></div>
+          <input id="pdfRandomCount" type="number" min="1" max="500" placeholder="Bo'sh — barchasi ko'rsatiladi" class="upm-input">
+          <div class="upm-help">Bobda 50 savol bo'lsa va bu yerga <strong>10</strong> yozsangiz, talabaga har safar tasodifiy 10 ta chiqadi.</div>
+        </div>
+
+        <div class="upm-section">
+          <div class="upm-label">📅 Faollik oynasi <span class="upm-hint">ixtiyoriy</span></div>
+          <div class="upm-grid-2">
+            <div>
+              <div style="font-size:11px;color:#64748B;margin-bottom:5px;font-weight:500">Boshlanish</div>
+              <input id="pdfAvailableFrom" type="datetime-local" class="upm-input">
+            </div>
+            <div>
+              <div style="font-size:11px;color:#64748B;margin-bottom:5px;font-weight:500">Tugash</div>
+              <input id="pdfAvailableTo" type="datetime-local" class="upm-input">
+            </div>
+          </div>
+          <div class="upm-help">Sana belgilansa, bob faqat shu oraliqda talabaga ko'rinadi.</div>
+        </div>
+
+        <div class="upm-section">
+          <div class="upm-label">👥 Ruxsat berilgan auditoriya <span class="upm-hint">ixtiyoriy</span></div>
+          <div class="upm-grid-2">
+            <div>
+              <div style="font-size:11px;color:#64748B;margin-bottom:5px;font-weight:500">Kurs</div>
+              <select id="pdfAllowedYear" class="upm-select">
+                <option value="">Barcha kurslar</option>
+                <option value="1">1-kurs</option>
+                <option value="2">2-kurs</option>
+                <option value="3">3-kurs</option>
+                <option value="4">4-kurs</option>
+                <option value="5">5-kurs (magistr)</option>
+                <option value="6">6-kurs (magistr)</option>
+              </select>
+            </div>
+            <div>
+              <div style="font-size:11px;color:#64748B;margin-bottom:5px;font-weight:500">Guruhlar</div>
+              <input id="pdfAllowedGroups" type="text" placeholder="101, 102, 201A" class="upm-input">
+            </div>
+          </div>
+          <div class="upm-help">Vergul bilan ajrating. Bo'sh qoldirilsa — barcha guruhlarga ochiq.</div>
+        </div>
+
+        <div class="upm-banner upm-banner-blue" style="margin-top:6px">
+          <span>ℹ️</span>
+          <div>Bu yerdagi sozlamalar shu yuklashda yaratiladigan <strong>har bir yangi bobga</strong> birdek qo'llanadi. Keyinroq alohida boblar uchun o'zgartirish mumkin.</div>
+        </div>
+      </div>
+
+      <!-- TAB: File ───────────────────────────────────────────────── -->
+      <div class="upm-tabpanel" data-upm-panel="file">
+        <div class="upm-section">
+          <div class="upm-dropzone" id="pdfDropzone">
+            <div style="font-size:44px;line-height:1;margin-bottom:10px">📄</div>
+            <div style="font-size:15px;font-weight:700;color:#0F172A;margin-bottom:4px">Faylni tanlang yoki bu yerga tashlang</div>
+            <div style="font-size:12px;color:#94A3B8;margin-bottom:16px">PDF · TXT · Word (docx) · JSON · CSV · max 10 MB</div>
+            <input type="file" id="pdfFileInput" accept=".pdf,.json,.txt,.doc,.docx,.xlsx,.csv" style="display:none"
+              onchange="(function(f){var n=document.getElementById('pdfFileName');var z=document.getElementById('pdfDropzone');if(f){n.textContent='✓ '+f.name+' ('+(f.size/1024).toFixed(1)+' KB)';z.classList.add('has-file');}else{n.textContent='';z.classList.remove('has-file');}})(this.files[0])">
+            <button type="button" class="upm-file-btn" onclick="document.getElementById('pdfFileInput').click()">Fayl tanlash</button>
+            <div id="pdfFileName" style="margin-top:12px;font-size:12.5px;color:#10B981;font-weight:600"></div>
+          </div>
+        </div>
+        <div class="upm-banner upm-banner-blue">
+          <span>✅</span>
+          <div>Yuklash tugagach, jadval avtomatik yangilanadi. Faqat hozirgi <strong>Fan</strong> + <strong>Tur</strong>ga qo'shiladi — mavjud boblarga ta'sir qilmaydi.</div>
+        </div>
       </div>
     </div>
-    <div style="border:2px dashed #CBD5E1;border-radius:12px;padding:24px;text-align:center;margin-bottom:16px;background:#F8FAFC">
-      <div style="font-size:32px;margin-bottom:8px">📄</div>
-      <div style="font-size:14px;font-weight:600;margin-bottom:4px">Fayl tanlang</div>
-      <div style="font-size:12px;color:#94A3B8;margin-bottom:12px">PDF · TXT · Word (docx) · JSON · CSV (max 10 MB)</div>
-      <input type="file" id="pdfFileInput" accept=".pdf,.json,.txt,.doc,.docx,.xlsx,.csv" style="display:none" onchange="document.getElementById('pdfFileName').textContent=this.files[0]?.name||'Fayl tanlanmagan'">
-      <button onclick="document.getElementById('pdfFileInput').click()" style="padding:8px 20px;background:#EEF3FF;border:1.5px solid #93C5FD;border-radius:8px;color:#1B4FD8;font-family:'Outfit',sans-serif;font-size:13px;font-weight:600;cursor:pointer">Fayl tanlash</button>
-      <div id="pdfFileName" style="margin-top:8px;font-size:12px;color:#1B4FD8;font-weight:600"></div>
-    </div>
-    <div style="display:flex;gap:10px">
-      <button id="pdfUploadBtn" onclick="uploadQuestionsPDF()" style="flex:1;padding:12px;background:linear-gradient(135deg,#1B4FD8,#3B82F6);color:white;border:none;border-radius:10px;font-family:'Outfit',sans-serif;font-size:14px;font-weight:700;cursor:pointer">📤 Yuklash</button>
-      <button onclick="closePdfUploadModal()" style="padding:12px 20px;background:white;border:2px solid #E2E8F0;border-radius:10px;font-family:'Outfit',sans-serif;font-size:14px;cursor:pointer">Bekor</button>
+
+    <!-- Footer -->
+    <div class="upm-foot">
+      <button class="upm-btn-ghost" onclick="closePdfUploadModal()">Bekor qilish</button>
+      <button id="pdfUploadBtn" class="upm-btn-primary" onclick="uploadQuestionsPDF()">📤 Yuklash</button>
     </div>
   </div>
 </div>
+
+<script>
+function upmTab(name) {
+  document.querySelectorAll('#pdfUploadModal .upm-tab').forEach(function(t){
+    t.classList.toggle('active', t.getAttribute('data-upm-tab') === name);
+  });
+  document.querySelectorAll('#pdfUploadModal .upm-tabpanel').forEach(function(p){
+    p.classList.toggle('active', p.getAttribute('data-upm-panel') === name);
+  });
+}
+</script>
 
 <!-- MODAL: Savol qo'shish / tahrirlash -->
 <div id="addQuestionModal" style="display:none;position:fixed;top:0;left:0;width:100%;height:100%;background:rgba(0,0,0,0.5);z-index:3000;overflow:auto">
@@ -3805,7 +3915,7 @@
   </div>
 </div>
   <!-- ===== IDU Platform — Modular Architecture ===== -->
-  <script defer src="js/core/config.js?v=20260523p"></script>
+  <script defer src="js/core/config.js?v=20260523q"></script>
   <script defer src="js/core/auth.js?v=20260517d"></script>
   <script defer src="js/core/router.js?v=20260517d"></script>
   <script defer src="js/core/ui-utils.js?v=20260522a"></script>
@@ -3814,13 +3924,13 @@
   <script defer src="js/ui/effects.js?v=20260517d"></script>
   <script defer src="js/pages/student.js?v=20260517d"></script>
   <script defer src="js/pages/teacher.js?v=20260517d"></script>
-  <script defer src="js/pages/dekanat.js?v=20260523p"></script>
+  <script defer src="js/pages/dekanat.js?v=20260523q"></script>
   <script defer src="js/pages/investor.js?v=20260517d"></script>
   <script defer src="js/features/schedule.js?v=20260517d"></script>
   <script defer src="js/features/assignments.js?v=20260517d"></script>
   <script defer src="js/features/grades.js?v=20260517d"></script>
   <script defer src="js/features/ai-chat.js?v=20260520f"></script>
-  <script defer src="js/features/exams.js?v=20260523p"></script>
+  <script defer src="js/features/exams.js?v=20260523q"></script>
   <script defer src="js/features/games.js?v=20260517d"></script>
   <script defer src="js/features/reports.js?v=20260517d"></script>
   <script defer src="js/features/stats.js?v=20260521a"></script>
@@ -4413,12 +4523,12 @@ document.addEventListener('DOMContentLoaded', function () {
 ──────────────────────────────────────────────────────────────────────────── -->
 <script>
 (function () {
-  var EXPECTED = 'v=20260523p';
+  var EXPECTED = 'v=20260523q';
   var dekEl = document.querySelector('script[src*="dekanat.js"]');
   if (dekEl && dekEl.getAttribute('src').indexOf(EXPECTED) === -1) {
     // Old index.html — force a fresh fetch
     var base = window.location.href.split('?')[0].split('#')[0];
-    window.location.replace(base + '?_bust=20260523p' + (window.location.hash || ''));
+    window.location.replace(base + '?_bust=20260523q' + (window.location.hash || ''));
   }
 }());
 </script>
