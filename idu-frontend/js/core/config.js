@@ -7,17 +7,15 @@ var API_BASE = (function () {
   var meta = document.querySelector('meta[name="api-base"]');
   if (meta && meta.content) return meta.content;
 
-  // 2. Same-origin deployment (Railway / localhost)
-  var sameOriginHosts = [
-    'idu-platform-production.up.railway.app',
-    'localhost',
-    '127.0.0.1',
-  ];
-  if (sameOriginHosts.some(function(h) { return window.location.hostname.indexOf(h) !== -1; })) {
-    return '/api/v1';
-  }
+  var h = window.location.hostname;
 
-  // 3. Separate frontend domain — point at backend
+  // 2. Localhost dev
+  if (h === 'localhost' || h === '127.0.0.1') return '/api/v1';
+
+  // 3. ANY Railway deployment — always same-origin (backend + frontend on same service)
+  if (h.endsWith('.railway.app')) return '/api/v1';
+
+  // 4. Unknown domain — fall back to known production backend
   return 'https://idu-platform-production.up.railway.app/api/v1';
 }());
 

@@ -528,7 +528,10 @@ async function uploadQuestionsPDF() {
       formData.append('subject', subject);
       formData.append('type', type || 'test');
       const token = (typeof _apiToken !== 'undefined' && _apiToken) || localStorage.getItem('idu_jwt');
-      const res = await fetch(window.location.origin + '/api/questions/upload-pdf', {
+      // Derive upload base from API_BASE so it works on any Railway subdomain
+      const _uploadBase = (typeof API_BASE !== 'undefined' && API_BASE.startsWith('http'))
+        ? new URL(API_BASE).origin : window.location.origin;
+      const res = await fetch(_uploadBase + '/api/questions/upload-pdf', {
         method: 'POST',
         headers: token ? { 'Authorization': 'Bearer ' + token } : {},
         body: formData
