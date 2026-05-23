@@ -412,7 +412,21 @@ async function _renderQTable(filter) {
     const raw = await api('GET', url);
     const qs = Array.isArray(raw) ? raw : (raw && Array.isArray(raw.data) ? raw.data : []);
     console.log('[QTable] got '+qs.length+' questions');
-    if (!qs.length) { tbody.innerHTML='<tr><td colspan="6" style="text-align:center;color:var(--text3);padding:40px">Hali savol kiritilmagan</td></tr>'; return; }
+    if (!qs.length) {
+      tbody.innerHTML='<tr><td colspan="6" style="text-align:center;color:var(--text3);padding:30px">'
+        +'<div>Hali savol kiritilmagan</div>'
+        +'<div style="margin-top:8px;font-size:11px;color:#94A3B8">So\'rov: <code>'+url+'</code> → 0 natija</div>'
+        +'<button onclick="window.__debugQs()" style="margin-top:10px;padding:6px 14px;background:#EEF3FF;border:1px solid #CBD5E1;border-radius:8px;font-size:12px;cursor:pointer;color:#1B4FD8">🔍 API ni tekshir</button>'
+        +'</td></tr>';
+      window.__debugQs = async function() {
+        try {
+          const r1 = await api('GET', '/questions?limit=5');
+          const r2 = await api('GET', '/questions?limit=1000');
+          alert('limit=5 → '+JSON.stringify(r1).slice(0,200)+'\n\nlimit=1000 → '+r2.length+' ta savol\n\nFilter: '+filter+'\nURL: '+url);
+        } catch(e) { alert('API xatosi: '+e.message); }
+      };
+      return;
+    }
     const opts = ['option_a','option_b','option_c','option_d'];
     tbody.innerHTML = qs.map((q,i) => '<tr><td><strong>'+(i+1)+'</strong></td><td><span style="padding:3px 8px;background:#EEF3FF;border-radius:6px;font-size:11.5px;font-weight:700;color:#1B4FD8">'+(SUBJ_LABELS[q.subject]||q.subject)+'</span></td><td><span style="padding:3px 8px;border-radius:6px;font-size:11.5px;font-weight:700;background:'+(q.type==='test'?'#DCFCE7':q.type==='real'?'#FEE2E2':'#F3E8FF')+';color:'+(q.type==='test'?'#16A34A':q.type==='real'?'#DC2626':'#7C3AED')+'">'+(TYPE_LABELS[q.type]||q.type)+'</span></td><td><div style="font-weight:600;font-size:13px">'+q.question_text.substring(0,80)+(q.question_text.length>80?'...':'')+'</div></td><td style="font-size:12px;color:#16A34A;font-weight:600">'+q.correct_option+'</td><td><div style="display:flex;gap:5px"><button onclick="editQuestion('+q.id+')" style="padding:5px 10px;background:#EEF3FF;border:none;border-radius:6px;color:#1B4FD8;font-size:12px;cursor:pointer">✏️</button><button onclick="deleteQuestion('+q.id+')" style="padding:5px 10px;background:#FEE2E2;border:none;border-radius:6px;color:#DC2626;font-size:12px;cursor:pointer">🗑️</button></div></td></tr>').join('');
   } catch(e) { console.error('[QTable] xato:', e); tbody.innerHTML='<tr><td colspan="6" style="text-align:center;color:var(--red);padding:20px">Xato: '+e.message+'</td></tr>'; }
