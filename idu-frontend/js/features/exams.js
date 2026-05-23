@@ -1425,22 +1425,25 @@ async function launchSecureExam(examType, subject) {
 }
 // ============================================================
 // 21. BACKWARD COMPAT STUBS
+// Only stub functions that DON'T exist elsewhere — never override real
+// implementations from dekanat.js / teacher-exams.js (load order matters:
+// later scripts win for plain function declarations).
 // ============================================================
-function renderQuiz() {}
-function answerQuiz() {}
-function startExamTimer() {}
-function getRealQuestions() { return typeof REAL_EXAM_QUESTIONS !== 'undefined' ? REAL_EXAM_QUESTIONS : []; }
-function loadDekanatQuestions() {}
-function saveDekanatQuestions() {}
-function renderDekanatQuestions() {}
-function openAddQuestionModal() {}
-function editQuestion() {}
-function deleteQuestion() {}
-function clearAllDekanatQuestions() {}
-function saveQuestionModal() {}
-function closeQuestionModal() {}
-function startExamSession() {}
-function submitTestExam() {}
+if (typeof window.renderQuiz              !== 'function') window.renderQuiz = function () {};
+if (typeof window.answerQuiz              !== 'function') window.answerQuiz = function () {};
+if (typeof window.startExamTimer          !== 'function') window.startExamTimer = function () {};
+if (typeof window.getRealQuestions        !== 'function') window.getRealQuestions = function () { return typeof REAL_EXAM_QUESTIONS !== 'undefined' ? REAL_EXAM_QUESTIONS : []; };
+if (typeof window.loadDekanatQuestions    !== 'function') window.loadDekanatQuestions = function () {};
+if (typeof window.saveDekanatQuestions    !== 'function') window.saveDekanatQuestions = function () {};
+if (typeof window.renderDekanatQuestions  !== 'function') window.renderDekanatQuestions = function () {};
+if (typeof window.openAddQuestionModal    !== 'function') window.openAddQuestionModal = function () {};
+if (typeof window.editQuestion            !== 'function') window.editQuestion = function () {};
+if (typeof window.deleteQuestion          !== 'function') window.deleteQuestion = function () {};
+if (typeof window.clearAllDekanatQuestions!== 'function') window.clearAllDekanatQuestions = function () {};
+if (typeof window.saveQuestionModal       !== 'function') window.saveQuestionModal = function () {};
+if (typeof window.closeQuestionModal      !== 'function') window.closeQuestionModal = function () {};
+if (typeof window.startExamSession        !== 'function') window.startExamSession = function () {};
+if (typeof window.submitTestExam          !== 'function') window.submitTestExam = function () {};
 
 
 
