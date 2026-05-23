@@ -11,12 +11,18 @@ router.use(authenticate);
 
 // ── GET /api/subjects — all active subjects (any authenticated user) ──────────
 router.get('/', async (req, res) => {
-  const { rows } = await db.query(
-    `SELECT id, code, label, icon, sort_order
-     FROM subjects WHERE is_active = TRUE
-     ORDER BY sort_order, label`
-  );
-  res.json(rows);
+  try {
+    const { rows } = await db.query(
+      `SELECT id, code, label, icon, sort_order
+       FROM subjects WHERE is_active = TRUE
+       ORDER BY sort_order, label`
+    );
+    res.json(rows);
+  } catch (err) {
+    // subjects table may not exist yet (migration pending) — return empty array
+    // so the frontend uses its fallback list instead of crashing
+    res.json([]);
+  }
 });
 
 // ── POST /api/subjects — add new subject ──────────────────────────────────────

@@ -394,8 +394,21 @@ async function _updateQStats() {
     const e1=document.getElementById('qStatTotal'); if(e1)e1.textContent=total;
     const e2=document.getElementById('qStatTest'); if(e2)e2.textContent=_allDekQuestions.filter(q=>q.type==='test'||q.type==='both').length;
     const e3=document.getElementById('qStatReal'); if(e3)e3.textContent=_allDekQuestions.filter(q=>q.type==='real'||q.type==='both').length;
-    const e4=document.getElementById('qStatSubjects'); if(e4)e4.textContent=[...new Set(_allDekQuestions.map(q=>q.subject))].length;
-  } catch(e) {}
+    const uniqueSubjs = [...new Set(_allDekQuestions.map(q=>q.subject))];
+    const e4=document.getElementById('qStatSubjects'); if(e4)e4.textContent=uniqueSubjs.length;
+
+    // If /subjects API failed (404), build subjects from actual questions in DB
+    // so filter chips include all real subjects (e.g. 'sardor')
+    var missingSubjs = uniqueSubjs.filter(function(code) {
+      return !_subjects.find(function(s){ return s.code===code; });
+    });
+    if (missingSubjs.length) {
+      missingSubjs.forEach(function(code) {
+        _subjects.push({ id: 0, code: code, label: code, icon: '📚', sort_order: 99 });
+      });
+      _rebuildSubjHelpers();
+    }
+  } catch(e) { console.error('[stats] xato:', e); }
 }
 
 async function _renderQTable(filter) {
