@@ -271,6 +271,10 @@ app.get('*', (req, res) => {
     return res.status(404).json({ error: 'API route not found' });
   }
   if (!frontendDir) return res.status(500).send('Frontend not found');
+  // Force browser to always re-fetch index.html so new script versions take effect
+  res.setHeader('Cache-Control', 'no-store, no-cache, must-revalidate');
+  res.setHeader('Pragma', 'no-cache');
+  res.setHeader('Expires', '0');
   res.sendFile(path.join(frontendDir, 'index.html'));
 });
 

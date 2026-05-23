@@ -307,7 +307,39 @@ router.post(
     // These PDFs contain mathematical matrices and cannot be parsed by regex.
     // Use GPT-4 with a matrix-specific prompt to reconstruct LaTeX from garbled text.
     const hashBlocks = rawText.split(/\n?#+\s*/).filter(s => s.trim().length > 15);
-    const isMatrixPdf = hashBlocks.length >= 3 && process.env.OPENAI_API_KEY;
+    const isMatrixPdf = hashBlocks.length >= 3;
+
+    // ── Hash-split fallback (no GPT-4 needed) ─────────────────────────────────
+    // Even without AI, save the question blocks so they appear in the system.
+    // Each block's text is stored as-is; options are extracted by '=' separators.
+    if (isMatrixPdf && questions.length < hashBlocks.length / 2) {
+      const hashParsed = hashBlocks.map((block, idx) => {
+        const clean = block.replace(/[□■▪▫◻◼]/g, '').replace(/\s{3,}/g, ' ').trim();
+        if (clean.length < 10) return null;
+        // Split block into question part and options part
+        // Options usually start after "toping" or "toping." or after 4 '=' signs
+        const topingIdx = clean.search(/toping[\.\s]/i);
+        const qEnd = topingIdx > 0 ? topingIdx + 6 : Math.floor(clean.length * 0.4);
+        const qText = clean.slice(0, qEnd).trim() || clean.slice(0, 200).trim();
+        const optPart = clean.slice(qEnd).trim();
+        // Try to split options by '=(' or '= (' pattern
+        const optSplit = optPart.split(/=\s*\(|\n{2,}/).map(s => s.trim()).filter(s => s.length > 0);
+        return {
+          text: 'Savol ' + (idx + 1) + ': ' + qText,
+          a: optSplit[0] ? ('(' + optSplit[0]).slice(0, 200) : '(variant A)',
+          b: optSplit[1] ? ('(' + optSplit[1]).slice(0, 200) : '(variant B)',
+          c: optSplit[2] ? ('(' + optSplit[2]).slice(0, 200) : '(variant C)',
+          d: optSplit[3] ? ('(' + optSplit[3]).slice(0, 200) : '(variant D)',
+          correct: 'A',
+          explanation: null,
+        };
+      }).filter(Boolean);
+
+      if (hashParsed.length > questions.length) {
+        questions = hashParsed;
+        logger.info(`[upload-pdf] Hash-split fallback: ${questions.length} blocks saved`);
+      }
+    }
 
     if ((isMatrixPdf && questions.length < hashBlocks.length / 2) && process.env.OPENAI_API_KEY) {
       try {
