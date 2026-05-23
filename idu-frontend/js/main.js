@@ -4943,8 +4943,8 @@ function startTestWithChapter(subj, chapterNum) {
 
 // ── Override: startTestWithSubject now shows chapter picker if chapters exist ─
 startTestWithSubject = async function(subj) {
-  // Ensure questions loaded
-  if (!DEKANAT_QUESTIONS.length && typeof loadDekanatQuestions === 'function') {
+  // Always reload questions to pick up any newly uploaded PDFs
+  if (typeof loadDekanatQuestions === 'function') {
     await loadDekanatQuestions();
     renderTestSubjectGrid();
   }
@@ -4962,7 +4962,7 @@ startTestWithSubject = async function(subj) {
   } else {
     // No DB questions: use built-in questions or show chapter picker with fallback
     var builtIn = (TEST_QUESTIONS_DB[subj] || []).slice(0, 20);
-    if (!builtIn.length) { showToast('ℹ️', 'Savollar', 'Bu fan uchun savollar topilmadi'); return; }
+    if (!builtIn.length) { showToast('ℹ️', 'Savollar', 'Bu fan uchun ' + subj + ' savollari topilmadi'); return; }
 
     _currentTestSubject   = subj;
     _currentTestQuestions = builtIn;

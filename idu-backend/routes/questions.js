@@ -591,8 +591,19 @@ function parsePdfQuestions(rawText) {
   const CYR = { 'А':'A','Б':'B','В':'C','Г':'D','С':'C','Д':'D','а':'A','б':'B','в':'C','г':'D','с':'C','д':'D' };
   const normLetter = ch => CYR[ch] || ch.toUpperCase();
 
-  // Option line: A) A. A: (A) А) etc.
-  const OPT_RE = /^[(]?\s*([AaBbCcDdАБВГ])\s*[.):\-]\s*(.+)/;
+  // Option line: A) A. A: (A) А) and also "A " (space only, some PDFs)
+  // Require option text to be at least 1 char; space-only delimiter needs 3+ chars to avoid false matches
+  const OPT_RE = /^[(]?\s*([AaBbCcDdАБВГСДсд])\s*(?:[.):\-]\s*(.+)|(?=[.):\-])|[.):\-]\s*(.+)|\s{1,3}(\S.{2,}))/;
+
+  function parseOpt(line) {
+    // Try strict form first: A) text, A. text, A: text, (A) text
+    const strict = line.match(/^[(]?\s*([AaBbCcDdАБВГСДсд])\s*[.):\-]\s*(.+)/);
+    if (strict) return { letter: strict[1], val: strict[2].trim() };
+    // Try space-only form: "A some text" — but only if it starts the line
+    const loose = line.match(/^([AaBbCcDdАБВГ])\s{1,4}(\S.{2,})/);
+    if (loose) return { letter: loose[1], val: loose[2].trim() };
+    return null;
+  }
 
   const CORR_RE = [
     /(?:to[''`'′]?[gġ][''`'′]?ri|tog[''`'′]?ri|togri|javob|answer|correct|to['']g['']ri|правильн(?:ый|о|ая)?)\s*[:=]\s*([ABCD])/i,
@@ -618,7 +629,8 @@ function parsePdfQuestions(rawText) {
     let optStart = bLines.length;
 
     for (let i = 0; i < bLines.length; i++) {
-      if (OPT_RE.test(bLines[i]) || /^(?:to[''`']?g|togri|javob|answer|correct)/i.test(bLines[i])) {
+      const parsed = parseOpt(bLines[i]);
+      if (parsed || /^(?:to[''`']?g|togri|javob|answer|correct)/i.test(bLines[i])) {
         optStart = i; break;
       }
       qParts.push(bLines[i]);
@@ -631,10 +643,10 @@ function parsePdfQuestions(rawText) {
 
     for (let i = optStart; i < bLines.length; i++) {
       const line = bLines[i];
-      const optM = line.match(OPT_RE);
+      const optM = parseOpt(line);
       if (optM) {
-        const letter = normLetter(optM[1]);
-        const val = optM[2].trim();
+        const letter = normLetter(optM.letter);
+        const val = optM.val;
         if (/✓|\*/.test(val) && !correct) correct = letter;
         const cleaned = val.replace(/[*✓]/g, '').trim();
         if (letter === 'A') a = cleaned;
@@ -658,41 +670,47 @@ function parsePdfQuestions(rawText) {
     };
   }
 
-  // ── STRATEGY 1: multi-line blocks (standard format) ─────────────────────────
-  // KEY FIX: removed \s from delimiter class — only punctuation triggers new block.
-  // This prevents "33 ta" or page numbers like "34" from splitting blocks.
-  // Also increased gap tolerance from 10 → 100 to handle chapter restarts.
+  // ── STRATEGY 1: multi-line blocks (standard + space-delimited format) ──────────
+  // Handles both "1. Savol" and "1 Savol" formats.
+  // Guard against false positives like "33 ta", "34-yil" using negative lookahead.
   function strategyMultiLine() {
     const results = [];
-    // Delimiter MUST be punctuation (., ), :, -, #) — NOT a plain space.
-    // This is the critical fix: \s was causing "number + space" to split mid-question.
-    const START = /^\s*(\d{1,3})\s*[-.):#]\s*(?:savol[.\s]*)?\s*(.*)/i;
+
+    // Primary: number + punctuation delimiter (most reliable)
+    const START_PUNCT = /^\s*(\d{1,3})\s*[-.):#]\s*(?:savol[.\s]*)?\s*(.*)/i;
+    // Secondary: number + space + real question text (≥8 chars, not a common false-positive word)
+    // Negative lookahead: skip "N ta", "N yil", "N kun", "N oy", "N nchi", standalone page numbers
+    const START_SPACE = /^\s*(\d{1,3})\s+(?!(?:ta|yil|kun|oy|soat|nchi|inch|bet|sahifa|variant|bob|guruh|sinf)\b)(.{8,})/i;
+
     const lines = text.split('\n');
     const blocks = [];
     let cur = null;
     let lastNum = 0;
-    let globalMax = 0;
 
     for (const line of lines) {
       const trimmed = line.trim();
       if (!trimmed) continue;
-      const m = trimmed.match(START);
+
+      // Try punctuation delimiter first, then space delimiter
+      let m = trimmed.match(START_PUNCT) || trimmed.match(START_SPACE);
       if (m) {
         const num = parseInt(m[1], 10);
-        // Accept as new question block if:
-        // - It's the very first block
-        // - Resets to 1 (new chapter/section starts)
-        // - Is sequential (±1) or within reasonable gap (up to 100)
-        // - Is greater than the global max seen (handles large gaps in numbering)
-        const isReset   = num === 1 && lastNum > 5;      // new section
-        const isSeq     = num > lastNum && num <= lastNum + 100;
-        const isFirst   = cur === null;
-        if (isFirst || isReset || isSeq) {
-          if (cur) blocks.push(cur);
-          cur = { num, lines: m[2].trim() ? [m[2].trim()] : [] };
-          lastNum = num;
-          if (num > globalMax) globalMax = num;
-          continue;
+        const rest = (m[2] || '').trim();
+
+        // Sanity: if space-delimited, the rest must look like a sentence (not a lone digit or letter)
+        if (!trimmed.match(START_PUNCT) && rest.length < 8) { m = null; }
+
+        if (m) {
+          const isReset = num === 1 && lastNum > 5;       // new chapter/section
+          const isSeq   = num > lastNum && num <= lastNum + 100;
+          const isFirst = cur === null;
+
+          if (isFirst || isReset || isSeq) {
+            if (cur) blocks.push(cur);
+            cur = { num, lines: rest ? [rest] : [] };
+            lastNum = num;
+            continue;
+          }
         }
       }
       if (cur) cur.lines.push(trimmed);
@@ -709,16 +727,18 @@ function parsePdfQuestions(rawText) {
   // ── STRATEGY 2: single-line scan (PDF flattened everything to one line) ─────
   function strategySingleLine() {
     const results = [];
-    const parts = text
-      .replace(/\n/g, ' ')
-      .split(/(?=\s\d{1,3}\s*[.)]\s)/);
+    const flat = text.replace(/\n/g, ' ');
+    // Split on question number boundaries: "1." "1)" "1 " (space + capital)
+    const parts = flat.split(/(?=\s+\d{1,3}\s*[.)]\s|\s+\d{1,3}\s+[A-ZА-ЯӲҚҒҲЎa-z]{2})/);
 
     for (const part of parts) {
       const trimmed = part.trim();
       if (!trimmed) continue;
-      const noNum = trimmed.replace(/^\d{1,3}\s*[.)]\s*/, '');
+      // Strip leading question number
+      const noNum = trimmed.replace(/^\d{1,3}\s*[-.):#]?\s*/, '');
+      // Split on option boundaries
       const subLines = noNum
-        .split(/\s+(?=[ABCDАБВГabcdабвг]\s*[.):]|\bTo[''']?g|togri|javob|answer|correct)/i)
+        .split(/\s+(?=[ABCDАБВГabcdабвг]\s*[.):\-]|\bTo[''']?g|togri|javob|answer|correct)/i)
         .map(s => s.trim()).filter(Boolean);
       const q = parseBlock(subLines);
       if (q) results.push(q);
@@ -831,25 +851,18 @@ function parsePdfQuestions(rawText) {
     });
   }
 
-  let questions = strategyMultiLine();
+  // Run all strategies; pick the one that finds the most questions
+  const s1 = strategyMultiLine();
+  const s2 = strategySingleLine();
+  const s3 = strategyRegexScan();
+  const s4 = strategyStandaloneOptions();
 
-  // If strategy 1 gave too few results, supplement with other strategies
-  if (questions.length < 10) {
-    const s2 = strategySingleLine();
-    const s3 = strategyRegexScan();
-    const s4 = strategyStandaloneOptions();
-    const merged = dedupByText([...questions, ...s2, ...s3, ...s4]);
-    if (merged.length > questions.length) questions = merged;
-  }
+  // Always merge all strategies — dedup by first 60 chars of question text
+  let questions = dedupByText([...s1, ...s2, ...s3, ...s4]);
 
-  // If still nothing, try all strategies merged
-  if (!questions.length) {
-    questions = dedupByText([
-      ...strategySingleLine(),
-      ...strategyRegexScan(),
-      ...strategyStandaloneOptions(),
-    ]);
-  }
+  // If merged is worse than best single strategy, use best single
+  const best = [s1, s2, s3, s4].reduce((a, b) => a.length >= b.length ? a : b, []);
+  if (best.length > questions.length) questions = best;
 
   return questions;
 }
