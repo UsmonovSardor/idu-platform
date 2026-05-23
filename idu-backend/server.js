@@ -261,7 +261,15 @@ if (!frontendDir) {
     etag:         true,
     lastModified: true,
     setHeaders:   (res, filePath) => {
-      res.setHeader('Cache-Control', staticCacheControl(filePath));
+      const f = filePath.replace(/\\/g, '/');
+      // index.html must never be served from cache — always re-fetch
+      if (f.endsWith('index.html')) {
+        res.setHeader('Cache-Control', 'no-store, no-cache, must-revalidate');
+        res.setHeader('Pragma', 'no-cache');
+        res.setHeader('Expires', '0');
+      } else {
+        res.setHeader('Cache-Control', staticCacheControl(filePath));
+      }
     },
   }));
 }

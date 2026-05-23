@@ -388,7 +388,7 @@ async function renderDekanatQuestions() {
 
 async function _updateQStats() {
   try {
-    const all = await api('GET', '/questions?limit=200');
+    const all = await api('GET', '/questions?limit=1000');
     _allDekQuestions = Array.isArray(all) ? all : [];
     const total = _allDekQuestions.length;
     const e1=document.getElementById('qStatTotal'); if(e1)e1.textContent=total;
@@ -404,15 +404,18 @@ async function _renderQTable(filter) {
   tbody.innerHTML = '<tr><td colspan="6" style="text-align:center;padding:20px">⏳ Yuklanmoqda...</td></tr>';
   try {
     const NO_SUBJECT = new Set(['barchasi','all','','undefined',undefined,null]);
-    let url = '/questions?limit=500';
+    let url = '/questions?limit=1000';
     if (filter==='test') url+='&type=test';
     else if (filter==='real' || filter==='sesiya') url+='&type=real';
-    else if (!NO_SUBJECT.has(filter)) url+='&subject='+filter;
-    const qs = await api('GET', url);
+    else if (!NO_SUBJECT.has(filter)) url+='&subject='+encodeURIComponent(filter);
+    console.log('[QTable] filter='+filter+' url='+url);
+    const raw = await api('GET', url);
+    const qs = Array.isArray(raw) ? raw : (raw && Array.isArray(raw.data) ? raw.data : []);
+    console.log('[QTable] got '+qs.length+' questions');
     if (!qs.length) { tbody.innerHTML='<tr><td colspan="6" style="text-align:center;color:var(--text3);padding:40px">Hali savol kiritilmagan</td></tr>'; return; }
     const opts = ['option_a','option_b','option_c','option_d'];
     tbody.innerHTML = qs.map((q,i) => '<tr><td><strong>'+(i+1)+'</strong></td><td><span style="padding:3px 8px;background:#EEF3FF;border-radius:6px;font-size:11.5px;font-weight:700;color:#1B4FD8">'+(SUBJ_LABELS[q.subject]||q.subject)+'</span></td><td><span style="padding:3px 8px;border-radius:6px;font-size:11.5px;font-weight:700;background:'+(q.type==='test'?'#DCFCE7':q.type==='real'?'#FEE2E2':'#F3E8FF')+';color:'+(q.type==='test'?'#16A34A':q.type==='real'?'#DC2626':'#7C3AED')+'">'+(TYPE_LABELS[q.type]||q.type)+'</span></td><td><div style="font-weight:600;font-size:13px">'+q.question_text.substring(0,80)+(q.question_text.length>80?'...':'')+'</div></td><td style="font-size:12px;color:#16A34A;font-weight:600">'+q.correct_option+'</td><td><div style="display:flex;gap:5px"><button onclick="editQuestion('+q.id+')" style="padding:5px 10px;background:#EEF3FF;border:none;border-radius:6px;color:#1B4FD8;font-size:12px;cursor:pointer">✏️</button><button onclick="deleteQuestion('+q.id+')" style="padding:5px 10px;background:#FEE2E2;border:none;border-radius:6px;color:#DC2626;font-size:12px;cursor:pointer">🗑️</button></div></td></tr>').join('');
-  } catch(e) { tbody.innerHTML='<tr><td colspan="6" style="text-align:center;color:var(--red);padding:20px">Xato: '+e.message+'</td></tr>'; }
+  } catch(e) { console.error('[QTable] xato:', e); tbody.innerHTML='<tr><td colspan="6" style="text-align:center;color:var(--red);padding:20px">Xato: '+e.message+'</td></tr>'; }
 }
 
 async function deleteQuestion(id) {
