@@ -3471,7 +3471,7 @@
   <!-- Filter row -->
   <div style="display:flex;gap:10px;margin-bottom:18px;flex-wrap:wrap;align-items:center">
     <div class="filter-row" style="margin:0;flex:1">
-      <button class="filter-chip active" onclick="filterQs('all',this)" id="qf-all">Barchasi</button>
+      <button class="filter-chip active" onclick="filterQs('',this)" id="qf-all">Barchasi</button>
       <button class="filter-chip" onclick="filterQs('test',this)" id="qf-test">🧪 Test</button>
       <button class="filter-chip" onclick="filterQs('real',this)" id="qf-real">📋 Sesiya</button>
       <span id="qf-subjects-chips"></span>
@@ -3740,7 +3740,7 @@
   <script defer src="js/ui/effects.js?v=20260517d"></script>
   <script defer src="js/pages/student.js?v=20260517d"></script>
   <script defer src="js/pages/teacher.js?v=20260517d"></script>
-  <script defer src="js/pages/dekanat.js?v=20260523i"></script>
+  <script defer src="js/pages/dekanat.js?v=20260523j"></script>
   <script defer src="js/pages/investor.js?v=20260517d"></script>
   <script defer src="js/features/schedule.js?v=20260517d"></script>
   <script defer src="js/features/assignments.js?v=20260517d"></script>
@@ -4306,12 +4306,12 @@ window.renderMathInPage=renderMathInPage;
 ──────────────────────────────────────────────────────────────────────────── -->
 <script>
 (function () {
-  var EXPECTED = 'v=20260523i';
+  var EXPECTED = 'v=20260523j';
   var dekEl = document.querySelector('script[src*="dekanat.js"]');
   if (dekEl && dekEl.getAttribute('src').indexOf(EXPECTED) === -1) {
     // Old index.html — force a fresh fetch
     var base = window.location.href.split('?')[0].split('#')[0];
-    window.location.replace(base + '?_bust=20260523i' + (window.location.hash || ''));
+    window.location.replace(base + '?_bust=20260523j' + (window.location.hash || ''));
   }
 }());
 </script>

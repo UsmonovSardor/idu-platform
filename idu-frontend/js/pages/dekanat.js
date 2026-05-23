@@ -6,7 +6,7 @@ let _dekStudentPage = 1;
 let _dekStudentSearch = '';
 let _allDekQuestions = [];
 let _editingQId = null;
-let _currentQFilter = 'all';
+let _currentQFilter = '';
 var SUBJ_LABELS = {algo:'💻 Algo', ai:'🤖 AI', math:'📐 Math', db:'🗄️ DB', web:'🌐 Web'};
 var TYPE_LABELS = {test:'🧪 Test', real:'📋 Sesiya', both:'📝 Ikkalasi'};
 
@@ -382,7 +382,7 @@ async function openStudentDetail(id) {
 async function renderDekanatQuestions() {
   await loadSubjects();          // fill dropdowns + filter chips
   await _updateQStats();
-  await _renderQTable(_currentQFilter || 'all');
+  await _renderQTable(_currentQFilter || '');
   await loadDekanatQuestions();  // sync student/teacher exam engine
 }
 
