@@ -3476,6 +3476,7 @@
       <button class="filter-chip" onclick="filterQs('real',this)" id="qf-real">📋 Sesiya</button>
       <span id="qf-subjects-chips"></span>
     </div>
+    <button onclick="renderDekanatQuestions()" style="padding:8px 14px;background:#F0FDF4;border:1.5px solid #86EFAC;border-radius:8px;color:#16A34A;font-family:'Outfit',sans-serif;font-size:12.5px;font-weight:700;cursor:pointer">🔄 Yangilash</button>
     <button onclick="clearAllDekanatQuestions()" style="padding:8px 14px;background:#FEE2E2;border:1.5px solid #FCA5A5;border-radius:8px;color:#DC2626;font-family:'Outfit',sans-serif;font-size:12.5px;font-weight:700;cursor:pointer">🗑️ Barchasini o'chirish</button>
   </div>
 
@@ -4298,4 +4299,20 @@ window.renderMathInPage=renderMathInPage;
   </div>
 </div>
 
+<!-- ── Self-healing cache buster ──────────────────────────────────────────────
+     If the browser has cached an old index.html (with old dekanat.js version),
+     redirect to the same page with a cache-busting query param so the browser
+     is forced to fetch fresh HTML from the server.
+──────────────────────────────────────────────────────────────────────────── -->
+<script>
+(function () {
+  var EXPECTED = 'v=20260523i';
+  var dekEl = document.querySelector('script[src*="dekanat.js"]');
+  if (dekEl && dekEl.getAttribute('src').indexOf(EXPECTED) === -1) {
+    // Old index.html — force a fresh fetch
+    var base = window.location.href.split('?')[0].split('#')[0];
+    window.location.replace(base + '?_bust=20260523i' + (window.location.hash || ''));
+  }
+}());
+</script>
 </html>
