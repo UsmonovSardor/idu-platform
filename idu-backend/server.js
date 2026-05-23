@@ -253,6 +253,10 @@ if (!frontendDir) {
     if (/\.(png|jpg|jpeg|gif|ico|svg|webp|woff2?|ttf|eot)$/.test(f)) {
       return 'public, max-age=604800, immutable';
     }
+    // dekanat.js contains critical business logic — never allow caching
+    if (f.includes('dekanat.js')) {
+      return 'no-store, no-cache, must-revalidate';
+    }
     // HTML, CSS, JS — always revalidate so deploys take effect immediately
     return 'no-cache';
   }

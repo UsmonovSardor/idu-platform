@@ -3476,7 +3476,7 @@
       <button class="filter-chip" onclick="filterQs('real',this)" id="qf-real">📋 Sesiya</button>
       <span id="qf-subjects-chips"></span>
     </div>
-    <button onclick="renderDekanatQuestions()" style="padding:8px 14px;background:#F0FDF4;border:1.5px solid #86EFAC;border-radius:8px;color:#16A34A;font-family:'Outfit',sans-serif;font-size:12.5px;font-weight:700;cursor:pointer">🔄 Yangilash</button>
+    <button onclick="window._currentQFilter='';renderDekanatQuestions()" style="padding:8px 14px;background:#F0FDF4;border:1.5px solid #86EFAC;border-radius:8px;color:#16A34A;font-family:'Outfit',sans-serif;font-size:12.5px;font-weight:700;cursor:pointer">🔄 Yangilash</button>
     <button onclick="clearAllDekanatQuestions()" style="padding:8px 14px;background:#FEE2E2;border:1.5px solid #FCA5A5;border-radius:8px;color:#DC2626;font-family:'Outfit',sans-serif;font-size:12.5px;font-weight:700;cursor:pointer">🗑️ Barchasini o'chirish</button>
   </div>
 
@@ -4298,6 +4298,39 @@ window.renderMathInPage=renderMathInPage;
     </div>
   </div>
 </div>
+
+<!-- ── Compatibility patch: fixes filter bug in any dekanat.js version ────────
+     Runs after all defer scripts. Ensures _renderQTable never sends 'all' or
+     'barchasi' as a subject filter — works with both old and new dekanat.js.
+──────────────────────────────────────────────────────────────────────────── -->
+<script>
+document.addEventListener('DOMContentLoaded', function () {
+  // 1. Reset _currentQFilter if old code left it as 'all'
+  if (typeof window._currentQFilter !== 'undefined' &&
+      (window._currentQFilter === 'all' || window._currentQFilter === 'barchasi')) {
+    window._currentQFilter = '';
+  }
+
+  // 2. Patch _renderQTable to sanitize the filter value
+  var _origRQT = window._renderQTable;
+  if (typeof _origRQT === 'function' && !window.__rqtPatched) {
+    window._renderQTable = async function (filter) {
+      var f = (!filter || filter === 'all' || filter === 'barchasi') ? '' : filter;
+      return _origRQT(f);
+    };
+    window.__rqtPatched = true;
+  }
+
+  // 3. If the table still shows the static placeholder — trigger a fresh load
+  var tbody = document.getElementById('questionsTableBody');
+  if (tbody) {
+    var hasPencil = tbody.innerHTML.indexOf('32px') !== -1; // static 📝 icon has font-size:32px
+    if (hasPencil && typeof renderDekanatQuestions === 'function') {
+      renderDekanatQuestions();
+    }
+  }
+});
+</script>
 
 <!-- ── Self-healing cache buster ──────────────────────────────────────────────
      If the browser has cached an old index.html (with old dekanat.js version),
