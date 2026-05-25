@@ -1745,4 +1745,79 @@ input:focus { transition: border-color 0.15s, box-shadow 0.15s; }
 .nav-icon-btn[data-tip]:hover::after { transform: translateX(-50%) translateY(0); }
 .nav-icon-btn[data-tip]:hover::before { transform: translateX(-50%) translateY(0); }
 
+/* ════════════════════════════════════════════════════════════════════
+   MOBILE PREMIUM OVERRIDES — Login modal + App panels — v20260525
+   ════════════════════════════════════════════════════════════════════ */
+
+/* ── Login modal: bottom sheet on mobile ─────────────────────────── */
+@media (max-width: 640px) {
+  .login-modal-bg {
+    align-items: flex-end !important;
+    padding: 0 !important;
+  }
+  .login-modal {
+    max-width: 100% !important;
+    width: 100% !important;
+    border-radius: 24px 24px 0 0 !important;
+    max-height: 96svh !important;
+    overflow-y: auto !important;
+    animation: sheetIn 0.32s cubic-bezier(0.16,1,0.3,1) !important;
+    /* safe area bottom padding for notch/home-bar phones */
+    padding-bottom: env(safe-area-inset-bottom, 12px) !important;
+  }
+  @keyframes sheetIn {
+    from { transform: translateY(60px); opacity: 0; }
+    to   { transform: translateY(0);    opacity: 1; }
+  }
+
+  /* Left panel hidden on mobile — full-width form */
+  .login-split { flex-direction: column !important; min-height: auto !important; }
+  .login-left  { display: none !important; }
+  .login-right { padding: 24px 20px 20px !important; }
+
+  /* Stretch modal handle bar visual hint */
+  .login-modal::before {
+    content: '';
+    display: block;
+    width: 40px; height: 4px;
+    background: rgba(0,0,0,0.12);
+    border-radius: 2px;
+    margin: 10px auto 0;
+  }
+
+  /* Header padding tweak */
+  .lm-header { padding: 6px 20px 0 !important; }
+  .lm-body   { padding: 20px 20px 24px !important; }
+
+  /* Demo grid: 2 cols on mobile */
+  .demo-grid { grid-template-columns: repeat(2, 1fr) !important; gap: 8px !important; }
+}
+
+/* ── App panels: tighter on mobile ───────────────────────────────── */
+@media (max-width: 768px) {
+  /* Cards: less padding, rounder on small screens */
+  .card { padding: 14px 14px !important; border-radius: 14px !important; }
+  .page-header { margin-bottom: 14px !important; }
+  .page-title { font-size: 18px !important; letter-spacing: -0.3px !important; }
+
+  /* Tables: allow horizontal scroll */
+  .table-wrap { overflow-x: auto !important; -webkit-overflow-scrolling: touch !important; }
+  table { min-width: 520px !important; }
+
+  /* Modal default: full-width with safe margins */
+  .modal-bg { padding: 12px !important; }
+  .modal-card { border-radius: 18px !important; padding: 20px 18px !important; width: 100% !important; max-width: 100% !important; }
+  .modal-title { font-size: 17px !important; }
+
+  /* Stat cards: compact */
+  .stat-card { padding: 14px 12px !important; }
+  .stat-card-val { font-size: 24px !important; }
+  .stat-card-label { font-size: 11px !important; }
+
+  /* Bottom tab nav: larger touch targets */
+  .mob-nav-item { padding: 6px 0 !important; min-height: 52px !important; }
+  .mob-nav-icon { font-size: 20px !important; }
+  .mob-nav-label { font-size: 10px !important; }
+}
+
 
