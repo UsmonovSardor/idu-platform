@@ -2,6 +2,10 @@
 <html lang="uz">
 <head>
 <meta charset="UTF-8">
+<!-- Aggressive cache busting: HTML must never be cached so users always see the latest deploy -->
+<meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
+<meta http-equiv="Pragma" content="no-cache">
+<meta http-equiv="Expires" content="0">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
 <meta name="theme-color" content="#1e3a8a">
 <meta name="description" content="IDU — Islom Karimov nomidagi Davlat Universiteti o'quv platformasi">
@@ -20,14 +24,14 @@
 <link rel="preconnect" href="https://cdnjs.cloudflare.com" crossorigin>
 <link rel="dns-prefetch" href="https://idu-platform-production.up.railway.app">
 <!-- Critical CSS preload — start fetching before parser hits the link tag -->
-<link rel="preload" href="css/style.css?v=20260523u" as="style">
-<link rel="preload" href="css/utilities.css?v=20260521e" as="style">
+<link rel="preload" href="css/style.css?v=20260523v" as="style">
+<link rel="preload" href="css/utilities.css?v=20260523v" as="style">
 <script defer src="https://cdnjs.cloudflare.com/ajax/libs/dompurify/3.0.8/purify.min.js"></script>
 <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800&family=DM+Mono:wght@400;500;600&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="css/style.css?v=20260523u">
-<link rel="stylesheet" href="css/responsive.css?v=20260517d">
-<link rel="stylesheet" href="css/landing.css?v=20260523u">
-<link rel="stylesheet" href="css/utilities.css?v=20260521e">
+<link rel="stylesheet" href="css/style.css?v=20260523v">
+<link rel="stylesheet" href="css/responsive.css?v=20260523v">
+<link rel="stylesheet" href="css/landing.css?v=20260523v">
+<link rel="stylesheet" href="css/utilities.css?v=20260523v">
 <!-- KaTeX for math formula rendering -->
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/katex.min.css" crossorigin="anonymous">
 <script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/katex.min.js" crossorigin="anonymous"></script>
@@ -3940,7 +3944,7 @@ function upmTab(name) {
   </div>
 </div>
   <!-- ===== IDU Platform — Modular Architecture ===== -->
-  <script defer src="js/core/config.js?v=20260523u"></script>
+  <script defer src="js/core/config.js?v=20260523v"></script>
   <script defer src="js/core/auth.js?v=20260517d"></script>
   <script defer src="js/core/router.js?v=20260517d"></script>
   <script defer src="js/core/ui-utils.js?v=20260522a"></script>
@@ -3949,13 +3953,13 @@ function upmTab(name) {
   <script defer src="js/ui/effects.js?v=20260517d"></script>
   <script defer src="js/pages/student.js?v=20260517d"></script>
   <script defer src="js/pages/teacher.js?v=20260517d"></script>
-  <script defer src="js/pages/dekanat.js?v=20260523u"></script>
+  <script defer src="js/pages/dekanat.js?v=20260523v"></script>
   <script defer src="js/pages/investor.js?v=20260517d"></script>
   <script defer src="js/features/schedule.js?v=20260517d"></script>
   <script defer src="js/features/assignments.js?v=20260517d"></script>
   <script defer src="js/features/grades.js?v=20260517d"></script>
   <script defer src="js/features/ai-chat.js?v=20260520f"></script>
-  <script defer src="js/features/exams.js?v=20260523u"></script>
+  <script defer src="js/features/exams.js?v=20260523v"></script>
   <script defer src="js/features/games.js?v=20260517d"></script>
   <script defer src="js/features/reports.js?v=20260517d"></script>
   <script defer src="js/features/stats.js?v=20260521a"></script>
@@ -4548,12 +4552,12 @@ document.addEventListener('DOMContentLoaded', function () {
 ──────────────────────────────────────────────────────────────────────────── -->
 <script>
 (function () {
-  var EXPECTED = 'v=20260523u';
+  var EXPECTED = 'v=20260523v';
   var dekEl = document.querySelector('script[src*="dekanat.js"]');
   if (dekEl && dekEl.getAttribute('src').indexOf(EXPECTED) === -1) {
     // Old index.html — force a fresh fetch
     var base = window.location.href.split('?')[0].split('#')[0];
-    window.location.replace(base + '?_bust=20260523u' + (window.location.hash || ''));
+    window.location.replace(base + '?_bust=20260523v' + (window.location.hash || ''));
   }
 }());
 </script>

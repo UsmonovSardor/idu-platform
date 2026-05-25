@@ -244,35 +244,41 @@ if (!frontendDir) {
 } else {
   logger.info('Frontend: ' + frontendDir);
 
-  // Smart cache headers:
-  //   index.html / sw.js  → no-cache   (always revalidate)
-  //   *.css / *.js        → no-cache + ETag (revalidate every request; 304 if unchanged)
-  //   images / fonts      → 7 days immutable
-  function staticCacheControl(filePath) {
-    const f = filePath.replace(/\\/g, '/');
-    if (/\.(png|jpg|jpeg|gif|ico|svg|webp|woff2?|ttf|eot)$/.test(f)) {
-      return 'public, max-age=604800, immutable';
+  // ── Pre-static middleware: force Cache-Control on EVERY frontend response ──
+  // Railway edge proxy strips/overrides headers set by express.static's setHeaders
+  // when no header is present at proxy level. Setting it directly via `res.on('headersSent')`
+  // before any other middleware ensures the header survives the proxy.
+  app.use((req, res, next) => {
+    const p = (req.path || '').toLowerCase();
+    if (p.startsWith('/api/') || p.startsWith('/uploads/')) return next();
+    // Versioned assets (?v=…) — they're already cache-busted, so allow long-cache
+    // for fonts/images, but force revalidation for code/style files.
+    if (/\.(png|jpg|jpeg|gif|ico|svg|webp|woff2?|ttf|eot)$/.test(p)) {
+      res.setHeader('Cache-Control', 'public, max-age=604800, immutable');
+    } else if (/\.(css|js|mjs|map)$/.test(p)) {
+      // CSS / JS — always revalidate. With ?v=… the URL changes per deploy,
+      // so 304s are cheap but stale serves are catastrophic.
+      res.setHeader('Cache-Control', 'no-cache, must-revalidate');
+      res.setHeader('Pragma', 'no-cache');
+    } else if (p === '/' || p.endsWith('.html') || p.endsWith('/sw.js') || p === '/sw.js') {
+      // HTML / Service Worker — never cache anywhere
+      res.setHeader('Cache-Control', 'no-store, no-cache, must-revalidate, max-age=0');
+      res.setHeader('Pragma', 'no-cache');
+      res.setHeader('Expires', '0');
     }
-    // Critical JS files — never allow caching (must always be fresh)
-    if (f.includes('dekanat.js') || f.includes('config.js') || f.includes('main.js')) {
-      return 'no-store, no-cache, must-revalidate';
-    }
-    // HTML, CSS, JS — always revalidate so deploys take effect immediately
-    return 'no-cache';
-  }
+    next();
+  });
 
   app.use(express.static(frontendDir, {
     etag:         true,
     lastModified: true,
     setHeaders:   (res, filePath) => {
       const f = filePath.replace(/\\/g, '/');
-      // index.html must never be served from cache — always re-fetch
-      if (f.endsWith('index.html')) {
-        res.setHeader('Cache-Control', 'no-store, no-cache, must-revalidate');
+      // index.html must never be served from cache — belt-and-suspenders
+      if (f.endsWith('index.html') || f.endsWith('sw.js')) {
+        res.setHeader('Cache-Control', 'no-store, no-cache, must-revalidate, max-age=0');
         res.setHeader('Pragma', 'no-cache');
         res.setHeader('Expires', '0');
-      } else {
-        res.setHeader('Cache-Control', staticCacheControl(filePath));
       }
     },
   }));
