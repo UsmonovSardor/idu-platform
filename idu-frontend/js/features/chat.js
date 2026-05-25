@@ -1,9 +1,11 @@
 'use strict';
-// IDU — Chat module (SSE real-time)
+// IDU — Chat module (socket.io real-time + SSE fallback)
 
-var _chatRoomId  = null;
-var _chatEventSrc = null;
-var _chatPage    = 1;
+var _chatRoomId   = null;
+var _chatEventSrc = null;   // SSE fallback
+var _chatSocket   = null;   // socket.io connection (preferred)
+var _chatPage     = 1;
+var _typingTimer  = null;
 
 // ── Open chat widget ──────────────────────────────────────────────────────────
 function openChat() {
@@ -50,7 +52,7 @@ async function openChatRoom(roomId, roomName, roomType) {
   if (meta) meta.textContent = roomType === 'announce' ? '📢 E\'lonlar kanali' : roomType === 'direct' ? '👤 Shaxsiy' : '👥 Guruh chat';
   document.getElementById('chatMsgList').innerHTML = '<div style="text-align:center;color:#94A3B8;padding:30px;font-size:13px"><div style="font-size:24px;margin-bottom:8px">⏳</div>Yuklanmoqda...</div>';
   await loadMessages(roomId);
-  subscribeSSE(roomId);
+  subscribeRealtime(roomId);
 }
 
 // Room colors palette
@@ -112,7 +114,7 @@ function backToRooms() {
   document.getElementById('chatRoomView').style.display = 'flex';
   document.getElementById('chatMsgView').style.display  = 'none';
   _chatRoomId = null;
-  if (_chatEventSrc) { _chatEventSrc.close(); _chatEventSrc = null; }
+  _disconnectRealtime();
 }
 
 async function loadMessages(roomId) {
@@ -160,25 +162,90 @@ function appendMessage(m) {
   el.scrollTop = el.scrollHeight;
 }
 
-function subscribeSSE(roomId) {
-  if (_chatEventSrc) { _chatEventSrc.close(); _chatEventSrc = null; }
-  var token = localStorage.getItem('idu_token') || '';
-  var url = (window.API_BASE || '/api') + '/messages/rooms/' + roomId + '/sse';
+// ── Real-time subscription: socket.io first, SSE fallback ────────────────────
+function subscribeRealtime(roomId) {
+  // Disconnect previous subscriptions
+  _disconnectRealtime();
+
+  // 1. Try socket.io (preferred — works across instances)
+  if (typeof io !== 'undefined') {
+    _subscribeSocketIO(roomId);
+  } else {
+    // socket.io not loaded yet — try SSE
+    _subscribeSSE(roomId);
+  }
+}
+
+function _subscribeSocketIO(roomId) {
+  var myId = window.CURRENT_USER ? window.CURRENT_USER.id : null;
+  var token = window._apiToken || localStorage.getItem('idu_jwt') || '';
+  var wsBase = (window.location.protocol === 'https:' ? 'wss:' : 'ws:')
+             + '//' + window.location.host;
+
+  try {
+    _chatSocket = io(wsBase, {
+      auth:       { token: token },
+      transports: ['websocket', 'polling'],
+      reconnectionDelay: 1000,
+      reconnectionDelayMax: 10000,
+    });
+
+    _chatSocket.on('connect', function() {
+      _chatSocket.emit('join:room', roomId);
+    });
+
+    _chatSocket.on('chat:message', function(msg) {
+      // Don't double-render our own messages (already appended on send)
+      if (msg.room_id && msg.room_id !== roomId) return;
+      if (msg.sender_id !== myId) appendMessage(msg);
+    });
+
+    _chatSocket.on('chat:typing', function(data) {
+      _renderTypingIndicator(data);
+    });
+
+    _chatSocket.on('connect_error', function() {
+      // Fallback to SSE if socket fails
+      _chatSocket.disconnect();
+      _chatSocket = null;
+      _subscribeSSE(roomId);
+    });
+  } catch(e) {
+    _subscribeSSE(roomId);
+  }
+}
+
+function _subscribeSSE(roomId) {
+  var myId  = window.CURRENT_USER ? window.CURRENT_USER.id : null;
+  var token = window._apiToken || localStorage.getItem('idu_jwt') || '';
+  var url   = (window.API_BASE || '/api') + '/messages/rooms/' + roomId + '/sse';
   try {
     _chatEventSrc = new EventSource(url + '?token=' + encodeURIComponent(token));
     _chatEventSrc.onmessage = function(e) {
       try {
         var payload = JSON.parse(e.data);
         if (payload.type === 'message' && payload.data) {
-          var myId = window.CURRENT_USER ? window.CURRENT_USER.id : null;
           if (payload.data.sender_id !== myId) appendMessage(payload.data);
         }
       } catch(err) {}
     };
-    _chatEventSrc.onerror = function() {
-      // Reconnect silently
-    };
   } catch(e) {}
+}
+
+function _disconnectRealtime() {
+  if (_chatEventSrc) { _chatEventSrc.close(); _chatEventSrc = null; }
+  if (_chatSocket)   { _chatSocket.disconnect(); _chatSocket = null; }
+}
+
+function _renderTypingIndicator(data) {
+  var el = document.getElementById('chatTypingIndicator');
+  if (!el) return;
+  if (data.isTyping) {
+    el.textContent = (data.userName || 'Kimdir') + ' yozmoqda...';
+    el.style.display = 'block';
+  } else {
+    el.style.display = 'none';
+  }
 }
 
 async function sendChatMessage() {
@@ -190,12 +257,22 @@ async function sendChatMessage() {
   inp.value = '';
   inp.focus();
 
+  // If socket.io connected: send via socket (no extra REST round-trip)
+  if (_chatSocket && _chatSocket.connected) {
+    _chatSocket.emit('chat:message', { roomId: _chatRoomId, content }, function(ack) {
+      if (ack && ack.ok && ack.message) appendMessage(ack.message);
+      else if (ack && ack.error) { showToast('❌', 'Chat', ack.error); inp.value = content; }
+    });
+    return;
+  }
+
+  // Fallback: REST API
   try {
     var msg = await api('POST', '/messages/rooms/' + _chatRoomId + '/messages', { content });
     appendMessage(msg);
   } catch(e) {
     showToast('❌', 'Chat', e.message || 'Xabar yuborilmadi');
-    if (inp) inp.value = content; // restore
+    if (inp) inp.value = content;
   }
 }
 
@@ -203,6 +280,15 @@ function chatInputKey(e) {
   if (e.key === 'Enter' && !e.shiftKey) {
     e.preventDefault();
     sendChatMessage();
+    return;
+  }
+  // Typing indicator via socket
+  if (_chatSocket && _chatSocket.connected && _chatRoomId) {
+    _chatSocket.emit('chat:typing', { roomId: _chatRoomId, isTyping: true });
+    clearTimeout(_typingTimer);
+    _typingTimer = setTimeout(function() {
+      if (_chatSocket) _chatSocket.emit('chat:typing', { roomId: _chatRoomId, isTyping: false });
+    }, 2000);
   }
 }
 

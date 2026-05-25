@@ -10,6 +10,8 @@ const validate         = require('../middleware/validate');
 const { authenticate } = require('../middleware/auth');
 const { authLimiter }  = require('../middleware/rateLimiter');
 const { logger }       = require('../middleware/logger');
+const { sendMail, passwordResetTemplate } = require('../services/email');
+const { createOtp, verifyOtp, createResetToken, consumeResetToken } = require('../services/otp');
 
 const router = express.Router();
 
@@ -207,5 +209,130 @@ router.get('/me', authenticate, async (req, res) => {
   if (!rows.length) return res.status(404).json({ error: 'User not found' });
   res.json(rows[0]);
 });
+
+// ── POST /api/v1/auth/forgot/send ────────────────────────────────────────────
+// Step 1 — Request OTP via email/login.  Rate-limited to 3/hour per login.
+router.post(
+  '/forgot/send',
+  authLimiter,
+  [body('login').trim().isLength({ min: 3, max: 50 }).withMessage('Login majburiy')],
+  validate,
+  async (req, res) => {
+    const login = String(req.body.login).trim().toLowerCase();
+
+    const { rows } = await db.query(
+      "SELECT id, full_name, email FROM users WHERE LOWER(login)=$1 AND is_active=TRUE LIMIT 1",
+      [login]
+    );
+
+    // Always respond OK — never reveal whether login exists
+    if (!rows[0]) return res.json({ message: 'Agar bu login mavjud bo\'lsa, email yuborildi.' });
+
+    const user = rows[0];
+    if (!user.email) return res.json({ message: 'Ushbu akkount uchun email ro\'yxatga olinmagan.' });
+
+    const otp = await createOtp(user.id, 'reset');
+    const tpl = passwordResetTemplate(user.full_name || login, otp);
+
+    // Fire-and-forget — don't block response on email delivery
+    sendMail({ to: user.email, ...tpl }).catch(e =>
+      logger.warn('[auth/forgot] email error: %s', e.message)
+    );
+
+    res.json({ message: "Email yuborildi. Iltimos pochtangizni tekshiring.", userId: user.id });
+  }
+);
+
+// ── POST /api/v1/auth/forgot/verify ──────────────────────────────────────────
+// Step 2 — Verify the 6-digit OTP. Returns a short-lived reset token.
+router.post(
+  '/forgot/verify',
+  authLimiter,
+  [
+    body('userId').isInt({ min: 1 }).toInt().withMessage('userId majburiy'),
+    body('otp').trim().isLength({ min: 6, max: 6 }).isNumeric().withMessage('6 xonali kod kiriting'),
+  ],
+  validate,
+  async (req, res) => {
+    const { userId, otp } = req.body;
+    const result = await verifyOtp(userId, otp, 'reset');
+
+    if (!result.ok) {
+      const msg = result.reason === 'expired'          ? 'Kod muddati o\'tgan. Qayta so\'rang.'
+                : result.reason === 'too_many_attempts' ? 'Ko\'p urinish. Qayta so\'rang.'
+                : `Noto'g'ri kod. ${result.attemptsLeft ?? 0} ta urinish qoldi.`;
+      return res.status(400).json({ error: msg });
+    }
+
+    const resetToken = await createResetToken(userId);
+    res.json({ resetToken, message: 'Kod tasdiqlandi. Yangi parol o\'rnating.' });
+  }
+);
+
+// ── POST /api/v1/auth/forgot/reset ───────────────────────────────────────────
+// Step 3 — Set new password using the reset token from step 2.
+router.post(
+  '/forgot/reset',
+  [
+    body('resetToken').trim().isLength({ min: 64, max: 64 }).withMessage('resetToken noto\'g\'ri'),
+    body('newPassword')
+      .isLength({ min: 8, max: 128 }).withMessage('Kamida 8 belgi')
+      .matches(/[A-Z]/).withMessage('Katta harf bo\'lishi kerak')
+      .matches(/[a-z]/).withMessage('Kichik harf bo\'lishi kerak')
+      .matches(/[0-9]/).withMessage('Raqam bo\'lishi kerak'),
+  ],
+  validate,
+  async (req, res) => {
+    const { resetToken, newPassword } = req.body;
+    const userId = await consumeResetToken(resetToken);
+    if (!userId) return res.status(400).json({ error: 'Token yaroqsiz yoki muddati o\'tgan.' });
+
+    const hash = await bcrypt.hash(newPassword, 12);
+    await db.query(
+      'UPDATE users SET password_hash=$1, updated_at=NOW() WHERE id=$2',
+      [hash, userId]
+    );
+    // Clear any lockouts since user proved identity via OTP
+    await db.query('DELETE FROM account_lockouts WHERE login=(SELECT login FROM users WHERE id=$1)', [userId]).catch(()=>{});
+
+    logger.info('[auth/forgot] password reset for userId=%d', userId);
+    res.json({ message: 'Parol muvaffaqiyatli o\'zgartirildi.' });
+  }
+);
+
+// ── POST /api/v1/auth/send-otp ───────────────────────────────────────────────
+// Generic OTP send endpoint (for future 2FA use).
+router.post(
+  '/send-otp',
+  authenticate,
+  authLimiter,
+  async (req, res) => {
+    const { rows } = await db.query('SELECT full_name, email FROM users WHERE id=$1', [req.user.id]);
+    if (!rows[0]?.email) return res.status(400).json({ error: 'Email topilmadi' });
+
+    const otp = await createOtp(req.user.id, 'verify');
+    const tpl = passwordResetTemplate(rows[0].full_name || req.user.login, otp);
+    sendMail({ to: rows[0].email, ...tpl }).catch(e => logger.warn('[auth/send-otp] %s', e.message));
+
+    res.json({ message: 'OTP emailga yuborildi.' });
+  }
+);
+
+// ── POST /api/v1/auth/verify-otp ────────────────────────────────────────────
+// Verify OTP sent via /send-otp.
+router.post(
+  '/verify-otp',
+  authenticate,
+  [body('otp').trim().isLength({ min: 6, max: 6 }).isNumeric()],
+  validate,
+  async (req, res) => {
+    const result = await verifyOtp(req.user.id, req.body.otp, 'verify');
+    if (!result.ok) {
+      const msg = result.reason === 'expired' ? 'Kod muddati o\'tgan.' : `Noto'g'ri kod.`;
+      return res.status(400).json({ error: msg });
+    }
+    res.json({ verified: true });
+  }
+);
 
 module.exports = router;

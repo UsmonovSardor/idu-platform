@@ -41,7 +41,11 @@ const auditLogRoutes    = require('./routes/auditLog');
 const subjectsRoutes    = require('./routes/subjects');
 const { audit }         = require('./middleware/audit');
 
-const app = express();
+const http            = require('http');
+const { setupSocket } = require('./socket');
+
+const app        = express();
+const httpServer = http.createServer(app);
 
 // ── Gzip compression (before everything else) ────────────────────────────────
 app.use(compression({
@@ -99,9 +103,10 @@ app.use(helmet({
       // Images: allow any HTTPS + data URIs + blob
       imgSrc: ["'self'", 'data:', 'blob:', 'https:'],
 
-      // Fetch/XHR connections: self + AI APIs + CDNs (for source maps in dev)
+      // Fetch/XHR/WebSocket connections: self + AI APIs + CDNs
       connectSrc: [
         "'self'",
+        'wss:',                         // socket.io WebSocket upgrade
         'https://api.openai.com',
         'https://api.anthropic.com',
         'https://cdn.jsdelivr.net',
@@ -304,14 +309,21 @@ const PORT = parseInt(process.env.PORT || '3000', 10);
 const runMigrations = require('./migrate');
 
 runMigrations()
-  .then(() => {
-    app.listen(PORT, '0.0.0.0', () => {
+  .then(async () => {
+    // Attach socket.io to the httpServer (must happen before listen)
+    const io = await setupSocket(httpServer);
+    // Make io accessible in route handlers via app.get('io')
+    app.set('io', io);
+
+    httpServer.listen(PORT, '0.0.0.0', () => {
       logger.info('═══════════════════════════════════════');
-      logger.info('  IDU Platform v4.0');
-      logger.info(`  Port    : ${PORT}`);
-      logger.info(`  Env     : ${process.env.NODE_ENV}`);
-      logger.info(`  API     : /api/v1/*`);
-      logger.info(`  Frontend: ${frontendDir || 'NOT FOUND'}`);
+      logger.info('  IDU Platform v4.1');
+      logger.info(`  Port     : ${PORT}`);
+      logger.info(`  API      : /api/v1/*`);
+      logger.info(`  WebSocket: socket.io enabled`);
+      logger.info(`  Redis    : ${process.env.REDIS_URL ? 'configured' : 'in-memory fallback'}`);
+      logger.info(`  Email    : ${process.env.RESEND_API_KEY || process.env.SMTP_HOST ? 'configured' : 'dev-log only'}`);
+      logger.info(`  Frontend : ${frontendDir || 'NOT FOUND'}`);
       logger.info('═══════════════════════════════════════');
     });
   })

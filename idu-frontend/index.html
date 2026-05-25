@@ -36,6 +36,8 @@
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/katex.min.css" crossorigin="anonymous">
 <script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/katex.min.js" crossorigin="anonymous"></script>
 <script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/contrib/auto-render.min.js" crossorigin="anonymous" onload="initKaTeX()"></script>
+<!-- socket.io client — same version as server package -->
+<script src="/socket.io/socket.io.js"></script>
 <script>
   // ── Service Worker registration + auto-refresh on new deploy ──────────
   // Strategy: always fetch sw.js fresh (cache:'no-store'), call .update()
@@ -83,8 +85,8 @@
       <span class="lp-logo-text">IDU</span>
     </div>
     <div class="lp-nav-links">
-      <a class="lp-link" id="nav-about" onclick="openAboutModal()">Tizim haqida</a>
-      <a class="lp-link" id="nav-features" onclick="openFeatModal()">Imkoniyatlar</a>
+      <a class="lp-link" id="nav-about" data-action="openAboutModal">Tizim haqida</a>
+      <a class="lp-link" id="nav-features" data-action="openFeatModal">Imkoniyatlar</a>
       <div class="lp-drop">
         <a class="lp-link lp-drop-trigger" id="nav-guides">Yo'riqnomalar <svg width="12" height="12" viewBox="0 0 12 12" fill="none"><path d="M2 4l4 4 4-4" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></svg></a>
         <div class="lp-drop-menu" id="navGuidesMenu">
@@ -94,7 +96,7 @@
           <div class="lp-drop-item" onclick="openGuideModal('admin')"><span class="lp-drop-icon">⚙️</span><div><div class="lp-drop-label" id="ng-admin">Administratorlarga</div><div class="lp-drop-sub">Tizim sozlamalari</div></div></div>
         </div>
       </div>
-      <a class="lp-link" id="nav-faq" onclick="openFaqModal()">FAQ</a>
+      <a class="lp-link" id="nav-faq" data-action="openFaqModal">FAQ</a>
     </div>
     <div class="lp-nav-right">
       <div class="lang-drop" id="langDrop">
@@ -109,7 +111,7 @@
           <div class="lang-option" id="lopt-en" onclick="setLang('en')"><span class="lo-flag">🇬🇧</span> English</div>
         </div>
       </div>
-      <button class="lp-cta-btn" onclick="openLoginModal()" id="nav-kirish">Kirish →</button>
+      <button class="lp-cta-btn" data-action="openLoginModal" id="nav-kirish">Kirish →</button>
     </div>
   </nav>
 
@@ -131,11 +133,11 @@
       <p class="lp-hero-desc" id="hero-sub">Talabalar, o'qituvchilar, dekanat va investorlar uchun <br>yagona intellektual ta'lim ekotizimi.</p>
 
       <div class="lp-hero-actions">
-        <button class="lp-primary-btn" onclick="openLoginModal()">
+        <button class="lp-primary-btn" data-action="openLoginModal">
           <span id="hero-primary-btn">Tizimga kirish</span>
           <svg width="18" height="18" viewBox="0 0 24 24" fill="none"><path d="M5 12h14M12 5l7 7-7 7" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
         </button>
-        <button class="lp-secondary-btn" id="hero-secondary-btn" onclick="openFeatModal()">Imkoniyatlarni ko'rish</button>
+        <button class="lp-secondary-btn" id="hero-secondary-btn" data-action="openFeatModal">Imkoniyatlarni ko'rish</button>
       </div>
 
       <!-- Floating feature pills -->
@@ -439,7 +441,7 @@
     <div class="lp-cta-content">
       <h2 class="lp-cta-title" id="cta-title">Bugun boshlang</h2>
       <p class="lp-cta-sub" id="cta-sub">Login va parol universitet administratsiyasi tomonidan beriladi.</p>
-      <button class="lp-primary-btn lp-cta-main-btn" onclick="openLoginModal()">
+      <button class="lp-primary-btn lp-cta-main-btn" data-action="openLoginModal">
         <span id="cta-btn-text">Tizimga kirish</span>
         <svg width="18" height="18" viewBox="0 0 24 24" fill="none"><path d="M5 12h14M12 5l7 7-7 7" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
       </button>
@@ -450,9 +452,9 @@
   <footer class="lp-footer">
     <div class="lp-footer-logo"><div class="lp-logo-mark" style="width:28px;height:28px;font-size:11px">IDU</div><span style="font-weight:700;color:#e2e8f0">IDU Platform</span></div>
     <div class="lp-footer-links">
-      <a id="ft-about" onclick="openAboutModal()">Tizim haqida</a>
-      <a id="ft-feat" onclick="openFeatModal()">Imkoniyatlar</a>
-      <a id="ft-faq" onclick="openFaqModal()">FAQ</a>
+      <a id="ft-about" data-action="openAboutModal">Tizim haqida</a>
+      <a id="ft-feat" data-action="openFeatModal">Imkoniyatlar</a>
+      <a id="ft-faq" data-action="openFaqModal">FAQ</a>
     </div>
     <div class="lp-footer-copy" id="ft-copy">© 2026 IDU. Barcha huquqlar himoyalangan.</div>
   </footer>
@@ -3948,6 +3950,7 @@ function upmTab(name) {
   <script defer src="js/core/auth.js?v=20260517d"></script>
   <script defer src="js/core/router.js?v=20260517d"></script>
   <script defer src="js/core/ui-utils.js?v=20260522a"></script>
+  <script defer src="js/core/events.js?v=20260525b"></script>
   <script defer src="js/ui/toast.js?v=20260517d"></script>
   <script defer src="js/ui/modal.js?v=20260517d"></script>
   <script defer src="js/ui/effects.js?v=20260517d"></script>

@@ -7,6 +7,7 @@ const { authenticate, authorize } = require('../middleware/auth');
 const validate                    = require('../middleware/validate');
 const { promptSanitize }          = require('../middleware/security');
 const { logger }                  = require('../middleware/logger');
+const { sendMail, submissionGradedTemplate } = require('../services/email');
 
 router.use(authenticate);
 
@@ -161,6 +162,22 @@ router.patch('/:id/approve', authorize('teacher','dekanat','admin'), async (req,
     [score, teacher_comment || null, req.params.id]
   );
   if (!rowCount) return res.status(404).json({ error: 'Topilmadi' });
+
+  // Fire-and-forget email notification to student
+  const sub = rows[0];
+  db.query(
+    `SELECT u.full_name, u.email, a.title AS assignment_title
+     FROM users u
+     JOIN assignments a ON a.id = $2
+     WHERE u.id = $1`,
+    [sub.student_id, sub.assignment_id]
+  ).then(({ rows: r }) => {
+    if (r[0]?.email) {
+      const tpl = submissionGradedTemplate(r[0].full_name, r[0].assignment_title, score, sub.ai_ball || 0);
+      sendMail({ to: r[0].email, ...tpl }).catch(e => logger.warn('[submissions/approve] email: %s', e.message));
+    }
+  }).catch(() => {});
+
   res.json({ submission: rows[0] });
 });
 

@@ -92,8 +92,13 @@ router.post('/rooms/:id/messages', async (req, res) => {
   );
   const msg = { ...rows[0], sender_id: req.user.id, sender_name: req.user.full_name, sender_role: req.user.role };
 
-  // Broadcast via global SSE (if active)
-  broadcastToRoom(roomId, { type: 'message', data: msg });
+  // Broadcast via socket.io (preferred) or SSE fallback
+  const io = req.app.get('io');
+  if (io && io._broadcastToRoom) {
+    io._broadcastToRoom(roomId, 'chat:message', msg);
+  } else {
+    broadcastToRoom(roomId, { type: 'message', data: msg });
+  }
 
   res.status(201).json(msg);
 });

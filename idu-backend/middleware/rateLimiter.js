@@ -1,65 +1,93 @@
 'use strict';
 /**
- * Rate limiters — Phase D: IP spoofing hardened
+ * Rate limiters — Redis-backed with in-memory fallback
  *
- * Previously used req.ip which can be spoofed via X-Forwarded-For
- * on misconfigured servers. Now uses realIp() which only trusts the
- * forwarded header when the direct connection comes from a trusted proxy.
+ * When REDIS_URL is set: RateLimiterRedis (shared across all instances).
+ * Otherwise: RateLimiterMemory (per-process, fine for single-instance deploys).
  *
- * Three limiters:
- *  • generalLimiter — 100 req / 15 min per real IP (all /api/* routes)
- *  • authLimiter    —  10 req / 15 min per real IP (login endpoint only)
- *  • uploadLimiter  —   5 req / 60 s  per user id  (file uploads)
+ * Three tiers:
+ *  • generalLimiter — 100 req / 15 min per real IP
+ *  • authLimiter    —  10 req / 15 min per real IP (login brute-force guard)
+ *  • uploadLimiter  —   5 req / 60 s  per user ID  (upload spam guard)
  */
 
-const { RateLimiterMemory } = require('rate-limiter-flexible');
-const { realIp }            = require('./security');
+const { RateLimiterMemory, RateLimiterRedis } = require('rate-limiter-flexible');
+const { realIp } = require('./security');
 
-// ── General API limiter ───────────────────────────────────────────────────────
-const _general = new RateLimiterMemory({
-  points:   parseInt(process.env.RATE_LIMIT_MAX_REQUESTS || '100', 10),
-  duration: Math.floor(parseInt(process.env.RATE_LIMIT_WINDOW_MS || '900000', 10) / 1000),
-});
+// Limiter configs
+const CONFIGS = {
+  general: {
+    keyPrefix:  'rl:g',
+    points:     parseInt(process.env.RATE_LIMIT_MAX_REQUESTS || '100', 10),
+    duration:   Math.floor(parseInt(process.env.RATE_LIMIT_WINDOW_MS || '900000', 10) / 1000),
+  },
+  auth: {
+    keyPrefix: 'rl:a',
+    points:    parseInt(process.env.AUTH_RATE_LIMIT_MAX || '10', 10),
+    duration:  900,
+  },
+  upload: {
+    keyPrefix: 'rl:u',
+    points:    5,
+    duration:  60,
+  },
+};
 
-// ── Auth limiter — brute-force guard ─────────────────────────────────────────
-const _auth = new RateLimiterMemory({
-  points:   parseInt(process.env.AUTH_RATE_LIMIT_MAX || '10', 10),
-  duration: 900, // 15 minutes
-});
+// Start with in-memory limiters (always work)
+let _general = new RateLimiterMemory(CONFIGS.general);
+let _auth    = new RateLimiterMemory(CONFIGS.auth);
+let _upload  = new RateLimiterMemory(CONFIGS.upload);
 
-// ── Upload limiter — prevents upload spam / storage abuse ────────────────────
-const _upload = new RateLimiterMemory({
-  points:   5,
-  duration: 60,
-});
-
-function makeMiddleware(limiter, keyFn) {
-  return async (req, res, next) => {
-    // keyFn receives the request and returns the rate-limit key string
-    const key = keyFn(req);
+// Upgrade to Redis limiters once connection is available
+if (process.env.REDIS_URL) {
+  // Lazy upgrade: try after a short delay to let Redis connect first
+  setTimeout(async () => {
     try {
-      await limiter.consume(key);
+      const redis = require('../services/redis');
+      const client = await redis.getClient();
+      if (client && client !== require('../services/redis').inMem) {
+        _general = new RateLimiterRedis({
+          storeClient:      client,
+          insuranceLimiter: new RateLimiterMemory(CONFIGS.general),
+          ...CONFIGS.general,
+        });
+        _auth = new RateLimiterRedis({
+          storeClient:      client,
+          insuranceLimiter: new RateLimiterMemory(CONFIGS.auth),
+          ...CONFIGS.auth,
+        });
+        _upload = new RateLimiterRedis({
+          storeClient:      client,
+          insuranceLimiter: new RateLimiterMemory(CONFIGS.upload),
+          ...CONFIGS.upload,
+        });
+        const { logger } = require('./logger');
+        logger.info('[rateLimiter] upgraded to Redis-backed limiters');
+      }
+    } catch (e) {
+      // Fallback already in place — no action needed
+    }
+  }, 3000);
+}
+
+// ── Middleware factory ─────────────────────────────────────────────────────────
+function makeMiddleware(getLimiter, keyFn) {
+  return async (req, res, next) => {
+    try {
+      await getLimiter().consume(keyFn(req));
       next();
     } catch (rlRes) {
       const retryAfter = Math.ceil((rlRes.msBeforeNext || 60000) / 1000);
       res.set('Retry-After', String(retryAfter));
-      res.status(429).json({
-        error:      'Too many requests. Please slow down.',
-        retryAfter,
-      });
+      res.status(429).json({ error: 'Too many requests. Please slow down.', retryAfter });
     }
   };
 }
 
 module.exports = {
-  // General limiter keyed by real IP (spoofing-resistant)
-  generalLimiter: makeMiddleware(_general, req => `ip:${realIp(req)}`),
-
-  // Auth limiter keyed by real IP
-  authLimiter:    makeMiddleware(_auth,    req => `ip:${realIp(req)}`),
-
-  // Upload limiter keyed by user ID (if authenticated) or IP
-  uploadLimiter:  makeMiddleware(_upload,  req =>
+  generalLimiter: makeMiddleware(() => _general, req => `ip:${realIp(req)}`),
+  authLimiter:    makeMiddleware(() => _auth,    req => `ip:${realIp(req)}`),
+  uploadLimiter:  makeMiddleware(() => _upload,  req =>
     req.user ? `uid:${req.user.id}` : `ip:${realIp(req)}`
   ),
 };
