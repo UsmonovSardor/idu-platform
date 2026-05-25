@@ -104,9 +104,9 @@
 
 /* ── HERO ─────────────────────────────────────────────────────── */
 .lp-hero {
-  min-height: 100vh;
+  min-height: auto;
   display: flex; align-items: center; justify-content: space-between;
-  padding: 100px 80px 60px; position: relative; gap: 60px;
+  padding: 120px 80px 100px; position: relative; gap: 60px;
   /* Static gradient mesh — NO animated blur, GPU safe */
   background:
     radial-gradient(ellipse 70% 55% at 15% 45%, rgba(30,64,175,0.28) 0%, transparent 55%),
@@ -404,8 +404,10 @@
 .lp-footer-copy  { font-size: 12px; color: var(--lp-text2); }
 
 /* ── SCROLL REVEAL ────────────────────────────────────────────── */
-.lp-reveal { opacity: 0; transform: translateY(20px); transition: opacity 0.5s ease, transform 0.5s ease; }
-.lp-reveal.visible { opacity: 1; transform: translateY(0); }
+/* Start invisible — JS adds .visible on scroll; fallback: show after 1s if JS slow */
+.lp-reveal { opacity: 0; transform: translateY(20px); transition: opacity 0.55s ease, transform 0.55s ease; animation: lp-reveal-fallback 0s 1.2s forwards; }
+.lp-reveal.visible { opacity: 1; transform: translateY(0); animation: none; }
+@keyframes lp-reveal-fallback { to { opacity: 1; transform: translateY(0); } }
 
 /* ── RESPONSIVE ───────────────────────────────────────────────── */
 
