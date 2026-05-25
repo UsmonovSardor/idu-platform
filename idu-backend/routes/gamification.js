@@ -2,7 +2,7 @@
 
 const express = require('express');
 const db      = require('../config/database');
-const { authenticate } = require('../middleware/auth');
+const { authenticate, authorize } = require('../middleware/auth');
 
 const router = express.Router();
 router.use(authenticate);
@@ -113,8 +113,8 @@ async function awardBadge(userId, badgeCode, client) {
 }
 
 // ── POST /api/gamification/recalculate ───────────────────────────────────────
-// Recalculate XP and badges for all students (run periodically / on demand)
-router.post('/recalculate', async (req, res) => {
+// Recalculate XP and badges for all students — dekanat/admin only
+router.post('/recalculate', authorize('dekanat', 'admin'), async (req, res) => {
   const { rows: students } = await db.query(
     "SELECT id FROM users WHERE role='student'"
   );
@@ -153,9 +153,9 @@ async function recalculateStudent(userId) {
   const attCount = parseInt(att[0].cnt, 10);
   if (attCount > 0) await awardXP(userId, attCount * 10, `Davomat: ${attCount} sesiya`);
 
-  // XP from submissions
+  // XP from submissions — count approved submissions (teacher_score IS NOT NULL)
   const { rows: subs } = await db.query(
-    "SELECT COUNT(*) AS cnt FROM submissions WHERE student_id=$1 AND status='graded'", [userId]
+    'SELECT COUNT(*) AS cnt FROM submissions WHERE student_id=$1 AND teacher_score IS NOT NULL', [userId]
   );
   const subCount = parseInt(subs[0].cnt, 10);
   if (subCount > 0) await awardXP(userId, subCount * 15, `Topshiriqlar: ${subCount} ta`);
@@ -168,12 +168,19 @@ async function recalculateStudent(userId) {
     ? grades.reduce((a, g) => a + (parseFloat(g.score) || 0), 0) / grades.length
     : 0;
 
-  if (avgGrade >= 86)  await awardBadge(userId, 'alochilar');
-  if (attCount >= 20)  await awardBadge(userId, 'qatnashuvchi');
-  if (attCount >= 0 && attCount / Math.max(attCount, 1) >= 0.9) await awardBadge(userId, 'faol');
-  if (subCount >= 5)   await awardBadge(userId, 'dasturchi');
-  if (subCount >= 10)  await awardBadge(userId, 'izlanuvchi');
-  if (totalXp >= 2000) await awardBadge(userId, 'chempion');
+  // Calculate real attendance rate: sessions attended vs total sessions available
+  const { rows: [sessRow] } = await db.query(
+    'SELECT COUNT(*) AS cnt FROM attendance_sessions'
+  ).catch(() => ({ rows: [{ cnt: 0 }] }));
+  const totalSessions = parseInt(sessRow?.cnt ?? 0, 10);
+  const attRate = totalSessions > 0 ? attCount / totalSessions : 0;
+
+  if (avgGrade >= 86)                          await awardBadge(userId, 'alochilar');
+  if (attCount >= 20)                          await awardBadge(userId, 'qatnashuvchi');
+  if (attRate >= 0.9 && totalSessions >= 10)   await awardBadge(userId, 'faol');      // real 90%+ attendance
+  if (subCount >= 5)                           await awardBadge(userId, 'dasturchi');
+  if (subCount >= 10)                          await awardBadge(userId, 'izlanuvchi');
+  if (totalXp >= 2000)                         await awardBadge(userId, 'chempion');
 }
 
 module.exports = router;

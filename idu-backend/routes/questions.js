@@ -641,14 +641,6 @@ MATN:\n${textChunk}`
       });
     }
 
-    // Ensure chapter_num column exists — defensive guard in case migration 008 hasn't run yet
-    try {
-      await db.query(`ALTER TABLE questions ADD COLUMN IF NOT EXISTS chapter_num INTEGER NOT NULL DEFAULT 1`);
-      await db.query(`CREATE INDEX IF NOT EXISTS idx_questions_subject_chapter ON questions (subject, chapter_num) WHERE is_active = TRUE`);
-    } catch (migrErr) {
-      logger.warn('[upload-pdf] chapter_num migration guard failed:', migrErr.message);
-    }
-
     // Determine starting chapter_num: find max chapter already in DB for this subject
     let startChapter = 1;
     try {

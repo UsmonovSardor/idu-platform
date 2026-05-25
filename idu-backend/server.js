@@ -186,11 +186,11 @@ app.use('/uploads', noSniff(), express.static(path.resolve(process.env.UPLOAD_DI
 
 // ── Health check ──────────────────────────────────────────────────────────────
 app.get('/health', (_req, res) => {
+  // Do not expose NODE_ENV — reveals deployment environment to attackers
   res.json({
     status:    'ok',
     timestamp: new Date().toISOString(),
-    env:       process.env.NODE_ENV,
-    version:   '4.0.0',
+    version:   '4.1.0',
   });
 });
 

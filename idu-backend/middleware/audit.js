@@ -4,6 +4,7 @@
 // Fire-and-forget (does not block the response).
 
 const db = require('../config/database');
+const { realIp } = require('./security');
 
 const ACTION_MAP = {
   'POST   /api/v1/auth/login':            { action: 'LOGIN',          entity: 'user',       skipBody: true },
@@ -75,7 +76,7 @@ function audit() {
           map.action,
           map.entity,
           req.params && req.params.id ? parseInt(req.params.id, 10) || null : null,
-          req.ip || req.headers['x-forwarded-for'] || null,
+          realIp(req) || null,
           (req.headers['user-agent'] || '').substring(0, 500),
           details,
           status

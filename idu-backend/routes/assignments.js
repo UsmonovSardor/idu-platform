@@ -1,9 +1,11 @@
 'use strict';
-const express = require('express');
-const router  = express.Router();
-const { Pool } = require('pg');
+const express  = require('express');
+const router   = express.Router();
+const db       = require('../config/database');
+const { authenticate } = require('../middleware/auth');
 
-const pool = new Pool({ connectionString: process.env.DATABASE_URL, ssl: { rejectUnauthorized: false } });
+// All assignments routes require authentication
+router.use(authenticate);
 
 // Middleware: faqat teacher/dekanat/admin
 function teacherOnly(req, res, next) {
@@ -18,9 +20,9 @@ router.get('/', async (req, res) => {
   const role   = req.user?.role;
   let rows;
   if (role === 'student') {
-    const st = await pool.query('SELECT group_name FROM students WHERE user_id=$1', [userId]);
+    const st = await db.query('SELECT group_name FROM students WHERE user_id=$1', [userId]);
     const grp = st.rows[0]?.group_name;
-    const r = await pool.query(
+    const r = await db.query(
       `SELECT a.*, u.full_name AS teacher_name
        FROM assignments a
        JOIN users u ON u.id = a.teacher_id
@@ -28,7 +30,7 @@ router.get('/', async (req, res) => {
        ORDER BY a.deadline ASC`, [grp]);
     rows = r.rows;
   } else {
-    const r = await pool.query(
+    const r = await db.query(
       `SELECT a.*, u.full_name AS teacher_name,
               (SELECT COUNT(*) FROM submissions s WHERE s.assignment_id=a.id) AS submission_count
        FROM assignments a JOIN users u ON u.id=a.teacher_id
@@ -42,7 +44,7 @@ router.get('/', async (req, res) => {
 router.post('/', teacherOnly, async (req, res) => {
   const { title, description, subject, deadline, group_name, max_score } = req.body;
   if (!title || !description || !deadline) return res.status(400).json({ error: 'title, description, deadline majburiy' });
-  const r = await pool.query(
+  const r = await db.query(
     `INSERT INTO assignments (title, description, subject, deadline, group_name, max_score, teacher_id)
      VALUES ($1,$2,$3,$4,$5,$6,$7) RETURNING *`,
     [title, description, subject || '', deadline, group_name || 'ALL', max_score || 100, req.user.id]);
@@ -51,7 +53,7 @@ router.post('/', teacherOnly, async (req, res) => {
 
 // GET /api/assignments/:id — bitta vazifa
 router.get('/:id', async (req, res) => {
-  const r = await pool.query(
+  const r = await db.query(
     `SELECT a.*, u.full_name AS teacher_name FROM assignments a
      JOIN users u ON u.id=a.teacher_id WHERE a.id=$1`, [req.params.id]);
   if (!r.rows[0]) return res.status(404).json({ error: 'Topilmadi' });
@@ -60,7 +62,7 @@ router.get('/:id', async (req, res) => {
 
 // DELETE /api/assignments/:id
 router.delete('/:id', teacherOnly, async (req, res) => {
-  await pool.query('DELETE FROM assignments WHERE id=$1 AND teacher_id=$2', [req.params.id, req.user.id]);
+  await db.query('DELETE FROM assignments WHERE id=$1 AND teacher_id=$2', [req.params.id, req.user.id]);
   res.json({ message: 'Ochirildi' });
 });
 

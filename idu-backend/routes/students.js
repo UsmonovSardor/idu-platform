@@ -359,21 +359,7 @@ router.post(
   async (req, res) => {
     const { date, group, records } = req.body;
 
-    // Ensure attendance table exists (soft create)
-    await db.query(`
-      CREATE TABLE IF NOT EXISTS attendance (
-        id           SERIAL PRIMARY KEY,
-        student_id   INT NOT NULL REFERENCES users(id) ON DELETE CASCADE,
-        teacher_id   INT NOT NULL REFERENCES users(id),
-        date         DATE NOT NULL,
-        present      BOOLEAN NOT NULL DEFAULT TRUE,
-        excused      BOOLEAN NOT NULL DEFAULT FALSE,
-        note         TEXT,
-        group_name   VARCHAR(50),
-        created_at   TIMESTAMPTZ DEFAULT NOW(),
-        UNIQUE(student_id, date)
-      )
-    `).catch(() => {});
+    // attendance table is created by migration 011_perf_and_integrity.sql
 
     const saved = [];
     for (const rec of records) {

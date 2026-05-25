@@ -277,9 +277,17 @@ router.get(
     const params = [];
 
     if (req.user.role === 'student') {
+      // Students see only their own attempts
       params.push(req.user.id);
       conditions.push(`a.student_id = $${params.length}`);
+    } else if (req.user.role === 'teacher') {
+      // Teachers see attempts for their own subjects only (via teacher_exams)
+      params.push(req.user.id);
+      conditions.push(`a.subject IN (
+        SELECT DISTINCT subject FROM teacher_exams WHERE teacher_id = $${params.length}
+      )`);
     }
+    // dekanat / admin see everything (no additional filter)
 
     if (req.query.examType) {
       params.push(req.query.examType);

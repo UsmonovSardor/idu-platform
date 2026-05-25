@@ -2,8 +2,9 @@
 //  v18 — API CLIENT + SECURITY LAYER
 // ══════════════════════════════════════════════════════════════════
 
-// Backend base URL — change to your deployed server URL in production
-var API_BASE = 'https://idu-platform-production.up.railway.app/api';
+// API_BASE is set by core/config.js from <meta name="api-base"> — preserve it.
+// This is a safety fallback only if config.js somehow didn't run first.
+if (typeof API_BASE === 'undefined') var API_BASE = 'https://idu-platform-production.up.railway.app/api';
 
 // JWT token storage (memory-first, localStorage fallback for "remember me")
 var _apiToken = null;

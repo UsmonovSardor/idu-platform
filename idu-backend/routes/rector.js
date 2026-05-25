@@ -21,8 +21,8 @@ router.get('/kpi', cache(120), async (req, res) => {
                  (SELECT COUNT(*) FROM users WHERE role='student')
                  FROM attendance_sessions s2),0),1) AS pct
               FROM attendance_records r`).catch(()=>({rows:[{pct:null}]})),
-    db.query("SELECT COUNT(*) FROM submissions WHERE status='graded'").catch(()=>({rows:[{count:0}]})),
-    db.query("SELECT COUNT(*) FROM exams WHERE is_active=TRUE").catch(()=>({rows:[{count:0}]})),
+    db.query("SELECT COUNT(*) FROM submissions WHERE teacher_score IS NOT NULL").catch(()=>({rows:[{count:0}]})),
+    db.query("SELECT COUNT(*) FROM teacher_exams WHERE is_active=TRUE").catch(()=>({rows:[{count:0}]})),
   ]);
 
   res.json({
