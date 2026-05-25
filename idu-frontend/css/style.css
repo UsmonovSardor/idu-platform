@@ -90,7 +90,7 @@ body{font-family:'Outfit',sans-serif;background:var(--bg);color:var(--text);min-
 .h-stat-key{font-size:11px;color:#94A3B8;font-weight:600;text-transform:uppercase;letter-spacing:0.6px;margin-top:4px}
 
 /* LOGIN MODAL */
-.login-modal-bg{position:fixed;inset:0;z-index:500;background:rgba(15,23,42,0.45);backdrop-filter:blur(8px);display:none;align-items:center;justify-content:center}
+.login-modal-bg{position:fixed;inset:0;z-index:2000;background:rgba(15,23,42,0.55);backdrop-filter:blur(8px);display:none;align-items:center;justify-content:center}
 .login-modal-bg.open{display:flex}
 .login-modal{background:#fff;border-radius:20px;width:100%;max-width:600px;max-height:92vh;overflow:hidden;box-shadow:0 24px 80px rgba(0,0,0,0.18);animation:modalIn 0.28s cubic-bezier(0.16,1,0.3,1);position:relative}
 @keyframes modalIn{from{opacity:0;transform:scale(0.94) translateY(16px)}to{opacity:1;transform:none}}

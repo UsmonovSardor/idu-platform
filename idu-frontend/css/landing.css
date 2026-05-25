@@ -456,11 +456,18 @@
 }
 
 @media (max-width: 768px) {
-  .lp-nav { padding: 0 16px; }
+  .lp-nav { padding: 0 16px; height: 58px; }
   .lp-nav-links { display: none; }
-  .lp-hero { flex-direction: column; padding: 88px 20px 40px; text-align: center; align-items: center; gap: 24px; min-height: auto; }
+  .lp-nav-right { gap: 8px; }
+  .lp-lang { padding: 5px 10px !important; font-size: 12px !important; }
+  .lp-cta-btn { padding: 7px 14px; font-size: 13px; }
+  .lp-hero { flex-direction: column; padding: 96px 20px 40px; text-align: center; align-items: center; gap: 28px; min-height: auto; }
+  .lp-hero-content { width: 100%; }
+  .lp-hero-title { font-size: clamp(32px, 8vw, 44px) !important; }
+  .lp-hero-desc { font-size: 15px; margin-bottom: 26px; }
+  .lp-hero-actions { justify-content: center; flex-wrap: wrap; gap: 10px; width: 100%; }
+  .lp-pills { justify-content: center; flex-wrap: wrap; gap: 8px; }
   .lp-hero-card { display: block; transform: none; width: 100%; max-width: 320px; }
-  .lp-hero-actions, .lp-pills { justify-content: center; flex-wrap: wrap; }
   .lp-stats { grid-template-columns: repeat(3,1fr); padding: 0 20px 48px; gap: 10px; }
   .lp-stat-card { padding: 14px 8px; }
   .lp-stat-num { font-size: 22px; }
@@ -474,13 +481,31 @@
 }
 
 @media (max-width: 480px) {
-  .lp-stats { grid-template-columns: repeat(2,1fr); }
+  .lp-nav { padding: 0 14px; height: 56px; }
   .lp-logo-text { display: none; }
+  .lp-logo-mark { width: 32px; height: 32px; font-size: 11px; }
+  .lp-nav-right { gap: 6px; }
+  .lp-lang { padding: 5px 8px !important; font-size: 11.5px !important; }
+  .lp-cta-btn { padding: 7px 12px; font-size: 12.5px; border-radius: 8px; }
+  .lp-stats { grid-template-columns: repeat(2,1fr); }
+  .lp-hero { padding: 80px 16px 36px; gap: 24px; }
+  .lp-hero-title { font-size: clamp(28px, 9vw, 38px) !important; line-height: 1.1; }
+  .lp-hero-desc { font-size: 14.5px; line-height: 1.6; }
+  .lp-hero-actions { gap: 10px; }
+  .lp-primary-btn,
+  .lp-secondary-btn,
   .lp-hero-actions .lp-btn-primary,
-  .lp-hero-actions .lp-btn-outline { width: 100%; justify-content: center; }
-  .lp-pills { gap: 6px; }
-  .lp-pill { font-size: 11px; padding: 5px 10px; }
+  .lp-hero-actions .lp-btn-outline { width: 100%; justify-content: center; padding: 14px 20px; font-size: 14.5px; }
+  /* Pills: clean 2×2 grid instead of 3+1 wrap */
+  .lp-pills { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; }
+  .lp-pill { font-size: 12px; padding: 8px 12px; justify-content: center; }
   .lp-cta-main-btn { width: 100%; box-sizing: border-box; }
+  .lp-badge { font-size: 12px; padding: 5px 12px; }
+}
+
+@media (max-width: 360px) {
+  .lp-pills { grid-template-columns: 1fr; }
+  .lp-hero-title { font-size: 26px !important; }
 }
 
 /* Short screens (laptops with low height) */
