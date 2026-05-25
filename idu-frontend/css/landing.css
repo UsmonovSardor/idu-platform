@@ -4,14 +4,14 @@
 ═══════════════════════════════════════════════════════════════ */
 
 :root {
-  --lp-bg:     #07111f;
-  --lp-bg2:    #0d1f40;
+  --lp-bg:     #060e1a;
+  --lp-bg2:    #0c1a38;
   --lp-blue:   #2563eb;
   --lp-cyan:   #06b6d4;
   --lp-purple: #818cf8;
-  --lp-text:   #f1f5f9;
-  --lp-text2:  #94a3b8;
-  --lp-border: rgba(255,255,255,0.08);
+  --lp-text:   #f0f4ff;
+  --lp-text2:  #8b9fbe;
+  --lp-border: rgba(255,255,255,0.07);
   --lp-glass:  rgba(255,255,255,0.04);
 }
 
@@ -109,12 +109,12 @@
 /* ── HERO ─────────────────────────────────────────────────────── */
 .lp-hero {
   min-height: auto;
-  display: flex; align-items: center; justify-content: space-between;
-  padding: 130px 88px 90px; position: relative; gap: 64px;
+  display: flex; align-items: center; justify-content: center;
+  padding: 130px 88px 90px; position: relative; gap: 80px;
   background:
-    radial-gradient(ellipse 60% 60% at 10% 50%, rgba(30,64,175,0.32) 0%, transparent 55%),
-    radial-gradient(ellipse 50% 50% at 88% 50%, rgba(6,182,212,0.18) 0%, transparent 55%),
-    radial-gradient(ellipse 40% 40% at 50% 5%,  rgba(129,140,248,0.14) 0%, transparent 50%),
+    radial-gradient(ellipse 55% 65% at 8% 50%,  rgba(30,64,175,0.36) 0%, transparent 52%),
+    radial-gradient(ellipse 45% 55% at 92% 50%, rgba(6,182,212,0.20) 0%, transparent 52%),
+    radial-gradient(ellipse 35% 35% at 50% 2%,  rgba(129,140,248,0.15) 0%, transparent 45%),
     var(--lp-bg);
 }
 
@@ -132,7 +132,7 @@
 /* Orbs: static, no animation, no blur — pure CSS gradient circles */
 .lp-orb { display: none; } /* Disabled for performance */
 
-.lp-hero-content { flex: 1; max-width: 600px; position: relative; z-index: 2; }
+.lp-hero-content { flex: 0 0 auto; max-width: 580px; position: relative; z-index: 2; }
 
 .lp-badge {
   display: inline-flex; align-items: center; gap: 8px;
@@ -164,16 +164,15 @@
 }
 
 .lp-brand-gradient {
-  background: linear-gradient(135deg, #60d6f9, #3b82f6, #a78bfa);
+  background: linear-gradient(125deg, #38bdf8 0%, #818cf8 40%, #c084fc 70%, #38bdf8 100%);
   -webkit-background-clip: text; -webkit-text-fill-color: transparent;
   background-clip: text;
-  /* Subtle shift — cheap, only background-position */
-  background-size: 200%;
-  animation: lp-grad 5s linear infinite;
+  background-size: 250%;
+  animation: lp-grad 6s linear infinite;
 }
 @keyframes lp-grad {
   0%   { background-position: 0% 50%; }
-  100% { background-position: 200% 50%; }
+  100% { background-position: 250% 50%; }
 }
 
 .lp-hero-sub-title {
@@ -243,14 +242,18 @@
 
 /* ── HERO CARD ────────────────────────────────────────────────── */
 .lp-hero-card {
-  flex-shrink: 0; width: 300px;
-  background: rgba(10,22,50,0.75);
-  backdrop-filter: blur(12px); -webkit-backdrop-filter: blur(12px);
-  border: 1px solid rgba(6,182,212,0.16);
-  border-radius: 22px; padding: 22px;
-  box-shadow: 0 24px 64px rgba(0,0,0,0.45), 0 0 0 1px rgba(255,255,255,0.04), inset 0 1px 0 rgba(255,255,255,0.06);
+  flex-shrink: 0; width: 340px;
+  background: rgba(10,22,50,0.82);
+  backdrop-filter: blur(16px); -webkit-backdrop-filter: blur(16px);
+  border: 1px solid rgba(6,182,212,0.18);
+  border-radius: 24px; padding: 24px;
+  box-shadow:
+    0 32px 80px rgba(0,0,0,0.5),
+    0 0 0 1px rgba(255,255,255,0.04),
+    inset 0 1px 0 rgba(255,255,255,0.08),
+    0 0 60px rgba(6,182,212,0.06);
   position: relative; z-index: 2;
-  animation: lp-card 0.6s ease-out 0.25s both;
+  animation: lp-card 0.7s cubic-bezier(0.22,1,0.36,1) 0.3s both;
   will-change: transform;
 }
 @keyframes lp-card {
@@ -292,7 +295,7 @@
 /* ── STATS ────────────────────────────────────────────────────── */
 .lp-stats {
   display: grid; grid-template-columns: repeat(6,1fr);
-  gap: 16px; padding: 0 88px 80px; position: relative; z-index: 2;
+  gap: 16px; padding: 20px 88px 60px; position: relative; z-index: 2;
 }
 /* Thin gradient separator above stats */
 .lp-stats::before {
