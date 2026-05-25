@@ -22,8 +22,9 @@ CREATE INDEX IF NOT EXISTS idx_audit_log_user
   ON audit_log(user_id, created_at DESC);
 
 -- ── failed_logins: prune entries older than 24 hours (keep table lean) ───────
+-- Column is attempted_at (defined in 005_audit_security.sql)
 DELETE FROM failed_logins
-  WHERE created_at < NOW() - INTERVAL '24 hours';
+  WHERE attempted_at < NOW() - INTERVAL '24 hours';
 
 -- ── grades: index for group-level reporting (rector group-stats query) ────────
 CREATE INDEX IF NOT EXISTS idx_grades_student
