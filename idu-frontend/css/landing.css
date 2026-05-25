@@ -479,19 +479,22 @@
 
 /* ── RESPONSIVE ───────────────────────────────────────────────── */
 
-/* Ultra-wide (1600px+): center content with max-width container */
+/* Ultra-wide (1600px+): center CONTENT via padding, not max-width on sections
+   (max-width on a section clips its background gradient — use padding instead) */
 @media (min-width: 1600px) {
-  .lp-hero,
-  .lp-features,
-  .lp-stats,
-  .lp-footer,
-  .lp-nav {
-    max-width: 1440px;
-    margin-left: auto;
-    margin-right: auto;
-  }
-  .lp-cta-section { max-width: 1264px; margin-left: auto; margin-right: auto; }
-  .lp-hero { padding: 130px 88px 90px; }
+  /* Nav: fixed full-width, constrain inner content */
+  .lp-nav { padding: 0 calc((100% - 1280px) / 2); }
+
+  /* Sections: full-width background, padded content */
+  .lp-hero    { padding: 140px calc((100% - 1280px) / 2 + 0px) 100px; }
+  .lp-stats   { padding: 0 calc((100% - 1280px) / 2) 80px; }
+  .lp-stats::before { left: calc((100% - 1280px) / 2); right: calc((100% - 1280px) / 2); }
+  .lp-features { padding: 80px calc((100% - 1280px) / 2); }
+  .lp-features::before { left: calc((100% - 1280px) / 2); right: calc((100% - 1280px) / 2); }
+  .lp-footer  { padding: 28px calc((100% - 1280px) / 2); }
+
+  /* CTA: these have their own bg, max-width + centering is fine */
+  .lp-cta-section { max-width: 1300px; margin-left: auto; margin-right: auto; }
 }
 
 /* 4K / very ultra-wide (2200px+) */
