@@ -24,14 +24,14 @@
 <link rel="preconnect" href="https://cdnjs.cloudflare.com" crossorigin>
 <link rel="dns-prefetch" href="https://idu-platform-production.up.railway.app">
 <!-- Critical CSS preload — start fetching before parser hits the link tag -->
-<link rel="preload" href="css/style.css?v=20260523v" as="style">
-<link rel="preload" href="css/utilities.css?v=20260523v" as="style">
+<link rel="preload" href="css/style.css?v=20260523w" as="style">
+<link rel="preload" href="css/utilities.css?v=20260523w" as="style">
 <script defer src="https://cdnjs.cloudflare.com/ajax/libs/dompurify/3.0.8/purify.min.js"></script>
 <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800&family=DM+Mono:wght@400;500;600&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="css/style.css?v=20260523v">
-<link rel="stylesheet" href="css/responsive.css?v=20260523v">
-<link rel="stylesheet" href="css/landing.css?v=20260523v">
-<link rel="stylesheet" href="css/utilities.css?v=20260523v">
+<link rel="stylesheet" href="css/style.css?v=20260523w">
+<link rel="stylesheet" href="css/responsive.css?v=20260523w">
+<link rel="stylesheet" href="css/landing.css?v=20260523w">
+<link rel="stylesheet" href="css/utilities.css?v=20260523w">
 <!-- KaTeX for math formula rendering -->
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/katex.min.css" crossorigin="anonymous">
 <script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/katex.min.js" crossorigin="anonymous"></script>
@@ -123,6 +123,9 @@
     <div class="lp-grid-overlay"></div>
 
     <div class="lp-hero-content">
+      <!-- DEBUG: visible only on mobile, confirms fresh deploy -->
+      <div id="debug-version-stamp" style="display:none;position:fixed;top:64px;left:50%;transform:translateX(-50%);z-index:9999;background:#16A34A;color:#fff;padding:5px 12px;border-radius:999px;font-size:11px;font-weight:700;font-family:system-ui,sans-serif;box-shadow:0 4px 12px rgba(22,163,74,0.4);letter-spacing:0.3px">✓ v20260523w · YANGI DIZAYN</div>
+      <script>if(window.innerWidth<=768){document.getElementById('debug-version-stamp').style.display='block';setTimeout(function(){var d=document.getElementById('debug-version-stamp');if(d)d.style.display='none'},6000)}</script>
       <div class="lp-badge" id="lp-badge">🎓 <span id="lp-badge-text">Raqamli ta'lim platformasi</span></div>
       <h1 class="lp-hero-title">
         <span class="lp-brand-gradient">IDU</span><br>
@@ -3944,7 +3947,7 @@ function upmTab(name) {
   </div>
 </div>
   <!-- ===== IDU Platform — Modular Architecture ===== -->
-  <script defer src="js/core/config.js?v=20260523v"></script>
+  <script defer src="js/core/config.js?v=20260523w"></script>
   <script defer src="js/core/auth.js?v=20260517d"></script>
   <script defer src="js/core/router.js?v=20260517d"></script>
   <script defer src="js/core/ui-utils.js?v=20260522a"></script>
@@ -3953,13 +3956,13 @@ function upmTab(name) {
   <script defer src="js/ui/effects.js?v=20260517d"></script>
   <script defer src="js/pages/student.js?v=20260517d"></script>
   <script defer src="js/pages/teacher.js?v=20260517d"></script>
-  <script defer src="js/pages/dekanat.js?v=20260523v"></script>
+  <script defer src="js/pages/dekanat.js?v=20260523w"></script>
   <script defer src="js/pages/investor.js?v=20260517d"></script>
   <script defer src="js/features/schedule.js?v=20260517d"></script>
   <script defer src="js/features/assignments.js?v=20260517d"></script>
   <script defer src="js/features/grades.js?v=20260517d"></script>
   <script defer src="js/features/ai-chat.js?v=20260520f"></script>
-  <script defer src="js/features/exams.js?v=20260523v"></script>
+  <script defer src="js/features/exams.js?v=20260523w"></script>
   <script defer src="js/features/games.js?v=20260517d"></script>
   <script defer src="js/features/reports.js?v=20260517d"></script>
   <script defer src="js/features/stats.js?v=20260521a"></script>
@@ -4552,12 +4555,12 @@ document.addEventListener('DOMContentLoaded', function () {
 ──────────────────────────────────────────────────────────────────────────── -->
 <script>
 (function () {
-  var EXPECTED = 'v=20260523v';
+  var EXPECTED = 'v=20260523w';
   var dekEl = document.querySelector('script[src*="dekanat.js"]');
   if (dekEl && dekEl.getAttribute('src').indexOf(EXPECTED) === -1) {
     // Old index.html — force a fresh fetch
     var base = window.location.href.split('?')[0].split('#')[0];
-    window.location.replace(base + '?_bust=20260523v' + (window.location.hash || ''));
+    window.location.replace(base + '?_bust=20260523w' + (window.location.hash || ''));
   }
 }());
 </script>
