@@ -120,8 +120,8 @@ app.use(helmet({
       baseUri:    ["'self'"],
       formAction: ["'self'"],
 
-      // Force HTTPS in production
-      upgradeInsecureRequests: IS_PROD ? [] : undefined,
+      // Force HTTPS in production (omit entirely in dev — helmet rejects `undefined`)
+      ...(IS_PROD ? { upgradeInsecureRequests: [] } : {}),
     },
   },
   // Prevent clickjacking

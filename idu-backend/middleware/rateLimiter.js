@@ -45,7 +45,8 @@ if (process.env.REDIS_URL) {
     try {
       const redis = require('../services/redis');
       const client = await redis.getClient();
-      if (client && client !== require('../services/redis').inMem) {
+      // Real ioredis has a .status property; in-memory fallback does not
+      if (client && typeof client.status === 'string') {
         _general = new RateLimiterRedis({
           storeClient:      client,
           insuranceLimiter: new RateLimiterMemory(CONFIGS.general),
