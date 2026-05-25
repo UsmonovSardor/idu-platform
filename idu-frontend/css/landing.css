@@ -1,18 +1,23 @@
 /* ═══════════════════════════════════════════════════════════════
-   IDU Premium Landing — v4.1  (performance-optimized)
-   GPU-safe: only transform + opacity animations, no filter blur
+   IDU Premium Landing — v5.0  WORLD-CLASS REDESIGN
+   Bold, vivid, immediately impactful. Linear × Vercel × Stripe.
 ═══════════════════════════════════════════════════════════════ */
 
 :root {
-  --lp-bg:     #060e1a;
-  --lp-bg2:    #0c1a38;
-  --lp-blue:   #2563eb;
-  --lp-cyan:   #06b6d4;
-  --lp-purple: #818cf8;
-  --lp-text:   #f0f4ff;
-  --lp-text2:  #8b9fbe;
-  --lp-border: rgba(255,255,255,0.07);
-  --lp-glass:  rgba(255,255,255,0.04);
+  --lp-bg:      #03050a;
+  --lp-bg2:     #070d1a;
+  --lp-blue:    #2563eb;
+  --lp-cyan:    #00d4ff;
+  --lp-purple:  #7c3aed;
+  --lp-pink:    #ec4899;
+  --lp-green:   #10b981;
+  --lp-text:    #ffffff;
+  --lp-text2:   #8892a4;
+  --lp-border:  rgba(255,255,255,0.08);
+  --lp-glass:   rgba(255,255,255,0.04);
+
+  /* Vivid gradient used everywhere */
+  --lp-grad: linear-gradient(135deg, #00d4ff 0%, #7c3aed 50%, #ec4899 100%);
 }
 
 #authScreen {
@@ -28,27 +33,28 @@
   position: fixed; top: 0; left: 0; right: 0; z-index: 1000;
   display: flex; align-items: center; justify-content: space-between;
   padding: 0 56px; height: 64px;
-  background: rgba(7,17,31,0.82);
-  backdrop-filter: blur(20px) saturate(180%);
-  -webkit-backdrop-filter: blur(20px) saturate(180%);
+  background: rgba(3,5,10,0.85);
+  backdrop-filter: blur(24px) saturate(180%);
+  -webkit-backdrop-filter: blur(24px) saturate(180%);
   border-bottom: 1px solid rgba(255,255,255,0.06);
   transition: background 0.3s, box-shadow 0.3s;
 }
 .lp-nav.scrolled {
-  background: rgba(7,17,31,0.96);
-  box-shadow: 0 1px 0 rgba(255,255,255,0.05), 0 4px 24px rgba(0,0,0,0.2);
+  background: rgba(3,5,10,0.97);
+  box-shadow: 0 1px 0 rgba(0,212,255,0.08), 0 4px 32px rgba(0,0,0,0.4);
 }
 
 .lp-nav-logo { display: flex; align-items: center; gap: 10px; cursor: default; }
 
 .lp-logo-mark {
-  width: 34px; height: 34px; border-radius: 9px;
-  background: linear-gradient(135deg, #1e40af, #06b6d4);
+  width: 36px; height: 36px; border-radius: 10px;
+  background: var(--lp-grad);
   display: flex; align-items: center; justify-content: center;
   font-size: 12px; font-weight: 900; color: #fff;
+  box-shadow: 0 0 20px rgba(0,212,255,0.35);
 }
 
-.lp-logo-text { font-size: 17px; font-weight: 800; color: var(--lp-text); }
+.lp-logo-text { font-size: 18px; font-weight: 900; color: var(--lp-text); letter-spacing: -0.3px; }
 
 .lp-nav-links { display: flex; align-items: center; gap: 2px; }
 
@@ -71,24 +77,24 @@
 
 .lp-cta-btn {
   padding: 9px 22px;
-  background: linear-gradient(135deg, #1e40af, #0891b2);
+  background: var(--lp-grad);
   color: #fff; border: none; border-radius: 10px;
   font-size: 14px; font-weight: 700; cursor: pointer;
   font-family: 'Outfit', sans-serif;
   transition: opacity 0.2s, transform 0.2s, box-shadow 0.2s;
   will-change: transform;
-  box-shadow: 0 2px 12px rgba(6,182,212,0.2);
+  box-shadow: 0 2px 20px rgba(0,212,255,0.3);
 }
-.lp-cta-btn:hover { opacity: 0.9; transform: translateY(-1px); box-shadow: 0 4px 20px rgba(6,182,212,0.3); }
+.lp-cta-btn:hover { opacity: 0.88; transform: translateY(-1px); box-shadow: 0 4px 28px rgba(0,212,255,0.4); }
 
 /* ── DROPDOWN ─────────────────────────────────────────────────── */
 .lp-drop { position: relative; }
 .lp-drop-menu {
   display: none; position: absolute; top: calc(100% + 10px);
   left: 50%; transform: translateX(-50%); min-width: 230px;
-  background: rgba(10,20,45,0.98); border: 1px solid var(--lp-border);
+  background: rgba(5,8,18,0.98); border: 1px solid var(--lp-border);
   border-radius: 14px; padding: 8px;
-  box-shadow: 0 20px 50px rgba(0,0,0,0.4);
+  box-shadow: 0 20px 60px rgba(0,0,0,0.5), 0 0 0 1px rgba(0,212,255,0.05);
 }
 .lp-drop:hover .lp-drop-menu { display: block; }
 .lp-drop-item {
@@ -108,294 +114,364 @@
 
 /* ── HERO ─────────────────────────────────────────────────────── */
 .lp-hero {
-  min-height: auto;
+  min-height: 100vh;
   display: flex; align-items: center; justify-content: center;
   padding: 130px 88px 90px; position: relative; gap: 80px;
+  overflow: hidden;
+}
+
+/* Hero mesh background — vivid, dramatic */
+.lp-hero::before {
+  content: '';
+  position: absolute; inset: 0; pointer-events: none;
   background:
-    radial-gradient(ellipse 55% 65% at 8% 50%,  rgba(30,64,175,0.36) 0%, transparent 52%),
-    radial-gradient(ellipse 45% 55% at 92% 50%, rgba(6,182,212,0.20) 0%, transparent 52%),
-    radial-gradient(ellipse 35% 35% at 50% 2%,  rgba(129,140,248,0.15) 0%, transparent 45%),
+    radial-gradient(ellipse 80% 80% at -10% 50%,  rgba(0,212,255,0.22) 0%, transparent 55%),
+    radial-gradient(ellipse 60% 60% at 110% 50%,  rgba(124,58,237,0.28) 0%, transparent 55%),
+    radial-gradient(ellipse 50% 50% at 50% -20%,  rgba(236,72,153,0.14) 0%, transparent 50%),
+    radial-gradient(ellipse 40% 40% at 50% 100%,  rgba(0,212,255,0.08) 0%, transparent 50%),
     var(--lp-bg);
 }
 
-/* Subtle grid — CSS only, no JS */
+/* Grid overlay — more visible on dark bg */
 .lp-grid-overlay {
-  position: absolute; inset: 0; pointer-events: none;
+  position: absolute; inset: 0; pointer-events: none; z-index: 0;
   background-image:
-    linear-gradient(rgba(255,255,255,0.018) 1px, transparent 1px),
-    linear-gradient(90deg, rgba(255,255,255,0.018) 1px, transparent 1px);
-  background-size: 56px 56px;
-  mask-image: radial-gradient(ellipse 70% 70% at 50% 50%, black, transparent);
-  -webkit-mask-image: radial-gradient(ellipse 70% 70% at 50% 50%, black, transparent);
+    linear-gradient(rgba(255,255,255,0.025) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(255,255,255,0.025) 1px, transparent 1px);
+  background-size: 52px 52px;
+  mask-image: radial-gradient(ellipse 80% 80% at 50% 50%, black 40%, transparent 100%);
+  -webkit-mask-image: radial-gradient(ellipse 80% 80% at 50% 50%, black 40%, transparent 100%);
 }
 
-/* Orbs: static, no animation, no blur — pure CSS gradient circles */
-.lp-orb { display: none; } /* Disabled for performance */
+/* Glowing orbs — CSS only, GPU-safe (transform only) */
+.lp-orb {
+  display: block;
+  position: absolute; border-radius: 50%;
+  pointer-events: none; z-index: 0;
+}
+.lp-orb-1 {
+  width: 500px; height: 500px;
+  top: -100px; left: -150px;
+  background: radial-gradient(circle, rgba(0,212,255,0.12) 0%, transparent 70%);
+  animation: lp-float1 14s ease-in-out infinite;
+}
+.lp-orb-2 {
+  width: 400px; height: 400px;
+  top: 20%; right: -100px;
+  background: radial-gradient(circle, rgba(124,58,237,0.15) 0%, transparent 70%);
+  animation: lp-float2 18s ease-in-out infinite;
+}
+.lp-orb-3 {
+  width: 300px; height: 300px;
+  bottom: 0; left: 40%;
+  background: radial-gradient(circle, rgba(236,72,153,0.10) 0%, transparent 70%);
+  animation: lp-float1 22s ease-in-out infinite reverse;
+}
+@keyframes lp-float1 {
+  0%, 100% { transform: translate(0, 0); }
+  33%       { transform: translate(30px, -20px); }
+  66%       { transform: translate(-20px, 30px); }
+}
+@keyframes lp-float2 {
+  0%, 100% { transform: translate(0, 0); }
+  50%       { transform: translate(-40px, 20px); }
+}
 
-.lp-hero-content { flex: 0 0 auto; max-width: 580px; position: relative; z-index: 2; }
+.lp-hero-content { flex: 0 0 auto; max-width: 600px; position: relative; z-index: 2; }
 
+/* ── BADGE ──────────────────────────────────────────────────── */
 .lp-badge {
   display: inline-flex; align-items: center; gap: 8px;
   padding: 6px 16px;
-  background: rgba(6,182,212,0.08);
-  border: 1px solid rgba(6,182,212,0.22);
+  background: rgba(0,212,255,0.07);
+  border: 1px solid rgba(0,212,255,0.25);
   border-radius: 100px; font-size: 12.5px; font-weight: 700;
-  color: #67e8f9; margin-bottom: 24px;
-  letter-spacing: 0.2px;
+  color: #67e8f9; margin-bottom: 28px;
+  letter-spacing: 0.3px;
   animation: lp-in 0.5s ease-out both;
-  box-shadow: 0 0 20px rgba(6,182,212,0.1);
+  box-shadow: 0 0 24px rgba(0,212,255,0.1), inset 0 1px 0 rgba(255,255,255,0.1);
 }
 
 @keyframes lp-in {
-  from { opacity: 0; transform: translateY(-8px); }
+  from { opacity: 0; transform: translateY(-10px); }
   to   { opacity: 1; transform: translateY(0); }
 }
 
+/* ── TITLE ──────────────────────────────────────────────────── */
 .lp-hero-title {
-  font-size: clamp(40px, 5.5vw, 72px);
-  font-weight: 900; line-height: 1.06; letter-spacing: -2px;
-  margin-bottom: 18px;
-  animation: lp-up 0.5s ease-out 0.08s both;
+  font-size: clamp(56px, 7vw, 96px);
+  font-weight: 900; line-height: 1.0; letter-spacing: -3px;
+  margin-bottom: 20px;
+  animation: lp-up 0.55s cubic-bezier(0.16,1,0.3,1) 0.08s both;
 }
 
 @keyframes lp-up {
-  from { opacity: 0; transform: translateY(16px); }
+  from { opacity: 0; transform: translateY(20px); }
   to   { opacity: 1; transform: translateY(0); }
 }
 
 .lp-brand-gradient {
-  background: linear-gradient(125deg, #38bdf8 0%, #818cf8 40%, #c084fc 70%, #38bdf8 100%);
+  background: var(--lp-grad);
+  background-size: 200%;
   -webkit-background-clip: text; -webkit-text-fill-color: transparent;
   background-clip: text;
-  background-size: 250%;
-  animation: lp-grad 6s linear infinite;
+  animation: lp-grad 4s linear infinite;
+  display: inline-block;
 }
 @keyframes lp-grad {
   0%   { background-position: 0% 50%; }
-  100% { background-position: 250% 50%; }
+  100% { background-position: 200% 50%; }
 }
 
 .lp-hero-sub-title {
-  display: block; color: var(--lp-text);
-  font-size: clamp(26px, 3.5vw, 46px);
-  font-weight: 800; letter-spacing: -1.2px;
+  display: block; color: rgba(255,255,255,0.9);
+  font-size: clamp(28px, 3.8vw, 52px);
+  font-weight: 900; letter-spacing: -1.5px;
+  line-height: 1.05;
 }
 
+/* ── DESCRIPTION ────────────────────────────────────────────── */
 .lp-hero-desc {
-  font-size: 16px; line-height: 1.7; color: var(--lp-text2);
-  margin-bottom: 32px;
-  animation: lp-up 0.5s ease-out 0.15s both;
+  font-size: 17px; line-height: 1.7; color: rgba(136,146,164,0.95);
+  margin-bottom: 36px;
+  animation: lp-up 0.55s cubic-bezier(0.16,1,0.3,1) 0.15s both;
 }
 
+/* ── BUTTONS ────────────────────────────────────────────────── */
 .lp-hero-actions {
   display: flex; gap: 12px; flex-wrap: wrap;
-  animation: lp-up 0.5s ease-out 0.2s both;
-  margin-bottom: 28px;
+  animation: lp-up 0.55s cubic-bezier(0.16,1,0.3,1) 0.2s both;
+  margin-bottom: 32px;
 }
 
 .lp-primary-btn {
-  display: inline-flex; align-items: center; gap: 9px;
-  padding: 13px 26px;
-  background: linear-gradient(135deg, #1e40af, #0891b2);
-  color: #fff; border: none; border-radius: 12px;
-  font-size: 15px; font-weight: 700; cursor: pointer;
+  display: inline-flex; align-items: center; gap: 10px;
+  padding: 15px 30px;
+  background: var(--lp-grad);
+  color: #fff; border: none; border-radius: 14px;
+  font-size: 16px; font-weight: 700; cursor: pointer;
   font-family: 'Outfit', sans-serif;
-  transition: opacity 0.2s, transform 0.2s;
+  transition: opacity 0.2s, transform 0.2s, box-shadow 0.2s;
   will-change: transform;
-  box-shadow: 0 4px 24px rgba(6,182,212,0.25);
+  box-shadow: 0 4px 32px rgba(0,212,255,0.3), 0 2px 8px rgba(0,0,0,0.3);
 }
-.lp-primary-btn:hover { opacity: 0.88; transform: translateY(-2px); }
+.lp-primary-btn:hover {
+  opacity: 0.9; transform: translateY(-2px);
+  box-shadow: 0 8px 40px rgba(0,212,255,0.4), 0 4px 16px rgba(0,0,0,0.3);
+}
 .lp-primary-btn:active { transform: translateY(0); }
 
 .lp-secondary-btn {
-  padding: 13px 26px;
-  background: rgba(255,255,255,0.05);
-  color: var(--lp-text); border: 1px solid var(--lp-border);
-  border-radius: 12px; font-size: 15px; font-weight: 600;
+  padding: 15px 30px;
+  background: rgba(255,255,255,0.04);
+  color: rgba(255,255,255,0.85); border: 1px solid rgba(255,255,255,0.12);
+  border-radius: 14px; font-size: 16px; font-weight: 600;
   cursor: pointer; font-family: 'Outfit', sans-serif;
-  transition: background 0.2s, border-color 0.2s, transform 0.2s;
+  transition: background 0.2s, border-color 0.2s, transform 0.2s, color 0.2s;
   will-change: transform;
+  backdrop-filter: blur(8px);
 }
 .lp-secondary-btn:hover {
-  background: rgba(255,255,255,0.09);
-  border-color: rgba(255,255,255,0.18);
+  background: rgba(255,255,255,0.08);
+  border-color: rgba(0,212,255,0.3);
+  color: #fff;
   transform: translateY(-1px);
 }
 
+/* ── PILLS ──────────────────────────────────────────────────── */
 .lp-pills {
   display: flex; flex-wrap: wrap; gap: 8px;
-  animation: lp-up 0.5s ease-out 0.25s both;
+  animation: lp-up 0.55s cubic-bezier(0.16,1,0.3,1) 0.25s both;
 }
 .lp-pill {
   display: inline-flex; align-items: center; gap: 6px;
-  padding: 6px 13px;
+  padding: 7px 14px;
   background: rgba(255,255,255,0.04);
-  border: 1px solid rgba(255,255,255,0.09);
+  border: 1px solid rgba(255,255,255,0.1);
   border-radius: 100px; font-size: 13px; font-weight: 500;
   color: var(--lp-text2);
   transition: background 0.2s, border-color 0.2s, color 0.2s;
 }
 .lp-pill:hover {
-  background: rgba(6,182,212,0.08);
-  border-color: rgba(6,182,212,0.25); color: #67e8f9;
+  background: rgba(0,212,255,0.08);
+  border-color: rgba(0,212,255,0.28); color: #67e8f9;
 }
 
 /* ── HERO CARD ────────────────────────────────────────────────── */
 .lp-hero-card {
   flex-shrink: 0; width: 340px;
-  background: rgba(10,22,50,0.82);
-  backdrop-filter: blur(16px); -webkit-backdrop-filter: blur(16px);
-  border: 1px solid rgba(6,182,212,0.18);
+  background: rgba(8,14,28,0.90);
+  backdrop-filter: blur(20px); -webkit-backdrop-filter: blur(20px);
   border-radius: 24px; padding: 24px;
-  box-shadow:
-    0 32px 80px rgba(0,0,0,0.5),
-    0 0 0 1px rgba(255,255,255,0.04),
-    inset 0 1px 0 rgba(255,255,255,0.08),
-    0 0 60px rgba(6,182,212,0.06);
   position: relative; z-index: 2;
-  animation: lp-card 0.7s cubic-bezier(0.22,1,0.36,1) 0.3s both;
+  animation: lp-card 0.8s cubic-bezier(0.16,1,0.3,1) 0.3s both;
   will-change: transform;
+
+  /* Gradient border */
+  border: 1px solid transparent;
+  background-clip: padding-box;
+  box-shadow:
+    0 0 0 1px rgba(0,212,255,0.18),
+    0 32px 80px rgba(0,0,0,0.6),
+    0 0 80px rgba(0,212,255,0.08),
+    inset 0 1px 0 rgba(255,255,255,0.07);
 }
 @keyframes lp-card {
-  from { opacity: 0; transform: translateX(20px); }
-  to   { opacity: 1; transform: translateX(0); }
+  from { opacity: 0; transform: translateX(30px) scale(0.97); }
+  to   { opacity: 1; transform: translateX(0) scale(1); }
+}
+
+/* Top glowing line on card */
+.lp-hero-card::before {
+  content: ''; position: absolute; top: 0; left: 20%; right: 20%; height: 1px;
+  background: var(--lp-grad);
+  border-radius: 1px;
+  opacity: 0.7;
 }
 
 .lp-card-header { display: flex; align-items: center; gap: 10px; margin-bottom: 16px; }
 .lp-card-dots   { display: flex; gap: 5px; }
-.lp-card-dots span { width: 9px; height: 9px; border-radius: 50%; background: rgba(255,255,255,0.12); }
+.lp-card-dots span { width: 10px; height: 10px; border-radius: 50%; background: rgba(255,255,255,0.12); }
 .lp-card-dots span:first-child  { background: #ef4444; }
 .lp-card-dots span:nth-child(2) { background: #f59e0b; }
 .lp-card-dots span:last-child   { background: #22c55e; }
 .lp-card-title { font-size: 12px; font-weight: 700; color: var(--lp-text2); }
 
 .lp-card-stats { display: grid; grid-template-columns: repeat(3,1fr); gap: 8px; margin-bottom: 14px; }
-.lp-cs { text-align: center; }
-.lp-cs-val { font-size: 20px; font-weight: 900; font-family: 'DM Mono', monospace; }
-.lp-cs-key { font-size: 10px; color: var(--lp-text2); margin-top: 2px; font-weight: 500; }
+.lp-cs { text-align: center; padding: 10px 6px; background: rgba(255,255,255,0.04); border-radius: 10px; border: 1px solid rgba(255,255,255,0.06); }
+.lp-cs-val { font-size: 22px; font-weight: 900; font-family: 'DM Mono', monospace; }
+.lp-cs-key { font-size: 10px; color: var(--lp-text2); margin-top: 3px; font-weight: 600; text-transform: uppercase; letter-spacing: 0.5px; }
 
-.lp-card-bar-label { display: flex; justify-content: space-between; font-size: 11px; font-weight: 600; color: var(--lp-text2); margin-bottom: 5px; }
-.lp-progress-bg   { height: 5px; background: rgba(255,255,255,0.08); border-radius: 5px; overflow: hidden; margin-bottom: 14px; }
+.lp-card-bar-label { display: flex; justify-content: space-between; font-size: 11px; font-weight: 600; color: var(--lp-text2); margin-bottom: 6px; }
+.lp-progress-bg   { height: 6px; background: rgba(255,255,255,0.08); border-radius: 6px; overflow: hidden; margin-bottom: 14px; }
 .lp-progress-fill {
   height: 100%;
-  background: linear-gradient(90deg, #1e40af, #06b6d4);
-  border-radius: 5px; width: 82%;
+  background: var(--lp-grad);
+  border-radius: 6px; width: 82%;
+  box-shadow: 0 0 10px rgba(0,212,255,0.4);
 }
 
-.lp-card-subjects { display: flex; flex-direction: column; gap: 5px; }
+.lp-card-subjects { display: flex; flex-direction: column; gap: 6px; }
 .lp-subj {
   display: flex; justify-content: space-between; align-items: center;
-  padding: 7px 10px;
+  padding: 8px 12px;
   background: rgba(255,255,255,0.04);
-  border: 1px solid rgba(255,255,255,0.06);
-  border-radius: 8px; font-size: 11px; color: var(--lp-text2);
+  border: 1px solid rgba(255,255,255,0.07);
+  border-radius: 9px; font-size: 12px; color: var(--lp-text2);
+  font-weight: 500;
 }
-.lp-subj span { font-weight: 800; font-size: 12px; color: var(--c); }
+.lp-subj span { font-weight: 800; font-size: 13px; color: var(--c); }
 
 /* ── STATS ────────────────────────────────────────────────────── */
 .lp-stats {
   display: grid; grid-template-columns: repeat(6,1fr);
-  gap: 16px; padding: 20px 88px 60px; position: relative; z-index: 2;
+  gap: 14px; padding: 0 88px 72px; position: relative; z-index: 2;
 }
-/* Thin gradient separator above stats */
+/* Top separator */
 .lp-stats::before {
   content: '';
   position: absolute; top: -1px; left: 88px; right: 88px; height: 1px;
-  background: linear-gradient(90deg, transparent, rgba(6,182,212,0.2), rgba(99,102,241,0.2), transparent);
+  background: linear-gradient(90deg, transparent, rgba(0,212,255,0.3), rgba(124,58,237,0.3), transparent);
 }
 
 .lp-stat-card {
   position: relative;
-  background: rgba(255,255,255,0.035);
-  border-radius: 16px; padding: 24px 16px; text-align: center;
-  transition: transform 0.22s ease, box-shadow 0.22s ease;
+  background: rgba(255,255,255,0.03);
+  border: 1px solid rgba(255,255,255,0.07);
+  border-radius: 18px; padding: 24px 16px; text-align: center;
+  transition: transform 0.22s ease, box-shadow 0.22s ease, border-color 0.22s ease;
   will-change: transform;
-  /* Gradient border trick */
-  background-clip: padding-box;
-  border: 1px solid transparent;
-  box-shadow: inset 0 0 0 1px rgba(255,255,255,0.07);
+  overflow: hidden;
 }
 .lp-stat-card::before {
-  content: ''; position: absolute; inset: 0; border-radius: 16px;
+  content: ''; position: absolute; inset: 0; border-radius: 18px;
   padding: 1px;
-  background: linear-gradient(135deg, rgba(6,182,212,0.15), rgba(99,102,241,0.12), rgba(255,255,255,0.04));
+  background: linear-gradient(135deg, rgba(0,212,255,0.2), rgba(124,58,237,0.15), rgba(255,255,255,0.04));
   -webkit-mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
   mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
   -webkit-mask-composite: xor; mask-composite: exclude;
   pointer-events: none;
 }
 .lp-stat-card:hover {
-  transform: translateY(-4px);
-  box-shadow: 0 12px 36px rgba(6,182,212,0.12), 0 4px 12px rgba(0,0,0,0.2);
+  transform: translateY(-6px);
+  border-color: rgba(0,212,255,0.2);
+  box-shadow: 0 16px 40px rgba(0,212,255,0.1), 0 4px 12px rgba(0,0,0,0.3);
 }
 
-.lp-stat-icon { font-size: 24px; margin-bottom: 10px; }
+.lp-stat-icon { font-size: 26px; margin-bottom: 12px; display: block; }
 .lp-stat-num {
-  font-size: 30px; font-weight: 900;
+  font-size: 32px; font-weight: 900;
   font-family: 'DM Mono', monospace;
-  background: linear-gradient(135deg, #7dd3fc, #818cf8);
+  background: var(--lp-grad);
   -webkit-background-clip: text; -webkit-text-fill-color: transparent;
-  background-clip: text; line-height: 1; margin-bottom: 6px;
+  background-clip: text; line-height: 1; margin-bottom: 7px;
 }
 .lp-stat-label {
-  font-size: 10.5px; color: var(--lp-text2); font-weight: 600;
+  font-size: 11px; color: var(--lp-text2); font-weight: 600;
   text-transform: uppercase; letter-spacing: 0.8px;
 }
 
 /* ── FEATURES ─────────────────────────────────────────────────── */
 .lp-features {
-  padding: 80px 88px; position: relative;
+  padding: 80px 88px 96px; position: relative;
   background:
-    radial-gradient(ellipse 50% 40% at 50% 0%, rgba(99,102,241,0.07) 0%, transparent 60%);
+    radial-gradient(ellipse 60% 50% at 50% 0%, rgba(124,58,237,0.08) 0%, transparent 60%);
 }
 .lp-features::before {
   content: ''; position: absolute; top: 0; left: 88px; right: 88px; height: 1px;
-  background: linear-gradient(90deg, transparent, rgba(99,102,241,0.3), rgba(6,182,212,0.3), transparent);
+  background: linear-gradient(90deg, transparent, rgba(124,58,237,0.4), rgba(0,212,255,0.4), transparent);
 }
 
 .lp-feat-header { text-align: center; margin-bottom: 56px; }
 .lp-feat-tag {
-  display: inline-flex; align-items: center; gap: 6px; padding: 5px 16px;
-  background: rgba(129,140,248,0.08);
-  border: 1px solid rgba(129,140,248,0.2);
+  display: inline-flex; align-items: center; gap: 7px; padding: 6px 18px;
+  background: rgba(124,58,237,0.1);
+  border: 1px solid rgba(124,58,237,0.25);
   border-radius: 100px; font-size: 12px; font-weight: 700;
-  color: #a5b4fc; margin-bottom: 16px; letter-spacing: 0.3px;
+  color: #a78bfa; margin-bottom: 18px; letter-spacing: 0.3px;
 }
 .lp-feat-tag::before { content: '✦'; font-size: 9px; opacity: 0.7; }
 .lp-feat-title {
-  font-size: clamp(28px, 3.8vw, 44px); font-weight: 900;
-  letter-spacing: -1.5px; color: var(--lp-text); line-height: 1.15;
+  font-size: clamp(32px, 4.2vw, 52px); font-weight: 900;
+  letter-spacing: -2px; color: var(--lp-text); line-height: 1.1;
+}
+/* Gradient accent on last word of feature title */
+.lp-feat-title-accent {
+  background: var(--lp-grad);
+  -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+  background-clip: text;
 }
 
-.lp-feat-grid { display: grid; grid-template-columns: repeat(3,1fr); gap: 18px; }
+.lp-feat-grid { display: grid; grid-template-columns: repeat(3,1fr); gap: 16px; }
 
 .lp-feat-card {
   position: relative;
-  background: rgba(255,255,255,0.028);
+  background: rgba(255,255,255,0.025);
   border: 1px solid rgba(255,255,255,0.07);
-  border-radius: 20px; padding: 28px;
+  border-radius: 20px; padding: 30px;
   overflow: hidden;
-  transition: transform 0.25s ease, box-shadow 0.25s ease, border-color 0.25s ease;
+  transition: transform 0.25s ease, box-shadow 0.25s ease, border-color 0.25s ease, background 0.25s ease;
   will-change: transform;
 }
 .lp-feat-card:hover {
-  border-color: rgba(255,255,255,0.13);
-  transform: translateY(-5px);
-  box-shadow: 0 20px 48px rgba(0,0,0,0.3), 0 0 0 1px rgba(255,255,255,0.06);
+  border-color: rgba(0,212,255,0.18);
+  background: rgba(0,212,255,0.03);
+  transform: translateY(-6px);
+  box-shadow: 0 24px 56px rgba(0,0,0,0.35), 0 0 0 1px rgba(0,212,255,0.1);
 }
 
-/* Top glow bar on hover */
+/* Top glow bar */
 .lp-feat-glow {
   position: absolute; top: 0; left: 0; right: 0; height: 2px;
-  background: linear-gradient(90deg, transparent 10%, var(--gc, rgba(6,182,212,0.7)) 50%, transparent 90%);
+  background: linear-gradient(90deg, transparent 10%, var(--gc, rgba(0,212,255,0.8)) 50%, transparent 90%);
   opacity: 0; transition: opacity 0.3s;
 }
 .lp-feat-card:hover .lp-feat-glow { opacity: 1; }
 
-/* Ambient glow bg on hover */
+/* Ambient inner glow */
 .lp-feat-card::after {
   content: ''; position: absolute; inset: 0; border-radius: 20px; pointer-events: none;
-  background: radial-gradient(ellipse 60% 40% at 50% 0%, var(--gc, rgba(6,182,212,0.06)), transparent 70%);
+  background: radial-gradient(ellipse 60% 40% at 50% 0%, var(--gc, rgba(0,212,255,0.08)), transparent 70%);
   opacity: 0; transition: opacity 0.3s;
 }
 .lp-feat-card:hover::after { opacity: 1; }
@@ -403,113 +479,116 @@
 .lp-feat-lg { grid-column: span 2; }
 
 .lp-feat-icon-wrap {
-  width: 52px; height: 52px; border-radius: 14px;
+  width: 54px; height: 54px; border-radius: 14px;
   display: flex; align-items: center; justify-content: center;
-  font-size: 24px; margin-bottom: 18px;
-  box-shadow: 0 4px 16px rgba(0,0,0,0.3);
+  font-size: 26px; margin-bottom: 20px;
+  box-shadow: 0 4px 20px rgba(0,0,0,0.3);
 }
 .lp-feat-card h3 {
-  font-size: 17.5px; font-weight: 800; color: var(--lp-text);
-  margin-bottom: 10px; letter-spacing: -0.3px;
+  font-size: 18px; font-weight: 800; color: var(--lp-text);
+  margin-bottom: 10px; letter-spacing: -0.4px;
 }
 .lp-feat-card p {
-  font-size: 14px; line-height: 1.7; color: rgba(148,163,184,0.9);
-  margin-bottom: 16px;
+  font-size: 14.5px; line-height: 1.7; color: rgba(136,146,164,0.9);
+  margin-bottom: 18px;
 }
 
 .lp-feat-chip {
-  display: inline-flex; align-items: center; gap: 5px; padding: 4px 12px;
-  background: rgba(6,182,212,0.09); border: 1px solid rgba(6,182,212,0.2);
+  display: inline-flex; align-items: center; gap: 5px; padding: 5px 13px;
+  background: rgba(0,212,255,0.09); border: 1px solid rgba(0,212,255,0.22);
   border-radius: 100px; font-size: 11px; font-weight: 700; color: #67e8f9;
   letter-spacing: 0.2px;
 }
 .lp-feat-chip-blue {
-  background: rgba(99,102,241,0.09); border-color: rgba(99,102,241,0.22); color: #a5b4fc;
+  background: rgba(124,58,237,0.1); border-color: rgba(124,58,237,0.25); color: #a78bfa;
 }
 
 /* ── CTA ──────────────────────────────────────────────────────── */
 .lp-cta-section {
-  margin: 0 88px 80px; border-radius: 28px; padding: 80px 64px;
+  margin: 0 88px 80px; border-radius: 28px; padding: 96px 64px;
   text-align: center; position: relative; overflow: hidden;
-  background:
-    radial-gradient(ellipse 80% 60% at 50% 120%, rgba(6,182,212,0.18) 0%, transparent 60%),
-    linear-gradient(135deg, rgba(30,64,175,0.4) 0%, rgba(13,25,50,0.95) 50%, rgba(14,116,144,0.3) 100%);
-  border: 1px solid rgba(6,182,212,0.2);
-  box-shadow: 0 0 80px rgba(6,182,212,0.08), inset 0 1px 0 rgba(255,255,255,0.06);
+  background: linear-gradient(135deg, rgba(0,212,255,0.08) 0%, rgba(124,58,237,0.12) 50%, rgba(236,72,153,0.08) 100%);
+  border: 1px solid rgba(0,212,255,0.15);
+  box-shadow:
+    0 0 100px rgba(0,212,255,0.06),
+    0 0 100px rgba(124,58,237,0.06),
+    inset 0 1px 0 rgba(255,255,255,0.07);
 }
-/* Decorative corner accents */
+/* CTA gradient border top */
 .lp-cta-section::before {
-  content: ''; position: absolute; top: -1px; left: 20%; right: 20%; height: 1px;
-  background: linear-gradient(90deg, transparent, rgba(6,182,212,0.5), rgba(99,102,241,0.5), transparent);
+  content: ''; position: absolute; top: 0; left: 15%; right: 15%; height: 1px;
+  background: var(--lp-grad);
+  opacity: 0.6;
 }
+/* CTA ambient glow */
 .lp-cta-section::after {
-  content: ''; position: absolute; bottom: -1px; left: 30%; right: 30%; height: 1px;
-  background: linear-gradient(90deg, transparent, rgba(6,182,212,0.3), transparent);
+  content: ''; position: absolute;
+  top: 50%; left: 50%; transform: translate(-50%, -50%);
+  width: 600px; height: 300px; border-radius: 50%;
+  background: radial-gradient(ellipse, rgba(124,58,237,0.12) 0%, transparent 70%);
+  pointer-events: none;
 }
 .lp-cta-orb { display: none; }
 .lp-cta-title {
-  font-size: clamp(32px, 4.5vw, 54px); font-weight: 900;
-  letter-spacing: -2px; margin-bottom: 12px; color: #fff;
-  line-height: 1.1;
+  font-size: clamp(36px, 5vw, 60px); font-weight: 900;
+  letter-spacing: -2.5px; margin-bottom: 16px; color: #fff;
+  line-height: 1.05; position: relative; z-index: 1;
 }
-.lp-cta-sub { font-size: 15.5px; color: rgba(148,163,184,0.85); margin-bottom: 36px; max-width: 380px; margin-left: auto; margin-right: auto; }
+.lp-cta-sub {
+  font-size: 16px; color: rgba(136,146,164,0.9);
+  margin-bottom: 40px; max-width: 400px;
+  margin-left: auto; margin-right: auto;
+  position: relative; z-index: 1;
+}
 .lp-cta-main-btn {
-  font-size: 16px; padding: 15px 40px; border-radius: 14px;
-  box-shadow: 0 8px 32px rgba(6,182,212,0.3), 0 2px 8px rgba(0,0,0,0.2);
+  font-size: 17px; padding: 17px 48px; border-radius: 15px;
+  box-shadow: 0 8px 40px rgba(0,212,255,0.35), 0 2px 8px rgba(0,0,0,0.2);
+  position: relative; z-index: 1;
 }
 
 /* ── FOOTER ───────────────────────────────────────────────────── */
 .lp-footer {
-  padding: 28px 88px; border-top: 1px solid rgba(255,255,255,0.06);
+  padding: 32px 88px; border-top: 1px solid rgba(255,255,255,0.06);
   display: flex; align-items: center; justify-content: space-between;
   flex-wrap: wrap; gap: 16px;
-  background: rgba(7,17,31,0.5);
+  background: rgba(3,5,10,0.6);
 }
 .lp-footer-logo  { display: flex; align-items: center; gap: 10px; }
-.lp-footer-links { display: flex; gap: 24px; }
+.lp-footer-links { display: flex; gap: 28px; }
 .lp-footer-links a {
-  font-size: 13px; color: rgba(148,163,184,0.7); cursor: pointer;
+  font-size: 13px; color: rgba(136,146,164,0.7); cursor: pointer;
   transition: color 0.15s; font-weight: 500;
 }
 .lp-footer-links a:hover { color: var(--lp-text); }
-.lp-footer-copy  { font-size: 12px; color: rgba(148,163,184,0.5); }
+.lp-footer-copy  { font-size: 12px; color: rgba(136,146,164,0.5); }
 
 /* ── SCROLL REVEAL ────────────────────────────────────────────── */
-/* Start invisible — JS adds .visible on scroll; fallback: show after 1s if JS slow */
-.lp-reveal { opacity: 0; transform: translateY(20px); transition: opacity 0.55s ease, transform 0.55s ease; animation: lp-reveal-fallback 0s 1.2s forwards; }
+.lp-reveal { opacity: 0; transform: translateY(24px); transition: opacity 0.6s ease, transform 0.6s ease; animation: lp-reveal-fallback 0s 1.0s forwards; }
 .lp-reveal.visible { opacity: 1; transform: translateY(0); animation: none; }
 @keyframes lp-reveal-fallback { to { opacity: 1; transform: translateY(0); } }
 
 /* ── RESPONSIVE ───────────────────────────────────────────────── */
 
-/* Ultra-wide (1600px+): center CONTENT via padding, not max-width on sections
-   (max-width on a section clips its background gradient — use padding instead) */
+/* Ultra-wide (1600px+): center CONTENT via padding, not max-width on sections */
 @media (min-width: 1600px) {
-  /* Nav: fixed full-width, constrain inner content */
-  .lp-nav { padding: 0 calc((100% - 1280px) / 2); }
-
-  /* Sections: full-width background, padded content */
-  .lp-hero    { padding: 140px calc((100% - 1280px) / 2 + 0px) 100px; }
-  .lp-stats   { padding: 0 calc((100% - 1280px) / 2) 80px; }
-  .lp-stats::before { left: calc((100% - 1280px) / 2); right: calc((100% - 1280px) / 2); }
-  .lp-features { padding: 80px calc((100% - 1280px) / 2); }
-  .lp-features::before { left: calc((100% - 1280px) / 2); right: calc((100% - 1280px) / 2); }
-  .lp-footer  { padding: 28px calc((100% - 1280px) / 2); }
-
-  /* CTA: these have their own bg, max-width + centering is fine */
+  .lp-nav     { padding: 0 calc((100% - 1300px) / 2); }
+  .lp-hero    { padding: 140px calc((100% - 1300px) / 2) 100px; }
+  .lp-stats   { padding: 0 calc((100% - 1300px) / 2) 80px; }
+  .lp-stats::before { left: calc((100% - 1300px) / 2); right: calc((100% - 1300px) / 2); }
+  .lp-features { padding: 80px calc((100% - 1300px) / 2) 96px; }
+  .lp-features::before { left: calc((100% - 1300px) / 2); right: calc((100% - 1300px) / 2); }
+  .lp-footer  { padding: 32px calc((100% - 1300px) / 2); }
   .lp-cta-section { max-width: 1300px; margin-left: auto; margin-right: auto; }
 }
 
-/* 4K / very ultra-wide (2200px+) */
 @media (min-width: 2200px) {
-  .lp-hero-title  { font-size: 84px; }
-  .lp-hero-sub-title { font-size: 52px; }
-  .lp-hero-content { max-width: 720px; }
+  .lp-hero-title  { font-size: 100px; }
+  .lp-hero-sub-title { font-size: 60px; }
+  .lp-hero-content { max-width: 800px; }
 }
 
-/* Smaller desktop / large tablet */
 @media (max-width: 1300px) {
-  .lp-hero { padding: 100px 60px 60px; gap: 40px; }
+  .lp-hero { padding: 100px 60px 60px; gap: 48px; }
   .lp-hero-card { transform: scale(0.92); transform-origin: top right; }
 }
 
@@ -534,191 +613,34 @@
 }
 
 /* ════════════════════════════════════════════════════════════════
-   MOBILE — tight, refined, Apple/Linear-style spacing rhythm
+   MOBILE — Premium Apple/Linear spacing
    ════════════════════════════════════════════════════════════════ */
-@media (max-width: 768px) {
-  /* Nav */
-  .lp-nav { padding: 0 18px; height: 56px; }
-  .lp-nav-links { display: none; }
-  .lp-nav-right { gap: 8px; }
-  .lp-lang { padding: 5px 10px !important; font-size: 12px !important; border-radius: 7px !important; }
-  .lp-cta-btn { padding: 7px 14px; font-size: 13px; border-radius: 8px; }
-
-  /* Hero — tighter padding, controlled rhythm */
-  .lp-hero {
-    flex-direction: column;
-    padding: 80px 22px 36px;
-    text-align: center;
-    align-items: center;
-    gap: 22px;
-    min-height: auto;
-  }
-  .lp-hero-content { width: 100%; max-width: 480px; margin: 0 auto; }
-
-  /* Badge — smaller, refined */
-  .lp-badge { font-size: 12px; padding: 5px 12px; margin-bottom: 18px; gap: 6px; }
-
-  /* Title — controlled scale, less letter-spacing on mobile */
-  .lp-hero-title {
-    font-size: clamp(34px, 8.5vw, 44px) !important;
-    line-height: 1.05 !important;
-    letter-spacing: -1.4px;
-    margin-bottom: 14px;
-  }
-  .lp-brand-gradient { font-size: 0.78em; line-height: 1; display: inline-block; margin-bottom: 6px; }
-  .lp-hero-sub-title { font-size: 0.92em; letter-spacing: -0.8px; }
-
-  /* Description — tighter */
-  .lp-hero-desc {
-    font-size: 14.5px;
-    line-height: 1.55;
-    margin-bottom: 22px;
-    color: rgba(226,232,240,0.78);
-  }
-
-  /* CTAs — full width but with proper rhythm */
-  .lp-hero-actions {
-    display: flex; flex-direction: column;
-    gap: 10px; width: 100%;
-    margin-bottom: 22px;
-  }
-  .lp-primary-btn,
-  .lp-secondary-btn {
-    width: 100%; justify-content: center;
-    padding: 13px 18px; font-size: 14.5px;
-    border-radius: 11px;
-  }
-
-  /* Pills — clean wrap */
-  .lp-pills { justify-content: center; flex-wrap: wrap; gap: 8px; }
-
-  /* Hero preview card */
-  .lp-hero-card { display: block; transform: none; width: 100%; max-width: 340px; padding: 18px; }
-
-  /* Other sections */
-  .lp-stats { grid-template-columns: repeat(3,1fr); padding: 0 20px 48px; gap: 10px; }
-  .lp-stat-card { padding: 14px 8px; }
-  .lp-stat-num { font-size: 22px; }
-  .lp-feat-grid { grid-template-columns: 1fr; }
-  .lp-features, .lp-footer { padding-left: 20px; padding-right: 20px; }
-  .lp-features { padding-top: 48px; padding-bottom: 48px; }
-  .lp-cta-section { margin: 0 20px 48px; padding: 40px 20px; }
-  .lp-hero-desc br { display: none; }
-  .lp-footer { flex-direction: column; gap: 12px; text-align: center; }
-  .lp-footer-links { flex-wrap: wrap; justify-content: center; }
-}
-
-@media (max-width: 480px) {
-  /* Nav — even tighter on phones */
-  .lp-nav { padding: 0 16px; height: 54px; }
-  .lp-logo-text { display: none; }
-  .lp-logo-mark { width: 30px; height: 30px; font-size: 10.5px; border-radius: 8px; }
-  .lp-nav-right { gap: 6px; }
-  .lp-lang { padding: 5px 9px !important; font-size: 11.5px !important; }
-  .lp-cta-btn { padding: 6px 13px; font-size: 12.5px; }
-
-  /* Hero — phone scale */
-  .lp-hero { padding: 72px 18px 32px; gap: 20px; }
-  .lp-hero-content { max-width: 100%; }
-
-  /* Badge */
-  .lp-badge { font-size: 11.5px; padding: 4px 11px; margin-bottom: 16px; }
-
-  /* Title — strict scaling, tight line-height */
-  .lp-hero-title {
-    font-size: clamp(28px, 9vw, 36px) !important;
-    line-height: 1.04 !important;
-    letter-spacing: -1.2px;
-    margin-bottom: 12px;
-  }
-  .lp-brand-gradient { font-size: 0.72em; margin-bottom: 4px; }
-  .lp-hero-sub-title { font-size: 0.88em; letter-spacing: -0.6px; }
-
-  /* Description */
-  .lp-hero-desc {
-    font-size: 14px; line-height: 1.5;
-    margin-bottom: 20px;
-    padding: 0 4px;
-  }
-
-  /* CTAs */
-  .lp-hero-actions { gap: 9px; margin-bottom: 20px; }
-  .lp-primary-btn,
-  .lp-secondary-btn,
-  .lp-hero-actions .lp-btn-primary,
-  .lp-hero-actions .lp-btn-outline {
-    width: 100%; justify-content: center;
-    padding: 13px 16px; font-size: 14.5px;
-    border-radius: 11px; font-weight: 600;
-  }
-  .lp-primary-btn { font-weight: 700; }
-
-  /* Pills — 2×2 grid, tighter */
-  .lp-pills { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; max-width: 360px; margin: 0 auto; }
-  .lp-pill {
-    font-size: 12px; padding: 9px 10px;
-    justify-content: center; gap: 6px;
-    border-radius: 10px;
-  }
-
-  /* Stats */
-  .lp-stats { grid-template-columns: repeat(2,1fr); gap: 10px; }
-  .lp-cta-main-btn { width: 100%; box-sizing: border-box; }
-}
-
-@media (max-width: 360px) {
-  .lp-hero { padding: 68px 14px 28px; }
-  .lp-hero-title { font-size: 26px !important; }
-  .lp-pills { grid-template-columns: 1fr; max-width: 280px; }
-  .lp-pill { padding: 10px 12px; }
-}
-
-/* Short screens (laptops with low height) */
-@media (max-height: 700px) and (min-width: 769px) {
-  .lp-hero { min-height: auto; padding-top: 88px; padding-bottom: 40px; }
-  .lp-hero-title { font-size: clamp(36px, 4.5vw, 60px); }
-}
-
-/* ════════════════════════════════════════════════════════════════════
-   FINAL MOBILE OVERRIDE — Premium v20260525
-   Claude-grade design: clean, minimal, purposeful. Zero clutter.
-   ════════════════════════════════════════════════════════════════════ */
-
-/* ─── TABLET (≤768px) ──────────────────────────────────────────────── */
 @media (max-width: 768px) {
   html, body { overflow-x: hidden !important; }
 
-  /* ── Nav: compact pill bar ─────────────────────────────────────── */
   .lp-nav {
-    height: 52px !important;
-    padding: 0 16px !important;
-    background: rgba(7,17,31,0.96) !important;
+    height: 54px !important;
+    padding: 0 18px !important;
+    background: rgba(3,5,10,0.97) !important;
     border-bottom: 1px solid rgba(255,255,255,0.07) !important;
   }
   .lp-logo-mark {
-    width: 30px !important; height: 30px !important;
-    border-radius: 8px !important; font-size: 11px !important;
+    width: 32px !important; height: 32px !important;
+    border-radius: 9px !important; font-size: 11px !important;
+    box-shadow: 0 0 14px rgba(0,212,255,0.3) !important;
   }
-  .lp-logo-text { font-size: 15px !important; font-weight: 800 !important; }
+  .lp-logo-text { font-size: 16px !important; font-weight: 900 !important; }
   .lp-nav-links { display: none !important; }
   .lp-nav-right { gap: 8px !important; }
-  .lp-lang {
-    padding: 5px 10px !important; font-size: 12px !important;
-    border-radius: 7px !important;
-  }
-  .lp-cta-btn {
-    padding: 7px 14px !important; font-size: 13px !important;
-    border-radius: 8px !important; font-weight: 700 !important;
-    letter-spacing: 0.1px !important;
-  }
+  .lp-lang { padding: 5px 10px !important; font-size: 12px !important; border-radius: 7px !important; }
+  .lp-cta-btn { padding: 7px 14px !important; font-size: 13px !important; border-radius: 9px !important; font-weight: 700 !important; }
 
-  /* ── Hero: full-viewport centered column ───────────────────────── */
   .lp-hero {
     flex-direction: column !important;
     align-items: center !important;
     justify-content: center !important;
     text-align: center !important;
-    padding: 90px 28px 52px !important;
+    padding: 90px 24px 52px !important;
     gap: 0 !important;
     min-height: 100svh !important;
   }
@@ -727,53 +649,46 @@
     max-width: 480px !important;
     margin: 0 auto !important;
   }
-
-  /* Dashboard preview card — hidden on mobile for focus */
   .lp-hero-card { display: none !important; }
 
-  /* ── Badge ─────────────────────────────────────────────────────── */
   .lp-badge {
-    font-size: 11px !important; padding: 4px 12px !important;
+    font-size: 11.5px !important; padding: 5px 14px !important;
     margin-bottom: 22px !important; gap: 6px !important;
-    letter-spacing: 0.15px !important;
   }
 
-  /* ── Title: IDU large + subtitle readable ──────────────────────── */
   .lp-hero-title {
-    font-size: 44px !important;
-    line-height: 1.04 !important;
-    letter-spacing: -2px !important;
-    margin: 0 0 0 !important;
+    font-size: 46px !important;
+    line-height: 1.02 !important;
+    letter-spacing: -2.2px !important;
+    margin-bottom: 14px !important;
     font-weight: 900 !important;
   }
   .lp-brand-gradient {
     display: block !important;
-    font-size: 44px !important;
+    font-size: 46px !important;
     line-height: 1 !important;
     margin-bottom: 6px !important;
-    letter-spacing: -2px !important;
+    letter-spacing: -2.2px !important;
   }
   .lp-hero-sub-title {
     display: block !important;
-    font-size: 24px !important;
-    line-height: 1.2 !important;
+    font-size: 26px !important;
+    line-height: 1.18 !important;
     letter-spacing: -0.8px !important;
     font-weight: 800 !important;
     margin-bottom: 16px !important;
-    color: var(--lp-text) !important;
+    color: rgba(255,255,255,0.9) !important;
   }
 
-  /* ── Description ───────────────────────────────────────────────── */
   .lp-hero-desc {
-    font-size: 15px !important;
+    font-size: 15.5px !important;
     line-height: 1.65 !important;
     margin: 0 0 28px !important;
-    color: rgba(148,163,184,0.95) !important;
+    color: rgba(136,146,164,0.95) !important;
     padding: 0 6px !important;
   }
   .lp-hero-desc br { display: none !important; }
 
-  /* ── CTAs: full-width stacked ──────────────────────────────────── */
   .lp-hero-actions {
     display: flex !important;
     flex-direction: column !important;
@@ -783,19 +698,17 @@
   }
   .lp-primary-btn {
     width: 100% !important; justify-content: center !important;
-    padding: 14px 20px !important; font-size: 15px !important;
+    padding: 15px 20px !important; font-size: 15.5px !important;
     border-radius: 13px !important; font-weight: 700 !important;
-    box-sizing: border-box !important; gap: 8px !important;
-    letter-spacing: 0.1px !important;
+    box-sizing: border-box !important;
   }
   .lp-secondary-btn {
     width: 100% !important; justify-content: center !important;
-    padding: 13px 20px !important; font-size: 15px !important;
+    padding: 14px 20px !important; font-size: 15.5px !important;
     border-radius: 13px !important; font-weight: 600 !important;
     box-sizing: border-box !important;
   }
 
-  /* ── Pills: 2×2 clean grid ─────────────────────────────────────── */
   .lp-pills {
     display: grid !important;
     grid-template-columns: 1fr 1fr !important;
@@ -808,89 +721,80 @@
     border-radius: 10px !important;
   }
 
-  /* ── Stats: compact 2-col ──────────────────────────────────────── */
   .lp-stats {
     grid-template-columns: repeat(2, 1fr) !important;
-    padding: 0 20px 44px !important; gap: 10px !important;
+    padding: 0 20px 48px !important; gap: 10px !important;
   }
-  .lp-stat-card { padding: 16px 10px !important; }
-  .lp-stat-icon { font-size: 18px !important; margin-bottom: 7px !important; }
-  .lp-stat-num { font-size: 22px !important; margin-bottom: 4px !important; }
-  .lp-stat-label { font-size: 10px !important; letter-spacing: 0.3px !important; }
+  .lp-stat-card { padding: 18px 10px !important; }
+  .lp-stat-icon { font-size: 20px !important; margin-bottom: 8px !important; }
+  .lp-stat-num { font-size: 24px !important; margin-bottom: 5px !important; }
+  .lp-stat-label { font-size: 10px !important; letter-spacing: 0.4px !important; }
 
-  /* ── Features: single column ───────────────────────────────────── */
   .lp-feat-grid { grid-template-columns: 1fr !important; }
   .lp-feat-lg { grid-column: span 1 !important; }
   .lp-features { padding: 52px 20px !important; }
-  .lp-feat-title { font-size: 26px !important; letter-spacing: -0.8px !important; }
+  .lp-feat-title { font-size: 28px !important; letter-spacing: -1px !important; }
 
-  /* ── CTA section ───────────────────────────────────────────────── */
   .lp-cta-section {
-    margin: 0 20px 48px !important; padding: 44px 24px !important;
+    margin: 0 20px 48px !important; padding: 48px 24px !important;
     border-radius: 22px !important;
   }
-  .lp-cta-title { font-size: 26px !important; letter-spacing: -0.8px !important; margin-bottom: 10px !important; }
-  .lp-cta-sub { font-size: 14px !important; margin-bottom: 24px !important; }
+  .lp-cta-title { font-size: 28px !important; letter-spacing: -1px !important; margin-bottom: 12px !important; }
+  .lp-cta-sub { font-size: 14.5px !important; margin-bottom: 28px !important; }
   .lp-cta-main-btn {
     width: 100% !important; box-sizing: border-box !important;
-    padding: 14px 20px !important; font-size: 15px !important;
+    padding: 15px 20px !important; font-size: 15.5px !important;
     border-radius: 13px !important;
   }
 
-  /* ── Footer: stacked ───────────────────────────────────────────── */
   .lp-footer {
     padding: 24px 20px !important; flex-direction: column !important;
     gap: 14px !important; text-align: center !important;
   }
   .lp-footer-links {
     flex-wrap: wrap !important; justify-content: center !important;
-    gap: 18px !important;
+    gap: 20px !important;
   }
 }
 
-/* ─── PHONE (≤480px) ────────────────────────────────────────────────── */
 @media (max-width: 480px) {
-  /* Nav */
-  .lp-nav { height: 50px !important; padding: 0 14px !important; }
-  .lp-logo-mark { width: 28px !important; height: 28px !important; font-size: 10.5px !important; }
+  .lp-nav { height: 52px !important; padding: 0 14px !important; }
+  .lp-logo-mark { width: 30px !important; height: 30px !important; font-size: 10.5px !important; }
   .lp-logo-text { display: none !important; }
   .lp-lang { padding: 5px 9px !important; font-size: 11.5px !important; }
   .lp-cta-btn { padding: 6px 13px !important; font-size: 12.5px !important; }
 
-  /* Hero */
-  .lp-hero { padding: 80px 20px 48px !important; min-height: 100svh !important; }
-  .lp-badge { font-size: 10.5px !important; padding: 4px 11px !important; margin-bottom: 20px !important; }
+  .lp-hero { padding: 82px 20px 48px !important; min-height: 100svh !important; }
+  .lp-badge { font-size: 11px !important; padding: 4px 12px !important; margin-bottom: 20px !important; }
 
-  /* Title */
-  .lp-hero-title { font-size: 38px !important; letter-spacing: -1.8px !important; }
-  .lp-brand-gradient { font-size: 38px !important; letter-spacing: -1.8px !important; margin-bottom: 4px !important; }
-  .lp-hero-sub-title { font-size: 21px !important; letter-spacing: -0.5px !important; margin-bottom: 14px !important; }
+  .lp-hero-title { font-size: 40px !important; letter-spacing: -2px !important; }
+  .lp-brand-gradient { font-size: 40px !important; letter-spacing: -2px !important; margin-bottom: 4px !important; }
+  .lp-hero-sub-title { font-size: 22px !important; letter-spacing: -0.6px !important; margin-bottom: 14px !important; }
 
-  /* Body text */
-  .lp-hero-desc { font-size: 14px !important; line-height: 1.6 !important; margin-bottom: 24px !important; padding: 0 4px !important; }
+  .lp-hero-desc { font-size: 14.5px !important; line-height: 1.6 !important; margin-bottom: 24px !important; }
 
-  /* Buttons */
   .lp-hero-actions { gap: 9px !important; margin-bottom: 22px !important; }
-  .lp-primary-btn  { padding: 13px 18px !important; font-size: 14.5px !important; }
-  .lp-secondary-btn { padding: 12px 18px !important; font-size: 14.5px !important; }
+  .lp-primary-btn  { padding: 14px 18px !important; font-size: 14.5px !important; }
+  .lp-secondary-btn { padding: 13px 18px !important; font-size: 14.5px !important; }
 
-  /* Pills */
   .lp-pills { gap: 7px !important; max-width: 340px !important; }
   .lp-pill { font-size: 12px !important; padding: 9px 11px !important; }
 
-  /* Stats */
-  .lp-stats { grid-template-columns: repeat(2, 1fr) !important; gap: 9px !important; }
-  .lp-stat-num { font-size: 20px !important; }
+  .lp-stats { gap: 9px !important; }
+  .lp-stat-num { font-size: 22px !important; }
 }
 
-/* ─── TINY PHONE (≤360px) ───────────────────────────────────────────── */
 @media (max-width: 360px) {
   .lp-hero { padding: 76px 16px 44px !important; }
-  .lp-hero-title { font-size: 33px !important; letter-spacing: -1.5px !important; }
-  .lp-brand-gradient { font-size: 33px !important; }
-  .lp-hero-sub-title { font-size: 18px !important; margin-bottom: 12px !important; }
+  .lp-hero-title { font-size: 34px !important; letter-spacing: -1.6px !important; }
+  .lp-brand-gradient { font-size: 34px !important; }
+  .lp-hero-sub-title { font-size: 19px !important; margin-bottom: 12px !important; }
   .lp-hero-desc { font-size: 13.5px !important; }
   .lp-pills { grid-template-columns: 1fr !important; max-width: 260px !important; }
-  .lp-pill { padding: 10px 12px !important; }
   .lp-primary-btn, .lp-secondary-btn { font-size: 14px !important; padding: 13px 16px !important; }
+}
+
+@media (max-height: 700px) and (min-width: 769px) {
+  .lp-hero { min-height: auto; padding-top: 90px; padding-bottom: 48px; }
+  .lp-hero-title { font-size: clamp(40px, 5vw, 72px); }
 }
