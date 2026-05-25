@@ -455,19 +455,69 @@
   .lp-hero-card { display: none; }
 }
 
+/* ════════════════════════════════════════════════════════════════
+   MOBILE — tight, refined, Apple/Linear-style spacing rhythm
+   ════════════════════════════════════════════════════════════════ */
 @media (max-width: 768px) {
-  .lp-nav { padding: 0 16px; height: 58px; }
+  /* Nav */
+  .lp-nav { padding: 0 18px; height: 56px; }
   .lp-nav-links { display: none; }
   .lp-nav-right { gap: 8px; }
-  .lp-lang { padding: 5px 10px !important; font-size: 12px !important; }
-  .lp-cta-btn { padding: 7px 14px; font-size: 13px; }
-  .lp-hero { flex-direction: column; padding: 96px 20px 40px; text-align: center; align-items: center; gap: 28px; min-height: auto; }
-  .lp-hero-content { width: 100%; }
-  .lp-hero-title { font-size: clamp(32px, 8vw, 44px) !important; }
-  .lp-hero-desc { font-size: 15px; margin-bottom: 26px; }
-  .lp-hero-actions { justify-content: center; flex-wrap: wrap; gap: 10px; width: 100%; }
+  .lp-lang { padding: 5px 10px !important; font-size: 12px !important; border-radius: 7px !important; }
+  .lp-cta-btn { padding: 7px 14px; font-size: 13px; border-radius: 8px; }
+
+  /* Hero — tighter padding, controlled rhythm */
+  .lp-hero {
+    flex-direction: column;
+    padding: 80px 22px 36px;
+    text-align: center;
+    align-items: center;
+    gap: 22px;
+    min-height: auto;
+  }
+  .lp-hero-content { width: 100%; max-width: 480px; margin: 0 auto; }
+
+  /* Badge — smaller, refined */
+  .lp-badge { font-size: 12px; padding: 5px 12px; margin-bottom: 18px; gap: 6px; }
+
+  /* Title — controlled scale, less letter-spacing on mobile */
+  .lp-hero-title {
+    font-size: clamp(34px, 8.5vw, 44px) !important;
+    line-height: 1.05 !important;
+    letter-spacing: -1.4px;
+    margin-bottom: 14px;
+  }
+  .lp-brand-gradient { font-size: 0.78em; line-height: 1; display: inline-block; margin-bottom: 6px; }
+  .lp-hero-sub-title { font-size: 0.92em; letter-spacing: -0.8px; }
+
+  /* Description — tighter */
+  .lp-hero-desc {
+    font-size: 14.5px;
+    line-height: 1.55;
+    margin-bottom: 22px;
+    color: rgba(226,232,240,0.78);
+  }
+
+  /* CTAs — full width but with proper rhythm */
+  .lp-hero-actions {
+    display: flex; flex-direction: column;
+    gap: 10px; width: 100%;
+    margin-bottom: 22px;
+  }
+  .lp-primary-btn,
+  .lp-secondary-btn {
+    width: 100%; justify-content: center;
+    padding: 13px 18px; font-size: 14.5px;
+    border-radius: 11px;
+  }
+
+  /* Pills — clean wrap */
   .lp-pills { justify-content: center; flex-wrap: wrap; gap: 8px; }
-  .lp-hero-card { display: block; transform: none; width: 100%; max-width: 320px; }
+
+  /* Hero preview card */
+  .lp-hero-card { display: block; transform: none; width: 100%; max-width: 340px; padding: 18px; }
+
+  /* Other sections */
   .lp-stats { grid-template-columns: repeat(3,1fr); padding: 0 20px 48px; gap: 10px; }
   .lp-stat-card { padding: 14px 8px; }
   .lp-stat-num { font-size: 22px; }
@@ -481,31 +531,68 @@
 }
 
 @media (max-width: 480px) {
-  .lp-nav { padding: 0 14px; height: 56px; }
+  /* Nav — even tighter on phones */
+  .lp-nav { padding: 0 16px; height: 54px; }
   .lp-logo-text { display: none; }
-  .lp-logo-mark { width: 32px; height: 32px; font-size: 11px; }
+  .lp-logo-mark { width: 30px; height: 30px; font-size: 10.5px; border-radius: 8px; }
   .lp-nav-right { gap: 6px; }
-  .lp-lang { padding: 5px 8px !important; font-size: 11.5px !important; }
-  .lp-cta-btn { padding: 7px 12px; font-size: 12.5px; border-radius: 8px; }
-  .lp-stats { grid-template-columns: repeat(2,1fr); }
-  .lp-hero { padding: 80px 16px 36px; gap: 24px; }
-  .lp-hero-title { font-size: clamp(28px, 9vw, 38px) !important; line-height: 1.1; }
-  .lp-hero-desc { font-size: 14.5px; line-height: 1.6; }
-  .lp-hero-actions { gap: 10px; }
+  .lp-lang { padding: 5px 9px !important; font-size: 11.5px !important; }
+  .lp-cta-btn { padding: 6px 13px; font-size: 12.5px; }
+
+  /* Hero — phone scale */
+  .lp-hero { padding: 72px 18px 32px; gap: 20px; }
+  .lp-hero-content { max-width: 100%; }
+
+  /* Badge */
+  .lp-badge { font-size: 11.5px; padding: 4px 11px; margin-bottom: 16px; }
+
+  /* Title — strict scaling, tight line-height */
+  .lp-hero-title {
+    font-size: clamp(28px, 9vw, 36px) !important;
+    line-height: 1.04 !important;
+    letter-spacing: -1.2px;
+    margin-bottom: 12px;
+  }
+  .lp-brand-gradient { font-size: 0.72em; margin-bottom: 4px; }
+  .lp-hero-sub-title { font-size: 0.88em; letter-spacing: -0.6px; }
+
+  /* Description */
+  .lp-hero-desc {
+    font-size: 14px; line-height: 1.5;
+    margin-bottom: 20px;
+    padding: 0 4px;
+  }
+
+  /* CTAs */
+  .lp-hero-actions { gap: 9px; margin-bottom: 20px; }
   .lp-primary-btn,
   .lp-secondary-btn,
   .lp-hero-actions .lp-btn-primary,
-  .lp-hero-actions .lp-btn-outline { width: 100%; justify-content: center; padding: 14px 20px; font-size: 14.5px; }
-  /* Pills: clean 2×2 grid instead of 3+1 wrap */
-  .lp-pills { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; }
-  .lp-pill { font-size: 12px; padding: 8px 12px; justify-content: center; }
+  .lp-hero-actions .lp-btn-outline {
+    width: 100%; justify-content: center;
+    padding: 13px 16px; font-size: 14.5px;
+    border-radius: 11px; font-weight: 600;
+  }
+  .lp-primary-btn { font-weight: 700; }
+
+  /* Pills — 2×2 grid, tighter */
+  .lp-pills { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; max-width: 360px; margin: 0 auto; }
+  .lp-pill {
+    font-size: 12px; padding: 9px 10px;
+    justify-content: center; gap: 6px;
+    border-radius: 10px;
+  }
+
+  /* Stats */
+  .lp-stats { grid-template-columns: repeat(2,1fr); gap: 10px; }
   .lp-cta-main-btn { width: 100%; box-sizing: border-box; }
-  .lp-badge { font-size: 12px; padding: 5px 12px; }
 }
 
 @media (max-width: 360px) {
-  .lp-pills { grid-template-columns: 1fr; }
+  .lp-hero { padding: 68px 14px 28px; }
   .lp-hero-title { font-size: 26px !important; }
+  .lp-pills { grid-template-columns: 1fr; max-width: 280px; }
+  .lp-pill { padding: 10px 12px; }
 }
 
 /* Short screens (laptops with low height) */
