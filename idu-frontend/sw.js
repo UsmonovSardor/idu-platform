@@ -1,14 +1,15 @@
-/* IDU Platform — Service Worker v2.0
+/* IDU Platform — Service Worker v3.0
  * Strategies:
  *   • API (/api/*): network-only (no caching of user data)
- *   • CSS/JS/HTML: stale-while-revalidate (instant load + background update)
+ *   • Versioned CSS/JS (?v=...): network-first, cache as fallback
+ *     (the ?v= query string IS the cache buster — SW must respect it)
+ *   • Unversioned CSS/JS: stale-while-revalidate (legacy paths)
  *   • Images/fonts: cache-first (rarely change)
- *   • Cross-origin CDN: cache-first
- *   • Navigation: network-first with offline fallback to cached '/'
+ *   • Navigation: network-first, shell fallback offline
  */
 'use strict';
 
-const VERSION       = 'v6';
+const VERSION       = 'v7';
 const STATIC_CACHE  = 'idu-static-' + VERSION;
 const IMG_CACHE     = 'idu-img-' + VERSION;
 const SHELL_CACHE   = 'idu-shell-' + VERSION;
@@ -50,6 +51,17 @@ function staleWhileRevalidate(req, cacheName) {
       }).catch(() => cached);
       return cached || network;
     })
+  );
+}
+
+// Network-first: always try the network. Use cache only as offline fallback.
+// Critical for versioned assets where the URL (with ?v=…) is the cache key.
+function networkFirst(req, cacheName) {
+  return caches.open(cacheName).then((cache) =>
+    fetch(req).then((resp) => {
+      if (resp && resp.ok) cache.put(req, resp.clone());
+      return resp;
+    }).catch(() => cache.match(req))
   );
 }
 
@@ -99,9 +111,16 @@ self.addEventListener('fetch', (event) => {
     return;
   }
 
-  // 5. CSS / JS — stale-while-revalidate (fast + always updating)
+  // 5. CSS / JS — network-first for versioned assets (?v=...),
+  //    stale-while-revalidate only as a last resort for unversioned legacy paths.
+  //    Reason: when the URL has ?v=…, that IS the cache buster. The user
+  //    must always see the freshest deploy, never a stale cached copy.
   if (/\.(css|js)$/i.test(url.pathname)) {
-    event.respondWith(staleWhileRevalidate(req, STATIC_CACHE));
+    if (url.search && /[?&]v=/.test(url.search)) {
+      event.respondWith(networkFirst(req, STATIC_CACHE));
+    } else {
+      event.respondWith(staleWhileRevalidate(req, STATIC_CACHE));
+    }
     return;
   }
 
