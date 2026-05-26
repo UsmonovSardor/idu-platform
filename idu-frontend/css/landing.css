@@ -109,10 +109,11 @@
   padding: 120px 88px 60px;
   position: relative; overflow: hidden;
   background:
-    radial-gradient(ellipse 100% 90% at -10% 50%, rgba(37,99,235,0.35) 0%, transparent 52%),
-    radial-gradient(ellipse 80% 70% at 110% 40%, rgba(56,189,248,0.22) 0%, transparent 50%),
-    radial-gradient(ellipse 70% 55% at 50% -15%, rgba(37,99,235,0.2) 0%, transparent 50%),
-    radial-gradient(ellipse 50% 40% at 50% 110%, rgba(29,78,216,0.12) 0%, transparent 50%),
+    radial-gradient(ellipse 110% 100% at -15% 50%, rgba(37,99,235,0.42) 0%, transparent 50%),
+    radial-gradient(ellipse 90% 80% at 115% 40%, rgba(56,189,248,0.28) 0%, transparent 48%),
+    radial-gradient(ellipse 80% 60% at 50% -20%, rgba(37,99,235,0.22) 0%, transparent 48%),
+    radial-gradient(ellipse 60% 50% at 50% 120%, rgba(29,78,216,0.16) 0%, transparent 50%),
+    radial-gradient(ellipse 40% 40% at 80% 80%, rgba(56,189,248,0.1) 0%, transparent 50%),
     var(--bg);
 }
 
@@ -216,18 +217,20 @@
 
 .lp-secondary-btn {
   padding: 14px 28px;
-  background: rgba(255,255,255,0.05);
-  color: rgba(241,245,249,0.82);
-  border: 1px solid rgba(255,255,255,0.11);
+  background: rgba(255,255,255,0.07);
+  color: rgba(241,245,249,0.9);
+  border: 1px solid rgba(255,255,255,0.18);
   border-radius: 12px; font-size: 15px; font-weight: 600;
   cursor: pointer; font-family: 'Outfit', sans-serif;
-  transition: background 0.2s, border-color 0.2s, transform 0.15s, color 0.2s;
-  backdrop-filter: blur(8px);
+  transition: background 0.2s, border-color 0.2s, transform 0.15s, color 0.2s, box-shadow 0.2s;
+  backdrop-filter: blur(12px);
+  box-shadow: 0 2px 12px rgba(0,0,0,0.2), inset 0 1px 0 rgba(255,255,255,0.08);
 }
 .lp-secondary-btn:hover {
-  background: rgba(255,255,255,0.09);
-  border-color: rgba(59,130,246,0.3); color: #fff;
-  transform: translateY(-1px);
+  background: rgba(255,255,255,0.12);
+  border-color: rgba(59,130,246,0.4); color: #fff;
+  transform: translateY(-2px);
+  box-shadow: 0 4px 20px rgba(0,0,0,0.25), inset 0 1px 0 rgba(255,255,255,0.1);
 }
 
 /* ─────────────────────────────────────────────────────────────
@@ -239,14 +242,18 @@
 }
 .lp-pill {
   display: inline-flex; align-items: center; gap: 6px;
-  padding: 6px 14px;
-  background: rgba(59,130,246,0.06);
-  border: 1px solid rgba(59,130,246,0.16);
-  border-radius: 100px; font-size: 12.5px; font-weight: 500;
-  color: rgba(147,197,253,0.85);
-  transition: background 0.2s, border-color 0.2s, color 0.2s;
+  padding: 7px 16px;
+  background: rgba(59,130,246,0.1);
+  border: 1px solid rgba(59,130,246,0.22);
+  border-radius: 100px; font-size: 13px; font-weight: 600;
+  color: rgba(191,219,254,0.95);
+  transition: background 0.2s, border-color 0.2s, color 0.2s, transform 0.15s;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.15);
 }
-.lp-pill:hover { background: rgba(59,130,246,0.12); border-color: rgba(59,130,246,0.32); color: #bfdbfe; }
+.lp-pill:hover {
+  background: rgba(59,130,246,0.18); border-color: rgba(59,130,246,0.38);
+  color: #dbeafe; transform: translateY(-1px);
+}
 
 /* ─────────────────────────────────────────────────────────────
    HERO CARD
