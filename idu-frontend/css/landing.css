@@ -5,15 +5,15 @@
 ═══════════════════════════════════════════════════════════════ */
 
 :root {
-  --bg:      #040c1a;
-  --bg2:     #071426;
+  --bg:      #071524;
+  --bg2:     #0b1e35;
   --blue:    #3b82f6;
   --blue2:   #2563eb;
   --sky:     #38bdf8;
   --text:    #f1f5f9;
-  --text2:   #7d93b5;
-  --border:  rgba(59,130,246,0.12);
-  --card:    rgba(255,255,255,0.04);
+  --text2:   #8fa5c8;
+  --border:  rgba(59,130,246,0.22);
+  --card:    rgba(255,255,255,0.06);
   --glow:    rgba(59,130,246,0.25);
   --btn:     linear-gradient(135deg, #2563eb 0%, #1d4ed8 100%);
 }
@@ -35,15 +35,21 @@
   position: fixed; top: 0; left: 0; right: 0; z-index: 1000;
   display: flex; align-items: center; justify-content: space-between;
   padding: 0 56px; height: 64px;
-  background: rgba(4,12,26,0.85);
+  background: rgba(7,21,36,0.85);
   backdrop-filter: blur(24px) saturate(180%);
   -webkit-backdrop-filter: blur(24px) saturate(180%);
-  border-bottom: 1px solid rgba(59,130,246,0.1);
+  border-bottom: 1px solid rgba(59,130,246,0.14);
   transition: background 0.3s, box-shadow 0.3s;
 }
+.lp-nav::before {
+  content: '';
+  position: absolute; top: 0; left: 0; right: 0; height: 2px;
+  background: linear-gradient(90deg, transparent 5%, #2563eb 30%, #38bdf8 50%, #2563eb 70%, transparent 95%);
+  opacity: 0.8;
+}
 .lp-nav.scrolled {
-  background: rgba(4,12,26,0.97);
-  box-shadow: 0 1px 0 rgba(59,130,246,0.12), 0 4px 24px rgba(0,0,0,0.4);
+  background: rgba(7,21,36,0.97);
+  box-shadow: 0 1px 0 rgba(59,130,246,0.2), 0 4px 24px rgba(0,0,0,0.4);
 }
 .lp-nav-logo { display: flex; align-items: center; gap: 10px; cursor: default; }
 .lp-logo-mark {
@@ -109,11 +115,11 @@
   padding: 120px 88px 60px;
   position: relative; overflow: hidden;
   background:
-    radial-gradient(ellipse 110% 100% at -15% 50%, rgba(37,99,235,0.42) 0%, transparent 50%),
-    radial-gradient(ellipse 90% 80% at 115% 40%, rgba(56,189,248,0.28) 0%, transparent 48%),
-    radial-gradient(ellipse 80% 60% at 50% -20%, rgba(37,99,235,0.22) 0%, transparent 48%),
-    radial-gradient(ellipse 60% 50% at 50% 120%, rgba(29,78,216,0.16) 0%, transparent 50%),
-    radial-gradient(ellipse 40% 40% at 80% 80%, rgba(56,189,248,0.1) 0%, transparent 50%),
+    radial-gradient(ellipse 110% 100% at -15% 50%, rgba(37,99,235,0.50) 0%, transparent 50%),
+    radial-gradient(ellipse 90% 80% at 115% 40%, rgba(56,189,248,0.35) 0%, transparent 48%),
+    radial-gradient(ellipse 80% 60% at 50% -20%, rgba(37,99,235,0.28) 0%, transparent 48%),
+    radial-gradient(ellipse 60% 50% at 50% 120%, rgba(29,78,216,0.20) 0%, transparent 50%),
+    radial-gradient(ellipse 40% 40% at 80% 80%, rgba(56,189,248,0.14) 0%, transparent 50%),
     var(--bg);
 }
 
@@ -166,13 +172,13 @@
 
 /* IDU — vivid blue gradient with depth glow */
 .lp-brand-gradient {
-  background: linear-gradient(135deg, #dbeafe 0%, #93c5fd 25%, #60a5fa 55%, #3b82f6 80%, #93c5fd 100%);
+  background: linear-gradient(135deg, #eff6ff 0%, #a5c8fd 25%, #60a5fa 55%, #3b82f6 80%, #a5c8fd 100%);
   background-size: 250%;
   -webkit-background-clip: text; -webkit-text-fill-color: transparent;
   background-clip: text;
   animation: lp-grad 5s ease-in-out infinite alternate;
   display: inline-block;
-  filter: drop-shadow(0 0 32px rgba(59,130,246,0.55));
+  filter: drop-shadow(0 0 32px rgba(59,130,246,0.7));
 }
 @keyframes lp-grad { 0% { background-position: 0% 50%; } 100% { background-position: 100% 50%; } }
 
@@ -317,12 +323,12 @@
 }
 .lp-stat-card {
   position: relative;
-  background: linear-gradient(145deg, rgba(37,99,235,0.1) 0%, rgba(255,255,255,0.03) 100%);
-  border: 1px solid rgba(59,130,246,0.18);
+  background: linear-gradient(145deg, rgba(37,99,235,0.14) 0%, rgba(255,255,255,0.04) 100%);
+  border: 1px solid rgba(59,130,246,0.26);
   border-radius: 18px; padding: 26px 14px 22px; text-align: center;
   transition: transform 0.22s ease, box-shadow 0.22s ease, border-color 0.22s ease;
   overflow: hidden;
-  box-shadow: 0 4px 20px rgba(0,0,0,0.2), inset 0 1px 0 rgba(255,255,255,0.05);
+  box-shadow: 0 4px 20px rgba(0,0,0,0.2), 0 0 20px rgba(37,99,235,0.06), inset 0 1px 0 rgba(255,255,255,0.07);
 }
 .lp-stat-card::before {
   content: ''; position: absolute; top: 0; left: 15%; right: 15%; height: 1px;
@@ -342,7 +348,7 @@
 .lp-stat-num {
   font-size: 32px; font-weight: 900;
   font-family: 'DM Mono', monospace;
-  background: linear-gradient(135deg, #bfdbfe 0%, #93c5fd 40%, #60a5fa 100%);
+  background: linear-gradient(135deg, #eff6ff 0%, #a5c8fd 40%, #60a5fa 100%);
   -webkit-background-clip: text; -webkit-text-fill-color: transparent;
   background-clip: text;
   line-height: 1; margin-bottom: 7px;
@@ -384,10 +390,10 @@
 .lp-feat-grid { display: grid; grid-template-columns: repeat(3,1fr); gap: 14px; }
 .lp-feat-card {
   position: relative;
-  background: linear-gradient(145deg, rgba(37,99,235,0.07) 0%, rgba(255,255,255,0.025) 100%);
-  border: 1px solid rgba(59,130,246,0.14);
+  background: linear-gradient(145deg, rgba(37,99,235,0.10) 0%, rgba(255,255,255,0.035) 100%);
+  border: 1px solid rgba(59,130,246,0.22);
   border-radius: 20px; padding: 28px; overflow: hidden;
-  box-shadow: 0 4px 24px rgba(0,0,0,0.18), inset 0 1px 0 rgba(255,255,255,0.04);
+  box-shadow: 0 8px 32px rgba(0,0,0,0.25), inset 0 1px 0 rgba(255,255,255,0.05);
   transition: transform 0.22s, box-shadow 0.22s, border-color 0.22s, background 0.22s;
 }
 .lp-feat-card:hover {
@@ -426,9 +432,9 @@
   margin: 0 88px 80px; border-radius: 24px; padding: 88px 56px;
   text-align: center; position: relative; overflow: hidden;
   background:
-    radial-gradient(ellipse 80% 70% at 50% 110%, rgba(37,99,235,0.25) 0%, transparent 55%),
-    radial-gradient(ellipse 60% 50% at 50% 0%, rgba(56,189,248,0.12) 0%, transparent 50%),
-    linear-gradient(135deg, rgba(37,99,235,0.15) 0%, rgba(7,15,32,0.98) 40%, rgba(29,78,216,0.12) 100%);
+    radial-gradient(ellipse 80% 70% at 50% 110%, rgba(37,99,235,0.32) 0%, transparent 55%),
+    radial-gradient(ellipse 60% 50% at 50% 0%, rgba(56,189,248,0.16) 0%, transparent 50%),
+    linear-gradient(135deg, rgba(37,99,235,0.22) 0%, rgba(11,30,53,0.98) 40%, rgba(29,78,216,0.18) 100%);
   border: 1px solid rgba(59,130,246,0.2);
   box-shadow: 0 0 80px rgba(37,99,235,0.1), inset 0 1px 0 rgba(255,255,255,0.05);
 }
