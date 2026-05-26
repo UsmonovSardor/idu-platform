@@ -125,8 +125,15 @@
   -webkit-mask-image: radial-gradient(ellipse 90% 90% at 50% 40%, black 10%, transparent 100%);
 }
 
-/* No animated orbs — clean */
+/* Subtle ambient glow at hero bottom — bridges to stats */
 .lp-orb { display: none; }
+.lp-hero::after {
+  content: '';
+  position: absolute; bottom: -60px; left: 50%; transform: translateX(-50%);
+  width: 600px; height: 120px; pointer-events: none;
+  background: radial-gradient(ellipse 60% 100% at 50% 100%, rgba(37,99,235,0.14), transparent 70%);
+  z-index: 0;
+}
 
 .lp-hero-content { flex: 0 0 auto; max-width: 580px; position: relative; z-index: 2; }
 
@@ -156,14 +163,15 @@
 }
 @keyframes lp-up { from { opacity: 0; transform: translateY(18px); } to { opacity: 1; transform: translateY(0); } }
 
-/* IDU — vivid blue gradient, premium feel */
+/* IDU — vivid blue gradient with depth glow */
 .lp-brand-gradient {
-  background: linear-gradient(135deg, #93c5fd 0%, #60a5fa 30%, #3b82f6 65%, #bfdbfe 100%);
-  background-size: 200%;
+  background: linear-gradient(135deg, #dbeafe 0%, #93c5fd 25%, #60a5fa 55%, #3b82f6 80%, #93c5fd 100%);
+  background-size: 250%;
   -webkit-background-clip: text; -webkit-text-fill-color: transparent;
   background-clip: text;
-  animation: lp-grad 6s ease-in-out infinite alternate;
+  animation: lp-grad 5s ease-in-out infinite alternate;
   display: inline-block;
+  filter: drop-shadow(0 0 32px rgba(59,130,246,0.55));
 }
 @keyframes lp-grad { 0% { background-position: 0% 50%; } 100% { background-position: 100% 50%; } }
 
@@ -244,17 +252,17 @@
    HERO CARD
 ───────────────────────────────────────────────────────────── */
 .lp-hero-card {
-  flex-shrink: 0; width: 340px;
+  flex-shrink: 0; width: 360px;
   background: rgba(7,15,32,0.92);
   backdrop-filter: blur(20px); -webkit-backdrop-filter: blur(20px);
-  border: 1px solid rgba(59,130,246,0.15);
-  border-radius: 22px; padding: 22px;
+  border: 1px solid rgba(59,130,246,0.2);
+  border-radius: 22px; padding: 24px;
   position: relative; z-index: 2;
   box-shadow:
-    0 0 0 1px rgba(59,130,246,0.08),
-    0 24px 64px rgba(0,0,0,0.55),
-    0 0 64px rgba(37,99,235,0.08),
-    inset 0 1px 0 rgba(255,255,255,0.06);
+    0 0 0 1px rgba(59,130,246,0.1),
+    0 32px 80px rgba(0,0,0,0.6),
+    0 0 100px rgba(37,99,235,0.14),
+    inset 0 1px 0 rgba(255,255,255,0.08);
   animation: lp-card 0.7s cubic-bezier(0.22,1,0.36,1) 0.28s both;
 }
 @keyframes lp-card { from { opacity: 0; transform: translateX(28px) scale(0.97); } to { opacity: 1; transform: translateX(0) scale(1); } }
