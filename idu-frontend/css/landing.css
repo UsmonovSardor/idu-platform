@@ -106,23 +106,23 @@
   min-height: auto;
   display: flex; align-items: center; justify-content: center;
   gap: 72px;
-  padding: 120px 88px 80px;
+  padding: 120px 88px 60px;
   position: relative; overflow: hidden;
   background:
-    radial-gradient(ellipse 90% 80% at -5% 50%, rgba(37,99,235,0.28) 0%, transparent 55%),
-    radial-gradient(ellipse 70% 60% at 105% 40%, rgba(56,189,248,0.18) 0%, transparent 52%),
-    radial-gradient(ellipse 60% 50% at 50% -10%, rgba(37,99,235,0.15) 0%, transparent 50%),
-    radial-gradient(ellipse 50% 40% at 50% 110%, rgba(29,78,216,0.1) 0%, transparent 50%),
+    radial-gradient(ellipse 100% 90% at -10% 50%, rgba(37,99,235,0.35) 0%, transparent 52%),
+    radial-gradient(ellipse 80% 70% at 110% 40%, rgba(56,189,248,0.22) 0%, transparent 50%),
+    radial-gradient(ellipse 70% 55% at 50% -15%, rgba(37,99,235,0.2) 0%, transparent 50%),
+    radial-gradient(ellipse 50% 40% at 50% 110%, rgba(29,78,216,0.12) 0%, transparent 50%),
     var(--bg);
 }
 
-/* Fine dot grid — gives it premium texture */
+/* Fine dot grid — premium depth texture */
 .lp-grid-overlay {
   position: absolute; inset: 0; pointer-events: none; z-index: 0;
-  background-image: radial-gradient(circle, rgba(148,163,184,0.12) 1px, transparent 1px);
-  background-size: 28px 28px;
-  mask-image: radial-gradient(ellipse 85% 85% at 50% 50%, black 20%, transparent 100%);
-  -webkit-mask-image: radial-gradient(ellipse 85% 85% at 50% 50%, black 20%, transparent 100%);
+  background-image: radial-gradient(circle, rgba(148,163,184,0.16) 1px, transparent 1px);
+  background-size: 24px 24px;
+  mask-image: radial-gradient(ellipse 90% 90% at 50% 40%, black 10%, transparent 100%);
+  -webkit-mask-image: radial-gradient(ellipse 90% 90% at 50% 40%, black 10%, transparent 100%);
 }
 
 /* No animated orbs — clean */
@@ -149,9 +149,9 @@
    TITLE — Large, gradient, impactful
 ───────────────────────────────────────────────────────────── */
 .lp-hero-title {
-  font-size: clamp(64px, 8vw, 108px);
-  font-weight: 900; line-height: 0.95; letter-spacing: -4px;
-  margin-bottom: 16px;
+  font-size: clamp(60px, 7.5vw, 100px);
+  font-weight: 900; line-height: 0.96; letter-spacing: -3.5px;
+  margin-bottom: 14px;
   animation: lp-up 0.5s cubic-bezier(0.22,1,0.36,1) 0.06s both;
 }
 @keyframes lp-up { from { opacity: 0; transform: translateY(18px); } to { opacity: 1; transform: translateY(0); } }
@@ -290,7 +290,7 @@
 .lp-subj span { font-weight: 800; font-size: 12px; color: var(--c); }
 
 /* ─────────────────────────────────────────────────────────────
-   STATS — Vivid, compact, no dead space
+   STATS — Polished cards, no dead space
 ───────────────────────────────────────────────────────────── */
 .lp-stats {
   display: grid; grid-template-columns: repeat(6,1fr);
@@ -298,38 +298,43 @@
 }
 .lp-stats::before {
   content: ''; position: absolute; top: 0; left: 88px; right: 88px; height: 1px;
-  background: linear-gradient(90deg, transparent, rgba(59,130,246,0.35), rgba(56,189,248,0.25), transparent);
+  background: linear-gradient(90deg, transparent, rgba(59,130,246,0.4), rgba(56,189,248,0.3), transparent);
 }
 .lp-stat-card {
   position: relative;
-  background: rgba(255,255,255,0.03);
-  border: 1px solid rgba(59,130,246,0.12);
-  border-radius: 16px; padding: 24px 12px 20px; text-align: center;
-  transition: transform 0.2s, box-shadow 0.2s, border-color 0.2s;
+  background: linear-gradient(145deg, rgba(37,99,235,0.1) 0%, rgba(255,255,255,0.03) 100%);
+  border: 1px solid rgba(59,130,246,0.18);
+  border-radius: 18px; padding: 26px 14px 22px; text-align: center;
+  transition: transform 0.22s ease, box-shadow 0.22s ease, border-color 0.22s ease;
   overflow: hidden;
+  box-shadow: 0 4px 20px rgba(0,0,0,0.2), inset 0 1px 0 rgba(255,255,255,0.05);
+}
+.lp-stat-card::before {
+  content: ''; position: absolute; top: 0; left: 15%; right: 15%; height: 1px;
+  background: linear-gradient(90deg, transparent, rgba(59,130,246,0.5), rgba(56,189,248,0.4), transparent);
 }
 .lp-stat-card::after {
-  content: ''; position: absolute; inset: 0; border-radius: 16px;
-  background: radial-gradient(ellipse 80% 60% at 50% 0%, rgba(59,130,246,0.07), transparent 70%);
+  content: ''; position: absolute; inset: 0; border-radius: 18px;
+  background: radial-gradient(ellipse 100% 60% at 50% 0%, rgba(59,130,246,0.09), transparent 65%);
   pointer-events: none;
 }
 .lp-stat-card:hover {
-  transform: translateY(-5px);
-  border-color: rgba(59,130,246,0.28);
-  box-shadow: 0 12px 32px rgba(37,99,235,0.15), 0 4px 12px rgba(0,0,0,0.3);
+  transform: translateY(-6px);
+  border-color: rgba(59,130,246,0.35);
+  box-shadow: 0 16px 40px rgba(37,99,235,0.2), 0 4px 12px rgba(0,0,0,0.3);
 }
-.lp-stat-icon { font-size: 24px; margin-bottom: 10px; display: block; }
+.lp-stat-icon { font-size: 26px; margin-bottom: 12px; display: block; }
 .lp-stat-num {
-  font-size: 30px; font-weight: 900;
+  font-size: 32px; font-weight: 900;
   font-family: 'DM Mono', monospace;
-  background: linear-gradient(135deg, #93c5fd, #60a5fa, #38bdf8);
+  background: linear-gradient(135deg, #bfdbfe 0%, #93c5fd 40%, #60a5fa 100%);
   -webkit-background-clip: text; -webkit-text-fill-color: transparent;
   background-clip: text;
-  line-height: 1; margin-bottom: 6px;
+  line-height: 1; margin-bottom: 7px;
 }
 .lp-stat-label {
-  font-size: 10px; color: var(--text2); font-weight: 700;
-  text-transform: uppercase; letter-spacing: 0.9px;
+  font-size: 10px; color: rgba(125,147,181,0.9); font-weight: 700;
+  text-transform: uppercase; letter-spacing: 1px;
 }
 
 /* ─────────────────────────────────────────────────────────────
@@ -364,9 +369,10 @@
 .lp-feat-grid { display: grid; grid-template-columns: repeat(3,1fr); gap: 14px; }
 .lp-feat-card {
   position: relative;
-  background: rgba(59,130,246,0.03);
-  border: 1px solid rgba(59,130,246,0.1);
-  border-radius: 18px; padding: 28px; overflow: hidden;
+  background: linear-gradient(145deg, rgba(37,99,235,0.07) 0%, rgba(255,255,255,0.025) 100%);
+  border: 1px solid rgba(59,130,246,0.14);
+  border-radius: 20px; padding: 28px; overflow: hidden;
+  box-shadow: 0 4px 24px rgba(0,0,0,0.18), inset 0 1px 0 rgba(255,255,255,0.04);
   transition: transform 0.22s, box-shadow 0.22s, border-color 0.22s, background 0.22s;
 }
 .lp-feat-card:hover {
