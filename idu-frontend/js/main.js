@@ -822,6 +822,15 @@ async function renderStudentDashboard() {
     dateEl.textContent = days[now.getDay()] + ', ' + now.getDate() + ' ' + months[now.getMonth()] + ' ' + now.getFullYear();
   }
 
+  // Quick action entrance animation
+  _animateQuickActions();
+
+  // Next class countdown pill
+  _updateNextClassPill();
+  if (!window._nextClassTimer) {
+    window._nextClassTimer = setInterval(_updateNextClassPill, 60000);
+  }
+
   // Jadval, vazifalar va hero banner (real API)
   renderDashboardSchedule();
   renderDashboardTasks();
@@ -879,12 +888,13 @@ function _updateDashStats(stats) {
   if (!cards.length) return;
 
   // GPA card (index 0) — from grades/my endpoint
-  // Umumiy ball card (index 1)
+  // Umumiy ball card (index 1) — count-up animation
   var totalCard = cards[1] ? cards[1].querySelector('.stat-card-val') : null;
   if (totalCard) {
     if (stats && stats.total_courses > 0) {
-      totalCard.textContent = stats.avg_total ? Math.round(stats.avg_total) : '—';
+      var avgVal = stats.avg_total ? Math.round(stats.avg_total) : 0;
       totalCard.style.color = 'var(--green)';
+      _countUpEl(totalCard, avgVal, '');
     } else {
       totalCard.innerHTML = '<span style="font-size:14px;color:var(--text3)">Ma\'lumot yo\'q</span>';
     }
@@ -941,6 +951,67 @@ function _renderRecentGrades(grades) {
       '<td style="text-align:center"><span style="padding:2px 8px;border-radius:6px;font-weight:800;font-size:12px;background:' + grade.c + '20;color:' + grade.c + '">' + grade.l + '</span></td>' +
     '</tr>';
   }).join('');
+}
+
+// ── Quick Actions animation & count-up helpers ────────────────────────────────
+
+function _animateQuickActions() {
+  var btns = document.querySelectorAll('#quickActionsWrap .qa-btn');
+  btns.forEach(function(btn, i) {
+    btn.style.opacity = '0';
+    btn.style.transform = 'translateY(14px)';
+    setTimeout(function() {
+      btn.style.transition = 'opacity 0.32s ease, transform 0.32s cubic-bezier(0.22,1,0.36,1)';
+      btn.style.opacity = '1';
+      btn.style.transform = '';
+    }, 60 + i * 55);
+  });
+}
+
+function _countUpEl(el, target, suffix) {
+  if (!el) return;
+  var start = 0;
+  var dur = 900;
+  var step = 16;
+  var steps = Math.ceil(dur / step);
+  var inc = target / steps;
+  var cur = 0;
+  var timer = setInterval(function() {
+    cur = Math.min(cur + inc, target);
+    el.textContent = (suffix === '%' ? Math.round(cur) : parseFloat(cur).toFixed(target % 1 ? 2 : 0)) + (suffix || '');
+    if (cur >= target) clearInterval(timer);
+  }, step);
+}
+
+function _updateNextClassPill() {
+  // Show next upcoming class time in the "Bugungi darslar" header
+  var pill = document.getElementById('nextClassPill');
+  if (!pill) return;
+  var now = new Date();
+  var nowMins = now.getHours() * 60 + now.getMinutes();
+  // Schedule times (matches backend typical UzB schedule)
+  var slots = [
+    {label:'1-dars', start: 8*60+30},
+    {label:'2-dars', start: 10*60},
+    {label:'3-dars', start: 11*60+30},
+    {label:'4-dars', start: 13*60},
+    {label:'5-dars', start: 14*60+30},
+    {label:'6-dars', start: 16*60},
+  ];
+  var next = null;
+  for (var i = 0; i < slots.length; i++) {
+    if (slots[i].start > nowMins) { next = slots[i]; break; }
+  }
+  if (next) {
+    var diff = next.start - nowMins;
+    var h = Math.floor(diff / 60);
+    var m = diff % 60;
+    var txt = diff <= 60 ? (m + ' daq') : (h + 's ' + (m ? m + 'daq' : ''));
+    pill.textContent = '⏰ ' + next.label + ' — ' + txt;
+    pill.style.display = '';
+  } else {
+    pill.style.display = 'none';
+  }
 }
 
 async function renderDashboardTasks() {

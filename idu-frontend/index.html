@@ -24,11 +24,11 @@
 <link rel="preconnect" href="https://cdnjs.cloudflare.com" crossorigin>
 <link rel="dns-prefetch" href="https://idu-platform-production.up.railway.app">
 <!-- Critical CSS preload — start fetching before parser hits the link tag -->
-<link rel="preload" href="css/style.css?v=20260526a" as="style">
+<link rel="preload" href="css/style.css?v=20260526b" as="style">
 <link rel="preload" href="css/utilities.css?v=20260525a" as="style">
 <script defer src="https://cdnjs.cloudflare.com/ajax/libs/dompurify/3.0.8/purify.min.js"></script>
 <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800&family=DM+Mono:wght@400;500;600&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="css/style.css?v=20260526a">
+<link rel="stylesheet" href="css/style.css?v=20260526b">
 <link rel="stylesheet" href="css/responsive.css?v=20260525a">
 <link rel="stylesheet" href="css/landing.css?v=20260525n">
 <link rel="stylesheet" href="css/utilities.css?v=20260525a">
@@ -894,6 +894,34 @@
       <div class="stat-card-bar scb-blue"></div>
     </div>
   </div>
+  <!-- Quick Actions — WeChat / DingTalk style -->
+  <div class="qa-wrap" id="quickActionsWrap">
+    <button class="qa-btn" onclick="showPage('timetable')">
+      <div class="qa-ico" style="background:linear-gradient(135deg,#1d4ed8,#38bdf8)">📅</div>
+      <span class="qa-lbl" id="qa-l1">Jadval</span>
+    </button>
+    <button class="qa-btn" onclick="showPage('tasks')">
+      <div class="qa-ico" style="background:linear-gradient(135deg,#15803d,#22c55e)">📝</div>
+      <span class="qa-lbl" id="qa-l2">Vazifalar</span>
+    </button>
+    <button class="qa-btn" onclick="showPage('student-exams')">
+      <div class="qa-ico" style="background:linear-gradient(135deg,#b45309,#f59e0b)">🎯</div>
+      <span class="qa-lbl" id="qa-l3">Imtihon</span>
+    </button>
+    <button class="qa-btn" onclick="showPage('grades')">
+      <div class="qa-ico" style="background:linear-gradient(135deg,#6d28d9,#a78bfa)">📊</div>
+      <span class="qa-lbl" id="qa-l4">Baholar</span>
+    </button>
+    <button class="qa-btn" onclick="showPage('aitutor')">
+      <div class="qa-ico" style="background:linear-gradient(135deg,#0e7490,#22d3ee)">🤖</div>
+      <span class="qa-lbl" id="qa-l5">AI Tutor</span>
+    </button>
+    <button class="qa-btn" onclick="showPage('leaderboard')">
+      <div class="qa-ico" style="background:linear-gradient(135deg,#be123c,#fb7185)">🏆</div>
+      <span class="qa-lbl" id="qa-l6">Reyting</span>
+    </button>
+  </div>
+
   <!-- XP / Gamification widget -->
   <div id="xpWidget" style="margin-bottom:14px"></div>
 
@@ -901,7 +929,10 @@
     <div class="card">
       <div class="card-header">
         <div class="card-title" id="dash-today-title">Bugungi darslar</div>
-        <div class="card-badge cb-blue" id="todayBadge">3-Mart</div>
+        <div style="display:flex;align-items:center;gap:8px">
+          <div class="card-badge cb-blue" id="todayBadge">3-Mart</div>
+          <div class="next-class-pill" id="nextClassPill" style="display:none"></div>
+        </div>
       </div>
       <div id="todaySchedule"></div>
     </div>
