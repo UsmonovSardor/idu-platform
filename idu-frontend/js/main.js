@@ -826,6 +826,12 @@ async function renderStudentDashboard() {
   _trackTodayStreak();
   _renderDashStreakRow();
 
+  // Activity feed
+  _renderActivityFeed();
+
+  // Onboarding (first-time users)
+  if (typeof maybeStartOnboarding === 'function') maybeStartOnboarding();
+
   // Notification permission button
   _initNotifBtn();
   // Schedule smart notifications (if already granted)
@@ -940,6 +946,21 @@ function _updateDashStats(stats) {
 }
 
 function _renderRecentGrades(grades) {
+  // Store for chart
+  _gradeChartData = grades || [];
+
+  // Log recent high grades to activity feed
+  if (grades && grades.length) {
+    grades.slice(0, 3).forEach(function(g) {
+      var score = Number(g.total) || 0;
+      if (score >= 86) {
+        _logActivity('⭐', '<strong>' + (g.subject || g.fan || 'Fan') + '</strong> — ' + score + ' ball (A\'lo)', '#16a34a');
+      } else if (score >= 71) {
+        _logActivity('📊', '<strong>' + (g.subject || g.fan || 'Fan') + '</strong> — ' + score + ' ball', '#2563eb');
+      }
+    });
+  }
+
   var tbody = document.getElementById('recentGradesBody');
   if (!tbody) return;
   if (!grades.length) {
@@ -964,6 +985,161 @@ function _renderRecentGrades(grades) {
       '<td style="text-align:center;font-weight:700">' + total + '</td>' +
       '<td style="text-align:center"><span style="padding:2px 8px;border-radius:6px;font-weight:800;font-size:12px;background:' + grade.c + '20;color:' + grade.c + '">' + grade.l + '</span></td>' +
     '</tr>';
+  }).join('');
+}
+
+// ════════════════════════════════════════════════════════════════════
+// CONFETTI — Duolingo / Stripe celebration  (v20260526)
+// ════════════════════════════════════════════════════════════════════
+function launchConfetti(opts) {
+  var canvas = document.getElementById('confettiCanvas');
+  if (!canvas) return;
+  canvas.width  = window.innerWidth;
+  canvas.height = window.innerHeight;
+  canvas.style.display = 'block';
+  var ctx = canvas.getContext('2d');
+  var colors = ['#2563eb','#38bdf8','#22c55e','#f59e0b','#ef4444','#8b5cf6','#f97316','#ec4899'];
+  var count = (opts && opts.count) || 110;
+  var particles = [];
+  for (var i = 0; i < count; i++) {
+    particles.push({
+      x: Math.random() * canvas.width,
+      y: Math.random() * -200 - 20,
+      w: Math.random() * 11 + 5,
+      h: Math.random() * 6 + 3,
+      color: colors[Math.floor(Math.random() * colors.length)],
+      vx: (Math.random() - 0.5) * 5,
+      vy: Math.random() * 4 + 2.5,
+      rot: Math.random() * 360,
+      rotV: (Math.random() - 0.5) * 8,
+      alpha: 1,
+    });
+  }
+  var frame;
+  function draw() {
+    ctx.clearRect(0, 0, canvas.width, canvas.height);
+    var alive = false;
+    particles.forEach(function(p) {
+      if (p.alpha <= 0) return;
+      alive = true;
+      ctx.save();
+      ctx.globalAlpha = Math.max(0, p.alpha);
+      ctx.translate(p.x, p.y);
+      ctx.rotate(p.rot * Math.PI / 180);
+      ctx.fillStyle = p.color;
+      ctx.fillRect(-p.w / 2, -p.h / 2, p.w, p.h);
+      ctx.restore();
+      p.x += p.vx; p.y += p.vy;
+      p.rot += p.rotV;
+      if (p.y > canvas.height * 0.65) p.alpha -= 0.025;
+    });
+    if (alive) { frame = requestAnimationFrame(draw); }
+    else { canvas.style.display = 'none'; }
+  }
+  cancelAnimationFrame(frame);
+  requestAnimationFrame(draw);
+}
+
+// ════════════════════════════════════════════════════════════════════
+// GRADE TREND CHART — Stripe/Canvas style  (v20260526)
+// ════════════════════════════════════════════════════════════════════
+var _gradeChartData = [];
+
+function _renderGradeTrendChart(grades) {
+  var el = document.getElementById('gradeTrendChart');
+  if (!el) return;
+  _gradeChartData = grades || [];
+  var pts = grades.slice(-8).map(function(g) { return Number(g.total) || 0; });
+  if (pts.length < 2) {
+    el.innerHTML = '<div style="text-align:center;padding:24px;color:var(--text3);font-size:13px">Grafik uchun kamida 2 ta baho kerak</div>';
+    return;
+  }
+  var W = 480, H = 100, PAD = 20;
+  var max = Math.max.apply(null, pts.concat([100]));
+  var min = Math.min.apply(null, pts.concat([0]));
+  var range = max - min || 1;
+  var xs = pts.map(function(_, i) { return PAD + (i / (pts.length - 1)) * (W - PAD * 2); });
+  var ys = pts.map(function(v) { return PAD + (1 - (v - min) / range) * (H - PAD * 1.5); });
+  var path = xs.map(function(x, i) { return (i === 0 ? 'M' : 'L') + x.toFixed(1) + ',' + ys[i].toFixed(1); }).join(' ');
+  var area = path + ' L' + xs[xs.length-1].toFixed(1) + ',' + H + ' L' + xs[0].toFixed(1) + ',' + H + ' Z';
+
+  // Y-axis labels
+  var yLabels = [100, 75, 50].map(function(v) {
+    var y = PAD + (1 - (v - min) / range) * (H - PAD * 1.5);
+    return '<text x="0" y="' + y.toFixed(1) + '" fill="var(--text3)" font-size="9" dominant-baseline="middle">' + v + '</text>';
+  }).join('');
+
+  // Point circles + tooltips (data-title for hover)
+  var circles = xs.map(function(x, i) {
+    var score = pts[i];
+    var col = score >= 86 ? '#16a34a' : score >= 71 ? '#2563eb' : score >= 56 ? '#f59e0b' : '#dc2626';
+    return '<circle cx="' + x.toFixed(1) + '" cy="' + ys[i].toFixed(1) + '" r="5" fill="' + col + '" stroke="#fff" stroke-width="2"><title>' + score + ' ball</title></circle>';
+  }).join('');
+
+  el.innerHTML = '<svg viewBox="-14 0 ' + (W + 20) + ' ' + H + '" style="width:100%;height:110px;overflow:visible">' +
+    '<defs>' +
+      '<linearGradient id="cg" x1="0" y1="0" x2="0" y2="1">' +
+        '<stop offset="0%" stop-color="#2563eb" stop-opacity="0.22"/>' +
+        '<stop offset="100%" stop-color="#2563eb" stop-opacity="0"/>' +
+      '</linearGradient>' +
+    '</defs>' +
+    // Gridlines
+    [100,75,50].map(function(v) {
+      var y = (PAD + (1 - (v - min) / range) * (H - PAD * 1.5)).toFixed(1);
+      return '<line x1="' + PAD + '" y1="' + y + '" x2="' + (W - PAD) + '" y2="' + y + '" stroke="var(--border)" stroke-width="1" stroke-dasharray="4 3"/>';
+    }).join('') +
+    yLabels +
+    '<path d="' + area + '" fill="url(#cg)"/>' +
+    '<path d="' + path + '" fill="none" stroke="#2563eb" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/>' +
+    circles +
+  '</svg>';
+}
+
+function _setGradeView(view, btn) {
+  var tableWrap = document.getElementById('gradeTableWrap');
+  var chartWrap = document.getElementById('gradeChartWrap');
+  if (!tableWrap || !chartWrap) return;
+  document.querySelectorAll('#gradeViewTable,#gradeViewChart').forEach(function(b){ b.classList.remove('active'); });
+  if (btn) btn.classList.add('active');
+  if (view === 'chart') {
+    tableWrap.style.display = 'none';
+    chartWrap.style.display = '';
+    _renderGradeTrendChart(_gradeChartData);
+  } else {
+    tableWrap.style.display = '';
+    chartWrap.style.display = 'none';
+  }
+}
+
+// ════════════════════════════════════════════════════════════════════
+// ACTIVITY FEED — GitHub style  (v20260526)
+// ════════════════════════════════════════════════════════════════════
+var _activityLog = JSON.parse(localStorage.getItem('idu_activity') || '[]');
+
+function _logActivity(icon, text, color) {
+  color = color || '#2563eb';
+  _activityLog.unshift({ icon: icon, text: text, color: color, time: new Date().toISOString() });
+  if (_activityLog.length > 20) _activityLog = _activityLog.slice(0, 20);
+  localStorage.setItem('idu_activity', JSON.stringify(_activityLog));
+  _renderActivityFeed();
+}
+
+function _renderActivityFeed() {
+  var el = document.getElementById('activityFeed');
+  if (!el) return;
+  if (!_activityLog.length) {
+    el.innerHTML = '<div style="font-size:12px;color:var(--text3);text-align:center;padding:12px">Hali faoliyat yo\'q</div>';
+    return;
+  }
+  var now = Date.now();
+  el.innerHTML = _activityLog.slice(0, 7).map(function(a) {
+    var dt = new Date(a.time), diff = Math.floor((now - dt) / 60000);
+    var timeStr = diff < 1 ? 'hozir' : diff < 60 ? diff + ' daq oldin' : diff < 1440 ? Math.floor(diff/60) + ' soat' : Math.floor(diff/1440) + ' kun';
+    return '<div class="activity-item">' +
+      '<div class="activity-dot" style="background:' + (a.color || '#2563eb') + '"></div>' +
+      '<div class="activity-text">' + a.text + '</div>' +
+      '<div class="activity-time">' + timeStr + '</div>' +
+    '</div>';
   }).join('');
 }
 
@@ -2491,6 +2667,11 @@ function updateStreak(){
     const sn=document.getElementById('streakNum');if(sn)sn.textContent=streakDays;
     const sr=document.getElementById('streakRecord');if(sr)sr.textContent=streakRecord;
     showToast('🔥','Streak!',`${streakDays} kunlik streak davom etmoqda!`);
+    // Confetti on milestone streaks
+    if (streakDays === 3 || streakDays === 7 || streakDays === 14 || streakDays === 30 || streakDays % 30 === 0) {
+      setTimeout(launchConfetti, 400);
+    }
+    _logActivity('🔥', streakDays + ' kunlik <strong>streak</strong> — davom eting!', '#ef4444');
   }
 }
 

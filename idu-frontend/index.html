@@ -24,11 +24,11 @@
 <link rel="preconnect" href="https://cdnjs.cloudflare.com" crossorigin>
 <link rel="dns-prefetch" href="https://idu-platform-production.up.railway.app">
 <!-- Critical CSS preload — start fetching before parser hits the link tag -->
-<link rel="preload" href="css/style.css?v=20260526c" as="style">
+<link rel="preload" href="css/style.css?v=20260526d" as="style">
 <link rel="preload" href="css/utilities.css?v=20260525a" as="style">
 <script defer src="https://cdnjs.cloudflare.com/ajax/libs/dompurify/3.0.8/purify.min.js"></script>
 <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800&family=DM+Mono:wght@400;500;600&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="css/style.css?v=20260526c">
+<link rel="stylesheet" href="css/style.css?v=20260526d">
 <link rel="stylesheet" href="css/responsive.css?v=20260525a">
 <link rel="stylesheet" href="css/landing.css?v=20260525n">
 <link rel="stylesheet" href="css/utilities.css?v=20260525a">
@@ -803,6 +803,7 @@
     </div>
     <div class="topnav-tabs" id="topnavTabs"></div>
     <div class="topnav-right">
+      <button class="nav-icon-btn" id="cmdPaletteOpenBtn" data-tip="Buyruq paneli (Ctrl+K)" onclick="openCmdPalette()" style="font-size:15px;font-weight:700;letter-spacing:-0.5px">⌘K</button>
       <div class="nav-icon-btn" data-tip="Yangilash (Ctrl+R)" onclick="syncData()">↻</div>
       <div class="nav-icon-btn" id="notifBtn" data-tip="Bildirishnomalar" onclick="showPage('notifications')">
         🔔<div class="notif-badge" id="notifCount" style="display:none">0</div>
@@ -952,14 +953,26 @@
     <div class="card">
       <div class="card-header">
         <div class="card-title" id="dash-grades-title">So'nggi baholar</div>
-        <button class="btn btn-secondary btn-sm" onclick="showPage('grades')" id="dash-grades-all">Barchasi →</button>
+        <div style="display:flex;gap:8px;align-items:center">
+          <button class="filter-chip active" id="gradeViewTable" onclick="_setGradeView('table',this)">Jadval</button>
+          <button class="filter-chip" id="gradeViewChart" onclick="_setGradeView('chart',this)">📈 Grafik</button>
+          <button class="btn btn-secondary btn-sm" onclick="showPage('grades')" id="dash-grades-all">Barchasi →</button>
+        </div>
       </div>
-      <table class="grade-table">
-        <thead><tr>
-          <th id="th-fan">Fan</th><th id="th-jn">JN</th><th id="th-on">ON</th><th id="th-yn">YN</th><th id="th-mi">MI</th><th id="th-jami">Jami</th><th id="th-baho">Baho</th>
-        </tr></thead>
-        <tbody id="recentGradesBody"></tbody>
-      </table>
+      <div id="gradeTableWrap">
+        <table class="grade-table">
+          <thead><tr>
+            <th id="th-fan">Fan</th><th id="th-jn">JN</th><th id="th-on">ON</th><th id="th-yn">YN</th><th id="th-mi">MI</th><th id="th-jami">Jami</th><th id="th-baho">Baho</th>
+          </tr></thead>
+          <tbody id="recentGradesBody"></tbody>
+        </table>
+      </div>
+      <div id="gradeChartWrap" style="display:none;padding:8px 4px">
+        <div id="gradeTrendChart"></div>
+        <div style="display:flex;justify-content:center;gap:16px;margin-top:10px;font-size:11px;color:var(--text3)">
+          <span>● So'nggi 7 ta baho trendi</span>
+        </div>
+      </div>
     </div>
     <div class="card">
       <div class="card-header"><div class="card-title" id="dash-achieve-title">Yutuqlar 🏆</div></div>
@@ -975,6 +988,10 @@
         <div><div class="badge-name" id="dash-ach3-name">Innovator</div>
           <div class="badge-desc" id="dash-ach3-desc">Startup g'oya kiritish</div></div>
         <div class="badge-reward">+75</div></div>
+      <div style="margin-top:14px;padding-top:14px;border-top:1px solid var(--border)">
+        <div class="card-title" style="margin-bottom:10px">📋 Faoliyat</div>
+        <div id="activityFeed"></div>
+      </div>
     </div>
   </div>
 </div>
@@ -4007,7 +4024,10 @@ function upmTab(name) {
   <script defer src="js/features/gamification.js?v=20260520f"></script>
   <script defer src="js/pages/rector.js?v=20260520f"></script>
   <script defer src="js/features/teacher-exams.js?v=20260520f"></script>
-  <script defer src="js/main.js?v=20260523c"></script>
+  <script defer src="js/features/dark-mode.js?v=20260526a"></script>
+  <script defer src="js/features/command-palette.js?v=20260526a"></script>
+  <script defer src="js/features/onboarding.js?v=20260526a"></script>
+  <script defer src="js/main.js?v=20260526a"></script>
   <script defer src="js/enhancements.js?v=20260526a"></script>
   <!-- QR code generator (teacher) -->
   <script defer src="https://cdn.jsdelivr.net/npm/qrcodejs@1.0.0/qrcode.min.js" crossorigin="anonymous"></script>
@@ -4582,6 +4602,29 @@ document.addEventListener('DOMContentLoaded', function () {
   }
 });
 </script>
+
+<!-- ── Command Palette (Ctrl+K) ───────────────────────────────────────────── -->
+<div id="cmdPaletteBg" class="cmd-palette-bg" style="display:none">
+  <div class="cmd-palette-modal">
+    <div class="cmd-palette-header">
+      <span class="cmd-palette-search-icon">🔍</span>
+      <input type="text" id="cmdInput" class="cmd-palette-input" placeholder="Sahifa yoki funksiya qidiring..." autocomplete="off" spellcheck="false">
+      <kbd class="cmd-esc-key">Esc</kbd>
+    </div>
+    <div class="cmd-palette-results" id="cmdResults"></div>
+    <div class="cmd-palette-footer">
+      <span><kbd>↑</kbd><kbd>↓</kbd> Tanlash</span>
+      <span><kbd>Enter</kbd> Ochish</span>
+      <span><kbd>Esc</kbd> Yopish</span>
+      <span><kbd>?</kbd> Yorliqlat</span>
+    </div>
+  </div>
+</div>
+
+<!-- ── Confetti canvas ─────────────────────────────────────────────────────── -->
+<canvas id="confettiCanvas" style="position:fixed;inset:0;pointer-events:none;z-index:9998;display:none"></canvas>
+
+<!-- ── Activity feed (inside dashboard) ───────────────────────────────────── -->
 
 <!-- ── Self-healing cache buster ──────────────────────────────────────────────
      If the browser has cached an old index.html (with old dekanat.js version),
