@@ -7,6 +7,27 @@ var _chatSocket   = null;   // socket.io connection (preferred)
 var _chatPage     = 1;
 var _typingTimer  = null;
 
+// ── Connection status indicator (top-right floating pill) ────────────────────
+function _showConnIndicator(text, color) {
+  var el = document.getElementById('chatConnIndicator');
+  if (!el) {
+    el = document.createElement('div');
+    el.id = 'chatConnIndicator';
+    el.style.cssText = 'position:fixed;top:74px;right:20px;z-index:9000;padding:8px 16px;border-radius:24px;font-size:12px;font-weight:700;color:#fff;background:#f59e0b;box-shadow:0 6px 20px rgba(0,0,0,0.18);transition:opacity 0.3s,transform 0.3s;font-family:"Outfit",sans-serif';
+    document.body.appendChild(el);
+  }
+  el.style.background = color || '#f59e0b';
+  el.textContent = text;
+  el.style.opacity = '1';
+  el.style.transform = 'translateY(0)';
+}
+function _hideConnIndicator() {
+  var el = document.getElementById('chatConnIndicator');
+  if (!el) return;
+  el.style.opacity = '0';
+  el.style.transform = 'translateY(-8px)';
+}
+
 // ── Open chat widget ──────────────────────────────────────────────────────────
 function openChat() {
   var w = document.getElementById('chatWidget');
@@ -186,12 +207,16 @@ function _subscribeSocketIO(roomId) {
     _chatSocket = io(wsBase, {
       auth:       { token: token },
       transports: ['websocket', 'polling'],
+      reconnection: true,
+      reconnectionAttempts: Infinity,
       reconnectionDelay: 1000,
       reconnectionDelayMax: 10000,
+      timeout: 12000,
     });
 
     _chatSocket.on('connect', function() {
       _chatSocket.emit('join:room', roomId);
+      _hideConnIndicator();
     });
 
     _chatSocket.on('chat:message', function(msg) {
@@ -204,11 +229,26 @@ function _subscribeSocketIO(roomId) {
       _renderTypingIndicator(data);
     });
 
-    _chatSocket.on('connect_error', function() {
-      // Fallback to SSE if socket fails
-      _chatSocket.disconnect();
-      _chatSocket = null;
-      _subscribeSSE(roomId);
+    _chatSocket.on('disconnect', function(reason) {
+      _showConnIndicator('🔄 Qayta ulanmoqda...', '#f59e0b');
+    });
+    _chatSocket.on('reconnect_attempt', function(n) {
+      _showConnIndicator('🔄 Qayta ulanish (' + n + '-urinish)...', '#f59e0b');
+    });
+    _chatSocket.on('reconnect', function() {
+      _showConnIndicator('✅ Qayta ulandi', '#16a34a');
+      setTimeout(_hideConnIndicator, 2000);
+      _chatSocket.emit('join:room', roomId);
+    });
+
+    _chatSocket.on('connect_error', function(err) {
+      // After many failed attempts, fall back to SSE
+      if (_chatSocket && _chatSocket.io && _chatSocket.io.reconnectionAttempts > 5) {
+        _showConnIndicator('⚠️ SSE rejimiga o\'tildi', '#dc2626');
+        _chatSocket.disconnect();
+        _chatSocket = null;
+        _subscribeSSE(roomId);
+      }
     });
   } catch(e) {
     _subscribeSSE(roomId);
