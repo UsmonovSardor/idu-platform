@@ -822,6 +822,17 @@ async function renderStudentDashboard() {
     dateEl.textContent = days[now.getDay()] + ', ' + now.getDate() + ' ' + months[now.getMonth()] + ' ' + now.getFullYear();
   }
 
+  // Track streak history + render streak mini widget
+  _trackTodayStreak();
+  _renderDashStreakRow();
+
+  // Notification permission button
+  _initNotifBtn();
+  // Schedule smart notifications (if already granted)
+  if (typeof Notification !== 'undefined' && Notification.permission === 'granted') {
+    _scheduleSmartNotifs();
+  }
+
   // Quick action entrance animation
   _animateQuickActions();
 
@@ -854,6 +865,9 @@ async function renderStudentDashboard() {
       if (gpaEl) {
         gpaEl.textContent = parseFloat(data.gpa).toFixed(2);
         gpaEl.style.color = data.gpa >= 3.5 ? 'var(--green)' : data.gpa >= 2.5 ? 'var(--primary)' : 'var(--orange)';
+        // Re-render streak row now that GPA is available (updates ring)
+        _renderDashStreakRow();
+        setTimeout(_animateRingAfterLoad, 200);
       }
     }
   } catch(e) {
@@ -951,6 +965,158 @@ function _renderRecentGrades(grades) {
       '<td style="text-align:center"><span style="padding:2px 8px;border-radius:6px;font-weight:800;font-size:12px;background:' + grade.c + '20;color:' + grade.c + '">' + grade.l + '</span></td>' +
     '</tr>';
   }).join('');
+}
+
+// ── Streak mini-widget (Duolingo/学而思 style) ────────────────────────────────
+
+function _renderDashStreakRow() {
+  var el = document.getElementById('dashStreakRow');
+  if (!el) return;
+
+  var streak = parseInt(localStorage.getItem('idu_streak') || '0');
+  var record = parseInt(localStorage.getItem('idu_streak_record') || '0');
+  var fireEmoji = streak >= 30 ? '🏆' : streak >= 14 ? '💎' : streak >= 7 ? '🔥' : streak >= 3 ? '⚡' : '✨';
+  var fireColor = streak >= 14 ? '#f59e0b' : streak >= 7 ? '#ef4444' : streak >= 3 ? '#3b82f6' : '#64748b';
+
+  // 7-day history
+  var history = JSON.parse(localStorage.getItem('idu_streak_history') || '[]');
+  var heatDots = '';
+  for (var d = 6; d >= 0; d--) {
+    var dt = new Date(); dt.setDate(dt.getDate() - d);
+    var key = dt.toISOString().slice(0, 10);
+    var active = history.indexOf(key) >= 0;
+    var h = active ? 28 : 12;
+    heatDots += '<div class="streak-heatmap-day" style="height:' + h + 'px;background:' + (active ? fireColor : 'var(--border2)') + '" title="' + key + '"></div>';
+  }
+
+  // GPA ring data (use cached stat if available)
+  var ringHTML = _buildProgressRingHTML();
+
+  el.innerHTML =
+    '<div class="dash-streak-row">' +
+      '<div class="streak-mini-card" style="border-color:' + fireColor + '30">' +
+        '<div class="streak-mini-fire">' + fireEmoji + '</div>' +
+        '<div class="streak-mini-info">' +
+          '<div class="streak-mini-label">Streak</div>' +
+          '<div class="streak-mini-val" style="color:' + fireColor + '">' + streak + '<span style="font-size:14px;font-weight:600;color:var(--text2)"> kun</span></div>' +
+          '<div class="streak-mini-sub">Rekord: <strong>' + record + '</strong> kun</div>' +
+        '</div>' +
+        '<div class="streak-heatmap">' + heatDots + '</div>' +
+      '</div>' +
+      ringHTML +
+    '</div>';
+}
+
+function _buildProgressRingHTML() {
+  // Build progress ring card — uses GPA from cached data
+  var gpaEl = document.querySelector('#page-dashboard .stat-card-val');
+  var gpa = parseFloat((gpaEl && !gpaEl.querySelector('.skel') ? gpaEl.textContent : '') || '0') || 0;
+  var pct = Math.min(Math.round((gpa / 4.0) * 100), 100);
+  var circ = 2 * Math.PI * 24; // r=24 → ~150.8
+  var offset = circ - (circ * pct / 100);
+  var color = gpa >= 3.5 ? '#16a34a' : gpa >= 2.5 ? '#2563eb' : gpa >= 1.5 ? '#f59e0b' : '#94a3b8';
+
+  return '<div class="progress-ring-card">' +
+    '<div class="ring-svg-wrap">' +
+      '<svg viewBox="0 0 60 60" style="width:72px;height:72px">' +
+        '<circle cx="30" cy="30" r="24" fill="none" stroke="var(--border2)" stroke-width="5"/>' +
+        '<circle cx="30" cy="30" r="24" fill="none" stroke="' + color + '" stroke-width="5"' +
+          ' stroke-linecap="round" stroke-dasharray="' + circ.toFixed(1) + '"' +
+          ' stroke-dashoffset="' + circ.toFixed(1) + '"' +
+          ' id="ringCircle"' +
+          ' style="transform:rotate(-90deg);transform-origin:30px 30px;transition:stroke-dashoffset 1.4s cubic-bezier(0.22,1,0.36,1)"/>' +
+      '</svg>' +
+      '<div class="ring-center-text">' +
+        '<div class="ring-pct-big" style="color:' + color + '">' + (gpa > 0 ? gpa.toFixed(1) : '—') + '</div>' +
+        '<div class="ring-pct-unit">GPA</div>' +
+      '</div>' +
+    '</div>' +
+    '<div class="ring-details">' +
+      '<div class="ring-details-title">Semestr holati</div>' +
+      '<div class="ring-stat-row"><span>GPA</span><span class="ring-stat-key">' + (gpa > 0 ? gpa.toFixed(2) + ' / 4.0' : 'Yuklanmoqda…') + '</span></div>' +
+      '<div class="ring-stat-row"><span>Progress</span><span class="ring-stat-key">' + (pct > 0 ? pct + '%' : '—') + '</span></div>' +
+      '<div class="ring-stat-row"><span>Daraja</span><span class="ring-stat-key">' + (gpa >= 3.5 ? "A'lo" : gpa >= 2.5 ? 'Yaxshi' : gpa > 0 ? 'Qoniqarli' : '—') + '</span></div>' +
+    '</div>' +
+  '</div>';
+}
+
+function _animateRingAfterLoad() {
+  var circle = document.getElementById('ringCircle');
+  if (!circle) return;
+  var gpaEl = document.querySelector('#page-dashboard .stat-card-val');
+  var gpa = parseFloat((gpaEl && !gpaEl.querySelector('.skel') ? gpaEl.textContent : '') || '0') || 0;
+  var circ = 150.8;
+  var offset = circ - (circ * Math.min(gpa / 4.0, 1));
+  setTimeout(function() { circle.style.strokeDashoffset = offset.toFixed(1); }, 120);
+}
+
+// ── Push / local notifications ────────────────────────────────────────────────
+
+function _initNotifBtn() {
+  var btn = document.getElementById('notifPermBtn');
+  if (!btn) return;
+  if (!('Notification' in window)) return;
+  if (Notification.permission === 'denied') return;
+  if (Notification.permission === 'default') {
+    btn.style.display = '';
+  }
+}
+
+function requestNotifPermission() {
+  if (!('Notification' in window)) {
+    showToast('❌', 'Xatolik', 'Brauzeringiz bildirishnomalarni qo\'llab-quvvatlamaydi');
+    return;
+  }
+  Notification.requestPermission().then(function(perm) {
+    var btn = document.getElementById('notifPermBtn');
+    if (perm === 'granted') {
+      if (btn) btn.style.display = 'none';
+      showToast('🔔', 'Yoqildi!', 'Bildirishnomalar ulandi — dars va imtihonlardan xabar olasiz');
+      _scheduleSmartNotifs();
+    } else {
+      if (btn) btn.style.display = 'none';
+      showToast('🔕', 'Yopildi', 'Bildirishnomalar rad etildi');
+    }
+  });
+}
+
+function _scheduleSmartNotifs() {
+  if (!('Notification' in window) || Notification.permission !== 'granted') return;
+  var now = new Date();
+  var nowMins = now.getHours() * 60 + now.getMinutes();
+  var slots = [
+    { label: '1-dars', start: 8 * 60 + 30 },
+    { label: '2-dars', start: 10 * 60 },
+    { label: '3-dars', start: 11 * 60 + 30 },
+    { label: '4-dars', start: 13 * 60 },
+    { label: '5-dars', start: 14 * 60 + 30 },
+    { label: '6-dars', start: 16 * 60 },
+  ];
+  slots.forEach(function(slot) {
+    var diffMs = (slot.start - 15 - nowMins) * 60000; // 15 min before
+    if (diffMs > 0) {
+      setTimeout(function() {
+        new Notification('⏰ ' + slot.label + ' 15 daqiqada boshlanadi', {
+          body: 'IDU Platform — darsga tayyorlaning!',
+          icon: '/manifest.json',
+          badge: '/manifest.json',
+          tag: 'class-' + slot.label,
+        });
+      }, diffMs);
+    }
+  });
+}
+
+// Track streak history for heatmap
+function _trackTodayStreak() {
+  var today = new Date().toISOString().slice(0, 10);
+  var history = JSON.parse(localStorage.getItem('idu_streak_history') || '[]');
+  if (history.indexOf(today) < 0) {
+    history.push(today);
+    // Keep only last 30 days
+    if (history.length > 30) history = history.slice(-30);
+    localStorage.setItem('idu_streak_history', JSON.stringify(history));
+  }
 }
 
 // ── Quick Actions animation & count-up helpers ────────────────────────────────

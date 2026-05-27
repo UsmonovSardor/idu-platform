@@ -258,4 +258,89 @@ document.addEventListener('DOMContentLoaded', function() {
 })();
 
 
-console.log('✅ Enhancements v7 loaded (mobNav + swipe + skeleton)');
+// ── 9. Swipe left/right to navigate between pages (mobile) ──────────────────
+(function() {
+  // Student page order (matches sidebar)
+  var STUDENT_PAGES = [
+    'dashboard','timetable','grades','tasks','leaderboard',
+    'aitutor','notifications','student-exams','sesiya-test','sesiya-real'
+  ];
+  var SWIPE_THRESHOLD = 72;
+  var EDGE_IGNORE = 28; // ignore swipes starting from left edge (sidebar zone)
+  var _swX = 0, _swY = 0, _swTime = 0;
+  var _hintTimer = null;
+
+  // Create hint overlay once
+  var hint = document.createElement('div');
+  hint.id = 'swipeHint';
+  document.body.appendChild(hint);
+
+  function showHint(text) {
+    hint.textContent = text;
+    hint.classList.add('show');
+    clearTimeout(_hintTimer);
+    _hintTimer = setTimeout(function() { hint.classList.remove('show'); }, 900);
+  }
+
+  function getCurrentPageId() {
+    var active = document.querySelector('.page.active');
+    return active ? active.id.replace('page-', '') : null;
+  }
+
+  document.addEventListener('touchstart', function(e) {
+    _swX = e.touches[0].clientX;
+    _swY = e.touches[0].clientY;
+    _swTime = Date.now();
+  }, { passive: true });
+
+  document.addEventListener('touchend', function(e) {
+    if (!e.changedTouches.length) return;
+    var dx = e.changedTouches[0].clientX - _swX;
+    var dy = e.changedTouches[0].clientY - _swY;
+    var dt = Date.now() - _swTime;
+
+    // Only fast horizontal swipes (not scroll, not too slow)
+    if (Math.abs(dy) > Math.abs(dx)) return;
+    if (Math.abs(dx) < SWIPE_THRESHOLD) return;
+    if (dt > 450) return; // too slow → probably scroll
+    if (_swX < EDGE_IGNORE) return; // edge zone reserved for sidebar
+
+    // Only on mobile
+    if (window.innerWidth > 768) return;
+
+    // Check sidebar is closed
+    var sidebar = document.getElementById('appSidebar');
+    if (sidebar && sidebar.classList.contains('mobile-open')) return;
+
+    var cur = getCurrentPageId();
+    if (!cur) return;
+    var idx = STUDENT_PAGES.indexOf(cur);
+    if (idx < 0) return;
+
+    if (dx < 0) {
+      // Swipe left → next page
+      var next = STUDENT_PAGES[idx + 1];
+      if (next && typeof window.showPage === 'function') {
+        showHint('→ ' + _pageLabel(next));
+        window.showPage(next);
+      }
+    } else {
+      // Swipe right → previous page
+      var prev = STUDENT_PAGES[idx - 1];
+      if (prev && typeof window.showPage === 'function') {
+        showHint('← ' + _pageLabel(prev));
+        window.showPage(prev);
+      }
+    }
+  }, { passive: true });
+
+  var PAGE_LABELS = {
+    'dashboard':'Bosh sahifa','timetable':'Jadval','grades':'Baholar',
+    'tasks':'Vazifalar','leaderboard':'Reyting','aitutor':'AI Tutor',
+    'notifications':'Xabarlar','student-exams':'Imtihonlar',
+    'sesiya-test':'Test rejim','sesiya-real':'Sesiya'
+  };
+  function _pageLabel(id) { return PAGE_LABELS[id] || id; }
+})();
+
+console.log('✅ Enhancements v8 loaded (mobNav + swipe + streak + ring + notifs)');

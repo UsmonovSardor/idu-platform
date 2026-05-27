@@ -1746,6 +1746,111 @@ input:focus { transition: border-color 0.15s, box-shadow 0.15s; }
 .nav-icon-btn[data-tip]:hover::before { transform: translateX(-50%) translateY(0); }
 
 /* ════════════════════════════════════════════════════════════════════
+   STREAK MINI ROW  (Duolingo / 学而思 style)  (v20260526)
+   ════════════════════════════════════════════════════════════════════ */
+.dash-streak-row {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 14px;
+  margin-bottom: 16px;
+}
+.streak-mini-card {
+  background: var(--white);
+  border: 1px solid var(--border);
+  border-radius: 16px;
+  padding: 16px 20px;
+  display: flex; align-items: center; gap: 16px;
+  box-shadow: var(--shadow-sm);
+  transition: transform 0.2s, box-shadow 0.2s;
+  overflow: hidden; position: relative;
+}
+.streak-mini-card:hover { transform: translateY(-2px); box-shadow: var(--shadow-md); }
+.streak-mini-fire {
+  font-size: 38px; line-height: 1; flex-shrink: 0;
+  animation: streakBounce 2.4s ease-in-out infinite;
+}
+@keyframes streakBounce {
+  0%,100% { transform: scale(1) rotate(-3deg); }
+  50%      { transform: scale(1.1) rotate(3deg); }
+}
+.streak-mini-info { flex: 1; min-width: 0; }
+.streak-mini-label {
+  font-size: 10px; font-weight: 700; color: var(--text3);
+  text-transform: uppercase; letter-spacing: 1px; margin-bottom: 2px;
+}
+.streak-mini-val {
+  font-size: 28px; font-weight: 900; letter-spacing: -1px; line-height: 1;
+}
+.streak-mini-sub { font-size: 11px; color: var(--text2); margin-top: 3px; }
+.streak-heatmap {
+  display: flex; gap: 4px; align-items: flex-end; flex-shrink: 0;
+}
+.streak-heatmap-day {
+  width: 8px; border-radius: 3px;
+  transition: height 0.5s cubic-bezier(0.22,1,0.36,1), background 0.3s;
+}
+
+/* Progress Ring SVG card */
+.progress-ring-card {
+  background: var(--white);
+  border: 1px solid var(--border);
+  border-radius: 16px;
+  padding: 16px 20px;
+  display: flex; align-items: center; gap: 18px;
+  box-shadow: var(--shadow-sm);
+  transition: transform 0.2s, box-shadow 0.2s;
+}
+.progress-ring-card:hover { transform: translateY(-2px); box-shadow: var(--shadow-md); }
+.ring-svg-wrap {
+  position: relative; flex-shrink: 0;
+  width: 72px; height: 72px;
+}
+.ring-svg-wrap svg { width: 72px; height: 72px; }
+.ring-center-text {
+  position: absolute; inset: 0;
+  display: flex; flex-direction: column; align-items: center; justify-content: center;
+}
+.ring-pct-big { font-size: 16px; font-weight: 900; letter-spacing: -0.5px; line-height: 1; }
+.ring-pct-unit { font-size: 9px; color: var(--text3); font-weight: 600; margin-top: 1px; }
+.ring-details { flex: 1; }
+.ring-details-title {
+  font-size: 11px; font-weight: 700; color: var(--text3);
+  text-transform: uppercase; letter-spacing: 0.8px; margin-bottom: 8px;
+}
+.ring-stat-row {
+  display: flex; justify-content: space-between; align-items: center;
+  font-size: 13px; font-weight: 600; color: var(--text); margin-bottom: 5px;
+}
+.ring-stat-row .ring-stat-key { font-size: 11px; color: var(--text2); font-weight: 500; }
+
+/* Swipe navigation hint */
+#swipeHint {
+  position: fixed; top: 50%; left: 50%; transform: translate(-50%,-50%) scale(0.85);
+  background: rgba(15,23,42,0.88); color: #fff; backdrop-filter: blur(8px);
+  padding: 10px 24px; border-radius: 30px;
+  font-size: 14px; font-weight: 700; pointer-events: none;
+  z-index: 9000; opacity: 0; letter-spacing: 0.2px;
+  transition: opacity 0.18s, transform 0.18s;
+}
+#swipeHint.show { opacity: 1; transform: translate(-50%,-50%) scale(1); }
+
+/* Notification permission button pulse */
+#notifPermBtn {
+  background: linear-gradient(135deg,#f59e0b,#fbbf24) !important;
+  color: #fff !important; border: none !important;
+  animation: notifPulse 2.2s ease-in-out infinite;
+}
+@keyframes notifPulse {
+  0%,100% { box-shadow: 0 0 0 0 rgba(245,158,11,0.5); }
+  50%      { box-shadow: 0 0 0 7px rgba(245,158,11,0); }
+}
+
+@media (max-width: 768px) {
+  .dash-streak-row { grid-template-columns: 1fr; }
+  .progress-ring-card { display: none; }
+}
+
+/* ════════════════════════════════════════════════════════════════════
    QUICK ACTIONS — WeChat / DingTalk style  (v20260526)
    ════════════════════════════════════════════════════════════════════ */
 .qa-wrap {

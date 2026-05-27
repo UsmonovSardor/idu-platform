@@ -24,11 +24,11 @@
 <link rel="preconnect" href="https://cdnjs.cloudflare.com" crossorigin>
 <link rel="dns-prefetch" href="https://idu-platform-production.up.railway.app">
 <!-- Critical CSS preload — start fetching before parser hits the link tag -->
-<link rel="preload" href="css/style.css?v=20260526b" as="style">
+<link rel="preload" href="css/style.css?v=20260526c" as="style">
 <link rel="preload" href="css/utilities.css?v=20260525a" as="style">
 <script defer src="https://cdnjs.cloudflare.com/ajax/libs/dompurify/3.0.8/purify.min.js"></script>
 <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800&family=DM+Mono:wght@400;500;600&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="css/style.css?v=20260526b">
+<link rel="stylesheet" href="css/style.css?v=20260526c">
 <link rel="stylesheet" href="css/responsive.css?v=20260525a">
 <link rel="stylesheet" href="css/landing.css?v=20260525n">
 <link rel="stylesheet" href="css/utilities.css?v=20260525a">
@@ -846,6 +846,7 @@
       <button class="btn btn-secondary" onclick="showPage('timetable')" id="dash-btn-jadval">📅 Jadval</button>
       <button class="btn btn-secondary" onclick="openStudentAttModal()" style="background:linear-gradient(135deg,#16A34A,#22C55E);color:#fff;border:none">✅ Davomat</button>
       <button class="btn btn-secondary" onclick="downloadMyTranscript()" style="background:linear-gradient(135deg,#7C3AED,#8B5CF6);color:#fff;border:none">📄 Transkript</button>
+      <button class="btn btn-secondary" id="notifPermBtn" onclick="requestNotifPermission()" style="display:none">🔔 Bildirishnomalar</button>
       <button class="btn btn-primary" onclick="openQuiz()" id="dash-btn-quiz">🧠 Quiz boshlash</button>
     </div>
   </div>
@@ -921,6 +922,9 @@
       <span class="qa-lbl" id="qa-l6">Reyting</span>
     </button>
   </div>
+
+  <!-- Streak + Progress Ring row (学而思 style) -->
+  <div id="dashStreakRow" style="margin-bottom:16px"></div>
 
   <!-- XP / Gamification widget -->
   <div id="xpWidget" style="margin-bottom:14px"></div>
@@ -4004,7 +4008,7 @@ function upmTab(name) {
   <script defer src="js/pages/rector.js?v=20260520f"></script>
   <script defer src="js/features/teacher-exams.js?v=20260520f"></script>
   <script defer src="js/main.js?v=20260523c"></script>
-  <script defer src="js/enhancements.js?v=20260520f"></script>
+  <script defer src="js/enhancements.js?v=20260526a"></script>
   <!-- QR code generator (teacher) -->
   <script defer src="https://cdn.jsdelivr.net/npm/qrcodejs@1.0.0/qrcode.min.js" crossorigin="anonymous"></script>
   <!-- QR code scanner (student camera) -->

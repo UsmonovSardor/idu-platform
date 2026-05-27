@@ -131,6 +131,38 @@ self.addEventListener('fetch', (event) => {
   }
 });
 
+// ── Push notifications ────────────────────────────────────────────────────────
+self.addEventListener('push', (event) => {
+  var data = {};
+  try { data = event.data ? event.data.json() : {}; } catch(e) {}
+  var title = data.title || 'IDU Platform';
+  var body  = data.body  || 'Yangi bildirishnoma';
+  var icon  = data.icon  || '/manifest.json';
+  event.waitUntil(
+    self.registration.showNotification(title, {
+      body, icon,
+      badge: icon,
+      tag: data.tag || 'idu-notif',
+      data: { url: data.url || '/' }
+    })
+  );
+});
+
+self.addEventListener('notificationclick', (event) => {
+  event.notification.close();
+  var url = (event.notification.data && event.notification.data.url) || '/';
+  event.waitUntil(
+    clients.matchAll({ type: 'window', includeUncontrolled: true }).then(function(list) {
+      for (var i = 0; i < list.length; i++) {
+        if (list[i].url.includes(self.location.origin)) {
+          return list[i].focus();
+        }
+      }
+      return clients.openWindow(url);
+    })
+  );
+});
+
 // ── Manual cache purge from page ─────────────────────────────────────────────
 self.addEventListener('message', (e) => {
   if (e.data && e.data.type === 'PURGE_CACHE') {
