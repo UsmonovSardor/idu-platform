@@ -46,11 +46,11 @@
 <link rel="preconnect" href="https://cdnjs.cloudflare.com" crossorigin>
 <link rel="dns-prefetch" href="https://idu-platform-production.up.railway.app">
 <!-- Critical CSS preload — start fetching before parser hits the link tag -->
-<link rel="preload" href="css/style.css?v=20260528i" as="style">
+<link rel="preload" href="css/style.css?v=20260528j" as="style">
 <link rel="preload" href="css/utilities.css?v=20260525a" as="style">
 <script defer src="https://cdnjs.cloudflare.com/ajax/libs/dompurify/3.0.8/purify.min.js"></script>
 <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800&family=DM+Mono:wght@400;500;600&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="css/style.css?v=20260528i">
+<link rel="stylesheet" href="css/style.css?v=20260528j">
 <link rel="stylesheet" href="css/responsive.css?v=20260525a">
 <link rel="stylesheet" href="css/landing.css?v=20260525n">
 <link rel="stylesheet" href="css/utilities.css?v=20260525a">
@@ -1321,8 +1321,8 @@
     </div>
   </div>
   <!-- Teacher filter bar -->
-  <div style="background:#fff;border:1.5px solid #E2E8F0;border-radius:14px;padding:10px 14px;margin-bottom:14px;display:flex;flex-wrap:wrap;gap:8px;align-items:center">
-    <span style="font-size:12px;font-weight:700;color:#64748B">🔍 Guruh:</span>
+  <div class="filter-bar">
+    <span class="filter-bar-label">🔍 Guruh:</span>
     <select id="tcGroupFilter" class="form-select" style="width:150px;font-size:13px" onchange="refreshTeacherStats()">
       <option value="">Barcha guruhlar</option>
       <option value="AI-2301">AI-2301</option>
@@ -2055,14 +2055,14 @@
     </div>
   </div>
   <!-- Filters -->
-  <div style="background:#fff;border:1.5px solid #E2E8F0;border-radius:14px;padding:10px 14px;margin-bottom:14px;display:flex;flex-wrap:wrap;gap:8px;align-items:center">
-    <span style="font-size:12px;font-weight:700;color:#64748B">Guruh:</span>
+  <div class="filter-bar">
+    <span class="filter-bar-label">Guruh:</span>
     <input id="attRptGroup" class="form-control" style="width:110px;font-size:13px" placeholder="AI-2301">
-    <span style="font-size:12px;font-weight:700;color:#64748B">Fan:</span>
+    <span class="filter-bar-label">Fan:</span>
     <input id="attRptSubject" class="form-control" style="width:130px;font-size:13px" placeholder="Matematika">
-    <span style="font-size:12px;font-weight:700;color:#64748B">Dan:</span>
+    <span class="filter-bar-label">Dan:</span>
     <input id="attRptFrom" type="date" class="form-control" style="width:140px;font-size:13px">
-    <span style="font-size:12px;font-weight:700;color:#64748B">Gacha:</span>
+    <span class="filter-bar-label">Gacha:</span>
     <input id="attRptTo" type="date" class="form-control" style="width:140px;font-size:13px">
     <button class="btn btn-primary" style="font-size:12px;padding:6px 14px" onclick="renderAttendanceReport()">🔍 Ko'rish</button>
     <button class="btn btn-secondary" style="font-size:12px;padding:6px 14px" onclick="document.getElementById('attRptGroup').value='';document.getElementById('attRptSubject').value='';document.getElementById('attRptFrom').value='';document.getElementById('attRptTo').value='';renderAttendanceReport()">✕ Tozalash</button>
@@ -2093,7 +2093,7 @@
   </div>
 
   <!-- Smart filter bar -->
-  <div style="background:#fff;border:1.5px solid #E2E8F0;border-radius:14px;padding:12px 16px;margin-bottom:16px;display:flex;flex-wrap:wrap;gap:10px;align-items:center">
+  <div class="filter-bar">
     <div style="font-size:12px;font-weight:700;color:#64748B;white-space:nowrap">🔍 Filtr:</div>
     <div style="display:flex;gap:8px;flex-wrap:wrap;align-items:center;flex:1">
       <select id="rptYearFilter" class="form-select" style="width:120px;font-size:13px" onchange="onRptYearChange()">
@@ -3655,37 +3655,37 @@
       </div>
     </div>
 
-    <div style="font-size:16px;font-weight:800;color:#0F172A;margin-bottom:16px">📚 Imtihon fanini tanlang:</div>
-    <div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(220px,1fr));gap:14px;margin-bottom:24px">
-      <div onclick="startRealWithSubject('algo')" style="background:white;border:2px solid #E2E8F0;border-radius:14px;padding:20px;cursor:pointer;transition:all 0.18s;text-align:center" onmouseover="this.style.borderColor='#DC2626';this.style.transform='translateY(-2px)';this.style.boxShadow='0 6px 20px rgba(220,38,38,0.12)'" onmouseout="this.style.borderColor='#E2E8F0';this.style.transform='';this.style.boxShadow=''">
-        <div style="font-size:32px;margin-bottom:10px">💻</div>
-        <div style="font-size:14px;font-weight:800;color:#0F172A">Algoritmlar va Dasturlash</div>
-        <div style="font-size:12px;color:#64748B;margin-top:4px">30 savol · 90 daqiqa · 100 ball</div>
-        <div style="margin-top:10px;padding:5px 12px;background:#FEE2E2;border-radius:20px;font-size:11px;font-weight:700;color:#DC2626;display:inline-block">Boshlash →</div>
+    <div style="font-size:16px;font-weight:800;color:var(--text);margin-bottom:16px">📚 Imtihon fanini tanlang:</div>
+    <div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(200px,1fr));gap:14px;margin-bottom:24px">
+      <div onclick="startRealWithSubject('algo')" class="subj-card">
+        <div class="subj-card-icon">💻</div>
+        <div class="subj-card-title">Algoritmlar va Dasturlash</div>
+        <div class="subj-card-meta">30 savol · 90 daqiqa · 100 ball</div>
+        <div class="subj-card-badge subj-card-badge-real">Boshlash →</div>
       </div>
-      <div onclick="startRealWithSubject('ai')" style="background:white;border:2px solid #E2E8F0;border-radius:14px;padding:20px;cursor:pointer;transition:all 0.18s;text-align:center" onmouseover="this.style.borderColor='#DC2626';this.style.transform='translateY(-2px)';this.style.boxShadow='0 6px 20px rgba(220,38,38,0.12)'" onmouseout="this.style.borderColor='#E2E8F0';this.style.transform='';this.style.boxShadow=''">
-        <div style="font-size:32px;margin-bottom:10px">🤖</div>
-        <div style="font-size:14px;font-weight:800;color:#0F172A">Sun'iy Intellekt</div>
-        <div style="font-size:12px;color:#64748B;margin-top:4px">30 savol · 90 daqiqa · 100 ball</div>
-        <div style="margin-top:10px;padding:5px 12px;background:#FEE2E2;border-radius:20px;font-size:11px;font-weight:700;color:#DC2626;display:inline-block">Boshlash →</div>
+      <div onclick="startRealWithSubject('ai')" class="subj-card">
+        <div class="subj-card-icon">🤖</div>
+        <div class="subj-card-title">Sun'iy Intellekt</div>
+        <div class="subj-card-meta">30 savol · 90 daqiqa · 100 ball</div>
+        <div class="subj-card-badge subj-card-badge-real">Boshlash →</div>
       </div>
-      <div onclick="startRealWithSubject('math')" style="background:white;border:2px solid #E2E8F0;border-radius:14px;padding:20px;cursor:pointer;transition:all 0.18s;text-align:center" onmouseover="this.style.borderColor='#DC2626';this.style.transform='translateY(-2px)';this.style.boxShadow='0 6px 20px rgba(220,38,38,0.12)'" onmouseout="this.style.borderColor='#E2E8F0';this.style.transform='';this.style.boxShadow=''">
-        <div style="font-size:32px;margin-bottom:10px">📐</div>
-        <div style="font-size:14px;font-weight:800;color:#0F172A">Matematika (AI uchun)</div>
-        <div style="font-size:12px;color:#64748B;margin-top:4px">30 savol · 90 daqiqa · 100 ball</div>
-        <div style="margin-top:10px;padding:5px 12px;background:#FEE2E2;border-radius:20px;font-size:11px;font-weight:700;color:#DC2626;display:inline-block">Boshlash →</div>
+      <div onclick="startRealWithSubject('math')" class="subj-card">
+        <div class="subj-card-icon">📐</div>
+        <div class="subj-card-title">Matematika (AI uchun)</div>
+        <div class="subj-card-meta">30 savol · 90 daqiqa · 100 ball</div>
+        <div class="subj-card-badge subj-card-badge-real">Boshlash →</div>
       </div>
-      <div onclick="startRealWithSubject('db')" style="background:white;border:2px solid #E2E8F0;border-radius:14px;padding:20px;cursor:pointer;transition:all 0.18s;text-align:center" onmouseover="this.style.borderColor='#DC2626';this.style.transform='translateY(-2px)';this.style.boxShadow='0 6px 20px rgba(220,38,38,0.12)'" onmouseout="this.style.borderColor='#E2E8F0';this.style.transform='';this.style.boxShadow=''">
-        <div style="font-size:32px;margin-bottom:10px">🗄️</div>
-        <div style="font-size:14px;font-weight:800;color:#0F172A">Ma'lumotlar Bazasi</div>
-        <div style="font-size:12px;color:#64748B;margin-top:4px">30 savol · 90 daqiqa · 100 ball</div>
-        <div style="margin-top:10px;padding:5px 12px;background:#FEE2E2;border-radius:20px;font-size:11px;font-weight:700;color:#DC2626;display:inline-block">Boshlash →</div>
+      <div onclick="startRealWithSubject('db')" class="subj-card">
+        <div class="subj-card-icon">🗄️</div>
+        <div class="subj-card-title">Ma'lumotlar Bazasi</div>
+        <div class="subj-card-meta">30 savol · 90 daqiqa · 100 ball</div>
+        <div class="subj-card-badge subj-card-badge-real">Boshlash →</div>
       </div>
-      <div onclick="startRealWithSubject('web')" style="background:white;border:2px solid #E2E8F0;border-radius:14px;padding:20px;cursor:pointer;transition:all 0.18s;text-align:center" onmouseover="this.style.borderColor='#DC2626';this.style.transform='translateY(-2px)';this.style.boxShadow='0 6px 20px rgba(220,38,38,0.12)'" onmouseout="this.style.borderColor='#E2E8F0';this.style.transform='';this.style.boxShadow=''">
-        <div style="font-size:32px;margin-bottom:10px">🌐</div>
-        <div style="font-size:14px;font-weight:800;color:#0F172A">Web Dasturlash</div>
-        <div style="font-size:12px;color:#64748B;margin-top:4px">30 savol · 90 daqiqa · 100 ball</div>
-        <div style="margin-top:10px;padding:5px 12px;background:#FEE2E2;border-radius:20px;font-size:11px;font-weight:700;color:#DC2626;display:inline-block">Boshlash →</div>
+      <div onclick="startRealWithSubject('web')" class="subj-card">
+        <div class="subj-card-icon">🌐</div>
+        <div class="subj-card-title">Web Dasturlash</div>
+        <div class="subj-card-meta">30 savol · 90 daqiqa · 100 ball</div>
+        <div class="subj-card-badge subj-card-badge-real">Boshlash →</div>
       </div>
     </div>
   </div>
@@ -4235,7 +4235,7 @@ function upmTab(name) {
   <script defer src="js/features/calendar.js?v=20260528a"></script>
   <script defer src="js/features/forum.js?v=20260528a"></script>
   <script defer src="js/features/bulk-export.js?v=20260528a"></script>
-  <script defer src="js/main.js?v=20260528i"></script>
+  <script defer src="js/main.js?v=20260528j"></script>
   <script defer src="js/enhancements.js?v=20260526a"></script>
   <!-- QR code generator (teacher) -->
   <script defer src="https://cdn.jsdelivr.net/npm/qrcodejs@1.0.0/qrcode.min.js" crossorigin="anonymous"></script>

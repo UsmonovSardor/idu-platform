@@ -2034,6 +2034,107 @@ body, .card, .stat-card, .topnav, .sidebar, .modal-card, input, select, textarea
   transition: background 0.25s ease, border-color 0.25s ease, color 0.15s ease;
 }
 
+/* ══════════════════════════════════════════════════════════════════════════
+   SUBJECT CARDS — reusable class for test/sesiya subject picker grids
+   ══════════════════════════════════════════════════════════════════════════ */
+.subj-card {
+  background: var(--white);
+  border: 2px solid var(--border);
+  border-radius: 14px; padding: 20px;
+  cursor: pointer; transition: all 0.18s;
+  text-align: center;
+}
+.subj-card:hover {
+  transform: translateY(-2px);
+  box-shadow: var(--shadow-md);
+}
+.subj-card-icon  { font-size: 32px; margin-bottom: 10px; }
+.subj-card-title { font-size: 14px; font-weight: 800; color: var(--text); margin-bottom: 4px; }
+.subj-card-meta  { font-size: 12px; color: var(--text2); }
+.subj-card-badge {
+  display: inline-block;
+  margin-top: 10px; padding: 4px 12px;
+  border-radius: 20px; font-size: 11px; font-weight: 700;
+}
+.subj-card-badge-test { background: var(--primary-light); color: var(--primary); }
+.subj-card-badge-real { background: var(--red-light);     color: var(--red); }
+
+/* ── Filter bar — replaces hardcoded #fff background bars ─────────────────── */
+.filter-bar {
+  background: var(--white);
+  border: 1.5px solid var(--border);
+  border-radius: 14px; padding: 10px 14px;
+  margin-bottom: 14px;
+  display: flex; flex-wrap: wrap; gap: 8px; align-items: center;
+}
+.filter-bar-label { font-size: 12px; font-weight: 700; color: var(--text2); }
+
+/* ── Info / note boxes ────────────────────────────────────────────────────── */
+.info-box {
+  background: var(--primary-light);
+  border: 1.5px solid rgba(59,130,246,0.25);
+  border-radius: 12px; padding: 14px 18px;
+  font-size: 13px; color: var(--text);
+}
+.info-box-warn {
+  background: var(--orange-light);
+  border-color: rgba(234,88,12,0.25);
+}
+
+/* ── User dropdown ────────────────────────────────────────────────────────── */
+#userDropdown {
+  background: var(--white) !important;
+  border-color: var(--border) !important;
+  color: var(--text) !important;
+}
+#userDropdown a, #userDropdown div, #userDropdown button {
+  color: var(--text) !important;
+}
+[data-theme="dark"] #userDropdown { box-shadow: 0 8px 24px rgba(0,0,0,.5) !important; }
+
+/* ── Modal inner containers (hardcoded #fff) ──────────────────────────────── */
+.modal-bg > div:not(.modal-inner),
+.modal-bg .modal-card {
+  background: var(--white);
+  color: var(--text);
+}
+[data-theme="dark"] .modal-bg > div:not(.modal-inner),
+[data-theme="dark"] .modal-bg .modal-card {
+  background: #0d1f3a;
+}
+
+/* ── Inline hardcoded colors override for dark mode ──────────────────────── */
+/* Elements that still use color:#0F172A / color:#1e293b inline styles */
+[data-theme="dark"] [style*="color:#0F172A"],
+[data-theme="dark"] [style*="color: #0F172A"],
+[data-theme="dark"] [style*="color:#1e293b"],
+[data-theme="dark"] [style*="color:#0f172a"] { color: var(--text) !important; }
+
+/* Elements that use background:white / background:#fff inline */
+[data-theme="dark"] [style*="background:white"],
+[data-theme="dark"] [style*="background: white"],
+[data-theme="dark"] [style*="background:#fff"],
+[data-theme="dark"] [style*="background: #fff"] {
+  background: var(--white) !important;
+}
+
+/* Hardcoded border colors */
+[data-theme="dark"] [style*="border:1.5px solid #E2E8F0"],
+[data-theme="dark"] [style*="border:2px solid #E2E8F0"],
+[data-theme="dark"] [style*="border: 1.5px solid #E2E8F0"] {
+  border-color: var(--border) !important;
+}
+
+/* Medium gray text (#64748B, #475569) — needs to be lighter in dark mode */
+[data-theme="dark"] [style*="color:#64748B"],
+[data-theme="dark"] [style*="color: #64748B"],
+[data-theme="dark"] [style*="color:#475569"] { color: var(--text2) !important; }
+
+/* Dekanat question table: hardcoded light bg in info box */
+[data-theme="dark"] [style*="background:#EEF3FF"] { background: var(--primary-light) !important; }
+[data-theme="dark"] [style*="color:#1E40AF"],
+[data-theme="dark"] [style*="color: #1E40AF"] { color: #60a5fa !important; }
+
 /* ── Dekanat question table helpers ───────────────────────────────────────── */
 .q-badge {
   display: inline-block;
