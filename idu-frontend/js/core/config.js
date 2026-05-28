@@ -58,6 +58,11 @@ async function api(method, path, body) {
   var data = await res.json().catch(function() { return {}; });
 
   if (!res.ok) {
+    // Auto-clear expired / invalid token so it stops spamming 401s
+    if (res.status === 401) {
+      _apiToken = null;
+      try { localStorage.removeItem('idu_jwt'); } catch(e) {}
+    }
     throw Object.assign(
       new Error(data.error || ('HTTP ' + res.status)),
       { status: res.status, data: data }
