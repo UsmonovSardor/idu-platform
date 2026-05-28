@@ -5251,63 +5251,67 @@ function renderTestSubjectGrid() {
   var grid = document.getElementById('testSubjectGrid');
   if (!grid) return;
 
-  // Subjects that have DB questions (from loaded DEKANAT_CHAPTERS)
-  var dbSubjects = Object.keys(window.DEKANAT_CHAPTERS || {});
+  var chs = window.DEKANAT_CHAPTERS || {};
 
-  // Only use VALID subjects (id > 0 = came from /subjects API).
-  // Subjects with id:0 are garbage injected by _updateQStats (e.g. user login names).
-  var apiSubjects = (typeof _subjects !== 'undefined')
-    ? _subjects.filter(function(s) { return s.id > 0; })
-    : [];
+  // Build candidate pool: fallback subjects + API subjects (id > 0 only)
+  var seen = {};
+  var pool = [];
+  // Always include built-in fallback subjects first
+  (typeof _FALLBACK_SUBJECTS !== 'undefined' ? _FALLBACK_SUBJECTS : []).forEach(function(s) {
+    if (!seen[s.code]) { seen[s.code] = true; pool.push({ code: s.code, label: s.label, icon: s.icon }); }
+  });
+  // Add API subjects with proper IDs (id > 0 = added via Subject Manager)
+  (typeof _subjects !== 'undefined' ? _subjects : []).forEach(function(s) {
+    if (s.id > 0 && !seen[s.code]) { seen[s.code] = true; pool.push({ code: s.code, label: s.label || s.code, icon: s.icon || '📚' }); }
+  });
 
-  // Fallback: if API subjects not loaded yet, use built-in fallback list
-  var baseList = apiSubjects.length
-    ? apiSubjects
-    : (typeof _FALLBACK_SUBJECTS !== 'undefined' ? _FALLBACK_SUBJECTS : []).map(function(s) {
-        return { id: s.id, code: s.code, label: s.label, icon: s.icon };
-      });
+  // KEY FILTER: only show subjects that actually have questions
+  // (DB chapters loaded into DEKANAT_CHAPTERS OR built-in TEST_QUESTIONS_DB)
+  // This prevents garbage subjects ("sardor", "bob", etc.) from ever appearing
+  var allSubjects = pool.filter(function(s) {
+    var hasDB     = Object.keys(chs[s.code] || {}).length > 0;
+    var hasBuiltIn = !!(TEST_QUESTIONS_DB && TEST_QUESTIONS_DB[s.code] && TEST_QUESTIONS_DB[s.code].length);
+    return hasDB || hasBuiltIn;
+  });
 
-  // Merge: start with API subjects, then add DB subjects that match a valid subject code
-  var validCodes = new Set(baseList.map(function(s) { return s.code; }));
-  var allSubjects = baseList.slice();
-  dbSubjects.forEach(function(code) {
-    if (validCodes.has(code) && !allSubjects.find(function(s) { return s.code === code; })) {
-      var found = baseList.find(function(s) { return s.code === code; });
-      allSubjects.push(found || { id: 1, code: code, label: _examSubjectNames[code] || code, icon: _examSubjectIcons[code] || '📚' });
-    }
+  // Sort: DB subjects first, then built-in only
+  allSubjects.sort(function(a, b) {
+    var aDB = Object.keys(chs[a.code] || {}).length;
+    var bDB = Object.keys(chs[b.code] || {}).length;
+    return bDB - aDB;
   });
 
   if (!allSubjects.length) {
-    grid.innerHTML = '<div style="text-align:center;color:var(--text2);padding:30px;grid-column:1/-1;font-size:13px">📭 Hali savollar yuklanmagan</div>';
-    return;
+    // Show all fallback subjects while DB loads in background (initial render)
+    var fallbackShow = (typeof _FALLBACK_SUBJECTS !== 'undefined' ? _FALLBACK_SUBJECTS : []);
+    if (!fallbackShow.length) {
+      grid.innerHTML = '<div style="text-align:center;color:var(--text2);padding:30px;grid-column:1/-1;font-size:13px">📭 Savollar yuklanmoqda…</div>';
+      return;
+    }
+    allSubjects = fallbackShow.map(function(s) { return { code: s.code, label: s.label, icon: s.icon }; });
   }
 
-  var chs = window.DEKANAT_CHAPTERS || {};
   grid.innerHTML = allSubjects.map(function(s) {
     var chMap   = chs[s.code] || {};
     var chCount = Object.keys(chMap).length;
     var qTotal  = Object.values(chMap).reduce(function(a, b) { return a + b; }, 0);
     var hasBuiltIn = !!(TEST_QUESTIONS_DB && TEST_QUESTIONS_DB[s.code] && TEST_QUESTIONS_DB[s.code].length);
-    var color   = _examSubjectColors[s.code] || '#1B4FD8';
+    var color      = _examSubjectColors[s.code] || '#1B4FD8';
     var colorLight = color + '22';
     var meta = chCount > 0
       ? chCount + ' bob · ' + qTotal + ' savol'
-      : hasBuiltIn ? '20 savol · 30 daqiqa' : 'Savollar yuklanmagan';
+      : '20 savol · 30 daqiqa';
     var badge = chCount > 0
       ? '<div style="margin-top:8px;padding:4px 10px;background:' + colorLight + ';border-radius:20px;font-size:11px;font-weight:700;color:' + color + ';display:inline-block">' + chCount + ' ta bob</div>'
-      : hasBuiltIn
-        ? '<div style="margin-top:8px;padding:4px 10px;background:' + colorLight + ';border-radius:20px;font-size:11px;font-weight:700;color:' + color + ';display:inline-block">Boshlash →</div>'
-        : '<div style="margin-top:8px;padding:4px 10px;background:rgba(148,163,184,0.12);border-radius:20px;font-size:11px;font-weight:700;color:#94a3b8;display:inline-block">Tez kunda</div>';
-
-    var clickable = chCount > 0 || hasBuiltIn;
-    return '<div ' + (clickable ? 'onclick="startTestWithSubject(\'' + s.code + '\')"' : '') + ' '
-      + 'style="background:var(--white);border:2px solid var(--border);border-radius:14px;padding:20px;cursor:' + (clickable ? 'pointer' : 'default') + ';transition:all 0.18s;text-align:center;opacity:' + (clickable ? '1' : '0.55') + '" '
-      + (clickable ? 'onmouseover="this.style.borderColor=\'' + color + '\';this.style.transform=\'translateY(-2px)\';this.style.boxShadow=\'0 6px 20px ' + color + '22\'" onmouseout="this.style.borderColor=\'var(--border)\';this.style.transform=\'\';this.style.boxShadow=\'\'"' : '') + '>'
+      : '<div style="margin-top:8px;padding:4px 10px;background:' + colorLight + ';border-radius:20px;font-size:11px;font-weight:700;color:' + color + ';display:inline-block">Boshlash →</div>';
+    return '<div onclick="startTestWithSubject(\'' + s.code + '\')" '
+      + 'style="background:var(--white);border:2px solid var(--border);border-radius:14px;padding:20px;cursor:pointer;transition:all 0.18s;text-align:center" '
+      + 'onmouseover="this.style.borderColor=\'' + color + '\';this.style.transform=\'translateY(-2px)\';this.style.boxShadow=\'0 6px 20px ' + color + '22\'" '
+      + 'onmouseout="this.style.borderColor=\'var(--border)\';this.style.transform=\'\';this.style.boxShadow=\'\'">'
       + '<div style="font-size:32px;margin-bottom:10px">' + s.icon + '</div>'
       + '<div style="font-size:14px;font-weight:800;color:var(--text)">' + s.label + '</div>'
       + '<div style="font-size:12px;color:var(--text2);margin-top:4px">' + meta + '</div>'
-      + badge
-      + '</div>';
+      + badge + '</div>';
   }).join('');
 }
 

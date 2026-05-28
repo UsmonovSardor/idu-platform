@@ -2034,6 +2034,23 @@ body, .card, .stat-card, .topnav, .sidebar, .modal-card, input, select, textarea
   transition: background 0.25s ease, border-color 0.25s ease, color 0.15s ease;
 }
 
+/* ── Dekanat question table helpers ───────────────────────────────────────── */
+.q-badge {
+  display: inline-block;
+  padding: 3px 9px; border-radius: 6px;
+  font-size: 11.5px; font-weight: 700; white-space: nowrap;
+}
+.btn-icon-sm {
+  padding: 5px 9px; border: none; border-radius: 7px;
+  font-size: 13px; cursor: pointer; transition: opacity 0.15s;
+  font-family: inherit;
+}
+.btn-icon-sm:hover { opacity: 0.75; }
+.btn-edit-sm { background: var(--primary-light); color: var(--primary); }
+.btn-del-sm  { background: var(--red-light);     color: var(--red); }
+[data-theme="dark"] .btn-edit-sm { background: rgba(30,64,175,0.22); }
+[data-theme="dark"] .btn-del-sm  { background: rgba(220,38,38,0.18); }
+
 /* ════════════════════════════════════════════════════════════════════
    COMMAND PALETTE (Ctrl+K) — Linear / GitHub style  (v20260526)
    ════════════════════════════════════════════════════════════════════ */

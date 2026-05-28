@@ -46,11 +46,11 @@
 <link rel="preconnect" href="https://cdnjs.cloudflare.com" crossorigin>
 <link rel="dns-prefetch" href="https://idu-platform-production.up.railway.app">
 <!-- Critical CSS preload — start fetching before parser hits the link tag -->
-<link rel="preload" href="css/style.css?v=20260528h" as="style">
+<link rel="preload" href="css/style.css?v=20260528i" as="style">
 <link rel="preload" href="css/utilities.css?v=20260525a" as="style">
 <script defer src="https://cdnjs.cloudflare.com/ajax/libs/dompurify/3.0.8/purify.min.js"></script>
 <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800&family=DM+Mono:wght@400;500;600&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="css/style.css?v=20260528h">
+<link rel="stylesheet" href="css/style.css?v=20260528i">
 <link rel="stylesheet" href="css/responsive.css?v=20260525a">
 <link rel="stylesheet" href="css/landing.css?v=20260525n">
 <link rel="stylesheet" href="css/utilities.css?v=20260525a">
@@ -3764,8 +3764,9 @@
       <button class="filter-chip" onclick="filterQs('real',this)" id="qf-real">📋 Sesiya</button>
       <span id="qf-subjects-chips"></span>
     </div>
-    <button onclick="window._currentQFilter='';renderDekanatQuestions()" style="padding:8px 14px;background:#F0FDF4;border:1.5px solid #86EFAC;border-radius:8px;color:#16A34A;font-family:'Outfit',sans-serif;font-size:12.5px;font-weight:700;cursor:pointer">🔄 Yangilash</button>
-    <button onclick="clearAllDekanatQuestions()" style="padding:8px 14px;background:#FEE2E2;border:1.5px solid #FCA5A5;border-radius:8px;color:#DC2626;font-family:'Outfit',sans-serif;font-size:12.5px;font-weight:700;cursor:pointer">🗑️ Barchasini o'chirish</button>
+    <button onclick="window._currentQFilter='';renderDekanatQuestions()" class="btn btn-secondary btn-sm">🔄 Yangilash</button>
+    <button onclick="exportQuestionsJSON()" class="btn btn-secondary btn-sm" style="background:var(--green-light);border-color:var(--green);color:var(--green)">📥 JSON yuklash</button>
+    <button onclick="clearAllDekanatQuestions()" class="btn btn-secondary btn-sm" style="background:var(--red-light);border-color:var(--red);color:var(--red)">🗑️ Barchasini o'chirish</button>
   </div>
 
   <!-- Questions table -->
@@ -4211,7 +4212,7 @@ function upmTab(name) {
   <script defer src="js/ui/effects.js?v=20260517d"></script>
   <script defer src="js/pages/student.js?v=20260517d"></script>
   <script defer src="js/pages/teacher.js?v=20260517d"></script>
-  <script defer src="js/pages/dekanat.js?v=20260528h"></script>
+  <script defer src="js/pages/dekanat.js?v=20260528i"></script>
   <script defer src="js/pages/investor.js?v=20260517d"></script>
   <script defer src="js/features/schedule.js?v=20260517d"></script>
   <script defer src="js/features/assignments.js?v=20260517d"></script>
@@ -4234,7 +4235,7 @@ function upmTab(name) {
   <script defer src="js/features/calendar.js?v=20260528a"></script>
   <script defer src="js/features/forum.js?v=20260528a"></script>
   <script defer src="js/features/bulk-export.js?v=20260528a"></script>
-  <script defer src="js/main.js?v=20260528h"></script>
+  <script defer src="js/main.js?v=20260528i"></script>
   <script defer src="js/enhancements.js?v=20260526a"></script>
   <!-- QR code generator (teacher) -->
   <script defer src="https://cdn.jsdelivr.net/npm/qrcodejs@1.0.0/qrcode.min.js" crossorigin="anonymous"></script>

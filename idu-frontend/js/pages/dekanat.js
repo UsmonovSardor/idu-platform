@@ -442,8 +442,36 @@ async function _renderQTable(filter) {
       };
       return;
     }
-    const opts = ['option_a','option_b','option_c','option_d'];
-    tbody.innerHTML = qs.map((q,i) => '<tr><td><strong>'+(i+1)+'</strong></td><td><span style="padding:3px 8px;background:#EEF3FF;border-radius:6px;font-size:11.5px;font-weight:700;color:#1B4FD8">'+(SUBJ_LABELS[q.subject]||q.subject)+'</span></td><td><span style="padding:3px 8px;border-radius:6px;font-size:11.5px;font-weight:700;background:'+(q.type==='test'?'#DCFCE7':q.type==='real'?'#FEE2E2':'#F3E8FF')+';color:'+(q.type==='test'?'#16A34A':q.type==='real'?'#DC2626':'#7C3AED')+'">'+(TYPE_LABELS[q.type]||q.type)+'</span></td><td><div style="font-weight:600;font-size:13px">'+q.question_text.substring(0,80)+(q.question_text.length>80?'...':'')+'</div></td><td style="font-size:12px;color:#16A34A;font-weight:600">'+q.correct_option+'</td><td><div style="display:flex;gap:5px"><button onclick="editQuestion('+q.id+')" style="padding:5px 10px;background:#EEF3FF;border:none;border-radius:6px;color:#1B4FD8;font-size:12px;cursor:pointer">✏️</button><button onclick="deleteQuestion('+q.id+')" style="padding:5px 10px;background:#FEE2E2;border:none;border-radius:6px;color:#DC2626;font-size:12px;cursor:pointer">🗑️</button></div></td></tr>').join('');
+    const typeStyle = {
+      test: 'background:var(--green-light);color:var(--green)',
+      real: 'background:var(--red-light);color:var(--red)',
+      both: 'background:var(--purple-light);color:var(--purple)',
+    };
+    tbody.innerHTML = qs.map((q,i) => {
+      const subj   = SUBJ_LABELS[q.subject] || q.subject;
+      const tStyle = typeStyle[q.type] || typeStyle.both;
+      const tLabel = TYPE_LABELS[q.type] || q.type;
+      const qText  = (q.question_text||'').substring(0,90) + (q.question_text&&q.question_text.length>90?'…':'');
+      const correct= q.correct_option || '—';
+      // Flag questions with unknown subject codes (not in SUBJ_LABELS)
+      const unknownSubj = !SUBJ_LABELS[q.subject];
+      const subjStyle = unknownSubj
+        ? 'background:var(--orange-light);color:var(--orange)'
+        : 'background:var(--primary-light);color:var(--primary)';
+      return `<tr>
+        <td style="font-weight:700;color:var(--text3);text-align:center">${i+1}</td>
+        <td><span class="q-badge" style="${subjStyle}" title="${unknownSubj?'Noto\'g\'ri sub\'ekt kodi!':''}">${subj}${unknownSubj?' ⚠️':''}</span></td>
+        <td><span class="q-badge" style="${tStyle}">${tLabel}</span></td>
+        <td style="color:var(--text);font-size:13px;line-height:1.4">${qText}</td>
+        <td style="font-weight:700;color:var(--green);text-align:center;font-size:13px">${correct}</td>
+        <td>
+          <div style="display:flex;gap:4px;justify-content:center">
+            <button onclick="editQuestion(${q.id})" class="btn-icon-sm btn-edit-sm" title="Tahrirlash">✏️</button>
+            <button onclick="deleteQuestion(${q.id})" class="btn-icon-sm btn-del-sm" title="O'chirish">🗑️</button>
+          </div>
+        </td>
+      </tr>`;
+    }).join('');
   } catch(e) { console.error('[QTable] xato:', e); tbody.innerHTML='<tr><td colspan="6" style="text-align:center;color:var(--red);padding:20px">Xato: '+e.message+'</td></tr>'; }
 }
 
@@ -742,6 +770,43 @@ async function apiSubmitApplication(data) { return api('POST','/applications',da
 
 function filterApps(filter,el){currentAppFilter=filter;document.querySelectorAll('#page-dekanat-applications .filter-chip').forEach(c=>c.classList.remove('active'));if(el)el.classList.add('active');renderDekanatApplications();}
 function filterQs(filter,el){_currentQFilter=filter;document.querySelectorAll('#page-dekanat-questions .filter-chip').forEach(c=>c.classList.remove('active'));if(el)el.classList.add('active');_renderQTable(filter);}
+
+// ── Export questions to JSON file ─────────────────────────────────────────────
+async function exportQuestionsJSON() {
+  try {
+    showToast('⏳','Yuklab olinmoqda','Savollar tayyorlanmoqda...');
+    const all = await api('GET', '/questions?limit=5000');
+    const qs = Array.isArray(all) ? all : [];
+    if (!qs.length) { showToast('ℹ️','Bo\'sh','Hali savollar yo\'q'); return; }
+    // Format for readability
+    const exportData = {
+      exported_at: new Date().toISOString(),
+      total: qs.length,
+      questions: qs.map(function(q) {
+        return {
+          id: q.id,
+          subject: q.subject,
+          type: q.type,
+          chapter: q.chapter_num || 1,
+          question: q.question_text,
+          options: { A: q.option_a, B: q.option_b, C: q.option_c, D: q.option_d },
+          correct: q.correct_option,
+          explanation: q.explanation || '',
+        };
+      })
+    };
+    const blob = new Blob([JSON.stringify(exportData, null, 2)], { type: 'application/json' });
+    const url  = URL.createObjectURL(blob);
+    const a    = document.createElement('a');
+    a.href     = url;
+    a.download = 'idu_savollar_' + new Date().toISOString().slice(0,10) + '.json';
+    document.body.appendChild(a);
+    a.click();
+    document.body.removeChild(a);
+    URL.revokeObjectURL(url);
+    showToast('✅','Yuklab olindi', qs.length + ' ta savol JSON formatida');
+  } catch(e) { showToast('❌','Xato', e.message); }
+}
 function renderDekanatSchedule(){const grp=document.getElementById('dekScheduleGroup')?.value||'AI-2301';currentDekScheduleGroup=grp;if(typeof buildTTTable==='function')buildTTTable('dekTTHead','dekTTBody',grp,true);if(typeof renderRoomStatus==='function')renderRoomStatus(grp);}
 function fillDekanat(l,p){const dl=document.getElementById('dLogin');const dp=document.getElementById('dPass');if(dl)dl.value=l;if(dp)dp.value=p;}
 async function clearAllDekanatQuestions(){
