@@ -58,8 +58,19 @@
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/katex.min.css" crossorigin="anonymous">
 <script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/katex.min.js" crossorigin="anonymous"></script>
 <script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/contrib/auto-render.min.js" crossorigin="anonymous" onload="initKaTeX()"></script>
-<!-- socket.io client — same version as server package -->
-<script src="/socket.io/socket.io.js"></script>
+<!-- socket.io client — loaded from the backend origin (works on both same-origin and
+     cross-origin deployments where captivating-growth is a static-only server) -->
+<script>
+(function() {
+  var meta = document.querySelector('meta[name="api-base"]');
+  var backendOrigin = (meta && meta.content)
+    ? meta.content.replace(/\/api.*$/, '')   // strip /api/v1 → keep https://host
+    : window.location.origin;                // same-origin fallback (idu-platform itself)
+  var s = document.createElement('script');
+  s.src = backendOrigin + '/socket.io/socket.io.js';
+  document.head.appendChild(s);
+}());
+</script>
 <script>
   // ── Service Worker registration + auto-refresh on new deploy ──────────
   // Strategy: always fetch sw.js fresh (cache:'no-store'), call .update()
