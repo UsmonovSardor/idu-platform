@@ -708,7 +708,17 @@ function showPage(id){
   else if(id==='my-applications') renderMyApplications();
   else if(id==='dekanat-dashboard') renderDekanatDashboard();
   else if(id==='investor-dashboard') renderInvestorDashboard();
-  else if(id==='sesiya-test') { renderSesiyaTest(); if(typeof renderTestSubjectGrid==='function') renderTestSubjectGrid(); }
+  else if(id==='sesiya-test') {
+    renderSesiyaTest();
+    if(typeof renderTestSubjectGrid==='function') renderTestSubjectGrid();
+    // Pre-load questions in background so grid shows chapter counts right away
+    if(typeof loadDekanatQuestions==='function' && (!window.DEKANAT_QUESTIONS || !window.DEKANAT_QUESTIONS.length)){
+      loadDekanatQuestions().then(function(){
+        _dekQsLastLoaded = Date.now();
+        if(typeof renderTestSubjectGrid==='function') renderTestSubjectGrid();
+      });
+    }
+  }
   else if(id==='sesiya-real') renderSesiyaReal();
   else if(id==='dekanat-sesiya') renderDekanatSesiya();
   // New modules
@@ -5241,25 +5251,34 @@ function renderTestSubjectGrid() {
   var grid = document.getElementById('testSubjectGrid');
   if (!grid) return;
 
-  // Subjects that have questions in DB
+  // Subjects that have DB questions (from loaded DEKANAT_CHAPTERS)
   var dbSubjects = Object.keys(window.DEKANAT_CHAPTERS || {});
 
-  // Merge with dynamic _subjects (from dekanat.js)
-  var allSubjects = (typeof _subjects !== 'undefined' && _subjects.length)
-    ? _subjects
-    : dbSubjects.map(function(code) {
-        return { code: code, label: _examSubjectNames[code] || code, icon: _examSubjectIcons[code] || '📚' };
+  // Only use VALID subjects (id > 0 = came from /subjects API).
+  // Subjects with id:0 are garbage injected by _updateQStats (e.g. user login names).
+  var apiSubjects = (typeof _subjects !== 'undefined')
+    ? _subjects.filter(function(s) { return s.id > 0; })
+    : [];
+
+  // Fallback: if API subjects not loaded yet, use built-in fallback list
+  var baseList = apiSubjects.length
+    ? apiSubjects
+    : (typeof _FALLBACK_SUBJECTS !== 'undefined' ? _FALLBACK_SUBJECTS : []).map(function(s) {
+        return { id: s.id, code: s.code, label: s.label, icon: s.icon };
       });
 
-  // Always include subjects that have DB questions (may not be in _subjects yet)
+  // Merge: start with API subjects, then add DB subjects that match a valid subject code
+  var validCodes = new Set(baseList.map(function(s) { return s.code; }));
+  var allSubjects = baseList.slice();
   dbSubjects.forEach(function(code) {
-    if (!allSubjects.find(function(s) { return s.code === code; })) {
-      allSubjects.push({ code: code, label: _examSubjectNames[code] || code, icon: _examSubjectIcons[code] || '📚' });
+    if (validCodes.has(code) && !allSubjects.find(function(s) { return s.code === code; })) {
+      var found = baseList.find(function(s) { return s.code === code; });
+      allSubjects.push(found || { id: 1, code: code, label: _examSubjectNames[code] || code, icon: _examSubjectIcons[code] || '📚' });
     }
   });
 
   if (!allSubjects.length) {
-    grid.innerHTML = '<div style="text-align:center;color:#94A3B8;padding:30px;grid-column:1/-1;font-size:13px">📭 Hali savollar yuklanmagan</div>';
+    grid.innerHTML = '<div style="text-align:center;color:var(--text2);padding:30px;grid-column:1/-1;font-size:13px">📭 Hali savollar yuklanmagan</div>';
     return;
   }
 
@@ -5268,22 +5287,25 @@ function renderTestSubjectGrid() {
     var chMap   = chs[s.code] || {};
     var chCount = Object.keys(chMap).length;
     var qTotal  = Object.values(chMap).reduce(function(a, b) { return a + b; }, 0);
+    var hasBuiltIn = !!(TEST_QUESTIONS_DB && TEST_QUESTIONS_DB[s.code] && TEST_QUESTIONS_DB[s.code].length);
     var color   = _examSubjectColors[s.code] || '#1B4FD8';
-    var colorLight = color + '18';
+    var colorLight = color + '22';
     var meta = chCount > 0
       ? chCount + ' bob · ' + qTotal + ' savol'
-      : '20 savol · 30 daqiqa';
+      : hasBuiltIn ? '20 savol · 30 daqiqa' : 'Savollar yuklanmagan';
     var badge = chCount > 0
       ? '<div style="margin-top:8px;padding:4px 10px;background:' + colorLight + ';border-radius:20px;font-size:11px;font-weight:700;color:' + color + ';display:inline-block">' + chCount + ' ta bob</div>'
-      : '<div style="margin-top:8px;padding:4px 10px;background:' + colorLight + ';border-radius:20px;font-size:11px;font-weight:700;color:' + color + ';display:inline-block">Boshlash →</div>';
+      : hasBuiltIn
+        ? '<div style="margin-top:8px;padding:4px 10px;background:' + colorLight + ';border-radius:20px;font-size:11px;font-weight:700;color:' + color + ';display:inline-block">Boshlash →</div>'
+        : '<div style="margin-top:8px;padding:4px 10px;background:rgba(148,163,184,0.12);border-radius:20px;font-size:11px;font-weight:700;color:#94a3b8;display:inline-block">Tez kunda</div>';
 
-    return '<div onclick="startTestWithSubject(\'' + s.code + '\')" '
-      + 'style="background:white;border:2px solid #E2E8F0;border-radius:14px;padding:20px;cursor:pointer;transition:all 0.18s;text-align:center" '
-      + 'onmouseover="this.style.borderColor=\'' + color + '\';this.style.transform=\'translateY(-2px)\';this.style.boxShadow=\'0 6px 20px ' + color + '22\'" '
-      + 'onmouseout="this.style.borderColor=\'#E2E8F0\';this.style.transform=\'\';this.style.boxShadow=\'\'">'
+    var clickable = chCount > 0 || hasBuiltIn;
+    return '<div ' + (clickable ? 'onclick="startTestWithSubject(\'' + s.code + '\')"' : '') + ' '
+      + 'style="background:var(--white);border:2px solid var(--border);border-radius:14px;padding:20px;cursor:' + (clickable ? 'pointer' : 'default') + ';transition:all 0.18s;text-align:center;opacity:' + (clickable ? '1' : '0.55') + '" '
+      + (clickable ? 'onmouseover="this.style.borderColor=\'' + color + '\';this.style.transform=\'translateY(-2px)\';this.style.boxShadow=\'0 6px 20px ' + color + '22\'" onmouseout="this.style.borderColor=\'var(--border)\';this.style.transform=\'\';this.style.boxShadow=\'\'"' : '') + '>'
       + '<div style="font-size:32px;margin-bottom:10px">' + s.icon + '</div>'
-      + '<div style="font-size:14px;font-weight:800;color:#0F172A">' + s.label + '</div>'
-      + '<div style="font-size:12px;color:#64748B;margin-top:4px">' + meta + '</div>'
+      + '<div style="font-size:14px;font-weight:800;color:var(--text)">' + s.label + '</div>'
+      + '<div style="font-size:12px;color:var(--text2);margin-top:4px">' + meta + '</div>'
       + badge
       + '</div>';
   }).join('');
@@ -5386,11 +5408,23 @@ function startTestWithChapter(subj, chapterNum) {
 }
 
 // ── Override: startTestWithSubject now shows chapter picker if chapters exist ─
+// Cache flag: questions only re-fetched if cache is empty (avoids 5000q fetch on every click)
+var _dekQsLastLoaded = 0;
 startTestWithSubject = async function(subj) {
-  // Always reload questions to pick up any newly uploaded PDFs
-  if (typeof loadDekanatQuestions === 'function') {
+  // Reload questions only if cache is empty (first load or page refresh)
+  // Dekanat can force-refresh by navigating away and back
+  var cacheAge = Date.now() - _dekQsLastLoaded;
+  var cacheEmpty = !window.DEKANAT_QUESTIONS || !window.DEKANAT_QUESTIONS.length;
+  if ((cacheEmpty || cacheAge > 5 * 60 * 1000) && typeof loadDekanatQuestions === 'function') {
+    // Show loading indicator on clicked grid item
+    var grid = document.getElementById('testSubjectGrid');
+    if (grid) {
+      var cards = grid.querySelectorAll('[onclick]');
+      cards.forEach(function(c) { c.style.opacity = '0.5'; c.style.pointerEvents = 'none'; });
+    }
     await loadDekanatQuestions();
-    renderTestSubjectGrid();
+    _dekQsLastLoaded = Date.now();
+    if (grid) renderTestSubjectGrid();
   }
 
   var chMap = (window.DEKANAT_CHAPTERS || {})[subj] || {};
@@ -5404,9 +5438,14 @@ startTestWithSubject = async function(subj) {
     var chNum = parseInt(Object.keys(chMap)[0], 10);
     startTestWithChapter(subj, chNum);
   } else {
-    // No DB questions: use built-in questions or show chapter picker with fallback
+    // No DB questions: use built-in questions
     var builtIn = (TEST_QUESTIONS_DB[subj] || []).slice(0, 20);
-    if (!builtIn.length) { showToast('ℹ️', 'Savollar', 'Bu fan uchun ' + subj + ' savollari topilmadi'); return; }
+    if (!builtIn.length) {
+      // Find proper subject label (not raw code)
+      var sLabel = _examSubjectNames[subj] || subj;
+      showToast('ℹ️', 'Savollar topilmadi', sLabel + ' bo\'yicha savollar hali yuklanmagan');
+      return;
+    }
 
     _currentTestSubject   = subj;
     _currentTestQuestions = builtIn;

@@ -397,14 +397,16 @@ async function _updateQStats() {
     const uniqueSubjs = [...new Set(_allDekQuestions.map(q=>q.subject))];
     const e4=document.getElementById('qStatSubjects'); if(e4)e4.textContent=uniqueSubjs.length;
 
-    // If /subjects API failed (404), build subjects from actual questions in DB
-    // so filter chips include all real subjects (e.g. 'sardor')
+    // Add subjects found in questions but missing from /subjects API.
+    // Use id: -1 (negative) to mark as "discovered from questions, NOT a valid subject".
+    // renderTestSubjectGrid filters these out (only shows id > 0).
     var missingSubjs = uniqueSubjs.filter(function(code) {
-      return !_subjects.find(function(s){ return s.code===code; });
+      return code && !_subjects.find(function(s){ return s.code===code; });
     });
     if (missingSubjs.length) {
       missingSubjs.forEach(function(code) {
-        _subjects.push({ id: 0, code: code, label: code, icon: '📚', sort_order: 99 });
+        // id: -1 = "ghost subject" visible only in dekanat filter, NOT in student test grid
+        _subjects.push({ id: -1, code: code, label: code + ' ⚠️', icon: '⚠️', sort_order: 999 });
       });
       _rebuildSubjHelpers();
     }
