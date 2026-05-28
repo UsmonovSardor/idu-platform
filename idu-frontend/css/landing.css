@@ -176,9 +176,12 @@
   background-size: 250%;
   -webkit-background-clip: text; -webkit-text-fill-color: transparent;
   background-clip: text;
+  color: transparent; /* W3C fallback — prevents letter flash when parent opacity animates */
   animation: lp-grad 5s ease-in-out infinite alternate;
   display: inline-block;
   filter: drop-shadow(0 0 32px rgba(59,130,246,0.7));
+  will-change: background-position; /* GPU layer — prevents repaint artifacts */
+  transform: translateZ(0);         /* force compositing */
 }
 @keyframes lp-grad { 0% { background-position: 0% 50%; } 100% { background-position: 100% 50%; } }
 
@@ -351,6 +354,7 @@
   background: linear-gradient(135deg, #eff6ff 0%, #a5c8fd 40%, #60a5fa 100%);
   -webkit-background-clip: text; -webkit-text-fill-color: transparent;
   background-clip: text;
+  color: transparent; /* prevent letter flash during reveal animation */
   line-height: 1; margin-bottom: 7px;
 }
 .lp-stat-label {
@@ -386,6 +390,7 @@
   background: linear-gradient(135deg, #60a5fa, #38bdf8);
   -webkit-background-clip: text; -webkit-text-fill-color: transparent;
   background-clip: text;
+  color: transparent; /* prevent letter flash during reveal animation */
 }
 .lp-feat-grid { display: grid; grid-template-columns: repeat(3,1fr); gap: 14px; }
 .lp-feat-card {
@@ -563,6 +568,7 @@
     line-height: 0.92 !important;
     margin-bottom: 8px !important;
     letter-spacing: -3.5px !important;
+    color: transparent !important; /* keep flash fix on mobile */
   }
   .lp-hero-sub-title {
     display: block !important;
