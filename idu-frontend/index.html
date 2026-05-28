@@ -4278,10 +4278,15 @@ function upmTab(name) {
       .then(function(s) {
         if (!s) return;
         var nums = document.querySelectorAll('.lp-stat-num[data-target]');
-        // Map: [0]=students, [1]=teachers, [2]=success, [3]=subjects
-        var map = [s.students, s.teachers, s.successRate, s.subjects];
+        // Only replace defaults when DB has real meaningful data (min thresholds)
+        var map = [
+          s.students   >= 20  ? s.students   : null,   // [0] students
+          s.teachers   >= 5   ? s.teachers   : null,   // [1] teachers
+          s.successRate >= 10 ? s.successRate : null,  // [2] success %
+          s.subjects   >= 3   ? s.subjects   : null,   // [3] subjects
+        ];
         nums.forEach(function(el, i) {
-          if (map[i] != null && map[i] > 0) el.dataset.target = map[i];
+          if (map[i] != null) el.dataset.target = map[i];
         });
         // Hamkorlar card (last data-target)
         var allNums = document.querySelectorAll('.lp-stat-num[data-target]');
