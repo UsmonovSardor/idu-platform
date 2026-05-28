@@ -41,6 +41,7 @@ const auditLogRoutes    = require('./routes/auditLog');
 const subjectsRoutes    = require('./routes/subjects');
 const pushRoutes        = require('./routes/push');
 const forumRoutes       = require('./routes/forum');
+const publicRoutes      = require('./routes/public');
 const { audit }         = require('./middleware/audit');
 
 const http            = require('http');
@@ -230,6 +231,7 @@ const routeMap = [
   ['/subjects',      subjectsRoutes],
   ['/push',          pushRoutes],
   ['/forum',         forumRoutes],
+  ['/public',        publicRoutes],
 ];
 
 routeMap.forEach(([path, router]) => {

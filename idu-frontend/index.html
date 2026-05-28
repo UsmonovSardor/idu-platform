@@ -13,6 +13,7 @@
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
 <meta name="apple-mobile-web-app-title" content="IDU">
+<meta name="api-base" content="https://idu-platform-production.up.railway.app/api/v1">
 <!-- API base: always same-origin — overrides any config.js hostname detection -->
 <meta name="api-base" content="/api/v1">
 <title>IDU — International Digital University</title>
@@ -4269,7 +4270,31 @@ function upmTab(name) {
     });
   }, { threshold: 0.15 });
 
+  // ── Fetch real stats from API and update data-target ─────────
+  function loadRealStats() {
+    var base = (typeof API_BASE !== 'undefined' ? API_BASE : '') || '/api/v1';
+    fetch(base + '/public/stats')
+      .then(function(r){ return r.ok ? r.json() : null; })
+      .then(function(s) {
+        if (!s) return;
+        var nums = document.querySelectorAll('.lp-stat-num[data-target]');
+        // Map: [0]=students, [1]=teachers, [2]=success, [3]=subjects
+        var map = [s.students, s.teachers, s.successRate, s.subjects];
+        nums.forEach(function(el, i) {
+          if (map[i] != null && map[i] > 0) el.dataset.target = map[i];
+        });
+        // Hamkorlar card (last data-target)
+        var allNums = document.querySelectorAll('.lp-stat-num[data-target]');
+        var last = allNums[allNums.length - 1];
+        if (last && s.partners > 0) last.dataset.target = s.partners;
+      })
+      .catch(function(){/* silently use defaults */});
+  }
+
   function initLanding() {
+    // Fetch real stats (non-blocking, updates targets before animation triggers)
+    loadRealStats();
+
     // Add reveal class to sections
     document.querySelectorAll(
       '.lp-stat-card, .lp-feat-card, .lp-cta-section, .lp-stats, .lp-feat-header'
