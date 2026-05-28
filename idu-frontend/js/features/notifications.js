@@ -119,7 +119,7 @@ function _renderNotifList() {
     el.innerHTML =
       '<div style="padding:40px 20px;text-align:center">' +
         '<div style="font-size:48px;margin-bottom:12px">🔔</div>' +
-        '<div style="font-size:15px;font-weight:700;color:var(--text1);margin-bottom:6px">Bildirishnomalar yo\'q</div>' +
+        '<div style="font-size:15px;font-weight:700;color:var(--text);margin-bottom:6px">Bildirishnomalar yo\'q</div>' +
         '<div style="font-size:13px;color:var(--text3)">Yangi e\'lonlar va bildirishnomalar bu yerda ko\'rinadi</div>' +
       '</div>';
     return;
