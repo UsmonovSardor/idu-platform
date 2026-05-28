@@ -179,13 +179,13 @@ document.addEventListener('keydown', function(e) {
   if (e.key === '?') { showShortcutsHelp(); return; }
 
   // G + letter shortcuts
-  if (e.key.toLowerCase() === 'g' && !e.ctrlKey && !e.metaKey && !e.altKey) {
+  if (e.key && e.key.toLowerCase() === 'g' && !e.ctrlKey && !e.metaKey && !e.altKey) {
     _gPressed = true;
     clearTimeout(_gTimer);
     _gTimer = setTimeout(function(){ _gPressed = false; }, 900);
     return;
   }
-  if (_gPressed) {
+  if (_gPressed && e.key) {
     _gPressed = false;
     clearTimeout(_gTimer);
     var map = { h:'dashboard', t:'timetable', g:'grades', v:'tasks', a:'aitutor', r:'leaderboard' };
