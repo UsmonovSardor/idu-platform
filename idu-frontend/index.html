@@ -4856,20 +4856,6 @@ document.addEventListener('DOMContentLoaded', function () {
 
 <!-- ── Activity feed (inside dashboard) ───────────────────────────────────── -->
 
-<!-- ── Self-healing cache buster ──────────────────────────────────────────────
-     If the browser has cached an old index.html (with old dekanat.js version),
-     redirect to the same page with a cache-busting query param so the browser
-     is forced to fetch fresh HTML from the server.
-──────────────────────────────────────────────────────────────────────────── -->
-<script>
-(function () {
-  var EXPECTED = 'v=20260525a';
-  var dekEl = document.querySelector('script[src*="dekanat.js"]');
-  if (dekEl && dekEl.getAttribute('src').indexOf(EXPECTED) === -1) {
-    // Old index.html — force a fresh fetch
-    var base = window.location.href.split('?')[0].split('#')[0];
-    window.location.replace(base + '?_bust=20260523w' + (window.location.hash || ''));
-  }
-}());
-</script>
+<!-- Self-healing cache buster removed: version bumps on every JS/CSS file
+     now handle cache invalidation without needing a redirect loop. -->
 </html>
