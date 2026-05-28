@@ -200,8 +200,11 @@ function subscribeRealtime(roomId) {
 function _subscribeSocketIO(roomId) {
   var myId = window.CURRENT_USER ? window.CURRENT_USER.id : null;
   var token = window._apiToken || localStorage.getItem('idu_jwt') || '';
-  var wsBase = (window.location.protocol === 'https:' ? 'wss:' : 'ws:')
-             + '//' + window.location.host;
+  // Derive WebSocket base from API_BASE so it works even when frontend
+  // and backend are on different domains (e.g. captivating-growth + idu-platform)
+  var _apiOrigin = (window.API_BASE || '').replace(/\/api.*$/, '').replace(/^http/, 'ws') ||
+                   ((window.location.protocol === 'https:' ? 'wss:' : 'ws:') + '//' + window.location.host);
+  var wsBase = _apiOrigin;
 
   try {
     _chatSocket = io(wsBase, {
