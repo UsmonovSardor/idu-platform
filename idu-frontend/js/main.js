@@ -5194,9 +5194,10 @@ var DEKANAT_QUESTIONS = [];
 var DEKANAT_CHAPTERS  = {};   // { subject: { chapterNum: count } }
 var _chapterPickerSubj = null; // currently selected subject in chapter picker
 
-// Load all questions on startup (dekanat.js fills window.DEKANAT_QUESTIONS)
+// Load all questions on startup — only if user is logged in (has token)
 (async function() {
-  if (typeof loadDekanatQuestions === 'function') {
+  var hasToken = !!(window._apiToken || (function(){ try { return localStorage.getItem('idu_jwt'); } catch(e){ return null; } }()));
+  if (hasToken && typeof loadDekanatQuestions === 'function') {
     await loadDekanatQuestions();
     renderTestSubjectGrid();
   }
