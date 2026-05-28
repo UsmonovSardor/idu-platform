@@ -4223,7 +4223,7 @@ function upmTab(name) {
   <script defer src="js/features/calendar.js?v=20260528a"></script>
   <script defer src="js/features/forum.js?v=20260528a"></script>
   <script defer src="js/features/bulk-export.js?v=20260528a"></script>
-  <script defer src="js/main.js?v=20260528d"></script>
+  <script defer src="js/main.js?v=20260528f"></script>
   <script defer src="js/enhancements.js?v=20260526a"></script>
   <!-- QR code generator (teacher) -->
   <script defer src="https://cdn.jsdelivr.net/npm/qrcodejs@1.0.0/qrcode.min.js" crossorigin="anonymous"></script>
@@ -4817,14 +4817,8 @@ document.addEventListener('DOMContentLoaded', function () {
     window.__rqtPatched = true;
   }
 
-  // 3. If the table still shows the static placeholder — trigger a fresh load
-  var tbody = document.getElementById('questionsTableBody');
-  if (tbody) {
-    var hasPencil = tbody.innerHTML.indexOf('32px') !== -1; // static 📝 icon has font-size:32px
-    if (hasPencil && typeof renderDekanatQuestions === 'function') {
-      renderDekanatQuestions();
-    }
-  }
+  // 3. renderDekanatQuestions() is called from showPage('dekanat-questions') — no need
+  //    to auto-trigger here. Calling it before login causes 401 spam in the console.
 });
 </script>
 

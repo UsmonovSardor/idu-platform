@@ -5194,14 +5194,10 @@ var DEKANAT_QUESTIONS = [];
 var DEKANAT_CHAPTERS  = {};   // { subject: { chapterNum: count } }
 var _chapterPickerSubj = null; // currently selected subject in chapter picker
 
-// Load all questions on startup — only if user is logged in (has token)
-(async function() {
-  var hasToken = !!(window._apiToken || (function(){ try { return localStorage.getItem('idu_jwt'); } catch(e){ return null; } }()));
-  if (hasToken && typeof loadDekanatQuestions === 'function') {
-    await loadDekanatQuestions();
-    renderTestSubjectGrid();
-  }
-})();
+// Questions are loaded on-demand:
+//   • dekanat-questions page → renderDekanatQuestions() → loadDekanatQuestions()
+//   • student/teacher test  → startTestWithSubject()   → loadDekanatQuestions()
+// Do NOT load at startup — causes 401 spam when there is no active session.
 
 // ── Subject display helpers ──────────────────────────────────────────────────
 var _examSubjectNames = {
