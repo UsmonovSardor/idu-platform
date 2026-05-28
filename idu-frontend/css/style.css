@@ -1478,7 +1478,7 @@ button:focus-visible, a:focus-visible { border-radius: 8px; }
 .card:nth-child(3) { animation-delay: 0.19s; }
 .card-header {
   padding-bottom: 14px;
-  border-bottom: 1px solid #f1f5f9;
+  border-bottom: 1px solid var(--border);
   margin-bottom: 18px;
 }
 
@@ -2013,6 +2013,21 @@ input:focus { transition: border-color 0.15s, box-shadow 0.15s; }
 /* Fix: subjects manager modal, question modal, other overlay content */
 [data-theme="dark"] #subjectsMgrModal > div,
 [data-theme="dark"] #addQuestionModal > div { background: #0d1f3a !important; color: var(--text); }
+
+/* ── Text visibility fixes — elements with hardcoded light colors ────────── */
+/* card-title & page-header title: inherit body color but set explicitly */
+[data-theme="dark"] .card-title,
+[data-theme="dark"] .ph-title { color: var(--text); }
+/* form labels: hardcoded #475569 in light mode, override for dark */
+[data-theme="dark"] .form-label { color: var(--text2); }
+/* generic form inputs that use .form-input/.form-select (login/modal forms) */
+[data-theme="dark"] .form-input,
+[data-theme="dark"] .form-select { color: var(--text); background: var(--bg2); border-color: var(--border2); }
+[data-theme="dark"] .form-input::placeholder { color: var(--text3); }
+/* faq answers section — hardcoded #fff background */
+[data-theme="dark"] .faq-a { background: var(--bg2); border-color: var(--border); color: var(--text2); }
+/* hb-secondary button (landing hero) — hardcoded #fff bg, #0F172A text */
+[data-theme="dark"] .hb-secondary { background: var(--bg2); color: var(--text); border-color: var(--border2); }
 
 /* Dark mode transition */
 body, .card, .stat-card, .topnav, .sidebar, .modal-card, input, select, textarea {
