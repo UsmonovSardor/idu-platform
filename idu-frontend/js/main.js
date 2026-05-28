@@ -557,9 +557,10 @@ async function sendForgotOTP() {
 // ════════════════════════════════════
 const NAV_TABS = {
   student: [
+    {id:'profile',icon:'👤',label:'Profil',labelRu:'Профиль'},
+    {id:'calendar',icon:'🗓️',label:'Kalendar',labelRu:'Календарь'},
     {id:'dashboard',icon:'🏠',label:'Bosh sahifa',labelRu:'Главная'},
     {id:'timetable',icon:'📅',label:'Jadval',labelRu:'Расписание'},
-    {id:'calendar',icon:'🗓️',label:'Kalendar',labelRu:'Календарь'},
     {id:'grades',icon:'📊',label:'Baholar',labelRu:'Оценки'},
     {id:'tasks',icon:'📝',label:'Vazifalar',labelRu:'Задания',badge:5},
     {id:'forum',icon:'💬',label:'Forum',labelRu:'Форум'},
@@ -568,7 +569,6 @@ const NAV_TABS = {
     {id:'aitutor',icon:'🤖',label:'AI Tutor',labelRu:'AI Репетитор'},
     {id:'professors',icon:'⭐',label:'Ustozlar',labelRu:'Преподаватели'},
     {id:'notifications',icon:'🔔',label:'Xabarlar',labelRu:'Уведомления',badge:3},
-    {id:'profile',icon:'👤',label:'Profil',labelRu:'Профиль'},
     {id:'student-exams',icon:'🎯',label:'Imtihonlar',labelRu:'Экзамены'},
     {id:'sesiya-test',icon:'🧪',label:'Test Rejim',labelRu:'Пробный экзамен'},
     {id:'sesiya-real',icon:'📝',label:'Sesiya',labelRu:'Сессия'},
@@ -868,21 +868,43 @@ async function renderStudentDashboard() {
     _updateDashStats(null);
   }
 
-  // So'nggi baholar
+  // So'nggi baholar + GPA
   try {
     var data = await api('GET', '/grades/my');
     _renderRecentGrades(data.grades || []);
-    if (data.gpa) {
-      var gpaEl = document.querySelector('#page-dashboard .stat-card-val');
-      if (gpaEl) {
-        gpaEl.textContent = parseFloat(data.gpa).toFixed(2);
-        gpaEl.style.color = data.gpa >= 3.5 ? 'var(--green)' : data.gpa >= 2.5 ? 'var(--primary)' : 'var(--orange)';
-        // Re-render streak row now that GPA is available (updates ring)
+    // GPA card (index 0): show real value or '—'
+    var gpaEl = document.querySelector('#page-dashboard .stat-card:nth-child(1) .stat-card-val');
+    var gpaChange = document.querySelector('#page-dashboard .stat-card:nth-child(1) .stat-card-change');
+    if (gpaEl) {
+      if (data.gpa) {
+        var gpa = parseFloat(data.gpa);
+        gpaEl.textContent = gpa.toFixed(2);
+        gpaEl.style.color = gpa >= 3.5 ? 'var(--green)' : gpa >= 2.5 ? 'var(--primary)' : 'var(--orange)';
+        if (gpaChange) { gpaChange.textContent = gpa >= 3.5 ? "A'lo" : gpa >= 2.5 ? 'Yaxshi' : 'Qoniqarli'; gpaChange.className = 'stat-card-change sc-up'; }
         _renderDashStreakRow();
         setTimeout(_animateRingAfterLoad, 200);
+      } else {
+        gpaEl.textContent = '—';
+        gpaEl.style.color = 'var(--text3)';
+        if (gpaChange) { gpaChange.textContent = 'Baholar kiritilmagan'; gpaChange.className = 'stat-card-change sc-flat'; }
       }
     }
+    // Davomat card (index 3): show placeholder since attendance is separate API
+    var davCard = document.querySelector('#page-dashboard .stat-card:nth-child(4) .stat-card-val');
+    var davChange = document.querySelector('#page-dashboard .stat-card:nth-child(4) .stat-card-change');
+    if (davCard && davCard.querySelector && davCard.querySelector('.skel')) {
+      davCard.textContent = '—';
+      davCard.style.color = 'var(--text3)';
+      if (davChange) { davChange.textContent = 'Jadval bo\'yicha'; davChange.className = 'stat-card-change sc-flat'; }
+    }
   } catch(e) {
+    // Clear all skeletons on error so "Yuklanmoqda…" doesn't stay forever
+    document.querySelectorAll('#page-dashboard .stat-card-val').forEach(function(el) {
+      if (el.querySelector && el.querySelector('.skel')) { el.textContent = '—'; el.style.color = 'var(--text3)'; }
+    });
+    document.querySelectorAll('#page-dashboard .stat-card-change').forEach(function(el) {
+      if (el.textContent === 'Yuklanmoqda…') { el.textContent = 'Ma\'lumot yo\'q'; el.className = 'stat-card-change sc-flat'; }
+    });
     _renderRecentGrades([]);
   }
 }
@@ -926,8 +948,8 @@ function _updateDashStats(stats) {
     }
   }
   var totalChange = cards[1] ? cards[1].querySelector('.stat-card-change') : null;
-  if (totalChange && stats) {
-    totalChange.textContent = (stats.total_courses || 0) + ' ta fan';
+  if (totalChange) {
+    totalChange.textContent = stats ? (stats.total_courses || 0) + ' ta fan' : 'Baholar kiritilmagan';
     totalChange.className = 'stat-card-change sc-flat';
   }
 

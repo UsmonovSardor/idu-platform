@@ -1540,7 +1540,7 @@ button:focus-visible, a:focus-visible { border-radius: 8px; }
 }
 
 /* ── Main content: subtle gradient bg ──────────────────────────── */
-.main-content { background: linear-gradient(180deg, #f8fafc 0%, #f1f5f9 100%); }
+.main-content { background: linear-gradient(180deg, var(--bg) 0%, var(--bg2) 100%); }
 
 /* ── Filter tabs (e.g. Barchasi / A'lo / Yaxshi) ────────────────── */
 .filter-tabs { display: flex; gap: 6px; align-items: center; flex-wrap: wrap; }
@@ -2004,6 +2004,15 @@ input:focus { transition: border-color 0.15s, box-shadow 0.15s; }
 [data-theme="dark"] .cmd-item:hover,
 [data-theme="dark"] .cmd-item.selected { background: rgba(30,64,175,0.25); }
 [data-theme="dark"] .cmd-palette-input { color: var(--text); background: transparent; }
+/* Fix: main content area still had hardcoded white gradient */
+[data-theme="dark"] .main-content { background: var(--bg); }
+/* Fix: modal inner containers (landing page modals, guide, about, etc.) */
+[data-theme="dark"] .modal-bg > div,
+[data-theme="dark"] .modal-bg > .modal-inner,
+[data-theme="dark"] .login-modal-bg > div { background: #0d1f3a !important; color: var(--text); }
+/* Fix: subjects manager modal, question modal, other overlay content */
+[data-theme="dark"] #subjectsMgrModal > div,
+[data-theme="dark"] #addQuestionModal > div { background: #0d1f3a !important; color: var(--text); }
 
 /* Dark mode transition */
 body, .card, .stat-card, .topnav, .sidebar, .modal-card, input, select, textarea {
