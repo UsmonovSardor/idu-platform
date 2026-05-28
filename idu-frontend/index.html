@@ -46,11 +46,11 @@
 <link rel="preconnect" href="https://cdnjs.cloudflare.com" crossorigin>
 <link rel="dns-prefetch" href="https://idu-platform-production.up.railway.app">
 <!-- Critical CSS preload — start fetching before parser hits the link tag -->
-<link rel="preload" href="css/style.css?v=20260527a" as="style">
+<link rel="preload" href="css/style.css?v=20260528a" as="style">
 <link rel="preload" href="css/utilities.css?v=20260525a" as="style">
 <script defer src="https://cdnjs.cloudflare.com/ajax/libs/dompurify/3.0.8/purify.min.js"></script>
 <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800&family=DM+Mono:wght@400;500;600&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="css/style.css?v=20260527a">
+<link rel="stylesheet" href="css/style.css?v=20260528a">
 <link rel="stylesheet" href="css/responsive.css?v=20260525a">
 <link rel="stylesheet" href="css/landing.css?v=20260525n">
 <link rel="stylesheet" href="css/utilities.css?v=20260525a">
@@ -2240,6 +2240,176 @@
 </div>
 
 <!-- ═══ STARTUP G'OYALAR ═══ -->
+<!-- ═══ STUDENT/ALL: PROFILE ═══ -->
+<div class="page" id="page-profile">
+  <div class="page-header">
+    <div class="page-header-left">
+      <div class="ph-title">👤 Mening profilim</div>
+      <div class="ph-sub">Shaxsiy ma'lumotlar va sozlamalar</div>
+    </div>
+  </div>
+  <div class="profile-wrap">
+    <div class="profile-card">
+      <div class="profile-avatar-wrap">
+        <div class="profile-avatar" id="profileAvatar">?</div>
+        <input type="file" id="profileAvatarInput" accept="image/*" style="display:none" onchange="onProfileAvatarChange(event)">
+        <button class="profile-avatar-btn" onclick="document.getElementById('profileAvatarInput').click()">📷 O'zgartirish</button>
+      </div>
+      <div class="profile-info">
+        <div class="profile-name" id="profileName">—</div>
+        <div class="profile-role" id="profileRole">—</div>
+        <div class="profile-meta" id="profileMeta">—</div>
+      </div>
+    </div>
+
+    <div class="card">
+      <div class="card-header"><div class="card-title">Shaxsiy ma'lumotlar</div></div>
+      <form id="profileForm" onsubmit="event.preventDefault();saveProfile();">
+        <div class="profile-form-grid">
+          <label>To'liq ism
+            <input type="text" id="pf_full_name" maxlength="100" required>
+          </label>
+          <label>Email
+            <input type="email" id="pf_email" maxlength="150">
+          </label>
+          <label>Telefon
+            <input type="tel" id="pf_phone" maxlength="20" placeholder="+998901234567">
+          </label>
+          <label>Login (o'zgartirib bo'lmaydi)
+            <input type="text" id="pf_login" readonly style="background:var(--bg2)">
+          </label>
+          <label style="grid-column:1/-1">Bio (qisqacha)
+            <textarea id="pf_bio" maxlength="500" rows="3" placeholder="O'zingiz haqida..."></textarea>
+          </label>
+        </div>
+        <div style="display:flex;justify-content:flex-end;gap:10px;margin-top:14px">
+          <button type="button" class="btn btn-secondary" onclick="loadProfile()">Bekor qilish</button>
+          <button type="submit" class="btn btn-primary">💾 Saqlash</button>
+        </div>
+      </form>
+    </div>
+
+    <div class="card">
+      <div class="card-header"><div class="card-title">🔐 Parolni o'zgartirish</div></div>
+      <form id="passForm" onsubmit="event.preventDefault();savePassword();">
+        <div class="profile-form-grid">
+          <label>Joriy parol
+            <input type="password" id="pf_curpass" minlength="4" required>
+          </label>
+          <label>Yangi parol
+            <input type="password" id="pf_newpass" minlength="6" required>
+          </label>
+          <label>Yangi parolni takrorlang
+            <input type="password" id="pf_newpass2" minlength="6" required>
+          </label>
+        </div>
+        <div style="display:flex;justify-content:flex-end;gap:10px;margin-top:14px">
+          <button type="submit" class="btn btn-primary">🔑 Parolni yangilash</button>
+        </div>
+      </form>
+    </div>
+
+    <div class="card">
+      <div class="card-header"><div class="card-title">🔔 Bildirishnomalar</div></div>
+      <div style="display:flex;align-items:center;justify-content:space-between;padding:10px 0">
+        <div>
+          <div style="font-weight:600;color:var(--text);font-size:14px">Push bildirishnomalar</div>
+          <div style="font-size:12px;color:var(--text2);margin-top:3px">Dars/imtihondan oldin telefoningizga eslatma keladi</div>
+        </div>
+        <button class="btn btn-primary" id="pushSubBtn" onclick="togglePushSubscription()">Yoqish</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ═══ STUDENT: CALENDAR (Monthly View) ═══ -->
+<div class="page" id="page-calendar">
+  <div class="page-header">
+    <div class="page-header-left">
+      <div class="ph-title">📅 Kalendar</div>
+      <div class="ph-sub" id="calMonthLabel">Oylik ko'rinish</div>
+    </div>
+    <div class="page-header-right">
+      <button class="btn btn-secondary" onclick="calChangeMonth(-1)">←</button>
+      <button class="btn btn-secondary" onclick="calChangeMonth(0)">Bugun</button>
+      <button class="btn btn-secondary" onclick="calChangeMonth(1)">→</button>
+    </div>
+  </div>
+  <div class="cal-month-wrap">
+    <div class="cal-weekday-row">
+      <div class="cal-weekday">Du</div><div class="cal-weekday">Se</div>
+      <div class="cal-weekday">Cho</div><div class="cal-weekday">Pa</div>
+      <div class="cal-weekday">Ju</div><div class="cal-weekday">Sha</div>
+      <div class="cal-weekday">Yak</div>
+    </div>
+    <div class="cal-grid" id="calGrid"></div>
+  </div>
+</div>
+
+<!-- ═══ STUDENT: FORUM Q&A ═══ -->
+<div class="page" id="page-forum">
+  <div class="page-header">
+    <div class="page-header-left">
+      <div class="ph-title">💬 Forum</div>
+      <div class="ph-sub">Talabalar savollari va javoblari</div>
+    </div>
+    <div class="page-header-right">
+      <button class="btn btn-primary" onclick="openAskModal()">+ Savol berish</button>
+    </div>
+  </div>
+  <div class="forum-toolbar">
+    <input type="search" id="forumSearch" placeholder="🔍 Qidirish..." oninput="loadForumDebounced()" class="forum-search">
+    <div class="forum-filters">
+      <button class="filter-chip active" data-sort="recent" onclick="setForumSort('recent',this)">So'nggi</button>
+      <button class="filter-chip" data-sort="popular" onclick="setForumSort('popular',this)">Mashhur</button>
+      <button class="filter-chip" data-sort="unanswered" onclick="setForumSort('unanswered',this)">Javobsiz</button>
+    </div>
+  </div>
+  <div id="forumList"></div>
+</div>
+
+<!-- Ask modal -->
+<div class="modal-bg" id="askModalBg" style="display:none" onclick="if(event.target===this)closeAskModal()">
+  <div class="modal-card" style="max-width:560px">
+    <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:18px">
+      <div style="font-size:18px;font-weight:800">💬 Yangi savol</div>
+      <button onclick="closeAskModal()" style="background:none;border:none;font-size:22px;cursor:pointer;color:var(--text3)">×</button>
+    </div>
+    <form onsubmit="event.preventDefault();submitQuestion();">
+      <label style="display:block;margin-bottom:12px">
+        <span style="font-size:12px;font-weight:600;color:var(--text2);margin-bottom:5px;display:block">Sarlavha</span>
+        <input type="text" id="askTitle" maxlength="200" minlength="5" required style="width:100%;padding:10px 14px;border:1.5px solid var(--border2);border-radius:9px;font-family:inherit;font-size:14px" placeholder="Aniq, qisqa savol...">
+      </label>
+      <label style="display:block;margin-bottom:12px">
+        <span style="font-size:12px;font-weight:600;color:var(--text2);margin-bottom:5px;display:block">Tafsilot</span>
+        <textarea id="askBody" maxlength="5000" minlength="10" rows="6" required style="width:100%;padding:10px 14px;border:1.5px solid var(--border2);border-radius:9px;font-family:inherit;font-size:14px;resize:vertical" placeholder="Savolni batafsil yozing..."></textarea>
+      </label>
+      <label style="display:block;margin-bottom:14px">
+        <span style="font-size:12px;font-weight:600;color:var(--text2);margin-bottom:5px;display:block">Kategoriya</span>
+        <select id="askCategory" style="width:100%;padding:10px 14px;border:1.5px solid var(--border2);border-radius:9px;font-family:inherit;font-size:14px">
+          <option value="umumiy">Umumiy</option>
+          <option value="matematika">Matematika</option>
+          <option value="dasturlash">Dasturlash</option>
+          <option value="fizika">Fizika</option>
+          <option value="ingliz">Ingliz tili</option>
+          <option value="bahs">Baholash / Imtihon</option>
+        </select>
+      </label>
+      <div style="display:flex;justify-content:flex-end;gap:10px">
+        <button type="button" class="btn btn-secondary" onclick="closeAskModal()">Bekor</button>
+        <button type="submit" class="btn btn-primary">Yuborish</button>
+      </div>
+    </form>
+  </div>
+</div>
+
+<!-- Forum question detail modal -->
+<div class="modal-bg" id="forumDetailBg" style="display:none" onclick="if(event.target===this)closeForumDetail()">
+  <div class="modal-card" style="max-width:720px;max-height:90vh;overflow-y:auto">
+    <div id="forumDetailContent"></div>
+  </div>
+</div>
+
 <div class="page" id="page-startup">
   <div class="page-header">
     <div class="page-header-left">
@@ -4049,7 +4219,11 @@ function upmTab(name) {
   <script defer src="js/features/dark-mode.js?v=20260526a"></script>
   <script defer src="js/features/command-palette.js?v=20260526a"></script>
   <script defer src="js/features/onboarding.js?v=20260526a"></script>
-  <script defer src="js/main.js?v=20260526a"></script>
+  <script defer src="js/features/profile.js?v=20260528a"></script>
+  <script defer src="js/features/calendar.js?v=20260528a"></script>
+  <script defer src="js/features/forum.js?v=20260528a"></script>
+  <script defer src="js/features/bulk-export.js?v=20260528a"></script>
+  <script defer src="js/main.js?v=20260528a"></script>
   <script defer src="js/enhancements.js?v=20260526a"></script>
   <!-- QR code generator (teacher) -->
   <script defer src="https://cdn.jsdelivr.net/npm/qrcodejs@1.0.0/qrcode.min.js" crossorigin="anonymous"></script>

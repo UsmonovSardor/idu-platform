@@ -39,6 +39,8 @@ const rectorRoutes      = require('./routes/rector');
 const teacherExamsRoutes= require('./routes/teacherExams');
 const auditLogRoutes    = require('./routes/auditLog');
 const subjectsRoutes    = require('./routes/subjects');
+const pushRoutes        = require('./routes/push');
+const forumRoutes       = require('./routes/forum');
 const { audit }         = require('./middleware/audit');
 
 const http            = require('http');
@@ -226,6 +228,8 @@ const routeMap = [
   ['/teacher-exams', teacherExamsRoutes],
   ['/audit-log',     auditLogRoutes],
   ['/subjects',      subjectsRoutes],
+  ['/push',          pushRoutes],
+  ['/forum',         forumRoutes],
 ];
 
 routeMap.forEach(([path, router]) => {

@@ -559,13 +559,16 @@ const NAV_TABS = {
   student: [
     {id:'dashboard',icon:'🏠',label:'Bosh sahifa',labelRu:'Главная'},
     {id:'timetable',icon:'📅',label:'Jadval',labelRu:'Расписание'},
+    {id:'calendar',icon:'🗓️',label:'Kalendar',labelRu:'Календарь'},
     {id:'grades',icon:'📊',label:'Baholar',labelRu:'Оценки'},
     {id:'tasks',icon:'📝',label:'Vazifalar',labelRu:'Задания',badge:5},
+    {id:'forum',icon:'💬',label:'Forum',labelRu:'Форум'},
     {id:'startup',icon:'🚀',label:'Startup',labelRu:'Стартап'},
     {id:'leaderboard',icon:'🏆',label:'Reyting',labelRu:'Рейтинг'},
     {id:'aitutor',icon:'🤖',label:'AI Tutor',labelRu:'AI Репетитор'},
     {id:'professors',icon:'⭐',label:'Ustozlar',labelRu:'Преподаватели'},
     {id:'notifications',icon:'🔔',label:'Xabarlar',labelRu:'Уведомления',badge:3},
+    {id:'profile',icon:'👤',label:'Profil',labelRu:'Профиль'},
     {id:'student-exams',icon:'🎯',label:'Imtihonlar',labelRu:'Экзамены'},
     {id:'sesiya-test',icon:'🧪',label:'Test Rejim',labelRu:'Пробный экзамен'},
     {id:'sesiya-real',icon:'📝',label:'Sesiya',labelRu:'Сессия'},
@@ -713,6 +716,9 @@ function showPage(id){
   else if(id==='leaderboard')      { if(typeof renderLeaderboard==='function') renderLeaderboard(); }
   else if(id==='teacher-exams')    { if(typeof renderTeacherExamsList==='function') renderTeacherExamsList(); }
   else if(id==='student-exams')    { if(typeof renderStudentTeacherExams==='function') renderStudentTeacherExams(); }
+  else if(id==='profile')          { if(typeof loadProfile==='function') loadProfile(); }
+  else if(id==='calendar')         { if(typeof renderCalendarMonth==='function') renderCalendarMonth(); }
+  else if(id==='forum')            { if(typeof loadForum==='function') loadForum(); }
   // Lazy render — addon pages
   else if(id==='games') { if(typeof renderGameHub==='function') renderGameHub(); }
   else if(id==='gamification') { if(typeof renderGamification==='function') renderGamification(); }

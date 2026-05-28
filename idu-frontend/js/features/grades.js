@@ -67,6 +67,24 @@ async function renderGrades() {
     _gradesCache = [];
   }
   _renderGradesTable();
+
+  // Auto-inject export buttons on grades page header
+  try {
+    if (typeof addExportButtons === 'function') {
+      const header = document.querySelector('#page-grades .page-header-right');
+      if (header) {
+        const gradesTable = el.closest('table');
+        if (gradesTable && !gradesTable.id) gradesTable.id = 'gradesTable';
+        if (!header.querySelector('.export-btn-group')) {
+          const wrap = document.createElement('span');
+          wrap.style.display = 'inline-flex';
+          wrap.style.alignItems = 'center';
+          header.appendChild(wrap);
+          addExportButtons('#page-grades .page-header-right > span:last-child', '#' + (gradesTable.id || 'gradesTable'), 'Mening_baholarim');
+        }
+      }
+    }
+  } catch(e) {}
 }
 
 function _renderGradesTable() {

@@ -197,7 +197,7 @@ router.post(
 // ── GET /api/v1/auth/me ──────────────────────────────────────────────────────
 router.get('/me', authenticate, async (req, res) => {
   const { rows } = await db.query(
-    `SELECT u.id, u.full_name, u.login, u.role, u.phone, u.avatar_url,
+    `SELECT u.id, u.full_name, u.login, u.role, u.phone, u.email, u.bio, u.avatar_url,
             u.created_at, u.last_login,
             s.student_id_number, s.faculty, s.department, s.year_of_study, s.gpa
      FROM users u
@@ -209,6 +209,62 @@ router.get('/me', authenticate, async (req, res) => {
   if (!rows.length) return res.status(404).json({ error: 'User not found' });
   res.json(rows[0]);
 });
+
+// ── PATCH /api/v1/auth/me — update profile ───────────────────────────────────
+router.patch(
+  '/me',
+  authenticate,
+  [
+    body('full_name').optional().isString().trim().isLength({ min: 2, max: 100 }),
+    body('phone').optional().isString().trim().isLength({ max: 20 }),
+    body('email').optional().isEmail().normalizeEmail(),
+    body('bio').optional().isString().isLength({ max: 500 }),
+    body('avatar_url').optional().isString().isLength({ max: 500 }),
+  ],
+  validate,
+  async (req, res) => {
+    const allowed = ['full_name', 'phone', 'email', 'bio', 'avatar_url'];
+    const updates = [];
+    const values  = [];
+    let idx = 1;
+    for (const k of allowed) {
+      if (req.body[k] !== undefined) {
+        updates.push(`${k} = $${idx++}`);
+        values.push(req.body[k]);
+      }
+    }
+    if (!updates.length) return res.status(400).json({ error: 'Hech narsa o\'zgartirmadi' });
+
+    values.push(req.user.id);
+    const { rows } = await db.query(
+      `UPDATE users SET ${updates.join(', ')}, updated_at = NOW()
+       WHERE id = $${idx} RETURNING id, full_name, phone, email, bio, avatar_url`,
+      values
+    );
+    res.json(rows[0]);
+  }
+);
+
+// ── PATCH /api/v1/auth/password — change own password ────────────────────────
+router.patch(
+  '/password',
+  authenticate,
+  [
+    body('currentPassword').isString().isLength({ min: 4, max: 100 }),
+    body('newPassword').isString().isLength({ min: 6, max: 100 }),
+  ],
+  validate,
+  async (req, res) => {
+    const { rows } = await db.query('SELECT password_hash FROM users WHERE id = $1', [req.user.id]);
+    if (!rows.length) return res.status(404).json({ error: 'User topilmadi' });
+    const bcrypt = require('bcryptjs');
+    const ok = await bcrypt.compare(req.body.currentPassword, rows[0].password_hash);
+    if (!ok) return res.status(400).json({ error: 'Joriy parol noto\'g\'ri' });
+    const newHash = await bcrypt.hash(req.body.newPassword, 12);
+    await db.query('UPDATE users SET password_hash = $1, updated_at = NOW() WHERE id = $2', [newHash, req.user.id]);
+    res.json({ ok: true });
+  }
+);
 
 // ── POST /api/v1/auth/forgot/send ────────────────────────────────────────────
 // Step 1 — Request OTP via email/login.  Rate-limited to 3/hour per login.

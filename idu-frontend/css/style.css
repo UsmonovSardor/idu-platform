@@ -1745,6 +1745,193 @@ input:focus { transition: border-color 0.15s, box-shadow 0.15s; }
 .nav-icon-btn[data-tip]:hover::after { transform: translateX(-50%) translateY(0); }
 .nav-icon-btn[data-tip]:hover::before { transform: translateX(-50%) translateY(0); }
 
+/* ════════════════════════════════════════════════════════════════════
+   PROFILE PAGE  (v20260528)
+   ════════════════════════════════════════════════════════════════════ */
+.profile-wrap { display: grid; gap: 16px; max-width: 760px; }
+.profile-card {
+  display: flex; align-items: center; gap: 24px;
+  background: linear-gradient(135deg, rgba(37,99,235,0.06), rgba(124,58,237,0.04));
+  border: 1px solid var(--border);
+  border-radius: 18px; padding: 24px 28px;
+  box-shadow: var(--shadow-sm);
+}
+.profile-avatar-wrap { display: flex; flex-direction: column; align-items: center; gap: 8px; }
+.profile-avatar {
+  width: 96px; height: 96px; border-radius: 50%;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 36px; font-weight: 900; color: #fff;
+  background: linear-gradient(135deg,#1B4FD8,#3B82F6);
+  background-size: cover; background-position: center;
+  box-shadow: 0 8px 24px rgba(30,64,175,0.25);
+  flex-shrink: 0;
+}
+.profile-avatar-btn {
+  font-size: 11px; font-weight: 600; padding: 4px 10px;
+  background: var(--white); border: 1px solid var(--border2);
+  border-radius: 20px; cursor: pointer; color: var(--text2);
+  font-family: 'Outfit',sans-serif;
+}
+.profile-avatar-btn:hover { background: var(--bg); color: var(--text); }
+.profile-info { flex: 1; min-width: 0; }
+.profile-name { font-size: 22px; font-weight: 800; color: var(--text); letter-spacing: -0.5px; }
+.profile-role { display: inline-block; margin-top: 4px; padding: 3px 11px; background: var(--primary-light); color: var(--primary); border-radius: 100px; font-size: 11px; font-weight: 700; }
+.profile-meta { font-size: 13px; color: var(--text2); margin-top: 10px; }
+
+.profile-form-grid {
+  display: grid; grid-template-columns: 1fr 1fr; gap: 14px;
+}
+.profile-form-grid label {
+  display: flex; flex-direction: column; gap: 5px;
+  font-size: 12px; font-weight: 600; color: var(--text2);
+}
+.profile-form-grid input,
+.profile-form-grid textarea,
+.profile-form-grid select {
+  padding: 10px 14px; border: 1.5px solid var(--border2);
+  border-radius: 9px; font-family: inherit; font-size: 14px;
+  font-weight: 500; color: var(--text); background: var(--white);
+  transition: border-color 0.15s, box-shadow 0.15s;
+}
+.profile-form-grid input:focus,
+.profile-form-grid textarea:focus {
+  outline: none; border-color: var(--primary);
+  box-shadow: 0 0 0 3px var(--primary-light);
+}
+@media (max-width: 640px) {
+  .profile-form-grid { grid-template-columns: 1fr; }
+  .profile-card { flex-direction: column; text-align: center; padding: 24px 18px; }
+}
+
+/* ════════════════════════════════════════════════════════════════════
+   CALENDAR — Monthly View (Google Calendar style)  (v20260528)
+   ════════════════════════════════════════════════════════════════════ */
+.cal-month-wrap {
+  background: var(--white); border: 1px solid var(--border);
+  border-radius: 14px; padding: 16px; box-shadow: var(--shadow-sm);
+}
+.cal-weekday-row { display: grid; grid-template-columns: repeat(7, 1fr); gap: 6px; margin-bottom: 8px; }
+.cal-weekday {
+  text-align: center; padding: 8px 0; font-size: 11px;
+  font-weight: 700; color: var(--text3); text-transform: uppercase; letter-spacing: 1px;
+}
+.cal-grid {
+  display: grid; grid-template-columns: repeat(7, 1fr); gap: 6px;
+}
+.cal-cell {
+  min-height: 96px; border: 1px solid var(--border);
+  border-radius: 9px; padding: 6px 8px;
+  background: var(--white);
+  transition: background 0.15s, border-color 0.15s;
+  display: flex; flex-direction: column; gap: 3px;
+  overflow: hidden;
+}
+.cal-cell:hover { background: var(--bg2); border-color: var(--border2); }
+.cal-cell-outside { opacity: 0.4; background: var(--bg); }
+.cal-cell-weekend { background: rgba(37,99,235,0.025); }
+.cal-cell-today  {
+  border: 2px solid var(--primary);
+  box-shadow: 0 0 0 3px rgba(30,64,175,0.12);
+}
+.cal-day-num { font-size: 13px; font-weight: 700; color: var(--text2); margin-bottom: 2px; }
+.cal-cell-today .cal-day-num { color: var(--primary); }
+.cal-event {
+  font-size: 10.5px; font-weight: 600; padding: 2px 6px; border-radius: 4px;
+  white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+  cursor: default;
+}
+.cal-event-more { font-size: 10px; color: var(--text3); padding: 1px 4px; }
+@media (max-width: 768px) {
+  .cal-cell { min-height: 60px; padding: 4px 5px; }
+  .cal-day-num { font-size: 11px; }
+  .cal-event { font-size: 9px; padding: 1px 3px; }
+}
+
+/* ════════════════════════════════════════════════════════════════════
+   FORUM Q&A  (Stack Overflow style)  (v20260528)
+   ════════════════════════════════════════════════════════════════════ */
+.forum-toolbar {
+  display: flex; gap: 12px; align-items: center; margin-bottom: 16px;
+  flex-wrap: wrap;
+}
+.forum-search {
+  flex: 1; min-width: 220px; padding: 10px 16px;
+  border: 1.5px solid var(--border2); border-radius: 10px;
+  font-family: inherit; font-size: 14px; color: var(--text);
+  background: var(--white);
+}
+.forum-search:focus { outline: none; border-color: var(--primary); box-shadow: 0 0 0 3px var(--primary-light); }
+.forum-filters { display: flex; gap: 6px; }
+
+.forum-item {
+  display: flex; gap: 14px; align-items: flex-start;
+  background: var(--white); border: 1px solid var(--border);
+  border-radius: 12px; padding: 16px 18px; margin-bottom: 10px;
+  cursor: pointer; transition: transform 0.15s, box-shadow 0.15s, border-color 0.15s;
+}
+.forum-item:hover {
+  transform: translateY(-2px); box-shadow: var(--shadow-md);
+  border-color: var(--primary-mid);
+}
+.forum-stats { display: flex; flex-direction: column; gap: 6px; min-width: 56px; }
+.forum-stat-box {
+  background: var(--bg2); border: 1px solid var(--border);
+  border-radius: 7px; padding: 6px 4px; text-align: center;
+}
+.forum-stat-box.forum-solved { background: rgba(22,163,74,0.1); border-color: rgba(22,163,74,0.3); }
+.forum-stat-num { font-size: 15px; font-weight: 800; color: var(--text); line-height: 1; }
+.forum-stat-key { font-size: 9px; color: var(--text3); text-transform: uppercase; letter-spacing: 0.5px; margin-top: 2px; }
+.forum-body { flex: 1; min-width: 0; }
+.forum-title { font-size: 16px; font-weight: 700; color: var(--text); margin-bottom: 6px; line-height: 1.35; }
+.forum-snippet { font-size: 13px; color: var(--text2); line-height: 1.55; margin-bottom: 10px; }
+.forum-meta { display: flex; align-items: center; gap: 10px; font-size: 12px; color: var(--text3); flex-wrap: wrap; }
+.forum-cat {
+  background: var(--primary-light); color: var(--primary);
+  padding: 2px 9px; border-radius: 100px;
+  font-size: 11px; font-weight: 600;
+}
+.forum-author { display: inline-flex; align-items: center; gap: 6px; }
+.forum-author-avatar {
+  width: 20px; height: 20px; border-radius: 50%;
+  display: inline-flex; align-items: center; justify-content: center;
+  color: #fff; font-size: 9px; font-weight: 800;
+}
+.forum-badge-solved {
+  background: #16a34a; color: #fff;
+  padding: 2px 8px; border-radius: 4px;
+  font-size: 11px; font-weight: 700;
+  margin-right: 6px;
+}
+
+.forum-answer {
+  display: flex; gap: 14px;
+  background: var(--bg); border: 1px solid var(--border);
+  border-radius: 10px; padding: 14px 16px; margin-bottom: 10px;
+}
+.forum-answer-accepted {
+  background: rgba(22,163,74,0.06);
+  border-color: rgba(22,163,74,0.25);
+}
+.forum-vote-col {
+  display: flex; flex-direction: column; align-items: center; gap: 4px;
+  min-width: 36px;
+}
+.forum-vote-btn {
+  background: var(--white); border: 1.5px solid var(--border2);
+  border-radius: 7px; width: 32px; height: 30px;
+  font-size: 14px; cursor: pointer; color: var(--text2);
+  transition: all 0.15s;
+}
+.forum-vote-btn:hover { border-color: var(--primary); color: var(--primary); }
+.forum-vote-btn.voted { background: var(--primary); border-color: var(--primary); color: #fff; }
+.forum-vote-num { font-size: 13px; font-weight: 800; color: var(--text); }
+
+/* ════════════════════════════════════════════════════════════════════
+   EXPORT BUTTONS  (v20260528)
+   ════════════════════════════════════════════════════════════════════ */
+.export-btn-group { display: inline-flex; gap: 6px; margin-left: 8px; }
+.bulk-checkbox-all, .bulk-checkbox { cursor: pointer; width: 16px; height: 16px; }
+
 /* ── AI typing indicator (3 bouncing dots) ───────────────────────────── */
 .ai-typing { display: inline-flex; gap: 4px; padding: 2px 0; }
 .ai-typing span {
