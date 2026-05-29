@@ -52,7 +52,7 @@
 <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800&family=DM+Mono:wght@400;500;600&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="css/style.css?v=20260528j">
 <link rel="stylesheet" href="css/responsive.css?v=20260529a">
-<link rel="stylesheet" href="css/landing.css?v=20260529d">
+<link rel="stylesheet" href="css/landing.css?v=20260529e">
 <link rel="stylesheet" href="css/utilities.css?v=20260525a">
 <!-- KaTeX for math formula rendering -->
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/katex.min.css" crossorigin="anonymous">
@@ -4410,13 +4410,25 @@ function upmTab(name) {
     // Fetch real stats (non-blocking, updates targets before animation triggers)
     loadRealStats();
 
-    // Add reveal class to sections
-    document.querySelectorAll(
-      '.lp-stat-card, .lp-feat-card, .lp-cta-section, .lp-stats, .lp-feat-header'
-    ).forEach(function(el, i) {
-      el.classList.add('lp-reveal');
-      el.style.transitionDelay = (i * 0.05) + 's';
-      io.observe(el);
+    // Add reveal class to sections — hero + stats + features + new sections
+    var revealGroups = [
+      { sel: '.lp-stat-card',      delay: 0.07 },
+      { sel: '.lp-feat-header',    delay: 0 },
+      { sel: '.lp-feat-card',      delay: 0.08 },
+      { sel: '.lp-cta-section',    delay: 0 },
+      { sel: '.lp-stats',          delay: 0 },
+      { sel: '.lp-compare-wrap',   delay: 0 },
+      { sel: '.lp-how-step',       delay: 0.1 },
+      { sel: '.lp-sec-card',       delay: 0.07 },
+      { sel: '.lp-trust-stat',     delay: 0.08 },
+      { sel: '.lp-test-card',      delay: 0.09 },
+    ];
+    revealGroups.forEach(function(g) {
+      document.querySelectorAll(g.sel).forEach(function(el, i) {
+        el.classList.add('lp-reveal');
+        el.style.transitionDelay = (i * g.delay) + 's';
+        io.observe(el);
+      });
     });
 
     // Counter: also observe each stat card individually for number animation

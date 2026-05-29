@@ -222,6 +222,20 @@
   font-family: 'Outfit', sans-serif;
   box-shadow: 0 6px 22px rgba(37,99,235,0.32), inset 0 1px 0 rgba(255,255,255,0.2);
   transition: opacity 0.2s, transform 0.2s, box-shadow 0.2s;
+  position: relative; overflow: hidden;
+}
+.lp-primary-btn::after {
+  content: '';
+  position: absolute; top: 0; left: -100%;
+  width: 55%; height: 100%;
+  background: linear-gradient(90deg, transparent, rgba(255,255,255,0.28), transparent);
+  transform: skewX(-18deg);
+  animation: lp-shimmer 3.2s ease-in-out 1.8s infinite;
+  pointer-events: none;
+}
+@keyframes lp-shimmer {
+  0%       { left: -100%; }
+  35%, 100% { left: 160%; }
 }
 .lp-primary-btn:hover { opacity: 0.94; transform: translateY(-2px); box-shadow: 0 10px 30px rgba(37,99,235,0.4); }
 .lp-primary-btn:active { transform: translateY(0); }
@@ -276,13 +290,14 @@
   border-radius: 22px; padding: 24px;
   position: relative; z-index: 2;
   box-shadow:
-    0 0 0 1px rgba(37,99,235,0.04),
+    0 0 0 1px rgba(37,99,235,0.06),
     0 32px 70px rgba(15,23,42,0.16),
-    0 8px 24px rgba(37,99,235,0.08),
-    inset 0 1px 0 rgba(255,255,255,0.8);
-  animation: lp-card 0.7s cubic-bezier(0.22,1,0.36,1) 0.28s both;
+    0 8px 32px rgba(37,99,235,0.12),
+    inset 0 1px 0 rgba(255,255,255,0.9);
+  animation: lp-card 0.7s cubic-bezier(0.22,1,0.36,1) 0.28s both, lp-float 5s ease-in-out 1.2s infinite;
 }
-@keyframes lp-card { from { opacity: 0; transform: translateX(28px) scale(0.97); } to { opacity: 1; transform: translateX(0) scale(1); } }
+@keyframes lp-card  { from { opacity: 0; transform: translateX(28px) scale(0.97); } to { opacity: 1; transform: translateX(0) scale(1); } }
+@keyframes lp-float { 0%, 100% { transform: translateY(0px); } 50% { transform: translateY(-11px); } }
 .lp-hero-card::before {
   content: ''; position: absolute; top: 0; left: 20%; right: 20%; height: 2px;
   background: linear-gradient(90deg, transparent, rgba(37,99,235,0.7), rgba(8,145,178,0.6), transparent);
@@ -588,9 +603,20 @@
 .lp-footer-copy  { font-size: 12px; color: rgba(91,107,133,0.8); }
 
 /* ─────────────────────────────────────────────────────────────
+   CTA BUTTON PULSE-GLOW
+───────────────────────────────────────────────────────────── */
+.lp-cta-main-btn {
+  animation: lp-pulse-glow 2.8s ease-in-out infinite !important;
+}
+@keyframes lp-pulse-glow {
+  0%, 100% { box-shadow: 0 0 0 0 rgba(255,255,255,0.18), 0 6px 28px rgba(0,0,0,0.18); }
+  50%       { box-shadow: 0 0 0 9px rgba(255,255,255,0), 0 6px 28px rgba(0,0,0,0.18); }
+}
+
+/* ─────────────────────────────────────────────────────────────
    SCROLL REVEAL
 ───────────────────────────────────────────────────────────── */
-.lp-reveal { opacity: 0; transform: translateY(20px); transition: opacity 0.55s ease, transform 0.55s ease; animation: lp-reveal-fallback 0s 1.0s forwards; }
+.lp-reveal { opacity: 0; transform: translateY(24px); transition: opacity 0.6s cubic-bezier(0.22,1,0.36,1), transform 0.6s cubic-bezier(0.22,1,0.36,1); animation: lp-reveal-fallback 0s 1.2s forwards; }
 .lp-reveal.visible { opacity: 1; transform: translateY(0); animation: none; }
 @keyframes lp-reveal-fallback { to { opacity: 1; transform: translateY(0); } }
 
