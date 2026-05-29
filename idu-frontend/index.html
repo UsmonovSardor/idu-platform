@@ -4424,22 +4424,15 @@ function upmTab(name) {
       io.observe(card);
     });
 
-    // Navbar scroll effect
+    // Navbar scroll effect — toggle .scrolled class; CSS handles light styling
     var nav = document.getElementById('hemis-nav');
     if (nav) {
+      var setScrolled = function(y) { nav.classList.toggle('scrolled', y > 20); };
       var authEl = document.getElementById('authScreen');
       if (authEl) {
-        authEl.addEventListener('scroll', function() {
-          nav.style.background = authEl.scrollTop > 20
-            ? 'rgba(3,7,18,0.95)'
-            : 'rgba(3,7,18,0.7)';
-        });
+        authEl.addEventListener('scroll', function() { setScrolled(authEl.scrollTop); });
       }
-      window.addEventListener('scroll', function() {
-        nav.style.background = window.scrollY > 20
-          ? 'rgba(3,7,18,0.95)'
-          : 'rgba(3,7,18,0.7)';
-      });
+      window.addEventListener('scroll', function() { setScrolled(window.scrollY); });
     }
 
     // Orb parallax removed (orbs disabled for performance)
