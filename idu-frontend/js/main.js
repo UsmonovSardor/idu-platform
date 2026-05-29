@@ -4437,9 +4437,32 @@ window.addEventListener('unhandledrejection', function(evt) {
 });
 
 window.addEventListener('DOMContentLoaded', function() {
-  const saved = _lsGet('idu_session');
-  if (saved) {
-    loadSavedSession();
+  // ── JWT AUTO-LOGIN: if token exists, verify with server and go straight to dashboard ──
+  var jwt = _lsGet('idu_jwt');
+  if (jwt) {
+    // Show loading state on landing page while we verify
+    var landingEl = document.getElementById('landing-page') || document.getElementById('page-landing');
+    fetch((typeof API_BASE !== 'undefined' ? API_BASE : '') + '/auth/me', {
+      headers: { 'Authorization': 'Bearer ' + jwt }
+    }).then(function(r) {
+      if (!r.ok) throw new Error('token expired');
+      return r.json();
+    }).then(function(me) {
+      // Token valid — launch app immediately, skip landing page
+      var role = me.role;
+      var u = { login: me.login, name: me.full_name, role: role, phone: me.phone || '', gpa: me.gpa || 0 };
+      if (typeof launchApp === 'function') launchApp(role, u);
+    }).catch(function() {
+      // Token expired or invalid — clear it, show landing page normally
+      _lsDel('idu_jwt');
+      _apiToken = null;
+      var saved = _lsGet('idu_session');
+      if (saved) loadSavedSession();
+    });
+    // Don't call loadSavedSession below — JWT path handles it
+  } else {
+    var saved = _lsGet('idu_session');
+    if (saved) loadSavedSession();
   }
   // Login oynasi endi avtomatik ochilmaydi. Foydalanuvchi yuqoridagi “Kirish” tugmasini bosganda ochiladi.
   // ── LIVE DATE & TIME BAR ──
