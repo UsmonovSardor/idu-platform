@@ -27,6 +27,7 @@ function _fillProfileForm(me) {
   set('pf_phone',     me.phone);
   set('pf_login',     me.login);
   set('pf_bio',       me.bio);
+  set('pf_nickname',  me.nickname);
 }
 
 function _renderProfileHeader(me) {
@@ -49,6 +50,17 @@ function _renderProfileHeader(me) {
   // Name
   var nameEl = document.getElementById('profileName');
   if (nameEl) nameEl.textContent = me.full_name || '—';
+
+  // Nickname
+  var nickEl = document.getElementById('profileNickname');
+  if (nickEl) {
+    if (me.nickname) {
+      nickEl.textContent = '@' + me.nickname;
+      nickEl.style.display = '';
+    } else {
+      nickEl.style.display = 'none';
+    }
+  }
 
   // Role chip
   var roleEl = document.getElementById('profileRole');
@@ -119,13 +131,20 @@ function _renderStatsBar(me) {
 
 // ── Save profile ──────────────────────────────────────────────────────────────
 async function saveProfile() {
+  var nickRaw = (document.getElementById('pf_nickname') ? document.getElementById('pf_nickname').value : '').trim();
+  // Validate nickname client-side
+  if (nickRaw && !/^[a-zA-Z0-9_]{3,30}$/.test(nickRaw)) {
+    if (typeof showToast === 'function') showToast('⚠️', 'Xato', 'Nickname: 3-30 ta harf/raqam/_');
+    return;
+  }
   var body = {
     full_name: (document.getElementById('pf_full_name').value || '').trim(),
     email:     (document.getElementById('pf_email').value     || '').trim() || undefined,
     phone:     (document.getElementById('pf_phone').value     || '').trim() || undefined,
     bio:       (document.getElementById('pf_bio').value       || '').trim() || undefined,
+    nickname:  nickRaw || undefined,
   };
-  Object.keys(body).forEach(function(k) { if (!body[k]) delete body[k]; });
+  Object.keys(body).forEach(function(k) { if (body[k] === undefined) delete body[k]; });
   try {
     await api('PATCH', '/auth/me', body);
     if (typeof showToast === 'function') showToast('✅', 'Saqlandi', 'Profil yangilandi');
@@ -303,4 +322,88 @@ async function togglePushSubscription() {
   }
 }
 
-console.log('✅ Profile module loaded (v2.0 — badges + compression)');
+// ── User search by nickname / ID ──────────────────────────────────────────────
+var _searchTimer = null;
+
+function onNicknameSearchInput(val) {
+  var q = val.trim();
+  var box = document.getElementById('nickSearchResults');
+  if (!box) return;
+  if (!q || q.length < 2) { box.innerHTML = ''; box.style.display = 'none'; return; }
+  clearTimeout(_searchTimer);
+  _searchTimer = setTimeout(function() { _doNicknameSearch(q, box); }, 350);
+}
+
+async function _doNicknameSearch(q, box) {
+  try {
+    var results = await api('GET', '/auth/search?q=' + encodeURIComponent(q));
+    if (!results || !results.length) {
+      box.innerHTML = '<div class="nick-sr-empty">Foydalanuvchi topilmadi</div>';
+      box.style.display = 'block'; return;
+    }
+    box.innerHTML = results.map(function(u) {
+      var ini = (u.full_name || '?').split(' ').filter(Boolean).map(function(p){return p[0];}).join('').slice(0,2).toUpperCase();
+      var avHtml = u.avatar_url
+        ? '<div class="nick-sr-av" style="background-image:url(\''+u.avatar_url+'\');background-size:cover;background-position:center"></div>'
+        : '<div class="nick-sr-av" style="background:linear-gradient(135deg,#1B4FD8,#3B82F6);display:flex;align-items:center;justify-content:center;color:#fff;font-weight:700;font-size:13px">'+ini+'</div>';
+      var roleMap = { student:'Talaba', teacher:"O'qituvchi", dekanat:'Dekanat', admin:'Admin', investor:'Investor' };
+      var meta = (u.year_of_study ? u.year_of_study+'-kurs · ' : '') + (u.faculty || '');
+      return '<div class="nick-sr-item" onclick="showUserCard('+u.id+')">'
+        + avHtml
+        + '<div class="nick-sr-info">'
+        + '<div class="nick-sr-name">'+_esc(u.full_name)+(u.nickname ? ' <span class="nick-sr-at">@'+_esc(u.nickname)+'</span>' : '')+'</div>'
+        + '<div class="nick-sr-meta">'+(roleMap[u.role]||u.role)+(meta?' · '+_esc(meta):'')+'</div>'
+        + '</div>'
+        + '<div class="nick-sr-id">#'+u.id+'</div>'
+        + '</div>';
+    }).join('');
+    box.style.display = 'block';
+  } catch(e) { box.innerHTML = ''; box.style.display = 'none'; }
+}
+
+function _esc(s) {
+  return String(s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
+}
+
+// Close search dropdown when clicking outside
+document.addEventListener('click', function(e) {
+  var wrap = document.getElementById('nickSearchWrap');
+  var box  = document.getElementById('nickSearchResults');
+  if (box && wrap && !wrap.contains(e.target)) { box.innerHTML = ''; box.style.display = 'none'; }
+});
+
+// Show user mini-card modal
+async function showUserCard(userId) {
+  var box = document.getElementById('nickSearchResults');
+  if (box) { box.innerHTML = ''; box.style.display = 'none'; }
+  try {
+    var results = await api('GET', '/auth/search?q=' + userId);
+    var u = results && results[0];
+    if (!u) return;
+    var ini = (u.full_name || '?').split(' ').filter(Boolean).map(function(p){return p[0];}).join('').slice(0,2).toUpperCase();
+    var avHtml = u.avatar_url
+      ? '<div style="width:72px;height:72px;border-radius:50%;background-image:url(\''+u.avatar_url+'\');background-size:cover;background-position:center;margin:0 auto 12px"></div>'
+      : '<div style="width:72px;height:72px;border-radius:50%;background:linear-gradient(135deg,#1B4FD8,#3B82F6);display:flex;align-items:center;justify-content:center;color:#fff;font-weight:700;font-size:22px;margin:0 auto 12px">'+ini+'</div>';
+    var roleMap = { student:'🎓 Talaba', teacher:"👨‍🏫 O'qituvchi", dekanat:'🏛 Dekanat', admin:'⚙️ Admin', investor:'💼 Investor' };
+    var modal = document.getElementById('userCardModal');
+    if (!modal) {
+      modal = document.createElement('div');
+      modal.id = 'userCardModal';
+      modal.style.cssText = 'position:fixed;inset:0;background:rgba(0,0,0,0.5);z-index:9999;display:flex;align-items:center;justify-content:center;padding:20px';
+      modal.onclick = function(e){ if(e.target===modal) modal.remove(); };
+      document.body.appendChild(modal);
+    }
+    modal.innerHTML = '<div style="background:#0d1b2e;border:1px solid rgba(59,130,246,0.25);border-radius:18px;padding:28px;max-width:320px;width:100%;text-align:center;box-shadow:0 20px 60px rgba(0,0,0,0.5)">'
+      + '<button onclick="document.getElementById(\'userCardModal\').remove()" style="float:right;background:none;border:none;color:#7d93b5;font-size:20px;cursor:pointer;margin-top:-8px">✕</button>'
+      + avHtml
+      + '<div style="font-size:18px;font-weight:700;color:#f0f6ff;margin-bottom:4px">'+_esc(u.full_name)+'</div>'
+      + (u.nickname ? '<div style="color:#60a5fa;font-size:13px;margin-bottom:8px">@'+_esc(u.nickname)+'</div>' : '')
+      + '<div style="color:#8fa5c8;font-size:13px;margin-bottom:6px">'+( roleMap[u.role]||u.role )+'</div>'
+      + (u.faculty ? '<div style="color:#7d93b5;font-size:12px">'+_esc(u.faculty)+(u.year_of_study?' · '+u.year_of_study+'-kurs':'')+'</div>' : '')
+      + '<div style="color:#475569;font-size:11px;margin-top:10px">ID: #'+u.id+'</div>'
+      + '</div>';
+    modal.style.display = 'flex';
+  } catch(e) {}
+}
+
+console.log('✅ Profile module loaded (v2.1 — nickname + user search)');

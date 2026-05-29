@@ -46,11 +46,11 @@
 <link rel="preconnect" href="https://cdnjs.cloudflare.com" crossorigin>
 <link rel="dns-prefetch" href="https://idu-platform-production.up.railway.app">
 <!-- Critical CSS preload — start fetching before parser hits the link tag -->
-<link rel="preload" href="css/style.css?v=20260529c" as="style">
+<link rel="preload" href="css/style.css?v=20260529d" as="style">
 <link rel="preload" href="css/utilities.css?v=20260525a" as="style">
 <script defer src="https://cdnjs.cloudflare.com/ajax/libs/dompurify/3.0.8/purify.min.js"></script>
 <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800&family=DM+Mono:wght@400;500;600&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="css/style.css?v=20260529c">
+<link rel="stylesheet" href="css/style.css?v=20260529d">
 <link rel="stylesheet" href="css/responsive.css?v=20260529a">
 <link rel="stylesheet" href="css/landing.css?v=20260529f">
 <link rel="stylesheet" href="css/utilities.css?v=20260525a">
@@ -2415,6 +2415,7 @@
       <!-- Info + badges -->
       <div class="profile-hero-info">
         <div class="profile-name" id="profileName">—</div>
+        <div class="profile-nickname" id="profileNickname" style="display:none">@nickname</div>
         <div class="profile-role-chip" id="profileRole">—</div>
         <div class="profile-meta" id="profileMeta">—</div>
         <!-- Status badges -->
@@ -2424,6 +2425,18 @@
 
     <!-- ── Stats row ─────────────────────────────────────────── -->
     <div class="profile-stats-bar" id="profileStatsBar"></div>
+
+    <!-- ── User search ───────────────────────────────────────── -->
+    <div class="card">
+      <div class="card-header"><div class="card-title">🔍 Foydalanuvchi qidirish</div></div>
+      <div id="nickSearchWrap" style="position:relative">
+        <input type="text" class="profile-input" placeholder="@nickname yoki ID raqam kiriting..."
+          oninput="onNicknameSearchInput(this.value)"
+          style="width:100%;box-sizing:border-box;padding-left:38px">
+        <span style="position:absolute;left:13px;top:50%;transform:translateY(-50%);color:#60a5fa;font-size:17px;pointer-events:none">🔍</span>
+        <div id="nickSearchResults" style="display:none;position:absolute;top:calc(100% + 6px);left:0;right:0;background:#0d1b2e;border:1px solid rgba(59,130,246,0.25);border-radius:12px;overflow:hidden;z-index:500;box-shadow:0 8px 32px rgba(0,0,0,0.4)"></div>
+      </div>
+    </div>
 
     <!-- ── Personal info ─────────────────────────────────────── -->
     <div class="card">
@@ -2441,6 +2454,13 @@
           </label>
           <label>Login <span style="font-size:10px;opacity:0.6">(o'zgarmaydi)</span>
             <input type="text" id="pf_login" class="profile-input" readonly style="opacity:0.6;cursor:not-allowed">
+          </label>
+          <label style="grid-column:1/-1">
+            Nickname <span style="font-size:10px;opacity:0.6">(boshqalar siz bilan @nick yoki ID orqali topa oladi)</span>
+            <div style="position:relative">
+              <span style="position:absolute;left:13px;top:50%;transform:translateY(-50%);color:#60a5fa;font-weight:600;font-size:15px;pointer-events:none">@</span>
+              <input type="text" id="pf_nickname" class="profile-input" maxlength="30" placeholder="sizning_nick" style="padding-left:28px" oninput="this.value=this.value.replace(/[^a-zA-Z0-9_]/g,'')">
+            </div>
           </label>
           <label style="grid-column:1/-1">Bio <span style="font-size:10px;opacity:0.6">(qisqacha)</span>
             <textarea id="pf_bio" class="profile-input" maxlength="500" rows="3" placeholder="O'zingiz haqida..."></textarea>
@@ -4397,7 +4417,7 @@ function upmTab(name) {
   <script defer src="js/features/dark-mode.js?v=20260526a"></script>
   <script defer src="js/features/command-palette.js?v=20260528b"></script>
   <script defer src="js/features/onboarding.js?v=20260526a"></script>
-  <script defer src="js/features/profile.js?v=20260528a"></script>
+  <script defer src="js/features/profile.js?v=20260529a"></script>
   <script defer src="js/features/calendar.js?v=20260528a"></script>
   <script defer src="js/features/forum.js?v=20260528a"></script>
   <script defer src="js/features/bulk-export.js?v=20260528a"></script>

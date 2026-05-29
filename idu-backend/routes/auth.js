@@ -197,7 +197,7 @@ router.post(
 // ── GET /api/v1/auth/me ──────────────────────────────────────────────────────
 router.get('/me', authenticate, async (req, res) => {
   const { rows } = await db.query(
-    `SELECT u.id, u.full_name, u.login, u.role, u.phone, u.email, u.bio, u.avatar_url,
+    `SELECT u.id, u.full_name, u.login, u.role, u.phone, u.email, u.bio, u.nickname, u.avatar_url,
             u.created_at, u.last_login,
             s.student_id_number, s.faculty, s.department, s.year_of_study, s.gpa
      FROM users u
@@ -210,6 +210,43 @@ router.get('/me', authenticate, async (req, res) => {
   res.json(rows[0]);
 });
 
+// ── GET /api/v1/auth/search?q=nick_or_id ─────────────────────────────────────
+// Find users by @nickname or numeric ID. Returns minimal public profile.
+router.get('/search', authenticate, async (req, res) => {
+  const q = String(req.query.q || '').trim();
+  if (!q) return res.json([]);
+
+  let rows;
+  // If query is a number → search by ID
+  if (/^\d+$/.test(q)) {
+    ({ rows } = await db.query(
+      `SELECT u.id, u.full_name, u.nickname, u.avatar_url, u.role,
+              s.faculty, s.year_of_study
+       FROM users u
+       LEFT JOIN students s ON s.user_id = u.id
+       WHERE u.id = $1 AND u.is_active = TRUE LIMIT 1`,
+      [parseInt(q, 10)]
+    ));
+  } else {
+    // Search by nickname (case-insensitive) or full_name prefix
+    const like = q.replace(/[%_]/g, '\\$&') + '%';
+    ({ rows } = await db.query(
+      `SELECT u.id, u.full_name, u.nickname, u.avatar_url, u.role,
+              s.faculty, s.year_of_study
+       FROM users u
+       LEFT JOIN students s ON s.user_id = u.id
+       WHERE u.is_active = TRUE
+         AND (LOWER(u.nickname) LIKE LOWER($1) OR LOWER(u.full_name) LIKE LOWER($1))
+       ORDER BY
+         CASE WHEN LOWER(u.nickname) = LOWER($2) THEN 0 ELSE 1 END,
+         u.full_name
+       LIMIT 10`,
+      [like, q]
+    ));
+  }
+  res.json(rows);
+});
+
 // ── PATCH /api/v1/auth/me — update profile ───────────────────────────────────
 router.patch(
   '/me',
@@ -220,10 +257,23 @@ router.patch(
     body('email').optional().isEmail().normalizeEmail(),
     body('bio').optional().isString().isLength({ max: 500 }),
     body('avatar_url').optional().isString().isLength({ max: 600000 }), // base64 image up to ~450KB
+    body('nickname').optional({ nullable: true }).isString().trim()
+      .isLength({ min: 3, max: 30 }).withMessage('Nickname 3-30 belgi')
+      .matches(/^[a-zA-Z0-9_]+$/).withMessage('Faqat harf, raqam va _ belgisi'),
   ],
   validate,
   async (req, res) => {
-    const allowed = ['full_name', 'phone', 'email', 'bio', 'avatar_url'];
+    // Nickname unique check (case-insensitive)
+    if (req.body.nickname !== undefined && req.body.nickname !== null && req.body.nickname !== '') {
+      const nick = String(req.body.nickname).trim();
+      const { rows: taken } = await db.query(
+        'SELECT id FROM users WHERE LOWER(nickname)=LOWER($1) AND id<>$2 LIMIT 1',
+        [nick, req.user.id]
+      );
+      if (taken.length) return res.status(409).json({ error: 'Bu nickname band, boshqa tanlang' });
+    }
+
+    const allowed = ['full_name', 'phone', 'email', 'bio', 'nickname', 'avatar_url'];
     const updates = [];
     const values  = [];
     let idx = 1;
@@ -238,7 +288,7 @@ router.patch(
     values.push(req.user.id);
     const { rows } = await db.query(
       `UPDATE users SET ${updates.join(', ')}, updated_at = NOW()
-       WHERE id = $${idx} RETURNING id, full_name, phone, email, bio, avatar_url`,
+       WHERE id = $${idx} RETURNING id, full_name, phone, email, bio, nickname, avatar_url`,
       values
     );
     res.json(rows[0]);
