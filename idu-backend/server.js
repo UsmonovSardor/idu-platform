@@ -166,8 +166,8 @@ app.use(cors({
 }));
 
 // ── Body / Cookie parsers ─────────────────────────────────────────────────────
-// 10 MB only for multipart (avatars); JSON/form bodies capped at 256 KB
-app.use(express.json({ limit: '256kb' }));
+// 2 MB for JSON to support base64 avatar uploads (~450KB compressed); form bodies 256 KB
+app.use(express.json({ limit: '2mb' }));
 app.use(express.urlencoded({ extended: false, limit: '256kb' }));
 app.use(cookieParser());
 
