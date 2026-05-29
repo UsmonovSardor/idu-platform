@@ -364,11 +364,12 @@ async function renderDekanatStudents() {
       const ini = (s.full_name||'?').split(' ').filter(Boolean).map(x=>x[0]).join('').substring(0,2).toUpperCase();
       const gpa = parseFloat(s.gpa||0);
       const gpaBadge = gpa>=3.7 ? '<span style="color:#b45309;font-size:11px">⭐ A\'lochi</span>' : gpa>=3.0 ? '<span style="color:#1d4ed8;font-size:11px">📚 Yaxshi</span>' : '<span style="color:var(--text3);font-size:11px">—</span>';
-      const avStyle = s.avatar_url
-        ? 'background-image:url("'+s.avatar_url+'");background-size:cover;background-position:center;background-color:#1B4FD8'
-        : 'background:linear-gradient(135deg,#1B4FD8,#3B82F6)';
-      const avContent = s.avatar_url ? '' : ini;
-      return '<tr><td>' + ((_dekStudentPage-1)*20+i+1) + '</td><td><div style="display:flex;align-items:center;gap:9px"><div class="dt-avatar" style="'+avStyle+'">'+avContent+'</div><div><div style="font-weight:600">' + (s.full_name||'—') + '</div><div style="font-size:11px;color:var(--text3)">' + (s.student_id_number||'') + '</div></div></div></td><td><span class="card-badge cb-blue" style="font-size:11px">' + (s.faculty||'—') + '</span></td><td>' + (s.year_of_study ? s.year_of_study+'-kurs':'—') + '</td><td><span class="font-mono" style="font-weight:700;color:var(--primary)">' + (parseFloat(s.gpa||0).toFixed(2)) + '</span></td><td>—</td><td>—</td><td>' + gpaBadge + '</td><td><button class="btn btn-secondary btn-sm" onclick="openStudentDetail('+s.id+')">📋</button></td></tr>';
+      // Use <img> for avatar so base64 data-URLs render correctly (inline style attr truncates long strings)
+      const avHtml = s.avatar_url
+        ? '<img src="' + s.avatar_url + '" style="width:100%;height:100%;object-fit:cover;border-radius:inherit" alt="" onerror="this.parentNode.innerHTML=\''+ini+'\';this.parentNode.style.background=\'linear-gradient(135deg,#1B4FD8,#3B82F6)\'">'
+        : ini;
+      const avBg = s.avatar_url ? 'background:#1B4FD8' : 'background:linear-gradient(135deg,#1B4FD8,#3B82F6)';
+      return '<tr><td>' + ((_dekStudentPage-1)*20+i+1) + '</td><td><div style="display:flex;align-items:center;gap:9px"><div class="dt-avatar" style="overflow:hidden;'+avBg+'">'+avHtml+'</div><div><div style="font-weight:600">' + (s.full_name||'—') + '</div><div style="font-size:11px;color:var(--text3)">' + (s.student_id_number||'') + '</div></div></div></td><td><span class="card-badge cb-blue" style="font-size:11px">' + (s.faculty||'—') + '</span></td><td>' + (s.year_of_study ? s.year_of_study+'-kurs':'—') + '</td><td><span class="font-mono" style="font-weight:700;color:var(--primary)">' + (parseFloat(s.gpa||0).toFixed(2)) + '</span></td><td>—</td><td>—</td><td>' + gpaBadge + '</td><td><button class="btn btn-secondary btn-sm" onclick="openStudentDetail('+s.id+')">📋</button></td></tr>';
     }).join('');
   } catch(e) { el.innerHTML = '<tr><td colspan="9" style="text-align:center;color:var(--red);padding:20px">Xato: ' + e.message + '</td></tr>'; }
 }
