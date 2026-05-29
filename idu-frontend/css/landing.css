@@ -525,10 +525,10 @@
 @media (max-width: 768px) {
   html, body { overflow-x: hidden !important; }
 
-  /* Nav */
+  /* Nav (with notch safe-area at top) */
   .lp-nav {
-    height: 56px !important;
-    padding: 0 16px !important;
+    height: calc(56px + env(safe-area-inset-top, 0px)) !important;
+    padding: env(safe-area-inset-top, 0px) 16px 0 !important;
     background: rgba(4,12,26,0.97) !important;
     border-bottom: 1px solid rgba(59,130,246,0.12) !important;
   }
@@ -544,7 +544,7 @@
     flex-direction: column !important;
     align-items: center !important; justify-content: center !important;
     text-align: center !important;
-    padding: 88px 20px 52px !important;
+    padding: calc(88px + env(safe-area-inset-top, 0px)) 20px calc(52px + env(safe-area-inset-bottom, 0px)) !important;
     gap: 0 !important; min-height: 100svh !important;
     background:
       radial-gradient(ellipse 130% 60% at 50% -5%, rgba(37,99,235,0.3) 0%, transparent 55%),
