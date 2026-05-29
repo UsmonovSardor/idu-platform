@@ -589,6 +589,94 @@
 .lp-test-role { font-size: 12px; color: var(--text2); margin-top: 1px; }
 
 /* ─────────────────────────────────────────────────────────────
+   MOBILE PHONE PREVIEW MOCKUP (hidden on desktop)
+───────────────────────────────────────────────────────────── */
+.lp-mob-preview {
+  display: none; /* shown only at ≤768px */
+  position: relative;
+  width: 100%; max-width: 340px;
+  margin: 28px auto 0;
+}
+.lp-mob-screen {
+  background: #FFFFFF;
+  border: 1px solid rgba(15,23,42,0.08);
+  border-radius: 26px;
+  padding: 20px 18px 18px;
+  box-shadow:
+    0 0 0 1px rgba(37,99,235,0.06),
+    0 24px 64px rgba(15,23,42,0.15),
+    0 6px 20px rgba(37,99,235,0.1);
+  position: relative; z-index: 2;
+}
+.lp-mob-screen::before {
+  content: '';
+  display: block; width: 54px; height: 4px;
+  background: rgba(15,23,42,0.1);
+  border-radius: 2px; margin: 0 auto 16px;
+}
+
+/* top bar */
+.lp-mob-topbar { display: flex; align-items: center; justify-content: space-between; margin-bottom: 14px; }
+.lp-mob-tb-left { display: flex; align-items: center; gap: 10px; }
+.lp-mob-avatar {
+  width: 34px; height: 34px; border-radius: 10px;
+  background: linear-gradient(135deg, #2563eb, #0891b2);
+  color: #fff; font-weight: 800; font-size: 14px;
+  display: flex; align-items: center; justify-content: center;
+  flex-shrink: 0;
+}
+.lp-mob-greet   { font-size: 13px; font-weight: 700; color: #0F172A; }
+.lp-mob-subrole { font-size: 10.5px; color: #5b6b85; margin-top: 1px; }
+.lp-mob-notif   { font-size: 18px; }
+
+/* mini stats row */
+.lp-mob-stats {
+  display: grid; grid-template-columns: repeat(3,1fr); gap: 8px;
+  background: #F4F7FB; border-radius: 14px;
+  padding: 11px 8px; margin-bottom: 12px;
+}
+.lp-mob-mstat { text-align: center; }
+.lp-mob-mval  { font-size: 16px; font-weight: 800; letter-spacing: -0.5px; }
+.lp-mob-mkey  { font-size: 9px; color: #5b6b85; font-weight: 600; text-transform: uppercase; letter-spacing: 0.5px; margin-top: 2px; }
+
+/* schedule rows */
+.lp-mob-row {
+  display: flex; align-items: center; gap: 10px;
+  padding: 10px 12px;
+  background: #F8FAFC; border: 1px solid rgba(15,23,42,0.06);
+  border-radius: 12px; margin-bottom: 8px;
+}
+.lp-mob-row-dot { width: 8px; height: 8px; border-radius: 50%; background: #2563eb; flex-shrink: 0; }
+.lp-mob-row-info { flex: 1; min-width: 0; }
+.lp-mob-row-name { font-size: 12px; font-weight: 700; color: #0F172A; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.lp-mob-row-time { font-size: 10.5px; color: #5b6b85; margin-top: 1px; }
+.lp-mob-tag {
+  font-size: 10px; font-weight: 700;
+  background: rgba(37,99,235,0.1); color: #2563eb;
+  padding: 3px 9px; border-radius: 20px;
+  white-space: nowrap; flex-shrink: 0;
+}
+
+/* AI row */
+.lp-mob-ai-row {
+  display: flex; align-items: center; gap: 10px;
+  padding: 11px 13px;
+  background: linear-gradient(135deg, rgba(37,99,235,0.06), rgba(8,145,178,0.04));
+  border: 1px solid rgba(37,99,235,0.14); border-radius: 12px; margin-top: 2px;
+}
+.lp-mob-ai-ico { font-size: 18px; }
+.lp-mob-ai-lbl { flex: 1; font-size: 12px; font-weight: 700; color: #0F172A; }
+.lp-mob-ai-arr { font-size: 13px; color: #2563eb; font-weight: 700; }
+
+/* glow under */
+.lp-mob-glow {
+  position: absolute; bottom: -18px;
+  left: 12%; right: 12%; height: 36px;
+  background: rgba(37,99,235,0.18);
+  filter: blur(22px); border-radius: 50%; z-index: 1;
+}
+
+/* ─────────────────────────────────────────────────────────────
    FOOTER
 ───────────────────────────────────────────────────────────── */
 .lp-footer {
@@ -683,17 +771,20 @@
   /* Hero */
   .lp-hero {
     flex-direction: column !important;
-    align-items: center !important; justify-content: center !important;
+    align-items: center !important; justify-content: flex-start !important;
     text-align: center !important;
-    padding: calc(88px + env(safe-area-inset-top, 0px)) 20px calc(52px + env(safe-area-inset-bottom, 0px)) !important;
+    padding: calc(76px + env(safe-area-inset-top, 0px)) 20px 56px !important;
     gap: 0 !important; min-height: 100svh !important;
     background:
-      radial-gradient(ellipse 130% 60% at 50% -5%, rgba(37,99,235,0.1) 0%, transparent 55%),
-      radial-gradient(ellipse 100% 40% at 50% 100%, rgba(8,145,178,0.06) 0%, transparent 50%),
+      radial-gradient(ellipse 140% 50% at 50% -8%, rgba(37,99,235,0.12) 0%, transparent 52%),
+      radial-gradient(ellipse 80% 30% at 80% 70%, rgba(8,145,178,0.07) 0%, transparent 55%),
       var(--bg) !important;
   }
   .lp-hero-content { width: 100% !important; max-width: 420px !important; margin: 0 auto !important; }
   .lp-hero-card { display: none !important; }
+
+  /* Phone mockup — show on mobile */
+  .lp-mob-preview { display: block; }
 
   /* Badge */
   .lp-badge {
