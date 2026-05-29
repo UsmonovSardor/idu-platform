@@ -219,7 +219,7 @@ router.patch(
     body('phone').optional().isString().trim().isLength({ max: 20 }),
     body('email').optional().isEmail().normalizeEmail(),
     body('bio').optional().isString().isLength({ max: 500 }),
-    body('avatar_url').optional().isString().isLength({ max: 500 }),
+    body('avatar_url').optional().isString().isLength({ max: 600000 }), // base64 image up to ~450KB
   ],
   validate,
   async (req, res) => {

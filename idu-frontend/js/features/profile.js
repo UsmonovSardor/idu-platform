@@ -90,10 +90,11 @@ function _computeBadges(me) {
     badges.push({ icon:'📖', label:'Qoniqarli',      bg:'rgba(16,185,129,0.08)', color:'#065f46', border:'rgba(16,185,129,0.2)' });
   }
 
-  if (me.role === 'student') {
-    badges.push({ icon:'🎓', label:'Talaba',         bg:'rgba(99,102,241,0.08)', color:'#4338ca', border:'rgba(99,102,241,0.2)' });
-  } else if (me.role === 'teacher') {
-    badges.push({ icon:'👨‍🏫', label:'O\'qituvchi',  bg:'rgba(8,145,178,0.08)', color:'#0e7490', border:'rgba(8,145,178,0.2)' });
+  // Role badge only for non-student roles (students already have role chip)
+  if (me.role === 'dekanat') {
+    badges.push({ icon:'🏛', label:'Dekanat', bg:'rgba(99,102,241,0.08)', color:'#4338ca', border:'rgba(99,102,241,0.2)' });
+  } else if (me.role === 'admin') {
+    badges.push({ icon:'⚙️', label:'Admin',   bg:'rgba(239,68,68,0.08)', color:'#dc2626', border:'rgba(239,68,68,0.2)' });
   }
 
   return badges;
