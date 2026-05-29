@@ -398,6 +398,7 @@
 .lp-feat-grid { display: grid; grid-template-columns: repeat(3,1fr); gap: 14px; }
 .lp-feat-card {
   position: relative;
+  display: flex; flex-direction: column;
   background: #FFFFFF;
   border: 1px solid rgba(15,23,42,0.07);
   border-radius: 20px; padding: 28px; overflow: hidden;
@@ -425,9 +426,10 @@
   box-shadow: 0 4px 14px rgba(15,23,42,0.1);
 }
 .lp-feat-card h3 { font-size: 17px; font-weight: 800; color: var(--text); margin-bottom: 9px; letter-spacing: -0.3px; }
-.lp-feat-card p  { font-size: 14px; line-height: 1.7; color: var(--text2); margin-bottom: 16px; }
+.lp-feat-card p  { font-size: 14px; line-height: 1.7; color: var(--text2); margin-bottom: 16px; flex: 1; }
 .lp-feat-chip {
   display: inline-flex; align-items: center; gap: 5px; padding: 4px 11px;
+  align-self: flex-start; margin-top: auto;
   background: rgba(37,99,235,0.08); border: 1px solid rgba(37,99,235,0.18);
   border-radius: 100px; font-size: 11px; font-weight: 700; color: #1d4ed8;
 }
