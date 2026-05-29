@@ -62,11 +62,23 @@ function _renderProfileHeader(me) {
     }
   }
 
-  // Role chip
+  // Role chip + user_code
   var roleEl = document.getElementById('profileRole');
   if (roleEl) {
-    var roleMap = { student:'🎓 Talaba', teacher:'👨‍🏫 O\'qituvchi', dekanat:'🏛 Dekanat', investor:'💼 Investor', admin:'⚙️ Admin' };
+    var roleMap = { student:'🎓 Talaba', teacher:"👨‍🏫 O'qituvchi", dekanat:'🏛 Dekanat', investor:'💼 Investor', admin:'⚙️ Admin' };
     roleEl.textContent = roleMap[me.role] || me.role;
+  }
+  var codeEl = document.getElementById('profileUserCode');
+  if (codeEl) {
+    if (me.user_code) {
+      // Format: XXXX XXXX XXXX XXXX (like a card number)
+      var c = String(me.user_code);
+      var fmt = c.slice(0,4) + ' ' + c.slice(4,8) + ' ' + c.slice(8,12) + ' ' + c.slice(12,16);
+      codeEl.textContent = fmt;
+      codeEl.style.display = '';
+    } else {
+      codeEl.style.display = 'none';
+    }
   }
 
   // Meta
@@ -400,7 +412,9 @@ async function showUserCard(userId) {
       + (u.nickname ? '<div style="color:#60a5fa;font-size:13px;margin-bottom:8px">@'+_esc(u.nickname)+'</div>' : '')
       + '<div style="color:#8fa5c8;font-size:13px;margin-bottom:6px">'+( roleMap[u.role]||u.role )+'</div>'
       + (u.faculty ? '<div style="color:#7d93b5;font-size:12px">'+_esc(u.faculty)+(u.year_of_study?' · '+u.year_of_study+'-kurs':'')+'</div>' : '')
-      + '<div style="color:#475569;font-size:11px;margin-top:10px">ID: #'+u.id+'</div>'
+      + (u.user_code ? '<div style="color:#64748b;font-size:12px;font-family:monospace;letter-spacing:2px;margin-top:8px;background:rgba(148,163,184,0.08);border:1px solid rgba(148,163,184,0.15);border-radius:7px;padding:4px 10px;display:inline-block">'
+        + u.user_code.slice(0,4)+' '+u.user_code.slice(4,8)+' '+u.user_code.slice(8,12)+' '+u.user_code.slice(12,16)+'</div>' : '')
+      + '<div style="color:#475569;font-size:11px;margin-top:8px">ID: #'+u.id+'</div>'
       + '</div>';
     modal.style.display = 'flex';
   } catch(e) {}

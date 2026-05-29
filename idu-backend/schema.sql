@@ -15,6 +15,7 @@ CREATE TABLE IF NOT EXISTS users (
     phone         VARCHAR(20),
     email         VARCHAR(150) UNIQUE,
     nickname      VARCHAR(30)  UNIQUE,
+    user_code     CHAR(16)     UNIQUE NOT NULL DEFAULT lpad(floor(random()*9000000000000000+1000000000000000)::BIGINT::TEXT, 16, '0'),
     bio           TEXT,
     avatar_url    TEXT,
     is_active     BOOLEAN NOT NULL DEFAULT TRUE,

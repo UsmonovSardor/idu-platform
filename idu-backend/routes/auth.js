@@ -197,7 +197,7 @@ router.post(
 // ── GET /api/v1/auth/me ──────────────────────────────────────────────────────
 router.get('/me', authenticate, async (req, res) => {
   const { rows } = await db.query(
-    `SELECT u.id, u.full_name, u.login, u.role, u.phone, u.email, u.bio, u.nickname, u.avatar_url,
+    `SELECT u.id, u.full_name, u.login, u.role, u.phone, u.email, u.bio, u.nickname, u.user_code, u.avatar_url,
             u.created_at, u.last_login,
             s.student_id_number, s.faculty, s.department, s.year_of_study, s.gpa
      FROM users u
@@ -220,7 +220,7 @@ router.get('/search', authenticate, async (req, res) => {
   // If query is a number → search by ID
   if (/^\d+$/.test(q)) {
     ({ rows } = await db.query(
-      `SELECT u.id, u.full_name, u.nickname, u.avatar_url, u.role,
+      `SELECT u.id, u.full_name, u.nickname, u.user_code, u.avatar_url, u.role,
               s.faculty, s.year_of_study
        FROM users u
        LEFT JOIN students s ON s.user_id = u.id
@@ -228,15 +228,15 @@ router.get('/search', authenticate, async (req, res) => {
       [parseInt(q, 10)]
     ));
   } else {
-    // Search by nickname (case-insensitive) or full_name prefix
+    // Search by nickname (case-insensitive), user_code, or full_name prefix
     const like = q.replace(/[%_]/g, '\\$&') + '%';
     ({ rows } = await db.query(
-      `SELECT u.id, u.full_name, u.nickname, u.avatar_url, u.role,
+      `SELECT u.id, u.full_name, u.nickname, u.user_code, u.avatar_url, u.role,
               s.faculty, s.year_of_study
        FROM users u
        LEFT JOIN students s ON s.user_id = u.id
        WHERE u.is_active = TRUE
-         AND (LOWER(u.nickname) LIKE LOWER($1) OR LOWER(u.full_name) LIKE LOWER($1))
+         AND (LOWER(u.nickname) LIKE LOWER($1) OR LOWER(u.full_name) LIKE LOWER($1) OR u.user_code LIKE $1)
        ORDER BY
          CASE WHEN LOWER(u.nickname) = LOWER($2) THEN 0 ELSE 1 END,
          u.full_name

@@ -1799,8 +1799,19 @@ input:focus { transition: border-color 0.15s, box-shadow 0.15s; }
   font-size: 13px; font-weight: 600; color: #60a5fa;
   margin-top: 3px; letter-spacing: 0.2px;
 }
+.profile-role-row {
+  display: flex; align-items: center; gap: 10px; flex-wrap: wrap; margin-top: 6px;
+}
+.profile-user-code {
+  font-size: 12px; font-weight: 700; color: #94a3b8;
+  letter-spacing: 2px; font-family: 'Courier New', monospace;
+  background: rgba(148,163,184,0.08);
+  border: 1px solid rgba(148,163,184,0.15);
+  border-radius: 7px; padding: 3px 10px;
+  user-select: all; cursor: pointer;
+}
 .profile-role-chip {
-  display: inline-block; margin-top: 6px; padding: 4px 12px;
+  display: inline-block; margin-top: 0; padding: 4px 12px;
   background: rgba(37,99,235,0.08); color: var(--primary);
   border: 1px solid rgba(37,99,235,0.16); border-radius: 100px;
   font-size: 12px; font-weight: 700;

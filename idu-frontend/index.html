@@ -46,11 +46,11 @@
 <link rel="preconnect" href="https://cdnjs.cloudflare.com" crossorigin>
 <link rel="dns-prefetch" href="https://idu-platform-production.up.railway.app">
 <!-- Critical CSS preload — start fetching before parser hits the link tag -->
-<link rel="preload" href="css/style.css?v=20260529d" as="style">
+<link rel="preload" href="css/style.css?v=20260529e" as="style">
 <link rel="preload" href="css/utilities.css?v=20260525a" as="style">
 <script defer src="https://cdnjs.cloudflare.com/ajax/libs/dompurify/3.0.8/purify.min.js"></script>
 <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800&family=DM+Mono:wght@400;500;600&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="css/style.css?v=20260529d">
+<link rel="stylesheet" href="css/style.css?v=20260529e">
 <link rel="stylesheet" href="css/responsive.css?v=20260529a">
 <link rel="stylesheet" href="css/landing.css?v=20260529f">
 <link rel="stylesheet" href="css/utilities.css?v=20260525a">
@@ -2416,7 +2416,10 @@
       <div class="profile-hero-info">
         <div class="profile-name" id="profileName">—</div>
         <div class="profile-nickname" id="profileNickname" style="display:none">@nickname</div>
-        <div class="profile-role-chip" id="profileRole">—</div>
+        <div class="profile-role-row">
+          <div class="profile-role-chip" id="profileRole">—</div>
+          <div class="profile-user-code" id="profileUserCode" style="display:none">0000 0000 0000 0000</div>
+        </div>
         <div class="profile-meta" id="profileMeta">—</div>
         <!-- Status badges -->
         <div class="profile-badges" id="profileBadges"></div>
@@ -4417,7 +4420,7 @@ function upmTab(name) {
   <script defer src="js/features/dark-mode.js?v=20260526a"></script>
   <script defer src="js/features/command-palette.js?v=20260528b"></script>
   <script defer src="js/features/onboarding.js?v=20260526a"></script>
-  <script defer src="js/features/profile.js?v=20260529a"></script>
+  <script defer src="js/features/profile.js?v=20260529b"></script>
   <script defer src="js/features/calendar.js?v=20260528a"></script>
   <script defer src="js/features/forum.js?v=20260528a"></script>
   <script defer src="js/features/bulk-export.js?v=20260528a"></script>
