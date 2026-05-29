@@ -4,7 +4,12 @@
    Inspired by: Linear, Vercel, Stripe — dark & premium
 ═══════════════════════════════════════════════════════════════ */
 
-:root {
+/* ── Landing-page-only color tokens scoped to #authScreen.
+   Using :root here was overriding the app's light-mode --bg/--text vars
+   for the whole document, making the day-mode background appear dark.
+   Scoping to #authScreen keeps these dark values inside the landing page;
+   the app (outside #authScreen) keeps style.css :root light values. ── */
+#authScreen {
   --bg:      #071524;
   --bg2:     #0b1e35;
   --blue:    #3b82f6;
