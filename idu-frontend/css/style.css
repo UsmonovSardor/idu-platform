@@ -1748,24 +1748,142 @@ input:focus { transition: border-color 0.15s, box-shadow 0.15s; }
 /* ════════════════════════════════════════════════════════════════════
    PROFILE PAGE  (v20260528)
    ════════════════════════════════════════════════════════════════════ */
-.profile-wrap { display: grid; gap: 16px; max-width: 760px; }
+/* ════════════════════════════════════════════════════════════
+   PROFILE v2.0 — hero card, avatar overlay, badges, stats bar
+   ════════════════════════════════════════════════════════════ */
+.profile-wrap { display: grid; gap: 16px; max-width: 780px; }
+
+/* ── Hero card ── */
+.profile-hero-card {
+  display: flex; align-items: center; gap: 24px;
+  background: linear-gradient(135deg, rgba(37,99,235,0.06) 0%, rgba(8,145,178,0.04) 100%);
+  border: 1px solid rgba(37,99,235,0.12);
+  border-radius: 20px; padding: 26px 28px;
+  box-shadow: 0 2px 16px rgba(15,23,42,0.06);
+  position: relative; overflow: hidden;
+}
+.profile-hero-card::before {
+  content:''; position:absolute; top:0; left:0; right:0; height:3px;
+  background: linear-gradient(90deg, #2563eb, #0891b2, #6366f1);
+}
+
+/* Avatar ring + overlay */
+.profile-av-ring {
+  position: relative; cursor: pointer; flex-shrink: 0;
+}
+.profile-avatar {
+  width: 104px; height: 104px; border-radius: 50%;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 38px; font-weight: 900; color: #fff;
+  background: linear-gradient(135deg,#1B4FD8,#3B82F6);
+  background-size: cover; background-position: center;
+  box-shadow: 0 0 0 4px #fff, 0 0 0 5px rgba(37,99,235,0.2), 0 8px 28px rgba(30,64,175,0.22);
+  transition: box-shadow 0.2s;
+}
+.profile-av-ring:hover .profile-avatar { box-shadow: 0 0 0 4px #fff, 0 0 0 5px rgba(37,99,235,0.4), 0 8px 28px rgba(30,64,175,0.3); }
+.profile-av-overlay {
+  position: absolute; inset: 0; border-radius: 50%;
+  background: rgba(15,23,42,0.52); opacity: 0;
+  transition: opacity 0.2s;
+  display: flex; flex-direction: column; align-items: center; justify-content: center;
+  gap: 2px; color: #fff;
+}
+.profile-av-overlay span:first-child { font-size: 20px; }
+.profile-av-overlay span:last-child  { font-size: 10px; font-weight: 600; letter-spacing: 0.3px; }
+.profile-av-ring:hover .profile-av-overlay { opacity: 1; }
+
+/* Info block */
+.profile-hero-info { flex: 1; min-width: 0; }
+.profile-name { font-size: 22px; font-weight: 800; color: var(--text); letter-spacing: -0.5px; }
+.profile-role-chip {
+  display: inline-block; margin-top: 6px; padding: 4px 12px;
+  background: rgba(37,99,235,0.08); color: var(--primary);
+  border: 1px solid rgba(37,99,235,0.16); border-radius: 100px;
+  font-size: 12px; font-weight: 700;
+}
+.profile-meta { font-size: 13px; color: var(--text2); margin-top: 8px; }
+
+/* Badges */
+.profile-badges { display: flex; flex-wrap: wrap; gap: 6px; margin-top: 10px; }
+.profile-badge {
+  padding: 4px 11px; border-radius: 100px;
+  font-size: 11.5px; font-weight: 700;
+  border: 1px solid transparent;
+  white-space: nowrap;
+}
+
+/* ── Stats bar ── */
+.profile-stats-bar {
+  display: grid; grid-template-columns: repeat(4,1fr); gap: 10px;
+}
+.psb-item {
+  background: var(--white); border: 1px solid var(--border);
+  border-radius: 14px; padding: 14px 12px; text-align: center;
+  box-shadow: var(--shadow-sm);
+}
+.psb-val { font-size: 18px; font-weight: 800; letter-spacing: -0.5px; margin-bottom: 4px; }
+.psb-key { font-size: 10px; color: var(--text3); font-weight: 600; text-transform: uppercase; letter-spacing: 0.8px; }
+
+/* ── Form styles ── */
+.profile-form-grid {
+  display: grid; grid-template-columns: 1fr 1fr; gap: 14px;
+}
+.profile-form-grid label {
+  display: flex; flex-direction: column; gap: 5px;
+  font-size: 12px; font-weight: 600; color: var(--text2);
+}
+.profile-input {
+  padding: 11px 14px; border: 1.5px solid var(--border2);
+  border-radius: 10px; font-family: inherit; font-size: 14px;
+  font-weight: 500; color: var(--text); background: var(--white);
+  transition: border-color 0.15s, box-shadow 0.15s; width: 100%;
+}
+.profile-input:focus {
+  outline: none; border-color: var(--primary);
+  box-shadow: 0 0 0 3px var(--primary-light);
+}
+textarea.profile-input { resize: vertical; min-height: 80px; }
+
+/* Password field wrapper */
+.profile-pass-wrap { position: relative; }
+.profile-pass-wrap .profile-input { padding-right: 42px; }
+.profile-eye-btn {
+  position: absolute; right: 10px; top: 50%; transform: translateY(-50%);
+  background: none; border: none; cursor: pointer; font-size: 16px;
+  padding: 2px; line-height: 1; color: var(--text3);
+}
+.profile-eye-btn:hover { color: var(--text); }
+
+/* Password strength bar */
+.pass-strength-bar {
+  height: 4px; background: var(--border); border-radius: 2px;
+  margin-top: 6px; overflow: hidden;
+}
+.pass-strength-bar > div { height: 100%; width: 0; border-radius: 2px; }
+
+/* Dekanat: avatar in students table */
+.dt-avatar {
+  width: 34px; height: 34px; border-radius: 10px;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 12px; font-weight: 800; color: #fff;
+  flex-shrink: 0;
+  background-size: cover; background-position: center;
+}
+
+@media (max-width: 640px) {
+  .profile-hero-card { flex-direction: column; text-align: center; align-items: center; padding: 22px 18px; }
+  .profile-form-grid { grid-template-columns: 1fr; }
+  .profile-stats-bar { grid-template-columns: repeat(2,1fr); }
+}
+
+/* Keep backward compat — old .profile-card selector */
 .profile-card {
   display: flex; align-items: center; gap: 24px;
   background: linear-gradient(135deg, rgba(37,99,235,0.06), rgba(124,58,237,0.04));
-  border: 1px solid var(--border);
-  border-radius: 18px; padding: 24px 28px;
+  border: 1px solid var(--border); border-radius: 18px; padding: 24px 28px;
   box-shadow: var(--shadow-sm);
 }
 .profile-avatar-wrap { display: flex; flex-direction: column; align-items: center; gap: 8px; }
-.profile-avatar {
-  width: 96px; height: 96px; border-radius: 50%;
-  display: flex; align-items: center; justify-content: center;
-  font-size: 36px; font-weight: 900; color: #fff;
-  background: linear-gradient(135deg,#1B4FD8,#3B82F6);
-  background-size: cover; background-position: center;
-  box-shadow: 0 8px 24px rgba(30,64,175,0.25);
-  flex-shrink: 0;
-}
 .profile-avatar-btn {
   font-size: 11px; font-weight: 600; padding: 4px 10px;
   background: var(--white); border: 1px solid var(--border2);
@@ -1774,34 +1892,7 @@ input:focus { transition: border-color 0.15s, box-shadow 0.15s; }
 }
 .profile-avatar-btn:hover { background: var(--bg); color: var(--text); }
 .profile-info { flex: 1; min-width: 0; }
-.profile-name { font-size: 22px; font-weight: 800; color: var(--text); letter-spacing: -0.5px; }
 .profile-role { display: inline-block; margin-top: 4px; padding: 3px 11px; background: var(--primary-light); color: var(--primary); border-radius: 100px; font-size: 11px; font-weight: 700; }
-.profile-meta { font-size: 13px; color: var(--text2); margin-top: 10px; }
-
-.profile-form-grid {
-  display: grid; grid-template-columns: 1fr 1fr; gap: 14px;
-}
-.profile-form-grid label {
-  display: flex; flex-direction: column; gap: 5px;
-  font-size: 12px; font-weight: 600; color: var(--text2);
-}
-.profile-form-grid input,
-.profile-form-grid textarea,
-.profile-form-grid select {
-  padding: 10px 14px; border: 1.5px solid var(--border2);
-  border-radius: 9px; font-family: inherit; font-size: 14px;
-  font-weight: 500; color: var(--text); background: var(--white);
-  transition: border-color 0.15s, box-shadow 0.15s;
-}
-.profile-form-grid input:focus,
-.profile-form-grid textarea:focus {
-  outline: none; border-color: var(--primary);
-  box-shadow: 0 0 0 3px var(--primary-light);
-}
-@media (max-width: 640px) {
-  .profile-form-grid { grid-template-columns: 1fr; }
-  .profile-card { flex-direction: column; text-align: center; padding: 24px 18px; }
-}
 
 /* ════════════════════════════════════════════════════════════════════
    CALENDAR — Monthly View (Google Calendar style)  (v20260528)

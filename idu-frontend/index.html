@@ -46,11 +46,11 @@
 <link rel="preconnect" href="https://cdnjs.cloudflare.com" crossorigin>
 <link rel="dns-prefetch" href="https://idu-platform-production.up.railway.app">
 <!-- Critical CSS preload — start fetching before parser hits the link tag -->
-<link rel="preload" href="css/style.css?v=20260529b" as="style">
+<link rel="preload" href="css/style.css?v=20260529c" as="style">
 <link rel="preload" href="css/utilities.css?v=20260525a" as="style">
 <script defer src="https://cdnjs.cloudflare.com/ajax/libs/dompurify/3.0.8/purify.min.js"></script>
 <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800&family=DM+Mono:wght@400;500;600&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="css/style.css?v=20260529b">
+<link rel="stylesheet" href="css/style.css?v=20260529c">
 <link rel="stylesheet" href="css/responsive.css?v=20260529a">
 <link rel="stylesheet" href="css/landing.css?v=20260529f">
 <link rel="stylesheet" href="css/utilities.css?v=20260525a">
@@ -2402,66 +2402,90 @@
     </div>
   </div>
   <div class="profile-wrap">
-    <div class="profile-card">
-      <div class="profile-avatar-wrap">
+
+    <!-- ── Hero card ────────────────────────────────────────── -->
+    <div class="profile-hero-card">
+      <!-- Avatar with hover overlay -->
+      <div class="profile-av-ring" onclick="document.getElementById('profileAvatarInput').click()" title="Rasm yuklash">
         <div class="profile-avatar" id="profileAvatar">?</div>
-        <input type="file" id="profileAvatarInput" accept="image/*" style="display:none" onchange="onProfileAvatarChange(event)">
-        <button class="profile-avatar-btn" onclick="document.getElementById('profileAvatarInput').click()">📷 O'zgartirish</button>
+        <div class="profile-av-overlay"><span>📷</span><span>O'zgartirish</span></div>
       </div>
-      <div class="profile-info">
+      <input type="file" id="profileAvatarInput" accept="image/*" style="display:none" onchange="onProfileAvatarChange(event)">
+
+      <!-- Info + badges -->
+      <div class="profile-hero-info">
         <div class="profile-name" id="profileName">—</div>
-        <div class="profile-role" id="profileRole">—</div>
+        <div class="profile-role-chip" id="profileRole">—</div>
         <div class="profile-meta" id="profileMeta">—</div>
+        <!-- Status badges -->
+        <div class="profile-badges" id="profileBadges"></div>
       </div>
     </div>
 
+    <!-- ── Stats row ─────────────────────────────────────────── -->
+    <div class="profile-stats-bar" id="profileStatsBar"></div>
+
+    <!-- ── Personal info ─────────────────────────────────────── -->
     <div class="card">
-      <div class="card-header"><div class="card-title">Shaxsiy ma'lumotlar</div></div>
+      <div class="card-header"><div class="card-title">✏️ Shaxsiy ma'lumotlar</div></div>
       <form id="profileForm" onsubmit="event.preventDefault();saveProfile();">
         <div class="profile-form-grid">
           <label>To'liq ism
-            <input type="text" id="pf_full_name" maxlength="100" required>
+            <input type="text" id="pf_full_name" class="profile-input" maxlength="100" required placeholder="Ism Familiya">
           </label>
           <label>Email
-            <input type="email" id="pf_email" maxlength="150">
+            <input type="email" id="pf_email" class="profile-input" maxlength="150" placeholder="email@example.com">
           </label>
           <label>Telefon
-            <input type="tel" id="pf_phone" maxlength="20" placeholder="+998901234567">
+            <input type="tel" id="pf_phone" class="profile-input" maxlength="20" placeholder="+998901234567">
           </label>
-          <label>Login (o'zgartirib bo'lmaydi)
-            <input type="text" id="pf_login" readonly style="background:var(--bg2)">
+          <label>Login <span style="font-size:10px;opacity:0.6">(o'zgarmaydi)</span>
+            <input type="text" id="pf_login" class="profile-input" readonly style="opacity:0.6;cursor:not-allowed">
           </label>
-          <label style="grid-column:1/-1">Bio (qisqacha)
-            <textarea id="pf_bio" maxlength="500" rows="3" placeholder="O'zingiz haqida..."></textarea>
+          <label style="grid-column:1/-1">Bio <span style="font-size:10px;opacity:0.6">(qisqacha)</span>
+            <textarea id="pf_bio" class="profile-input" maxlength="500" rows="3" placeholder="O'zingiz haqida..."></textarea>
           </label>
         </div>
-        <div style="display:flex;justify-content:flex-end;gap:10px;margin-top:14px">
+        <div style="display:flex;justify-content:flex-end;gap:10px;margin-top:16px">
           <button type="button" class="btn btn-secondary" onclick="loadProfile()">Bekor qilish</button>
           <button type="submit" class="btn btn-primary">💾 Saqlash</button>
         </div>
       </form>
     </div>
 
+    <!-- ── Password change ───────────────────────────────────── -->
     <div class="card">
       <div class="card-header"><div class="card-title">🔐 Parolni o'zgartirish</div></div>
       <form id="passForm" onsubmit="event.preventDefault();savePassword();">
         <div class="profile-form-grid">
-          <label>Joriy parol
-            <input type="password" id="pf_curpass" minlength="4" required>
+          <label style="grid-column:1/-1">Joriy parol
+            <div class="profile-pass-wrap">
+              <input type="password" id="pf_curpass" class="profile-input" minlength="4" required placeholder="••••••••">
+              <button type="button" class="profile-eye-btn" onclick="togglePassVis('pf_curpass',this)">👁</button>
+            </div>
           </label>
           <label>Yangi parol
-            <input type="password" id="pf_newpass" minlength="6" required>
+            <div class="profile-pass-wrap">
+              <input type="password" id="pf_newpass" class="profile-input" minlength="6" required placeholder="Kamida 6 belgi" oninput="checkPassStrength(this.value)">
+              <button type="button" class="profile-eye-btn" onclick="togglePassVis('pf_newpass',this)">👁</button>
+            </div>
+            <div class="pass-strength-bar"><div id="passStrengthFill"></div></div>
+            <div id="passStrengthLabel" style="font-size:11px;margin-top:3px;color:var(--text3)"></div>
           </label>
-          <label>Yangi parolni takrorlang
-            <input type="password" id="pf_newpass2" minlength="6" required>
+          <label>Tasdiqlash
+            <div class="profile-pass-wrap">
+              <input type="password" id="pf_newpass2" class="profile-input" minlength="6" required placeholder="Qayta kiriting">
+              <button type="button" class="profile-eye-btn" onclick="togglePassVis('pf_newpass2',this)">👁</button>
+            </div>
           </label>
         </div>
-        <div style="display:flex;justify-content:flex-end;gap:10px;margin-top:14px">
+        <div style="display:flex;justify-content:flex-end;gap:10px;margin-top:16px">
           <button type="submit" class="btn btn-primary">🔑 Parolni yangilash</button>
         </div>
       </form>
     </div>
 
+    <!-- ── Notifications ──────────────────────────────────────── -->
     <div class="card">
       <div class="card-header"><div class="card-title">🔔 Bildirishnomalar</div></div>
       <div style="display:flex;align-items:center;justify-content:space-between;padding:10px 0">

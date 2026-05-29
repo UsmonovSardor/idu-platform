@@ -360,7 +360,16 @@ async function renderDekanatStudents() {
     const data = await api('GET', '/students?' + params.toString());
     const students = data.data || [];
     if (!students.length) { el.innerHTML = '<tr><td colspan="9" style="text-align:center;color:var(--text3);padding:20px">Talaba topilmadi</td></tr>'; return; }
-    el.innerHTML = students.map((s, i) => '<tr><td>' + ((_dekStudentPage-1)*20+i+1) + '</td><td><div style="display:flex;align-items:center;gap:8px"><div class="dt-avatar" style="background:#1B4FD8">' + (s.full_name||'?').split(' ').map(x=>x[0]).join('').substring(0,2) + '</div><div><div style="font-weight:600">' + (s.full_name||'—') + '</div><div style="font-size:11px;color:var(--text3)">' + (s.student_id_number||'') + '</div></div></div></td><td><span class="card-badge cb-blue">' + (s.faculty||'—') + '</span></td><td>' + (s.year_of_study ? s.year_of_study+'-kurs':'—') + '</td><td><span class="font-mono">' + (s.gpa||'0.00') + '</span></td><td>—</td><td>—</td><td>—</td><td><button class="btn btn-secondary btn-sm" onclick="openStudentDetail(' + s.id + ')">📋</button></td></tr>').join('');
+    el.innerHTML = students.map((s, i) => {
+      const ini = (s.full_name||'?').split(' ').filter(Boolean).map(x=>x[0]).join('').substring(0,2).toUpperCase();
+      const gpa = parseFloat(s.gpa||0);
+      const gpaBadge = gpa>=3.7 ? '<span style="color:#b45309;font-size:11px">⭐ A\'lochi</span>' : gpa>=3.0 ? '<span style="color:#1d4ed8;font-size:11px">📚 Yaxshi</span>' : '<span style="color:var(--text3);font-size:11px">—</span>';
+      const avStyle = s.avatar_url
+        ? 'background-image:url("'+s.avatar_url+'");background-size:cover;background-position:center;background-color:#1B4FD8'
+        : 'background:linear-gradient(135deg,#1B4FD8,#3B82F6)';
+      const avContent = s.avatar_url ? '' : ini;
+      return '<tr><td>' + ((_dekStudentPage-1)*20+i+1) + '</td><td><div style="display:flex;align-items:center;gap:9px"><div class="dt-avatar" style="'+avStyle+'">'+avContent+'</div><div><div style="font-weight:600">' + (s.full_name||'—') + '</div><div style="font-size:11px;color:var(--text3)">' + (s.student_id_number||'') + '</div></div></div></td><td><span class="card-badge cb-blue" style="font-size:11px">' + (s.faculty||'—') + '</span></td><td>' + (s.year_of_study ? s.year_of_study+'-kurs':'—') + '</td><td><span class="font-mono" style="font-weight:700;color:var(--primary)">' + (parseFloat(s.gpa||0).toFixed(2)) + '</span></td><td>—</td><td>—</td><td>' + gpaBadge + '</td><td><button class="btn btn-secondary btn-sm" onclick="openStudentDetail('+s.id+')">📋</button></td></tr>';
+    }).join('');
   } catch(e) { el.innerHTML = '<tr><td colspan="9" style="text-align:center;color:var(--red);padding:20px">Xato: ' + e.message + '</td></tr>'; }
 }
 
