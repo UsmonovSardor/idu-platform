@@ -13,7 +13,7 @@ CREATE TABLE IF NOT EXISTS users (
     password_hash VARCHAR(255) NOT NULL,
     role          VARCHAR(20) NOT NULL CHECK (role IN ('student','teacher','dekanat','investor','admin')),
     phone         VARCHAR(20),
-    avatar_url    VARCHAR(500),
+    avatar_url    TEXT,
     is_active     BOOLEAN NOT NULL DEFAULT TRUE,
     last_login    TIMESTAMPTZ,
     created_at    TIMESTAMPTZ NOT NULL DEFAULT NOW(),
