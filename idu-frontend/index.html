@@ -52,7 +52,7 @@
 <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800&family=DM+Mono:wght@400;500;600&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="css/style.css?v=20260528j">
 <link rel="stylesheet" href="css/responsive.css?v=20260529a">
-<link rel="stylesheet" href="css/landing.css?v=20260529a">
+<link rel="stylesheet" href="css/landing.css?v=20260529b">
 <link rel="stylesheet" href="css/utilities.css?v=20260525a">
 <!-- KaTeX for math formula rendering -->
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/katex.min.css" crossorigin="anonymous">
@@ -192,18 +192,18 @@
       <!-- Slide 1: Dashboard -->
       <div class="lp-carousel-slide" id="lpSlide0">
         <div class="lp-card-stats">
-          <div class="lp-cs"><div class="lp-cs-val" style="color:#06b6d4">3.8</div><div class="lp-cs-key">GPA</div></div>
-          <div class="lp-cs"><div class="lp-cs-val" style="color:#22d3ee">94%</div><div class="lp-cs-key">Davomat</div></div>
-          <div class="lp-cs"><div class="lp-cs-val" style="color:#818cf8">#12</div><div class="lp-cs-key">Reyting</div></div>
+          <div class="lp-cs"><div class="lp-cs-val" style="color:#2563eb">3.8</div><div class="lp-cs-key">GPA</div></div>
+          <div class="lp-cs"><div class="lp-cs-val" style="color:#0891b2">94%</div><div class="lp-cs-key">Davomat</div></div>
+          <div class="lp-cs"><div class="lp-cs-val" style="color:#6366f1">#12</div><div class="lp-cs-key">Reyting</div></div>
         </div>
         <div class="lp-card-bar-wrap">
-          <div class="lp-card-bar-label"><span>Semestr natijasi</span><span style="color:#06b6d4">82%</span></div>
+          <div class="lp-card-bar-label"><span>Semestr natijasi</span><span style="color:#2563eb">82%</span></div>
           <div class="lp-progress-bg"><div class="lp-progress-fill" style="width:82%"></div></div>
         </div>
         <div class="lp-card-subjects">
-          <div class="lp-subj" style="--c:#06b6d4">Algoritmlar <span>A</span></div>
-          <div class="lp-subj" style="--c:#818cf8">Web texn. <span>B+</span></div>
-          <div class="lp-subj" style="--c:#34d399">Matematika <span>A-</span></div>
+          <div class="lp-subj" style="--c:#2563eb">Algoritmlar <span>A</span></div>
+          <div class="lp-subj" style="--c:#6366f1">Web texn. <span>B+</span></div>
+          <div class="lp-subj" style="--c:#059669">Matematika <span>A-</span></div>
         </div>
       </div>
 
@@ -269,10 +269,10 @@
             <div class="lp-rating-gpa">3.96</div>
           </div>
           <div class="lp-rating-row lp-rating-me">
-            <div class="lp-rating-rank" style="color:#818cf8">#12</div>
-            <div class="lp-rating-avatar" style="background:linear-gradient(135deg,#4338ca,#818cf8)">SU</div>
-            <div class="lp-rating-name">Siz <span style="color:#818cf8;font-size:10px">(men)</span></div>
-            <div class="lp-rating-gpa" style="color:#818cf8">3.8</div>
+            <div class="lp-rating-rank" style="color:#2563eb">#12</div>
+            <div class="lp-rating-avatar" style="background:linear-gradient(135deg,#1e40af,#2563eb)">SU</div>
+            <div class="lp-rating-name">Siz <span style="color:#2563eb;font-size:10px">(men)</span></div>
+            <div class="lp-rating-gpa" style="color:#2563eb">3.8</div>
           </div>
         </div>
       </div>
@@ -292,42 +292,42 @@
     .lp-carousel-slide{transition:opacity 0.45s ease,transform 0.45s ease;opacity:1;transform:translateY(0);}
     .lp-slide-hidden{display:none;opacity:0;transform:translateY(8px);}
     .lp-carousel-dots{display:flex;justify-content:center;gap:6px;margin-top:14px;}
-    .lp-dot{width:8px;height:8px;border-radius:50%;border:none;background:rgba(255,255,255,0.2);cursor:pointer;padding:0;transition:background 0.3s,transform 0.3s;}
-    .lp-dot-active{background:#06b6d4;transform:scale(1.25);}
+    .lp-dot{width:8px;height:8px;border-radius:50%;border:none;background:rgba(15,23,42,0.15);cursor:pointer;padding:0;transition:background 0.3s,transform 0.3s;}
+    .lp-dot-active{background:#2563eb;transform:scale(1.25);}
     /* Chat slide */
     .lp-chat-wrap{display:flex;flex-direction:column;gap:10px;padding:4px 0;}
     .lp-chat-msg{display:flex;align-items:flex-end;gap:8px;}
     .lp-chat-user{flex-direction:row-reverse;}
     .lp-chat-bubble{border-radius:14px;padding:8px 12px;font-size:12px;line-height:1.4;max-width:78%;}
     .lp-bubble-user{background:linear-gradient(135deg,#1e40af,#3b82f6);color:#fff;border-bottom-right-radius:3px;}
-    .lp-bubble-ai{background:rgba(255,255,255,0.08);color:#e2e8f0;border:1px solid rgba(255,255,255,0.1);border-bottom-left-radius:3px;}
+    .lp-bubble-ai{background:#F1F5F9;color:#0f172a;border:1px solid rgba(15,23,42,0.08);border-bottom-left-radius:3px;}
     .lp-chat-avatar{width:26px;height:26px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:13px;flex-shrink:0;}
-    .lp-avatar-user{background:rgba(59,130,246,0.3);}
-    .lp-avatar-ai{background:rgba(6,182,212,0.2);}
-    .lp-typing-indicator{display:flex;align-items:center;gap:4px;padding:10px 14px;background:rgba(255,255,255,0.08);border-radius:14px;border-bottom-left-radius:3px;border:1px solid rgba(255,255,255,0.1);}
+    .lp-avatar-user{background:rgba(37,99,235,0.15);}
+    .lp-avatar-ai{background:rgba(8,145,178,0.15);}
+    .lp-typing-indicator{display:flex;align-items:center;gap:4px;padding:10px 14px;background:#F1F5F9;border-radius:14px;border-bottom-left-radius:3px;border:1px solid rgba(15,23,42,0.08);}
     .lp-typing-indicator span{width:6px;height:6px;border-radius:50%;background:#94a3b8;animation:lpTyping 1.2s infinite;}
     .lp-typing-indicator span:nth-child(2){animation-delay:0.2s;}
     .lp-typing-indicator span:nth-child(3){animation-delay:0.4s;}
     @keyframes lpTyping{0%,60%,100%{transform:translateY(0);}30%{transform:translateY(-5px);}}
     /* Jadval slide */
     .lp-jadval-wrap{display:flex;flex-direction:column;gap:8px;padding:2px 0;}
-    .lp-jadval-item{display:flex;align-items:center;gap:10px;padding:9px 12px;border-radius:10px;background:rgba(255,255,255,0.05);border:1px solid rgba(255,255,255,0.07);}
-    .lp-jadval-today{background:rgba(6,182,212,0.1);border-color:rgba(6,182,212,0.3);}
-    .lp-jadval-time{font-family:'DM Mono',monospace;font-size:12px;color:#06b6d4;min-width:38px;font-weight:600;}
+    .lp-jadval-item{display:flex;align-items:center;gap:10px;padding:9px 12px;border-radius:10px;background:rgba(15,23,42,0.03);border:1px solid rgba(15,23,42,0.06);}
+    .lp-jadval-today{background:rgba(37,99,235,0.08);border-color:rgba(37,99,235,0.25);}
+    .lp-jadval-time{font-family:'DM Mono',monospace;font-size:12px;color:#2563eb;min-width:38px;font-weight:600;}
     .lp-jadval-info{flex:1;}
-    .lp-jadval-name{font-size:12px;font-weight:600;color:#e2e8f0;}
+    .lp-jadval-name{font-size:12px;font-weight:600;color:#0f172a;}
     .lp-jadval-room{font-size:11px;color:#64748b;margin-top:2px;}
-    .lp-jadval-badge{font-size:10px;background:rgba(6,182,212,0.2);color:#06b6d4;padding:2px 7px;border-radius:20px;font-weight:600;}
+    .lp-jadval-badge{font-size:10px;background:rgba(37,99,235,0.14);color:#1d4ed8;padding:2px 7px;border-radius:20px;font-weight:600;}
     /* Reyting slide */
     .lp-rating-wrap{display:flex;flex-direction:column;gap:8px;padding:2px 0;}
-    .lp-rating-row{display:flex;align-items:center;gap:10px;padding:8px 10px;border-radius:10px;background:rgba(255,255,255,0.04);border:1px solid rgba(255,255,255,0.06);}
-    .lp-rating-me{background:rgba(129,140,248,0.1);border-color:rgba(129,140,248,0.3);}
-    .lp-rating-rank{font-family:'DM Mono',monospace;font-size:13px;font-weight:700;min-width:24px;text-align:center;color:#f59e0b;}
-    .lp-rank-gold{color:#f59e0b;}
-    .lp-rank-silver{color:#94a3b8;}
+    .lp-rating-row{display:flex;align-items:center;gap:10px;padding:8px 10px;border-radius:10px;background:rgba(15,23,42,0.03);border:1px solid rgba(15,23,42,0.06);}
+    .lp-rating-me{background:rgba(37,99,235,0.08);border-color:rgba(37,99,235,0.25);}
+    .lp-rating-rank{font-family:'DM Mono',monospace;font-size:13px;font-weight:700;min-width:24px;text-align:center;color:#d97706;}
+    .lp-rank-gold{color:#d97706;}
+    .lp-rank-silver{color:#64748b;}
     .lp-rating-avatar{width:28px;height:28px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:10px;font-weight:700;color:#fff;flex-shrink:0;}
-    .lp-rating-name{flex:1;font-size:12px;font-weight:600;color:#e2e8f0;}
-    .lp-rating-gpa{font-size:13px;font-weight:700;color:#34d399;}
+    .lp-rating-name{flex:1;font-size:12px;font-weight:600;color:#0f172a;}
+    .lp-rating-gpa{font-size:13px;font-weight:700;color:#059669;}
   </style>
 
   <script>
