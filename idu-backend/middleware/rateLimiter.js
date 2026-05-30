@@ -45,8 +45,9 @@ const CONFIGS = {
   general: {
     keyPrefix:  'rl:g',
     // Per-user budget (see rlKey). Generous so the SPA's many calls per
-    // navigation never trip it for a normal user.
-    points:     parseInt(process.env.RATE_LIMIT_MAX_REQUESTS || '1000', 10),
+    // navigation — plus heavy reloading during testing — never trip it for
+    // a normal user. Raised 1000 → 3000 (env can still override).
+    points:     parseInt(process.env.RATE_LIMIT_MAX_REQUESTS || '3000', 10),
     duration:   Math.floor(parseInt(process.env.RATE_LIMIT_WINDOW_MS || '900000', 10) / 1000),
   },
   auth: {
