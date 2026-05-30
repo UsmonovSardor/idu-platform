@@ -199,7 +199,7 @@ app.get('/health', (_req, res) => {
   res.json({
     status:    'ok',
     timestamp: new Date().toISOString(),
-    version:   '4.1.0',
+    version:   '4.1.1',
   });
 });
 
