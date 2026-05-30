@@ -124,7 +124,7 @@ router.get('/:id', async (req, res) => {
     if (!t) return res.status(404).json({ error: 'not_found' });
 
     const { rows: teams } = await db.query(
-      `SELECT id, group_name, faculty, seed, rating, played, wins, losses, points, eliminated
+      `SELECT id, group_name, faculty, seed, rating, played, wins, losses, points, eliminated, captain_user_id
          FROM comp_teams WHERE tournament_id=$1
         ORDER BY rating DESC, wins DESC, group_name ASC`, [id]
     );
@@ -246,6 +246,35 @@ router.delete('/:id', authorize('dekanat', 'admin'), async (req, res) => {
   }
 });
 
+// Auto-propose rewards when a tournament completes (Phase 3 approves them).
+// Champion → trophy + 10% discount proposal; runner-up → 5% discount proposal.
+async function proposeRewards(client, tournamentId, championId, runnerUpId) {
+  const q = client || db;
+  // Avoid duplicates if called twice
+  const { rows: existing } = await q.query(
+    'SELECT 1 FROM comp_rewards WHERE tournament_id=$1 LIMIT 1', [tournamentId]
+  );
+  if (existing.length) return;
+  await q.query(
+    `INSERT INTO comp_rewards (tournament_id, team_id, type, value, placement, status, note)
+     VALUES ($1,$2,'trophy',NULL,1,'proposed','Chempion kubogi')`,
+    [tournamentId, championId]
+  );
+  await q.query(
+    `INSERT INTO comp_rewards (tournament_id, team_id, type, value, placement, status, note)
+     VALUES ($1,$2,'discount',10,1,'proposed','Chempion guruhga o''qish chegirmasi (taklif)')`,
+    [tournamentId, championId]
+  );
+  if (runnerUpId) {
+    await q.query(
+      `INSERT INTO comp_rewards (tournament_id, team_id, type, value, placement, status, note)
+       VALUES ($1,$2,'discount',5,2,'proposed','2-o''rin guruhga chegirma (taklif)')`,
+      [tournamentId, runnerUpId]
+    );
+  }
+}
+
 module.exports = router;
 module.exports.advanceWinner = advanceWinner;
+module.exports.proposeRewards = proposeRewards;
 module.exports.SUBJECTS = SUBJECTS;

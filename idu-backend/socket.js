@@ -16,6 +16,7 @@ const { Server }  = require('socket.io');
 const jwt         = require('jsonwebtoken');
 const db          = require('./config/database');
 const { logger }  = require('./middleware/logger');
+const { registerBattle } = require('./services/battle');
 
 const JWT_SECRET  = process.env.JWT_SECRET;
 const IS_PROD     = process.env.NODE_ENV === 'production';
@@ -174,6 +175,10 @@ async function setupSocket(httpServer) {
         isTyping:   !!isTyping,
       });
     });
+
+    // ── IDU Liga — live quiz battle handlers ─────────────────────────────────
+    try { registerBattle(io, socket, user); }
+    catch (e) { logger.warn('[socket.io] battle register failed: %s', e.message); }
 
     // ── disconnect ────────────────────────────────────────────────────────────
     socket.on('disconnect', (reason) => {

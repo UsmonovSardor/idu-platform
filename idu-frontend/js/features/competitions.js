@@ -6,6 +6,10 @@
 
 var _ligaList = [];
 var _ligaActiveId = null;
+var _ligaDetail = null;
+var _ligaSocket = null;
+var _ligaMatch = null;       // { id, aName, bName, myTeam, status }
+var _ligaQTimer = null;
 
 var LIGA_SUBJECTS = [
   { code: 'algo', name: 'Algoritmlar', icon: '🧮' },
@@ -57,7 +61,33 @@ function _ligaInjectStyles() {
     + '.liga-gchk{display:flex;align-items:center;gap:8px;padding:8px 10px;border-radius:9px;cursor:pointer;font-size:13px;background:rgba(0,0,0,.02)}'
     + '.liga-gchk input{width:16px;height:16px}'
     + '.liga-gchk.on{background:rgba(37,99,235,.12);font-weight:700}'
-    + '@media(max-width:640px){.bracket-col{min-width:172px}}';
+    + '.mr-bg{position:fixed;inset:0;z-index:9999;background:linear-gradient(160deg,#0b1220,#111c33);display:flex;flex-direction:column;color:#e8eefc}'
+    + '.mr-top{display:flex;align-items:center;justify-content:space-between;padding:14px 18px;border-bottom:1px solid rgba(255,255,255,.08)}'
+    + '.mr-x{background:rgba(255,255,255,.1);border:none;color:#fff;width:36px;height:36px;border-radius:10px;font-size:16px;cursor:pointer}'
+    + '.mr-score{display:flex;align-items:center;justify-content:center;gap:18px;padding:18px}'
+    + '.mr-team{flex:1;max-width:240px;text-align:center}'
+    + '.mr-tname{font-weight:800;font-size:16px;margin-bottom:6px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}'
+    + '.mr-tscore{font-size:42px;font-weight:900;font-variant-numeric:tabular-nums;line-height:1}'
+    + '.mr-tsub{font-size:11px;color:#8aa0c6;margin-top:4px}'
+    + '.mr-vs{font-weight:900;color:#64748b;font-size:18px}'
+    + '.mr-mine{box-shadow:0 0 0 2px #2563eb inset;border-radius:14px;padding:10px 6px}'
+    + '.mr-body{flex:1;overflow:auto;padding:10px 18px 28px;display:flex;flex-direction:column;align-items:center;justify-content:center}'
+    + '.mr-q{max-width:680px;width:100%;text-align:center}'
+    + '.mr-qmeta{font-size:12px;color:#8aa0c6;font-weight:700;letter-spacing:.5px;margin-bottom:10px}'
+    + '.mr-qtext{font-size:21px;font-weight:800;line-height:1.4;margin-bottom:22px}'
+    + '.mr-opts{display:grid;grid-template-columns:1fr 1fr;gap:12px}'
+    + '.mr-opt{background:rgba(255,255,255,.06);border:1.5px solid rgba(255,255,255,.12);color:#e8eefc;padding:16px 18px;border-radius:14px;font-size:15px;font-weight:600;cursor:pointer;text-align:left;transition:.15s;display:flex;gap:10px;align-items:center}'
+    + '.mr-opt:hover{background:rgba(37,99,235,.22);border-color:#2563eb}'
+    + '.mr-opt .k{display:inline-flex;width:26px;height:26px;align-items:center;justify-content:center;border-radius:7px;background:rgba(255,255,255,.12);font-weight:800;flex-shrink:0}'
+    + '.mr-opt.picked{background:rgba(37,99,235,.35);border-color:#3b82f6}'
+    + '.mr-opt.correct{background:rgba(16,185,129,.3);border-color:#10b981}'
+    + '.mr-opt.wrong{background:rgba(239,68,68,.28);border-color:#ef4444}'
+    + '.mr-opt[disabled]{cursor:default;opacity:.92}'
+    + '.mr-ring{width:60px;height:60px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-weight:900;font-size:20px;margin:0 auto 14px;border:4px solid #2563eb;color:#fff}'
+    + '.mr-start{background:linear-gradient(135deg,#2563eb,#3b82f6);color:#fff;border:none;padding:16px 34px;border-radius:14px;font-size:17px;font-weight:800;cursor:pointer;box-shadow:0 10px 30px rgba(37,99,235,.4)}'
+    + '.mr-wait{color:#8aa0c6;font-size:15px;margin-top:14px}'
+    + '.mr-winner{font-size:30px;font-weight:900;margin-bottom:8px}'
+    + '@media(max-width:640px){.bracket-col{min-width:172px}.mr-opts{grid-template-columns:1fr}.mr-tscore{font-size:32px}}';
   var s = document.createElement('style');
   s.id = 'ligaStyles'; s.textContent = css;
   document.head.appendChild(s);
@@ -129,6 +159,7 @@ async function openLigaDetail(id) {
   try { data = await api('GET', '/competitions/' + id); }
   catch (e) { host.innerHTML = '<div class="liga-empty">❌ Yuklab bo\'lmadi</div>'; return; }
 
+  _ligaDetail = data;
   var t = data.tournament, teams = data.teams || [], matches = data.matches || [];
   var subj = LIGA_SUBJECTS.find(function (s) { return s.code === t.subject; });
 
@@ -186,10 +217,12 @@ function _matchCard(m) {
       '<span class="bm-score">' + (m.status === 'finished' || live ? _fmtScore(score) : '') + '</span></div>';
   }
   var foot = '';
-  if (m.status === 'live') foot = '<div class="bm-foot live">🔴 JONLI</div>';
-  else if (m.status === 'ready') foot = '<div class="bm-foot ready">Tayyor</div>';
+  var clickable = (m.status === 'ready' || m.status === 'live') && m.team_a_id && m.team_b_id;
+  if (m.status === 'live') foot = '<div class="bm-foot live">🔴 JONLI — kirish</div>';
+  else if (m.status === 'ready') foot = '<div class="bm-foot ready">▶ Jangga kirish</div>';
   else if (m.status === 'finished') foot = '<div class="bm-foot">Tugadi</div>';
-  return '<div class="bm' + (live ? ' bm-live' : '') + '">' +
+  var onclick = clickable ? ' onclick="openMatchRoom(' + m.id + ')" style="cursor:pointer"' : '';
+  return '<div class="bm' + (live ? ' bm-live' : '') + '"' + onclick + '>' +
     row(m.team_a_name, m.team_a_score, aWin, !!m.team_a_id) +
     row(m.team_b_name, m.team_b_score, bWin, !!m.team_b_id) +
     foot + '</div>';
@@ -287,4 +320,222 @@ async function submitLigaCreate() {
   } catch (e) {
     showToast('❌', 'Xato', (e && e.message) || 'Yaratilmadi');
   }
+}
+
+// ════════════════════════════════════════════════════════════════════════════
+//  LIVE BATTLE — match room
+// ════════════════════════════════════════════════════════════════════════════
+function openMatchRoom(matchId) {
+  _ligaInjectStyles();
+  var d = _ligaDetail; if (!d) return;
+  var m = (d.matches || []).find(function (x) { return x.id === matchId; });
+  if (!m) return;
+  var teams = d.teams || [];
+  var ta = teams.find(function (t) { return t.id === m.team_a_id; });
+  var tb = teams.find(function (t) { return t.id === m.team_b_id; });
+  var uid = window.CURRENT_USER ? window.CURRENT_USER.id : null;
+  var role = (typeof currentUser !== 'undefined' && currentUser) ? currentUser.role : '';
+  var isStaff = role === 'dekanat' || role === 'admin';
+  var isCaptain = (ta && ta.captain_user_id === uid) || (tb && tb.captain_user_id === uid);
+
+  _ligaMatch = {
+    id: matchId, aId: m.team_a_id, bId: m.team_b_id,
+    aName: m.team_a_name || 'A', bName: m.team_b_name || 'B',
+    canStart: isStaff || isCaptain, status: m.status, myTeam: null,
+    curQIndex: -1, picked: null,
+  };
+
+  var existing = document.getElementById('ligaMatchRoom');
+  if (existing) existing.remove();
+  var el = document.createElement('div');
+  el.id = 'ligaMatchRoom';
+  el.className = 'mr-bg';
+  el.innerHTML =
+    '<div class="mr-top"><div style="font-weight:800;font-size:15px">⚔️ Liga jangi</div>' +
+      '<button class="mr-x" onclick="closeMatchRoom()">✕</button></div>' +
+    '<div class="mr-score">' +
+      '<div class="mr-team" id="mrTeamA"><div class="mr-tname">' + _esc(_ligaMatch.aName) + '</div>' +
+        '<div class="mr-tscore" id="mrScoreA">0</div><div class="mr-tsub" id="mrSubA">0 ishtirokchi</div></div>' +
+      '<div class="mr-vs">VS</div>' +
+      '<div class="mr-team" id="mrTeamB"><div class="mr-tname">' + _esc(_ligaMatch.bName) + '</div>' +
+        '<div class="mr-tscore" id="mrScoreB">0</div><div class="mr-tsub" id="mrSubB">0 ishtirokchi</div></div>' +
+    '</div>' +
+    '<div class="mr-body" id="mrBody"><div class="mr-wait">⏳ Ulanmoqda...</div></div>';
+  document.body.appendChild(el);
+
+  _ligaConnectAndJoin(matchId);
+}
+
+function _ligaConnectAndJoin(matchId) {
+  if (typeof io === 'undefined') { _setBody('<div class="mr-wait">❌ Realtime mavjud emas</div>'); return; }
+  var token = window._apiToken || localStorage.getItem('idu_jwt') || '';
+  var apiOrigin = (window.API_BASE || '').replace(/\/api.*$/, '').replace(/^http/, 'ws') ||
+    ((location.protocol === 'https:' ? 'wss:' : 'ws:') + '//' + location.host);
+  if (_ligaSocket) { try { _ligaSocket.disconnect(); } catch (e) {} _ligaSocket = null; }
+  _ligaSocket = io(apiOrigin, { auth: { token: token }, transports: ['websocket', 'polling'], reconnection: true });
+
+  _ligaSocket.on('connect', function () {
+    _ligaSocket.emit('comp:join', { matchId: matchId }, function (res) { _onJoinAck(res); });
+  });
+  _ligaSocket.on('comp:start', function () { _setBody('<div class="mr-wait">🚀 Jang boshlandi...</div>'); });
+  _ligaSocket.on('comp:question', function (p) { _renderMrQuestion(p); });
+  _ligaSocket.on('comp:reveal', function (p) { _onReveal(p); });
+  _ligaSocket.on('comp:score', function (s) { _setScores(s); });
+  _ligaSocket.on('comp:end', function (p) { _renderMrEnd(p); });
+  _ligaSocket.on('disconnect', function () {});
+}
+
+function _onJoinAck(res) {
+  if (!res || res.error) { _setBody('<div class="mr-wait">❌ ' + ((res && res.error) || ' Xato') + '</div>'); return; }
+  if (res.myTeam) _ligaMatch.myTeam = res.myTeam;
+  if (res.scores) _setScores(res.scores);
+  if (res.live) {
+    if (res.current) _renderMrQuestion(res.current);
+    else _setBody('<div class="mr-wait">⏳ Keyingi savol kutilmoqda...</div>');
+  } else {
+    _renderMrLobby();
+  }
+}
+
+function _renderMrLobby() {
+  var canStart = _ligaMatch.canStart;
+  _setBody(
+    '<div style="text-align:center">' +
+      '<div style="font-size:54px;margin-bottom:10px">⚔️</div>' +
+      '<div style="font-size:20px;font-weight:800;margin-bottom:6px">' + _esc(_ligaMatch.aName) + ' vs ' + _esc(_ligaMatch.bName) + '</div>' +
+      (canStart
+        ? '<button class="mr-start" onclick="ligaStartMatch()">▶ Jangni boshlash</button>' +
+          '<div class="mr-wait">Boshlaganda ikkala guruh bir vaqtda javob beradi</div>'
+        : '<div class="mr-wait">Kapitan yoki dekanat jangni boshlashini kuting...</div>') +
+    '</div>'
+  );
+}
+
+function ligaStartMatch() {
+  if (!_ligaSocket || !_ligaMatch) return;
+  _setBody('<div class="mr-wait">🚀 Boshlanmoqda...</div>');
+  _ligaSocket.emit('comp:start', { matchId: _ligaMatch.id }, function (res) {
+    if (res && res.error) {
+      var msg = res.error === 'not_enough_questions' ? 'Bu fan uchun yetarli savol yo\'q'
+        : res.error === 'not_captain' ? 'Faqat kapitan/dekanat boshlay oladi'
+        : res.error === 'already_live' ? 'Jang allaqachon boshlangan' : res.error;
+      showToast('⚠️', 'Liga', msg);
+      _renderMrLobby();
+    }
+  });
+}
+
+function _renderMrQuestion(p) {
+  if (!p || !p.question) return;
+  _ligaMatch.curQIndex = p.qIndex;
+  _ligaMatch.picked = null;
+  var q = p.question;
+  var canAnswer = !!_ligaMatch.myTeam;
+  var letters = ['A', 'B', 'C', 'D'];
+  var opts = [q.a, q.b, q.c, q.d];
+  var optHtml = opts.map(function (o, i) {
+    if (o == null || o === '') return '';
+    var L = letters[i];
+    var attr = canAnswer ? ' onclick="ligaAnswer(\'' + L + '\')"' : ' disabled';
+    return '<button class="mr-opt" id="mrOpt' + L + '"' + attr + '><span class="k">' + L + '</span><span>' + _esc(o) + '</span></button>';
+  }).join('');
+  _setBody(
+    '<div class="mr-q">' +
+      '<div class="mr-ring" id="mrRing">' + '–' + '</div>' +
+      '<div class="mr-qmeta">SAVOL ' + (p.qIndex + 1) + ' / ' + p.total + (canAnswer ? '' : ' · tomoshabin') + '</div>' +
+      '<div class="mr-qtext">' + _esc(q.text) + '</div>' +
+      '<div class="mr-opts">' + optHtml + '</div>' +
+    '</div>'
+  );
+  _startQRing(p.endsAt);
+}
+
+function _startQRing(endsAt) {
+  if (_ligaQTimer) clearInterval(_ligaQTimer);
+  function tick() {
+    var ring = document.getElementById('mrRing');
+    if (!ring) { clearInterval(_ligaQTimer); return; }
+    var left = Math.max(0, Math.ceil((endsAt - Date.now()) / 1000));
+    ring.textContent = left;
+    ring.style.borderColor = left <= 5 ? '#ef4444' : '#2563eb';
+    if (left <= 0) { clearInterval(_ligaQTimer); _lockOpts(); }
+  }
+  tick();
+  _ligaQTimer = setInterval(tick, 250);
+}
+
+function ligaAnswer(choice) {
+  if (!_ligaSocket || !_ligaMatch || _ligaMatch.picked) return;
+  _ligaMatch.picked = choice;
+  var btn = document.getElementById('mrOpt' + choice);
+  if (btn) btn.classList.add('picked');
+  _lockOpts();
+  _ligaSocket.emit('comp:answer', { matchId: _ligaMatch.id, qIndex: _ligaMatch.curQIndex, choice: choice }, function () {});
+}
+
+function _lockOpts() {
+  ['A', 'B', 'C', 'D'].forEach(function (L) {
+    var b = document.getElementById('mrOpt' + L);
+    if (b) b.setAttribute('disabled', 'disabled');
+  });
+}
+
+function _onReveal(p) {
+  if (_ligaQTimer) clearInterval(_ligaQTimer);
+  if (p.scores) _setScores(p.scores);
+  var correct = p.correct_option;
+  if (correct) {
+    var cb = document.getElementById('mrOpt' + correct);
+    if (cb) cb.classList.add('correct');
+    if (_ligaMatch.picked && _ligaMatch.picked !== correct) {
+      var wb = document.getElementById('mrOpt' + _ligaMatch.picked);
+      if (wb) wb.classList.add('wrong');
+    }
+  }
+  var ring = document.getElementById('mrRing');
+  if (ring) ring.textContent = '✓';
+}
+
+function _setScores(s) {
+  if (!s) return;
+  var a = s.teamA || {}, b = s.teamB || {};
+  var sa = document.getElementById('mrScoreA'), sb = document.getElementById('mrScoreB');
+  if (sa) sa.textContent = _fmtScore(a.score || 0);
+  if (sb) sb.textContent = _fmtScore(b.score || 0);
+  var ua = document.getElementById('mrSubA'), ub = document.getElementById('mrSubB');
+  if (ua) ua.textContent = (a.participants || 0) + ' ishtirokchi · ' + (a.correct || 0) + ' to\'g\'ri';
+  if (ub) ub.textContent = (b.participants || 0) + ' ishtirokchi · ' + (b.correct || 0) + ' to\'g\'ri';
+  // highlight my team
+  if (_ligaMatch && _ligaMatch.myTeam) {
+    var ea = document.getElementById('mrTeamA'), eb = document.getElementById('mrTeamB');
+    if (ea) ea.classList.toggle('mr-mine', _ligaMatch.myTeam === _ligaMatch.aId);
+    if (eb) eb.classList.toggle('mr-mine', _ligaMatch.myTeam === _ligaMatch.bId);
+  }
+}
+
+function _renderMrEnd(p) {
+  if (_ligaQTimer) clearInterval(_ligaQTimer);
+  if (p.scores) _setScores(p.scores);
+  var winName = p.winner_team_id === _ligaMatch.aId ? _ligaMatch.aName
+    : p.winner_team_id === _ligaMatch.bId ? _ligaMatch.bName : '—';
+  var iWon = _ligaMatch.myTeam && _ligaMatch.myTeam === p.winner_team_id;
+  _setBody(
+    '<div style="text-align:center">' +
+      '<div style="font-size:60px;margin-bottom:6px">' + (iWon ? '🎉' : '🏁') + '</div>' +
+      '<div class="mr-winner">🥇 ' + _esc(winName) + '</div>' +
+      '<div class="mr-wait">' + _fmtScore(p.team_a_score) + ' : ' + _fmtScore(p.team_b_score) + '</div>' +
+      (iWon ? '<div style="color:#34d399;font-weight:800;margin-top:8px">Tabriklaymiz! +50 XP</div>' : '') +
+      '<button class="mr-start" style="margin-top:20px" onclick="closeMatchRoom()">Yopish</button>' +
+    '</div>'
+  );
+}
+
+function _setBody(html) { var b = document.getElementById('mrBody'); if (b) b.innerHTML = html; }
+
+function closeMatchRoom() {
+  if (_ligaQTimer) { clearInterval(_ligaQTimer); _ligaQTimer = null; }
+  if (_ligaSocket) { try { _ligaSocket.disconnect(); } catch (e) {} _ligaSocket = null; }
+  var el = document.getElementById('ligaMatchRoom');
+  if (el) el.remove();
+  if (_ligaActiveId) openLigaDetail(_ligaActiveId);
 }
