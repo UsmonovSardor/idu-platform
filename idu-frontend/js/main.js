@@ -871,6 +871,9 @@ async function renderStudentDashboard() {
   renderDashboardTasks();
   refreshHeroBanner();
 
+  // Bildirishnoma badge'ni yangilash (events / test-sesiya / baholar)
+  if (typeof renderNotifications === 'function') renderNotifications();
+
   // API dan baholar va statistika
   try {
     var stats = await api('GET', '/grades/my-stats');

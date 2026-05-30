@@ -272,6 +272,7 @@ async function saveCalEvent() {
     showToast('✅','Event', scope === 'personal' ? 'Saqlandi' : 'Hammaga e\'lon qilindi');
     _closeCalModal();
     renderCalendarMonth();
+    if (typeof renderNotifications === 'function') renderNotifications();
   } catch (e) {
     showToast('❌','Xato', (e && e.message) || 'Saqlanmadi');
   }

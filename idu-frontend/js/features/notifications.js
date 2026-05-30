@@ -4,9 +4,8 @@ var _notifsCache = [];
 
 async function renderNotifications() {
   const el = document.getElementById('notifList');
-  if (!el) return;
 
-  el.innerHTML = [1,2,3].map(() =>
+  if (el) el.innerHTML = [1,2,3].map(() =>
     '<div class="notif-item">' +
       '<div class="skel" style="width:40px;height:40px;border-radius:10px;flex-shrink:0"></div>' +
       '<div style="flex:1;display:flex;flex-direction:column;gap:6px">' +
@@ -25,6 +24,56 @@ async function renderNotifications() {
   var role = (typeof currentUser !== 'undefined' && currentUser) ? currentUser.role : '';
 
   if (typeof api !== 'undefined') {
+    // ── Calendar events (ALL roles): broadcast events from dekanat/teacher.
+    //    Personal events the user created are not announced back to them. ──────
+    try {
+      var _today = new Date();
+      var _pad = function(n){ return (n < 10 ? '0' : '') + n; };
+      var _fmt = function(d){ return d.getFullYear() + '-' + _pad(d.getMonth()+1) + '-' + _pad(d.getDate()); };
+      var _to = new Date(_today.getTime() + 45 * 86400000);
+      var evs = await api('GET', '/events?from=' + _fmt(_today) + '&to=' + _fmt(_to));
+      if (Array.isArray(evs)) {
+        evs.filter(function(e){ return e.scope && e.scope !== 'personal' && !e.mine; })
+           .slice(0, 15)
+           .forEach(function(e) {
+             var icon = e.type === 'party' ? '🎉'
+                      : e.type === 'meeting' ? '👥'
+                      : e.type === 'deadline' ? '⏰'
+                      : e.type === 'holiday' ? '🏖️' : '📅';
+             var when = e.event_date + (e.start_time ? ' ' + String(e.start_time).slice(0,5) : '');
+             combined.push({
+               icon: icon,
+               color: '#EFF6FF',
+               title: e.title,
+               text: when + (e.creator_name ? ' · ' + e.creator_name : '') +
+                     (e.description ? ' — ' + e.description : ''),
+               time: e.event_date,
+               unread: true
+             });
+           });
+      }
+    } catch(e) {}
+
+    // ── Active test/sesiya sessions (students): announce when dekanat opens one ─
+    if (role === 'student') {
+      try {
+        var sessions = await api('GET', '/exams/session-state');
+        if (Array.isArray(sessions)) {
+          sessions.filter(function(s){ return s.is_open; }).forEach(function(s) {
+            var isSes = s.exam_type === 'sesiya';
+            combined.push({
+              icon: isSes ? '🎓' : '📝',
+              color: '#FEF3C7',
+              title: (isSes ? 'Sesiya' : 'Test rejim') + ' ochildi',
+              text: (isSes ? 'Sesiya imtihoni' : 'Test') + ' faollashtirildi — topshirishingiz mumkin',
+              time: s.opened_at ? _timeAgo(s.opened_at) : '',
+              unread: true
+            });
+          });
+        }
+      } catch(e) {}
+    }
+
     // Dekanat/admin: exam results only (etiraz is in sesiya panel, NOT here)
     if (role === 'dekanat' || role === 'admin') {
       try {
