@@ -46,11 +46,11 @@
 <link rel="preconnect" href="https://cdnjs.cloudflare.com" crossorigin>
 <link rel="dns-prefetch" href="https://idu-platform-production.up.railway.app">
 <!-- Critical CSS preload — start fetching before parser hits the link tag -->
-<link rel="preload" href="css/style.css?v=20260530d" as="style">
+<link rel="preload" href="css/style.css?v=20260530e" as="style">
 <link rel="preload" href="css/utilities.css?v=20260525a" as="style">
 <script defer src="https://cdnjs.cloudflare.com/ajax/libs/dompurify/3.0.8/purify.min.js"></script>
 <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800&family=DM+Mono:wght@400;500;600&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="css/style.css?v=20260530d">
+<link rel="stylesheet" href="css/style.css?v=20260530e">
 <link rel="stylesheet" href="css/responsive.css?v=20260529a">
 <link rel="stylesheet" href="css/landing.css?v=20260529f">
 <link rel="stylesheet" href="css/utilities.css?v=20260525a">
@@ -1136,6 +1136,10 @@ html[data-autologin='1'] #idu-autologin-loader { display:flex; }
   <!-- Streak + Progress Ring row (学而思 style) -->
   <div id="dashStreakRow" style="margin-bottom:16px"></div>
 
+  <!-- Daily challenge + review (spaced repetition) -->
+  <div id="dailyChallengeCard" style="margin-bottom:12px"></div>
+  <div id="reviewBadgeCard" style="margin-bottom:14px"></div>
+
   <!-- XP / Gamification widget -->
   <div id="xpWidget" style="margin-bottom:14px"></div>
 
@@ -1409,25 +1413,21 @@ html[data-autologin='1'] #idu-autologin-loader { display:flex; }
       </select>
     </div>
   </div>
-  <div class="grid-7-3">
-    <div class="card">
-      <div class="card-header"><div class="card-title">Reyting jadvali</div></div>
-      <div id="ratingList"></div>
+  <!-- Weekly XP leaderboard (live competition) -->
+  <div class="card" style="margin-bottom:16px">
+    <div class="card-header">
+      <div class="card-title">🔥 Haftalik reyting <span style="font-size:12px;font-weight:600;color:var(--text3)">(so'nggi 7 kun XP)</span></div>
     </div>
-    <div class="card">
-      <div class="card-header"><div class="card-title">Sizning ko'rsatkichlaringiz</div></div>
-      <div style="text-align:center;padding:20px 0">
-        <div style="font-size:48px;font-weight:900;color:var(--primary);font-family:'DM Mono',monospace">#12</div>
-        <div style="font-size:13px;color:var(--text3);margin-bottom:16px">156 ta talaba ichida</div>
-      </div>
-      <div class="bb-row"><span class="bb-label">GPA</span><span class="bb-val" style="color:var(--primary)">3.7</span></div>
-      <div class="divider"></div>
-      <div class="bb-row"><span class="bb-label">O'rtacha ball</span><span class="bb-val">82.4</span></div>
-      <div class="divider"></div>
-      <div class="bb-row"><span class="bb-label">Davomat</span><span class="bb-val" style="color:var(--green)">94%</span></div>
-      <div class="divider"></div>
-      <div class="bb-row"><span class="bb-label">Yutuq ballari</span><span class="bb-val" style="color:var(--orange)">847</span></div>
+    <div id="weeklyLeaderboard"><div style="text-align:center;color:var(--text3);padding:18px">Yuklanmoqda...</div></div>
+  </div>
+
+  <!-- Bilim daraxti (subject mastery skill tree) -->
+  <div class="card">
+    <div class="card-header">
+      <div class="card-title">🌳 Bilim daraxti</div>
+      <div style="font-size:12px;color:var(--text3)">Har fan bo'yicha o'zlashtirish</div>
     </div>
+    <div id="masteryTree" style="margin-top:8px"></div>
   </div>
 </div>
 
@@ -4455,6 +4455,7 @@ function upmTab(name) {
   <script defer src="js/features/attendance.js?v=20260520f"></script>
   <script defer src="js/features/chat.js?v=20260528c"></script>
   <script defer src="js/features/gamification.js?v=20260520f"></script>
+  <script defer src="js/features/engagement.js?v=20260530e"></script>
   <script defer src="js/pages/rector.js?v=20260520f"></script>
   <script defer src="js/features/teacher-exams.js?v=20260520f"></script>
   <script defer src="js/features/dark-mode.js?v=20260526a"></script>
@@ -4464,7 +4465,7 @@ function upmTab(name) {
   <script defer src="js/features/calendar.js?v=20260528a"></script>
   <script defer src="js/features/forum.js?v=20260528a"></script>
   <script defer src="js/features/bulk-export.js?v=20260528a"></script>
-  <script defer src="js/main.js?v=20260530d"></script>
+  <script defer src="js/main.js?v=20260530e"></script>
   <script defer src="js/enhancements.js?v=20260526a"></script>
   <!-- QR code generator (teacher) -->
   <script defer src="https://cdn.jsdelivr.net/npm/qrcodejs@1.0.0/qrcode.min.js" crossorigin="anonymous"></script>

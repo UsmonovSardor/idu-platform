@@ -296,6 +296,7 @@ async function realLoginStart(role, loginInputId, passInputId, btnId) {
     var fab2 = document.getElementById('chatFab');
     if (fab2) fab2.style.display = 'flex';
     if (realRole === 'student' && typeof renderXPWidget === 'function') renderXPWidget();
+    if (realRole === 'student' && typeof refreshEngagement === 'function') refreshEngagement();
     if (typeof initDefaultChatRooms === 'function') setTimeout(initDefaultChatRooms, 2000);
     if (window.IDU) {
       setTimeout(function(){
@@ -681,14 +682,14 @@ function showPage(id){
   const si=document.getElementById('si-'+id);
   if(si) si.classList.add('active');
   // Lazy render — original pages
-  if(id==='dashboard') renderStudentDashboard();
+  if(id==='dashboard') { renderStudentDashboard(); if(typeof refreshEngagement==='function') refreshEngagement(); }
   else if(id==='timetable') renderTimetable();
   else if(id==='teacher-dashboard') initTeacherStats();
   else if(id==='teacher-timetable') renderTeacherTimetable();
   else if(id==='grades') { renderGrades(); }
   else if(id==='tasks') renderTasks();
   else if(id==='materials') renderMaterials();
-  else if(id==='rating') renderRating();
+  else if(id==='rating') { renderRating(); if(typeof renderWeeklyLeaderboard==='function') renderWeeklyLeaderboard(); if(typeof renderMasteryTree==='function') renderMasteryTree(); }
   else if(id==='notifications') renderNotifications();
   else if(id==='startup') renderIdeas();
   else if(id==='teacher-students') renderStudentList();
