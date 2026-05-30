@@ -46,11 +46,11 @@
 <link rel="preconnect" href="https://cdnjs.cloudflare.com" crossorigin>
 <link rel="dns-prefetch" href="https://idu-platform-production.up.railway.app">
 <!-- Critical CSS preload — start fetching before parser hits the link tag -->
-<link rel="preload" href="css/style.css?v=20260530c" as="style">
+<link rel="preload" href="css/style.css?v=20260530d" as="style">
 <link rel="preload" href="css/utilities.css?v=20260525a" as="style">
 <script defer src="https://cdnjs.cloudflare.com/ajax/libs/dompurify/3.0.8/purify.min.js"></script>
 <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800&family=DM+Mono:wght@400;500;600&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="css/style.css?v=20260530c">
+<link rel="stylesheet" href="css/style.css?v=20260530d">
 <link rel="stylesheet" href="css/responsive.css?v=20260529a">
 <link rel="stylesheet" href="css/landing.css?v=20260529f">
 <link rel="stylesheet" href="css/utilities.css?v=20260525a">
@@ -2467,10 +2467,15 @@ html[data-autologin='1'] #idu-autologin-loader { display:flex; }
     <div class="card">
       <div class="card-header"><div class="card-title">🔍 Foydalanuvchi qidirish</div></div>
       <div id="nickSearchWrap" style="position:relative">
-        <input type="text" id="nickSearchInput" class="profile-input" placeholder="@nickname, ism yoki ID raqam..."
+        <input type="text" id="nickSearchInput" class="profile-input" placeholder="Ism bo'yicha qidiring..."
           oninput="onNicknameSearchInput(this.value)"
           style="width:100%;box-sizing:border-box;padding-left:42px;font-size:14px">
         <span style="position:absolute;left:14px;top:50%;transform:translateY(-50%);color:#60a5fa;font-size:16px;pointer-events:none">🔍</span>
+      </div>
+      <div style="display:flex;gap:8px;margin-top:8px;flex-wrap:wrap">
+        <span style="font-size:11px;color:#607a9e;background:rgba(59,130,246,0.07);border:1px solid rgba(59,130,246,0.12);border-radius:6px;padding:2px 9px">✏️ Ism bo'yicha</span>
+        <span style="font-size:11px;color:#607a9e;background:rgba(59,130,246,0.07);border:1px solid rgba(59,130,246,0.12);border-radius:6px;padding:2px 9px">@ Nick bo'yicha: @sardor</span>
+        <span style="font-size:11px;color:#607a9e;background:rgba(59,130,246,0.07);border:1px solid rgba(59,130,246,0.12);border-radius:6px;padding:2px 9px"># ID bo'yicha: 1570...</span>
       </div>
     </div>
     <!-- Search results portal — fixed position, always on top -->

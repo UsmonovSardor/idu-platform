@@ -210,40 +210,56 @@ router.get('/me', authenticate, async (req, res) => {
   res.json(rows[0]);
 });
 
-// ── GET /api/v1/auth/search?q=nick_or_id ─────────────────────────────────────
-// Find users by @nickname or numeric ID. Returns minimal public profile.
+// ── GET /api/v1/auth/search?q=... ────────────────────────────────────────────
+// Search rules:
+//   @nick   → exact/prefix nickname match only
+//   123456  → numeric ID or user_code prefix
+//   text    → full_name prefix only (NOT nickname)
 router.get('/search', authenticate, async (req, res) => {
-  const q = String(req.query.q || '').trim();
-  if (!q) return res.json([]);
+  const raw = String(req.query.q || '').trim();
+  if (!raw || raw.length < 2) return res.json([]);
 
   let rows;
-  // If query is a number → search by ID
-  if (/^\d+$/.test(q)) {
+
+  if (raw.startsWith('@')) {
+    // @nickname search — strip @ and do prefix match on nickname
+    const nick = raw.slice(1).replace(/[%_]/g, '\\$&');
+    if (!nick) return res.json([]);
     ({ rows } = await db.query(
       `SELECT u.id, u.full_name, u.nickname, u.user_code, u.avatar_url, u.role,
               s.faculty, s.year_of_study
-       FROM users u
-       LEFT JOIN students s ON s.user_id = u.id
-       WHERE u.id = $1 AND u.is_active = TRUE LIMIT 1`,
-      [parseInt(q, 10)]
+       FROM users u LEFT JOIN students s ON s.user_id = u.id
+       WHERE u.is_active = TRUE AND LOWER(u.nickname) LIKE LOWER($1)
+       ORDER BY u.full_name LIMIT 10`,
+      [nick + '%']
     ));
-  } else {
-    // Search by nickname (case-insensitive), user_code, or full_name prefix
-    const like = q.replace(/[%_]/g, '\\$&') + '%';
+
+  } else if (/^\d+$/.test(raw)) {
+    // Numeric: try ID first, then user_code prefix
     ({ rows } = await db.query(
       `SELECT u.id, u.full_name, u.nickname, u.user_code, u.avatar_url, u.role,
               s.faculty, s.year_of_study
-       FROM users u
-       LEFT JOIN students s ON s.user_id = u.id
+       FROM users u LEFT JOIN students s ON s.user_id = u.id
        WHERE u.is_active = TRUE
-         AND (LOWER(u.nickname) LIKE LOWER($1) OR LOWER(u.full_name) LIKE LOWER($1) OR u.user_code LIKE $1)
-       ORDER BY
-         CASE WHEN LOWER(u.nickname) = LOWER($2) THEN 0 ELSE 1 END,
-         u.full_name
+         AND (u.id = $1 OR u.user_code LIKE $2)
+       ORDER BY CASE WHEN u.id = $1 THEN 0 ELSE 1 END, u.full_name
        LIMIT 10`,
-      [like, q]
+      [parseInt(raw, 10), raw + '%']
+    ));
+
+  } else {
+    // Plain text → full_name prefix ONLY (not nickname)
+    const like = raw.replace(/[%_]/g, '\\$&') + '%';
+    ({ rows } = await db.query(
+      `SELECT u.id, u.full_name, u.nickname, u.user_code, u.avatar_url, u.role,
+              s.faculty, s.year_of_study
+       FROM users u LEFT JOIN students s ON s.user_id = u.id
+       WHERE u.is_active = TRUE AND LOWER(u.full_name) LIKE LOWER($1)
+       ORDER BY u.full_name LIMIT 10`,
+      [like]
     ));
   }
+
   res.json(rows);
 });
 
