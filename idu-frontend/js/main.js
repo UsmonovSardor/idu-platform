@@ -4437,20 +4437,14 @@ window.addEventListener('unhandledrejection', function(evt) {
 });
 
 window.addEventListener('DOMContentLoaded', function() {
-  // ── JWT AUTO-LOGIN: verify token → skip landing page ────────────────────────
+  // ── JWT AUTO-LOGIN: verify session → skip landing page ──────────────────────
+  // config.js api() uses API_BASE='/api/v1', so path must be '/auth/me' not '/v1/auth/me'
+  // api() sends credentials:'include' — httpOnly cookie is sent automatically
   var jwt = _lsGet('idu_jwt');
   if (jwt) {
-    // Correct URL: origin + /api/v1/auth/me
-    var meUrl = window.location.origin + '/api/v1/auth/me';
-    fetch(meUrl, {
-      headers: { 'Authorization': 'Bearer ' + jwt, 'Content-Type': 'application/json' }
-    }).then(function(r) {
-      if (!r.ok) throw new Error('token expired');
-      return r.json();
-    }).then(function(me) {
-      // ✅ Token valid — set token in memory, launch dashboard
-      _apiToken = jwt;
-      if (typeof setToken === 'function') setToken(jwt);
+    (typeof api === 'function' ? api('GET', '/auth/me') : Promise.reject('no api'))
+    .then(function(me) {
+      // ✅ Session valid — launch dashboard immediately
       document.documentElement.removeAttribute('data-autologin');
       var loaderEl = document.getElementById('idu-autologin-loader');
       if (loaderEl) loaderEl.style.display = 'none';
@@ -4458,20 +4452,14 @@ window.addEventListener('DOMContentLoaded', function() {
       var u = { login: me.login, name: me.full_name, role: role, phone: me.phone || '', gpa: me.gpa || 0 };
       if (typeof launchApp === 'function') launchApp(role, u);
     }).catch(function() {
-      // ❌ Token expired or network error — clear, show landing page
+      // ❌ Session expired — clear storage, show landing page
       _lsDel('idu_jwt');
-      _apiToken = null;
       document.documentElement.removeAttribute('data-autologin');
       var authEl = document.getElementById('authScreen');
       if (authEl) authEl.style.display = '';
       var appEl = document.getElementById('appScreen');
       if (appEl) { appEl.style.display = 'none'; appEl.classList.remove('visible'); }
-      var saved = _lsGet('idu_session');
-      if (saved) loadSavedSession();
     });
-  } else {
-    var saved = _lsGet('idu_session');
-    if (saved) loadSavedSession();
   }
   // Login oynasi endi avtomatik ochilmaydi. Foydalanuvchi yuqoridagi “Kirish” tugmasini bosganda ochiladi.
   // ── LIVE DATE & TIME BAR ──

@@ -14,7 +14,7 @@ function getToken() {
 }
 
 async function api(method, path, body) {
-   var token = _apiToken || localStorage.getItem('idu_token') || localStorage.getItem('token') || localStorage.getItem('authToken');
+   var token = _apiToken || localStorage.getItem('idu_jwt') || localStorage.getItem('idu_token') || localStorage.getItem('token') || localStorage.getItem('authToken');
     var headers = { 'Content-Type': 'application/json' };
 if (token) headers['Authorization'] = 'Bearer ' + token;
   try {
