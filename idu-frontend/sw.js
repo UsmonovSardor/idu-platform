@@ -9,7 +9,7 @@
  */
 'use strict';
 
-const VERSION       = 'v8';
+const VERSION       = 'v9';
 const STATIC_CACHE  = 'idu-static-' + VERSION;
 const IMG_CACHE     = 'idu-img-' + VERSION;
 const SHELL_CACHE   = 'idu-shell-' + VERSION;
@@ -124,9 +124,14 @@ self.addEventListener('fetch', (event) => {
     return;
   }
 
-  // 6. Cross-origin (CDN) → cache-first
+  // 6. Cross-origin requests.
+  //    Static CDN assets (fonts/css/js/images) were already handled above and
+  //    are safe to cache-first. Anything else cross-origin (e.g. the API backend
+  //    on a different Railway host — /health, dynamic JSON) must be NETWORK-FIRST
+  //    so a redeploy is never masked by a stale cached copy. Caching cross-origin
+  //    dynamic responses here was making fresh backend data look "disappeared".
   if (url.origin !== self.location.origin) {
-    event.respondWith(cacheFirst(req, STATIC_CACHE));
+    event.respondWith(networkFirst(req, STATIC_CACHE));
     return;
   }
 });
