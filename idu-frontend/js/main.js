@@ -566,6 +566,7 @@ const NAV_TABS = {
     {id:'forum',icon:'💬',label:'Forum',labelRu:'Форум'},
     {id:'startup',icon:'🚀',label:'Startup',labelRu:'Стартап'},
     {id:'leaderboard',icon:'🏆',label:'Reyting',labelRu:'Рейтинг'},
+    {id:'liga',icon:'⚔️',label:'IDU Liga',labelRu:'IDU Лига'},
     {id:'aitutor',icon:'🤖',label:'AI Tutor',labelRu:'AI Репетитор'},
     {id:'professors',icon:'⭐',label:'Ustozlar',labelRu:'Преподаватели'},
     {id:'notifications',icon:'🔔',label:'Xabarlar',labelRu:'Уведомления',badge:3},
@@ -599,6 +600,7 @@ const NAV_TABS = {
     {id:'dekanat-report',icon:'📈',label:'Hisobotlar',labelRu:'Отчёты'},
     {id:'rector-dashboard',icon:'🏛️',label:'Rektor paneli',labelRu:'Ректор аналитика'},
     {id:'leaderboard',icon:'🏆',label:'Reyting',labelRu:'Рейтинг'},
+    {id:'liga',icon:'⚔️',label:'IDU Liga',labelRu:'IDU Лига'},
   ],
   investor: [
     {id:'investor-dashboard',icon:'💼',label:'Dashboard',labelRu:'Дашборд'},
@@ -731,6 +733,11 @@ function showPage(id){
   else if(id==='profile')          { if(typeof loadProfile==='function') loadProfile(); }
   else if(id==='calendar')         { if(typeof renderCalendarMonth==='function') renderCalendarMonth(); }
   else if(id==='forum')            { if(typeof loadForum==='function') loadForum(); }
+  else if(id==='liga')             {
+    var lb=document.getElementById('ligaCreateBtn');
+    if(lb) lb.style.display=(currentUser&&(currentUser.role==='dekanat'||currentUser.role==='admin'))?'':'none';
+    if(typeof renderLiga==='function') renderLiga();
+  }
   // Lazy render — addon pages
   else if(id==='games') { if(typeof renderGameHub==='function') renderGameHub(); }
   else if(id==='gamification') { if(typeof renderGamification==='function') renderGamification(); }

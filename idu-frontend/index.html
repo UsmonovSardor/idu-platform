@@ -2591,6 +2591,20 @@ html[data-autologin='1'] #idu-autologin-loader { display:flex; }
   </div>
 </div>
 
+<!-- ═══ IDU LIGA — guruhlararo chempionat ═══ -->
+<div class="page" id="page-liga">
+  <div class="page-header">
+    <div class="page-header-left">
+      <div class="ph-title">🏆 IDU Liga</div>
+      <div class="ph-sub">Fanlar bo'yicha guruhlararo chempionat</div>
+    </div>
+    <div class="page-header-right">
+      <button class="btn btn-primary" onclick="openLigaCreate()" id="ligaCreateBtn" style="display:none">＋ Turnir</button>
+    </div>
+  </div>
+  <div class="liga-wrap" id="ligaBody"></div>
+</div>
+
 <!-- ═══ STUDENT: FORUM Q&A ═══ -->
 <div class="page" id="page-forum">
   <div class="page-header">
@@ -4468,9 +4482,10 @@ function upmTab(name) {
   <script defer src="js/features/onboarding.js?v=20260526a"></script>
   <script defer src="js/features/profile.js?v=20260530c"></script>
   <script defer src="js/features/calendar.js?v=20260530k"></script>
+  <script defer src="js/features/competitions.js?v=20260530l"></script>
   <script defer src="js/features/forum.js?v=20260528a"></script>
   <script defer src="js/features/bulk-export.js?v=20260528a"></script>
-  <script defer src="js/main.js?v=20260530k"></script>
+  <script defer src="js/main.js?v=20260530l"></script>
   <script defer src="js/enhancements.js?v=20260526a"></script>
   <!-- QR code generator (teacher) -->
   <script defer src="https://cdn.jsdelivr.net/npm/qrcodejs@1.0.0/qrcode.min.js" crossorigin="anonymous"></script>
