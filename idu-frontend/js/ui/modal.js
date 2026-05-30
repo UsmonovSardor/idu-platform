@@ -328,6 +328,7 @@ function closeFeatModal(){ _closeModal('featModal'); }
 function openLoginModal(){
   document.getElementById('loginModalBg').classList.add('open');
   document.body.style.overflow='hidden';
+  document.body.classList.add('modal-open'); // pauses landing GPU animations → smooth modal
   setTimeout(function(){ var el=document.getElementById('mainLogin'); if(el) el.focus(); }, 80);
 }
 
@@ -338,6 +339,7 @@ function closeLoginModal(e){
 function closeLoginModalForce(){
   document.getElementById('loginModalBg').classList.remove('open');
   document.body.style.overflow='';
+  document.body.classList.remove('modal-open');
   // Reset new login form
   var lEl=document.getElementById('mainLogin'); if(lEl) lEl.value='';
   var pEl=document.getElementById('mainPass'); if(pEl){pEl.value='';pEl.type='password';}

@@ -175,17 +175,16 @@
 /* IDU — deep readable blue gradient on white */
 .lp-brand-gradient {
   background: linear-gradient(135deg, #1e40af 0%, #2563eb 35%, #0891b2 70%, #2563eb 100%);
-  background-size: 250%;
+  background-size: 100%;
   -webkit-background-clip: text; -webkit-text-fill-color: transparent;
   background-clip: text;
   color: transparent; /* W3C fallback — prevents letter flash when parent opacity animates */
-  animation: lp-grad 5s ease-in-out infinite alternate;
   display: inline-block;
-  filter: drop-shadow(0 6px 20px rgba(37,99,235,0.22));
-  will-change: background-position; /* GPU layer — prevents repaint artifacts */
-  transform: translateZ(0);         /* force compositing */
+  text-shadow: 0 6px 20px rgba(37,99,235,0.18); /* cheaper than drop-shadow filter; no per-frame raster */
 }
-@keyframes lp-grad { 0% { background-position: 0% 50%; } 100% { background-position: 100% 50%; } }
+/* NOTE: removed infinite lp-grad background-position loop + drop-shadow filter +
+   permanent will-change layer — they forced a full re-raster of the giant IDU text
+   every frame (even behind the login modal's backdrop-blur), causing UI freeze/jank. */
 
 .lp-hero-sub-title {
   display: block;
@@ -933,3 +932,15 @@
   .lp-hero { min-height: auto; padding-top: 88px; padding-bottom: 48px; }
   .lp-hero-title { font-size: clamp(48px, 6vw, 80px); }
 }
+
+/* ── Performance: stop infinite GPU animations on low-power / reduced-motion ── */
+@media (prefers-reduced-motion: reduce) {
+  .lp-primary-btn::after,
+  .lp-card,
+  .lp-cta-main-btn { animation: none !important; }
+}
+/* When login modal is open, pause landing background animations to keep the
+   modal smooth (no per-frame repaint behind the backdrop blur). */
+body.modal-open .lp-card,
+body.modal-open .lp-primary-btn::after,
+body.modal-open .lp-cta-main-btn { animation-play-state: paused !important; }
