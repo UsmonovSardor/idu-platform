@@ -1,7 +1,7 @@
 /* ═══════════════════════════════════════════════════════════════
-   IDU Landing — v10.0  Liquid Glass  (Fira Code + Fira Sans)
-   Aesthetic: dark premium, glassmorphism, iridescent glow
-   Skill: ui-ux-pro-max → Liquid Glass · #020617 · Fira Code
+   IDU Landing — v10.1  Liquid Glass  (Fira Code + Fira Sans)
+   Performance: no render-blocking fonts, minimal blur, no float
+   $10K: point of view · restrained motion · hierarchy · mobile
 ═══════════════════════════════════════════════════════════════ */
 
 /* ── Landing-page-only tokens (scoped to #authScreen) ── */
@@ -50,11 +50,12 @@
   position: fixed; top: 0; left: 0; right: 0; z-index: 1000;
   display: flex; align-items: center; justify-content: space-between;
   padding: 0 56px; height: 62px;
-  background: rgba(2,6,23,0.72);
-  backdrop-filter: blur(40px) saturate(180%);
-  -webkit-backdrop-filter: blur(40px) saturate(180%);
+  background: rgba(2,6,23,0.85);
+  backdrop-filter: blur(18px) saturate(160%);
+  -webkit-backdrop-filter: blur(18px) saturate(160%);
   border-bottom: 1px solid rgba(59,130,246,0.1);
-  transition: background 0.35s, box-shadow 0.35s;
+  transition: background 0.3s, box-shadow 0.3s;
+  will-change: background;
 }
 /* iridescent top bar */
 .lp-nav::before {
@@ -269,13 +270,13 @@
 .lp-primary-btn::after {
   content: '';
   position: absolute; top: 0; left: -100%;
-  width: 55%; height: 100%;
-  background: linear-gradient(90deg, transparent, rgba(255,255,255,0.3), transparent);
+  width: 40%; height: 100%;
+  background: linear-gradient(90deg, transparent, rgba(255,255,255,0.18), transparent);
   transform: skewX(-18deg);
-  animation: lp-shimmer 3.4s ease-in-out 1.8s infinite;
+  animation: lp-shimmer 5.5s ease-in-out 2.5s infinite;
   pointer-events: none;
 }
-@keyframes lp-shimmer { 0% { left: -100%; } 35%, 100% { left: 160%; } }
+@keyframes lp-shimmer { 0% { left: -100%; } 25%, 100% { left: 160%; } }
 .lp-primary-btn:hover { opacity: 0.92; transform: translateY(-2px); box-shadow: 0 12px 32px rgba(34,197,94,0.52); }
 .lp-primary-btn:active { transform: translateY(0); }
 
@@ -324,21 +325,18 @@
 ───────────────────────────────────────────────────────────── */
 .lp-hero-card {
   flex-shrink: 0; width: 360px;
-  background: rgba(4,12,30,0.7);
-  backdrop-filter: blur(30px) saturate(150%);
-  -webkit-backdrop-filter: blur(30px) saturate(150%);
+  background: rgba(4,12,30,0.82);
   border: 1px solid rgba(59,130,246,0.22);
   border-radius: 24px; padding: 24px;
   position: relative; z-index: 2;
   box-shadow:
     0 0 0 1px rgba(59,130,246,0.08),
-    0 36px 76px rgba(0,0,0,0.52),
-    0 10px 36px rgba(37,99,235,0.2),
-    inset 0 1px 0 rgba(255,255,255,0.06);
-  animation: lp-card 0.75s cubic-bezier(0.22,1,0.36,1) 0.28s both, lp-float 5.5s ease-in-out 1.2s infinite;
+    0 32px 64px rgba(0,0,0,0.52),
+    0 8px 28px rgba(37,99,235,0.18),
+    inset 0 1px 0 rgba(255,255,255,0.05);
+  animation: lp-card 0.75s cubic-bezier(0.22,1,0.36,1) 0.28s both;
 }
-@keyframes lp-card  { from { opacity: 0; transform: translateX(30px) scale(0.97); } to { opacity: 1; transform: translateX(0) scale(1); } }
-@keyframes lp-float { 0%, 100% { transform: translateY(0px); } 50% { transform: translateY(-12px); } }
+@keyframes lp-card { from { opacity: 0; transform: translateX(30px) scale(0.97); } to { opacity: 1; transform: translateX(0) scale(1); } }
 .lp-hero-card::before {
   content: ''; position: absolute; top: 0; left: 18%; right: 18%; height: 1px;
   background: linear-gradient(90deg, transparent, rgba(59,130,246,0.9), rgba(56,189,248,0.8), transparent);
@@ -373,6 +371,14 @@
 .lp-subj span { font-weight: 700; font-size: 12px; color: var(--c); }
 
 /* ─────────────────────────────────────────────────────────────
+   PERFORMANCE — below-fold sections skip rendering until near viewport
+───────────────────────────────────────────────────────────── */
+.lp-features, .lp-compare, .lp-how, .lp-sec, .lp-trust {
+  content-visibility: auto;
+  contain-intrinsic-size: 0 600px;
+}
+
+/* ─────────────────────────────────────────────────────────────
    STATS
 ───────────────────────────────────────────────────────────── */
 .lp-stats {
@@ -385,8 +391,7 @@
 }
 .lp-stat-card {
   position: relative;
-  background: rgba(4,12,30,0.62);
-  backdrop-filter: blur(20px);
+  background: rgba(4,12,30,0.78);
   border: 1px solid rgba(59,130,246,0.2);
   border-radius: 20px; padding: 26px 12px 22px; text-align: center;
   transition: transform 0.28s ease, box-shadow 0.28s ease, border-color 0.28s ease;
@@ -457,8 +462,7 @@
 .lp-feat-card {
   position: relative;
   display: flex; flex-direction: column;
-  background: rgba(4,12,30,0.58);
-  backdrop-filter: blur(20px);
+  background: rgba(4,12,30,0.80);
   border: 1px solid rgba(59,130,246,0.16);
   border-radius: 22px; padding: 28px; overflow: hidden;
   box-shadow: 0 6px 26px rgba(0,0,0,0.38), inset 0 1px 0 rgba(255,255,255,0.04);
@@ -552,8 +556,7 @@
 .lp-compare { padding: 80px 88px; position: relative; }
 .lp-compare-wrap {
   max-width: 920px; margin: 0 auto;
-  background: rgba(4,12,30,0.72);
-  backdrop-filter: blur(22px);
+  background: rgba(4,12,30,0.88);
   border: 1px solid rgba(59,130,246,0.2);
   border-radius: 22px; overflow: hidden;
   box-shadow: 0 8px 34px rgba(0,0,0,0.44);
@@ -604,8 +607,7 @@
 .lp-sec { padding: 80px 88px; }
 .lp-sec-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 14px; }
 .lp-sec-card {
-  background: rgba(4,12,30,0.62);
-  backdrop-filter: blur(16px);
+  background: rgba(4,12,30,0.80);
   border: 1px solid rgba(59,130,246,0.16);
   border-radius: 20px; padding: 26px 24px;
   box-shadow: 0 4px 20px rgba(0,0,0,0.32);
@@ -630,8 +632,7 @@
 }
 .lp-trust-stat {
   text-align: center; padding: 22px 10px;
-  background: rgba(4,12,30,0.62);
-  backdrop-filter: blur(16px);
+  background: rgba(4,12,30,0.80);
   border: 1px solid rgba(59,130,246,0.16);
   border-radius: 18px; box-shadow: 0 4px 18px rgba(0,0,0,0.32);
 }
@@ -646,8 +647,7 @@
 .lp-trust-key { font-family: var(--font-body); font-size: 10px; color: var(--text2); font-weight: 700; text-transform: uppercase; letter-spacing: 0.9px; }
 .lp-test-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 14px; }
 .lp-test-card {
-  background: rgba(4,12,30,0.62);
-  backdrop-filter: blur(16px);
+  background: rgba(4,12,30,0.80);
   border: 1px solid rgba(59,130,246,0.16);
   border-radius: 20px; padding: 26px; position: relative;
   box-shadow: 0 4px 20px rgba(0,0,0,0.32);
@@ -900,10 +900,37 @@
   .lp-hero-title { font-size: clamp(48px,6vw,80px); }
 }
 
+/* ─────────────────────────────────────────────────────────────
+   PERFORMANCE — mobile: no backdrop-filter (GPU expensive on phones)
+───────────────────────────────────────────────────────────── */
+@media (max-width: 768px) {
+  .lp-nav,
+  .lp-drop-menu,
+  .lp-mob-screen {
+    backdrop-filter: none !important;
+    -webkit-backdrop-filter: none !important;
+    background: rgba(2,6,23,0.97) !important;
+  }
+  /* disable iridescent animation on mobile — saves battery */
+  .lp-brand-gradient {
+    animation: none !important;
+    background-position: 0% 50%;
+  }
+  /* content-visibility off on mobile — layout shifts with small viewport */
+  .lp-features, .lp-compare, .lp-how, .lp-sec, .lp-trust {
+    content-visibility: visible;
+    contain-intrinsic-size: unset;
+  }
+}
+
 /* Reduced motion */
 @media (prefers-reduced-motion: reduce) {
   .lp-primary-btn::after,
   .lp-brand-gradient,
-  .lp-cta-main-btn { animation: none !important; }
+  .lp-cta-main-btn,
+  .lp-hero-card { animation: none !important; }
+  .lp-stat-card,
+  .lp-feat-card,
+  .lp-sec-card { transition: none !important; }
 }
 body.modal-open .lp-primary-btn::after { animation-play-state: paused !important; }
