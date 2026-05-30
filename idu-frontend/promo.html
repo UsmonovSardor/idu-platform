@@ -1,0 +1,331 @@
+<!DOCTYPE html>
+<html lang="uz">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>IDU — Taqdimot</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;500;600;700;800&family=DM+Sans:ital,opsz,wght@0,9..40,400;0,9..40,500;0,9..40,600;0,9..40,700;1,9..40,400&display=swap" rel="stylesheet">
+<style>
+/* ═══════════════════════════════════════════════════════════════════════
+   IDU — Premium 3D promo deck (A: slayd taqdimot + B: marketing matn)
+   Mustaqil fayl. Bog'liqliksiz. Avto-play ~60s. Ekrandан video olish uchun.
+   ═══════════════════════════════════════════════════════════════════════ */
+:root{
+  --blue:#2563eb; --blue2:#1d4ed8; --cyan:#38bdf8; --cyan2:#22d3ee;
+  --ink:#eaf2ff; --ink2:#9db4d8;
+  --bg:#040c1a; --bg2:#071528;
+}
+*{margin:0;padding:0;box-sizing:border-box}
+html,body{height:100%;overflow:hidden;background:var(--bg);
+  font-family:'DM Sans',-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;
+  color:var(--ink);-webkit-font-smoothing:antialiased}
+
+/* ── Stage (3D perspective root) ── */
+#stage{position:fixed;inset:0;perspective:1400px;perspective-origin:50% 42%;
+  background:
+    radial-gradient(1200px 700px at 75% 12%, rgba(56,189,248,.16), transparent 60%),
+    radial-gradient(1000px 800px at 15% 88%, rgba(37,99,235,.22), transparent 62%),
+    linear-gradient(160deg, #040c1a 0%, #061327 55%, #040e1d 100%);
+  overflow:hidden}
+
+/* floating 3D orbs */
+.orb{position:absolute;border-radius:50%;filter:blur(2px);opacity:.5;
+  background:radial-gradient(circle at 32% 30%, #7cc4ff, #2563eb 55%, transparent 72%);
+  animation:float 14s ease-in-out infinite;will-change:transform}
+.orb.b{background:radial-gradient(circle at 32% 30%, #8defff, #22d3ee 50%, transparent 72%)}
+.o1{width:340px;height:340px;left:-60px;top:8%;animation-delay:0s}
+.o2{width:220px;height:220px;right:6%;top:18%;animation-delay:-3s}
+.o3{width:280px;height:280px;right:18%;bottom:-70px;animation-delay:-6s}
+.o4{width:160px;height:160px;left:24%;bottom:8%;animation-delay:-9s}
+@keyframes float{0%,100%{transform:translate3d(0,0,0) scale(1)}
+  50%{transform:translate3d(0,-38px,60px) scale(1.07)}}
+
+/* particle grid floor (3D plane) */
+.grid{position:absolute;left:50%;bottom:-12%;width:240%;height:120%;
+  transform:translateX(-50%) rotateX(74deg);transform-origin:50% 100%;
+  background-image:
+    linear-gradient(rgba(56,189,248,.18) 1px,transparent 1px),
+    linear-gradient(90deg,rgba(56,189,248,.18) 1px,transparent 1px);
+  background-size:64px 64px;
+  -webkit-mask-image:linear-gradient(transparent,#000 40%,transparent);
+  mask-image:linear-gradient(transparent,#000 40%,transparent);
+  animation:grid 6s linear infinite;opacity:.55}
+@keyframes grid{to{background-position:0 64px,0 64px}}
+
+/* ── Slides ── */
+.slide{position:absolute;inset:0;display:flex;flex-direction:column;
+  align-items:center;justify-content:center;text-align:center;
+  padding:6vmin 8vmin;opacity:0;pointer-events:none;
+  transform:translateZ(-420px) rotateY(16deg);
+  transition:opacity .9s ease, transform 1.1s cubic-bezier(.18,.84,.34,1)}
+.slide.live{opacity:1;transform:translateZ(0) rotateY(0);pointer-events:auto}
+.slide.past{opacity:0;transform:translateZ(-420px) rotateY(-16deg)}
+
+.kicker{font-size:clamp(11px,1.4vw,15px);letter-spacing:.42em;text-transform:uppercase;
+  color:var(--cyan);font-weight:800;margin-bottom:22px;
+  opacity:0;transform:translateY(14px)}
+.title{font-family:'Syne',sans-serif;font-size:clamp(34px,7.2vw,104px);line-height:1.02;font-weight:800;
+  letter-spacing:-.02em;
+  background:linear-gradient(180deg,#ffffff 0%,#bcd6ff 78%);
+  -webkit-background-clip:text;background-clip:text;color:transparent;
+  text-shadow:0 10px 60px rgba(37,99,235,.35);
+  opacity:0;transform:translateY(26px) translateZ(40px)}
+.sub{margin-top:22px;font-size:clamp(15px,2.1vw,25px);line-height:1.5;max-width:880px;
+  color:var(--ink2);font-weight:500;opacity:0;transform:translateY(20px)}
+
+/* bullet marketing pills */
+.pills{margin-top:34px;display:flex;flex-wrap:wrap;gap:14px;justify-content:center;max-width:860px}
+.pill{padding:13px 22px;border-radius:16px;font-size:clamp(13px,1.6vw,18px);font-weight:700;
+  color:#eaf4ff;background:linear-gradient(135deg,rgba(37,99,235,.30),rgba(34,211,238,.14));
+  border:1px solid rgba(86,170,255,.34);
+  box-shadow:0 14px 38px rgba(0,0,0,.34),inset 0 1px 0 rgba(255,255,255,.14);
+  backdrop-filter:blur(8px);opacity:0;transform:translateY(22px) rotateX(-12deg);
+  transform-origin:center bottom}
+.pill .ic{margin-right:9px}
+
+/* animate-in for live slide */
+.slide.live .kicker{animation:rise .7s .15s forwards}
+.slide.live .title {animation:rise .9s .28s forwards}
+.slide.live .sub   {animation:rise .8s .5s forwards}
+.slide.live .pill  {animation:pop .7s forwards}
+.slide.live .pill:nth-child(1){animation-delay:.64s}
+.slide.live .pill:nth-child(2){animation-delay:.74s}
+.slide.live .pill:nth-child(3){animation-delay:.84s}
+.slide.live .pill:nth-child(4){animation-delay:.94s}
+@keyframes rise{to{opacity:1;transform:none}}
+@keyframes pop{to{opacity:1;transform:translateY(0) rotateX(0)}}
+
+/* ── Intro logo + stat counters ── */
+.brand{display:flex;align-items:center;gap:18px;opacity:0;transform:translateY(26px) translateZ(40px)}
+.slide.live .brand{animation:rise .9s .2s forwards}
+.logo3d{font-family:'Syne',sans-serif;font-size:clamp(48px,10vw,150px);font-weight:800;letter-spacing:-.04em;
+  background:linear-gradient(135deg,#eff6ff 0%,#7cc4ff 48%,#22d3ee 100%);
+  -webkit-background-clip:text;background-clip:text;color:transparent;
+  filter:drop-shadow(0 14px 42px rgba(56,189,248,.5))}
+.stats{margin-top:46px;display:flex;gap:clamp(20px,5vw,72px);opacity:0}
+.slide.live .stats{animation:rise .9s .7s forwards}
+.stat{display:flex;flex-direction:column;align-items:center}
+.stat .n{font-size:clamp(30px,5vw,68px);font-weight:900;
+  background:linear-gradient(180deg,#fff,#9fd0ff);-webkit-background-clip:text;background-clip:text;color:transparent}
+.stat .l{margin-top:6px;font-size:clamp(11px,1.4vw,15px);color:var(--ink2);
+  letter-spacing:.08em;text-transform:uppercase;font-weight:700}
+
+/* CTA final */
+.cta-btn{margin-top:40px;padding:18px 40px;border-radius:18px;font-size:clamp(15px,2vw,22px);
+  font-weight:800;color:#04101f;border:none;
+  background:linear-gradient(135deg,#7cc4ff,#22d3ee);
+  box-shadow:0 18px 50px rgba(34,211,238,.4);opacity:0}
+.slide.live .cta-btn{animation:pop .8s .6s forwards}
+
+/* ── UI chrome ── */
+#bar{position:fixed;top:0;left:0;height:4px;width:0;z-index:40;
+  background:linear-gradient(90deg,#2563eb,#38bdf8,#22d3ee);
+  box-shadow:0 0 18px rgba(56,189,248,.7);transition:width .25s linear}
+#dots{position:fixed;bottom:26px;left:50%;transform:translateX(-50%);
+  display:flex;gap:10px;z-index:40}
+.dot{width:9px;height:9px;border-radius:50%;background:rgba(157,180,216,.34);
+  cursor:pointer;transition:all .3s}
+.dot.on{background:var(--cyan);width:30px;border-radius:6px;box-shadow:0 0 12px var(--cyan)}
+#ctl{position:fixed;bottom:22px;right:26px;display:flex;gap:10px;z-index:40}
+.ic-btn{width:44px;height:44px;border-radius:12px;border:1px solid rgba(86,170,255,.3);
+  background:rgba(8,20,40,.6);color:var(--ink);font-size:17px;cursor:pointer;
+  display:flex;align-items:center;justify-content:center;backdrop-filter:blur(8px);
+  transition:.2s}
+.ic-btn:hover{background:rgba(37,99,235,.4);transform:translateY(-2px)}
+#hint{position:fixed;bottom:24px;left:26px;z-index:40;font-size:12px;color:var(--ink2);
+  letter-spacing:.04em;opacity:.7}
+.badge{position:fixed;top:22px;left:26px;z-index:40;display:flex;align-items:center;gap:9px;
+  font-weight:900;letter-spacing:-.01em;font-size:18px;
+  color:#dbeafe;opacity:.92}
+.badge .sq{width:13px;height:13px;border-radius:4px;
+  background:linear-gradient(135deg,#38bdf8,#2563eb);box-shadow:0 0 14px rgba(56,189,248,.7)}
+
+@media (max-width:640px){
+  .pills{gap:10px}.badge{font-size:15px}#hint{display:none}
+}
+@media (prefers-reduced-motion:reduce){
+  *{animation-duration:.01ms!important;transition-duration:.2s!important}
+}
+</style>
+</head>
+<body>
+<div id="stage">
+  <div class="grid"></div>
+  <div class="orb o1"></div><div class="orb b o2"></div>
+  <div class="orb b o3"></div><div class="orb o4"></div>
+
+  <!-- 1 — INTRO -->
+  <section class="slide" data-dur="9000">
+    <div class="brand"><span class="logo3d">IDU</span></div>
+    <div class="sub" style="margin-top:18px;font-size:clamp(16px,2.4vw,30px);color:#cfe2ff;font-weight:600">
+      Universitetingiz — bir ekranda.</div>
+    <div class="stats">
+      <div class="stat"><span class="n" data-to="4200" data-k="1">0</span><span class="l">Talaba</span></div>
+      <div class="stat"><span class="n" data-to="180">0</span><span class="l">O'qituvchi</span></div>
+      <div class="stat"><span class="n" data-to="98" data-suf="%">0</span><span class="l">Mamnunlik</span></div>
+    </div>
+  </section>
+
+  <!-- 2 — TALABA -->
+  <section class="slide" data-dur="8500">
+    <div class="kicker">Talaba paneli</div>
+    <h1 class="title">Hammasi<br>bir bosishda</h1>
+    <p class="sub">Baholar, dars jadvali, imtihonlar va shaxsiy reyting — barchasi real vaqtda yangilanadi.</p>
+    <div class="pills">
+      <span class="pill"><span class="ic">📊</span>Jonli baholar</span>
+      <span class="pill"><span class="ic">🗓️</span>Aqlli jadval</span>
+      <span class="pill"><span class="ic">🏆</span>Shaxsiy reyting</span>
+      <span class="pill"><span class="ic">📝</span>Onlayn imtihon</span>
+    </div>
+  </section>
+
+  <!-- 3 — O'QITUVCHI -->
+  <section class="slide" data-dur="8500">
+    <div class="kicker">O'qituvchi paneli</div>
+    <h1 class="title">Qog'ozsiz.<br>Tezkor.</h1>
+    <p class="sub">Davomat, baholash va savollar banki — o'qituvchining barcha ishi bitta joyda, soniyalarda.</p>
+    <div class="pills">
+      <span class="pill"><span class="ic">✅</span>Davomat belgilash</span>
+      <span class="pill"><span class="ic">🧩</span>Savollar banki</span>
+      <span class="pill"><span class="ic">⚡</span>Imtihon tuzish</span>
+      <span class="pill"><span class="ic">📈</span>Tahlil & hisobot</span>
+    </div>
+  </section>
+
+  <!-- 4 — DEKANAT -->
+  <section class="slide" data-dur="8500">
+    <div class="kicker">Dekanat paneli</div>
+    <h1 class="title">To'liq<br>nazorat</h1>
+    <p class="sub">Butun fakultet bir panelda: talabalar, hisobotlar va chegirma tasdiqlari — boshqaruv qulay.</p>
+    <div class="pills">
+      <span class="pill"><span class="ic">🏛️</span>Fakultet boshqaruvi</span>
+      <span class="pill"><span class="ic">📋</span>Avtomatik hisobot</span>
+      <span class="pill"><span class="ic">🎟️</span>Chegirma tasdiqi</span>
+      <span class="pill"><span class="ic">🔐</span>Xavfsiz tizim</span>
+    </div>
+  </section>
+
+  <!-- 5 — CHAT -->
+  <section class="slide" data-dur="8500">
+    <div class="kicker">Jonli aloqa</div>
+    <h1 class="title">Telegram<br>darajasida</h1>
+    <p class="sub">Ichki chat: javob berish, reaksiyalar, "o'qildi" belgisi va online holat — real vaqtda.</p>
+    <div class="pills">
+      <span class="pill"><span class="ic">💬</span>Jonli xabarlar</span>
+      <span class="pill"><span class="ic">↩️</span>Reply & reaksiya</span>
+      <span class="pill"><span class="ic">✓✓</span>O'qildi belgisi</span>
+      <span class="pill"><span class="ic">🟢</span>Online holat</span>
+    </div>
+  </section>
+
+  <!-- 6 — IDU LIGA -->
+  <section class="slide" data-dur="9000">
+    <div class="kicker">IDU Liga</div>
+    <h1 class="title">Bilim —<br>bu sport</h1>
+    <p class="sub">Guruhlar o'rtasida jonli savol-javob jangi. G'olib guruh <b style="color:#fff">haqiqiy o'qish chegirmasini</b> yutadi!</p>
+    <div class="pills">
+      <span class="pill"><span class="ic">⚔️</span>Jonli jang</span>
+      <span class="pill"><span class="ic">🥇</span>Chempionlik kubogi</span>
+      <span class="pill"><span class="ic">💸</span>Real chegirma</span>
+      <span class="pill"><span class="ic">📺</span>Bracket & jadval</span>
+    </div>
+  </section>
+
+  <!-- 7 — FINAL CTA -->
+  <section class="slide" data-dur="8000">
+    <div class="kicker">Kelajak universiteti</div>
+    <h1 class="title">IDU.<br>Bugun boshlang.</h1>
+    <p class="sub">Bilim, raqobat va zamonaviylik — bitta zamonaviy platformada birlashди.</p>
+    <button class="cta-btn">idu-platform.up.railway.app →</button>
+  </section>
+</div>
+
+<div id="bar"></div>
+<div class="badge"><span class="sq"></span>IDU PLATFORMA</div>
+<div id="dots"></div>
+<div id="ctl">
+  <button class="ic-btn" id="prev" title="Oldingi">‹</button>
+  <button class="ic-btn" id="play" title="Pauza/Davom">⏸</button>
+  <button class="ic-btn" id="next" title="Keyingi">›</button>
+  <button class="ic-btn" id="full" title="To'liq ekran">⛶</button>
+</div>
+<div id="hint">Boshqaruv: ← → · Probel = pauza · F = to'liq ekran</div>
+
+<script>
+(function(){
+  var slides=[].slice.call(document.querySelectorAll('.slide'));
+  var dotsWrap=document.getElementById('dots'), bar=document.getElementById('bar');
+  var i=0, playing=true, t0=0, raf=null, dur=slides[0].dataset.dur*1;
+
+  // dots
+  slides.forEach(function(_,n){
+    var d=document.createElement('div');d.className='dot';d.onclick=function(){go(n)};
+    dotsWrap.appendChild(d);
+  });
+  var dots=[].slice.call(dotsWrap.children);
+
+  function paintDots(){dots.forEach(function(d,n){d.classList.toggle('on',n===i)});}
+
+  function countUp(slide){
+    slide.querySelectorAll('[data-to]').forEach(function(el){
+      var to=+el.dataset.to, k=el.dataset.k==='1', suf=el.dataset.suf||'';
+      var start=performance.now(), D=1500;
+      function fmt(v){
+        if(k){var x=v/1000;return (x>=10?Math.round(x):x.toFixed(1)).replace(/\.0$/,'')+'K'+suf;}
+        return Math.round(v)+suf;
+      }
+      function step(now){
+        var p=Math.min((now-start)/D,1), e=1-Math.pow(2,-10*p);
+        el.textContent=fmt(to*(p===1?1:e));
+        if(p<1)requestAnimationFrame(step);else el.textContent=fmt(to);
+      }
+      requestAnimationFrame(step);
+    });
+  }
+
+  function go(n){
+    slides[i].classList.remove('live');slides[i].classList.add('past');
+    i=(n+slides.length)%slides.length;
+    slides.forEach(function(s,k){if(k!==i)s.classList.remove('live')});
+    var cur=slides[i];cur.classList.remove('past');cur.classList.add('live');
+    dur=cur.dataset.dur*1; t0=performance.now();
+    paintDots(); countUp(cur);
+  }
+
+  function tick(now){
+    if(playing){
+      var p=Math.min((now-t0)/dur,1);
+      bar.style.width=(p*100)+'%';
+      if(p>=1){go(i+1);}
+    }
+    raf=requestAnimationFrame(tick);
+  }
+
+  function setPlay(v){
+    playing=v;document.getElementById('play').textContent=v?'⏸':'▶';
+    if(v)t0=performance.now()-(bar.offsetWidth/window.innerWidth*dur);
+  }
+
+  document.getElementById('next').onclick=function(){go(i+1)};
+  document.getElementById('prev').onclick=function(){go(i-1)};
+  document.getElementById('play').onclick=function(){setPlay(!playing)};
+  document.getElementById('full').onclick=function(){
+    if(!document.fullscreenElement)document.documentElement.requestFullscreen();
+    else document.exitFullscreen();
+  };
+  document.addEventListener('keydown',function(e){
+    if(e.key==='ArrowRight')go(i+1);
+    else if(e.key==='ArrowLeft')go(i-1);
+    else if(e.key===' '){e.preventDefault();setPlay(!playing);}
+    else if(e.key.toLowerCase()==='f')document.getElementById('full').click();
+  });
+
+  // boot
+  slides[0].classList.add('live');paintDots();countUp(slides[0]);
+  t0=performance.now();raf=requestAnimationFrame(tick);
+})();
+</script>
+</body>
+</html>
