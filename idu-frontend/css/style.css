@@ -15,19 +15,19 @@ html,body{
   --orange:#EA580C;--orange-light:#FED7AA;--yellow:#D97706;--yellow-light:#FEF3C7;
   --purple:#7C3AED;--purple-light:#EDE9FE;--pink:#DB2777;--pink-light:#FCE7F3;
   --teal:#0D9488;--teal-light:#CCFBF1;
-  /* Surface — dark sidebar + light content */
-  --sidebar-bg:#0d1b2e;
-  --sidebar-border:rgba(56,130,246,0.1);
-  --nav-bg:#0d1b2e;
-  --bg:#F6F9FF;--bg2:#EEF3FB;--white:#FFFFFF;--border:#E4ECFA;--border2:#C8D8F0;
-  --text:#0C1426;--text2:#4A5A78;--text3:#8FA3C4;--text4:#C2D3E8;
-  /* Shadows — deeper, more premium */
-  --shadow-sm:0 1px 4px rgba(12,20,38,0.07),0 1px 2px rgba(12,20,38,0.04);
-  --shadow:0 4px 18px rgba(12,20,38,0.08),0 2px 7px rgba(12,20,38,0.04);
-  --shadow-md:0 10px 36px rgba(12,20,38,0.11),0 4px 14px rgba(12,20,38,0.05);
-  --shadow-lg:0 24px 64px rgba(12,20,38,0.14),0 8px 22px rgba(12,20,38,0.06);
-  --shadow-blue:0 5px 22px rgba(37,99,235,0.22);
-  --shadow-accent:0 5px 22px rgba(8,145,178,0.2);
+  /* Surface — full dark theme */
+  --sidebar-bg:#040e20;
+  --sidebar-border:rgba(59,130,246,0.14);
+  --nav-bg:#040e20;
+  --bg:#060f22;--bg2:#040c1c;--white:#0c1830;--border:rgba(59,130,246,0.15);--border2:rgba(59,130,246,0.26);
+  --text:#e8f2ff;--text2:#7da4d8;--text3:#4d7aad;--text4:#2d4d78;
+  /* Shadows — dark theme shadows */
+  --shadow-sm:0 1px 4px rgba(0,0,0,0.3),0 1px 2px rgba(0,0,0,0.2);
+  --shadow:0 4px 18px rgba(0,0,0,0.35),0 2px 7px rgba(0,0,0,0.2);
+  --shadow-md:0 10px 36px rgba(0,0,0,0.4),0 4px 14px rgba(0,0,0,0.22);
+  --shadow-lg:0 24px 64px rgba(0,0,0,0.5),0 8px 22px rgba(0,0,0,0.28);
+  --shadow-blue:0 5px 22px rgba(37,99,235,0.3);
+  --shadow-accent:0 5px 22px rgba(8,145,178,0.28);
   --r:10px;--r2:14px;--r3:18px;
   /* Fonts */
   --font-display:'Fira Code',monospace;
@@ -3007,3 +3007,106 @@ body, .card, .stat-card, .topnav, .sidebar, .modal-card, input, select, textarea
   border-color:var(--tc); color:#fff;
 }
 @media (max-width:520px){ .cal-type-grid { grid-template-columns:repeat(2,1fr); } }
+
+/* ═══════════════════════════════════════════════════════════════
+   DARK THEME HARD OVERRIDES — v10.0
+   Fixes all hardcoded #fff / white backgrounds throughout the app.
+   These rules run last, so they win the cascade.
+═══════════════════════════════════════════════════════════════ */
+
+/* ── Main content area & body ────────────────────────────────── */
+body { background: var(--bg) !important; color: var(--text) !important; }
+
+/* ── Cards, modals, boxes ────────────────────────────────────── */
+.card, .stat-card, .rpt-kpi,
+.login-modal, .jdm-box, .prm-box,
+.cmd-palette-modal,
+.modal-bg > div, .modal-card,
+.faq-item, .faq-a,
+.demo-card,
+.skeleton-tr { background: var(--white) !important; border-color: var(--border) !important; }
+
+/* ── Nav & top bars ──────────────────────────────────────────── */
+.hemis-nav, .top-nav, .page-nav, .tab-bar { background: var(--nav-bg) !important; border-color: var(--border) !important; }
+
+/* ── Tables ──────────────────────────────────────────────────── */
+.xl-wrap { background: var(--white) !important; border-color: var(--border) !important; }
+.xl-search-row { background: var(--bg2) !important; border-color: var(--border) !important; }
+.xl-table tbody tr td { background: var(--white) !important; border-color: var(--border) !important; color: var(--text) !important; }
+.xl-table tbody tr:hover td { background: rgba(59,130,246,0.06) !important; }
+.xl-table thead th { background: var(--bg2) !important; color: var(--text2) !important; border-color: var(--border) !important; }
+.xl-btn, .xl-filter-chip { background: var(--white) !important; border-color: var(--border) !important; color: var(--text) !important; }
+.xl-num-input { background: var(--bg) !important; border-color: var(--border) !important; color: var(--text) !important; }
+.xl-head-mi { background: rgba(245,158,11,0.12) !important; color: #fbbf24 !important; }
+.xl-warn-banner { background: rgba(245,158,11,0.1) !important; border-color: rgba(245,158,11,0.25) !important; color: #fbbf24 !important; }
+
+/* ── Form inputs ─────────────────────────────────────────────── */
+.form-input, .form-select,
+.login-input-field,
+.partners-search,
+.prof-search-input,
+.comment-input,
+.ai-textarea,
+input[type="text"], input[type="email"], input[type="password"],
+textarea, select {
+  background: var(--bg2) !important;
+  border-color: var(--border) !important;
+  color: var(--text) !important;
+}
+.form-input:focus, .form-select:focus,
+.login-input-field:focus,
+.partners-search:focus {
+  background: var(--white) !important;
+  border-color: var(--primary) !important;
+}
+
+/* ── Dropdown menus ──────────────────────────────────────────── */
+.hn-drop-menu, .lang-options, .lp-drop-menu {
+  background: rgba(4,14,32,0.98) !important;
+  border-color: var(--border) !important;
+  box-shadow: 0 12px 40px rgba(0,0,0,0.55) !important;
+}
+.lang-current {
+  background: var(--bg2) !important;
+  border-color: var(--border) !important;
+  color: var(--text2) !important;
+}
+.lang-option { color: var(--text2) !important; }
+.lang-option:hover { background: rgba(59,130,246,0.1) !important; }
+
+/* ── Compare table in landing ────────────────────────────────── */
+.lp-compare-table thead th { background: var(--bg2) !important; }
+
+/* ── Hardcoded text colors throughout app ────────────────────── */
+.page-header-left .ph-title,
+.card-title, h1, h2, h3 { color: var(--text) !important; }
+
+/* ── Grade table ─────────────────────────────────────────────── */
+.grade-table tr:hover td { background: rgba(59,130,246,0.06) !important; }
+.grade-table td, .grade-table th { border-color: var(--border) !important; }
+.grade-table th { background: var(--bg2) !important; color: var(--text2) !important; }
+.grade-table td { background: var(--white) !important; color: var(--text) !important; }
+
+/* ── Danger/warning color boxes ─────────────────────────────── */
+.form-error, .login-error-box { background: rgba(220,38,38,0.1) !important; border-color: rgba(239,68,68,0.35) !important; }
+.risk-high { border-color: rgba(239,68,68,0.4) !important; background: rgba(220,38,38,0.1) !important; }
+.risk-mid  { border-color: rgba(245,158,11,0.4) !important; background: rgba(245,158,11,0.08) !important; }
+
+/* ── Buttons secondary ───────────────────────────────────────── */
+.hb-secondary { background: var(--white) !important; color: var(--text) !important; border-color: var(--border) !important; }
+.hb-secondary:hover { background: var(--bg2) !important; }
+
+/* ── Hemis stats bar ─────────────────────────────────────────── */
+.hemis-stats { background: var(--white) !important; border-color: var(--border) !important; }
+
+/* ── cmd-palette ─────────────────────────────────────────────── */
+.cmd-palette-modal { background: var(--white) !important; }
+.cmd-item:hover, .cmd-item.selected { background: rgba(59,130,246,0.1) !important; }
+.cmd-kbd { background: var(--bg2) !important; border-color: var(--border) !important; color: var(--text3) !important; }
+
+/* ── Profile modal ───────────────────────────────────────────── */
+.prm-prof-info, .prm-cat-item { background: var(--bg) !important; }
+
+/* ── "font-mono" utility class ───────────────────────────────── */
+.font-mono { font-family:'Fira Code',monospace; }
+
