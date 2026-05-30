@@ -246,6 +246,116 @@ router.delete('/:id', authorize('dekanat', 'admin'), async (req, res) => {
   }
 });
 
+// ── GET /api/competitions/rewards/pending — dekanat inbox ────────────────────
+router.get('/rewards/pending', authorize('dekanat', 'admin'), async (req, res) => {
+  try {
+    const { rows } = await db.query(
+      `SELECT r.id, r.tournament_id, r.team_id, r.type, r.value, r.placement, r.status, r.note,
+              t.title AS tournament_title, t.subject, ct.group_name
+         FROM comp_rewards r
+         JOIN comp_tournaments t ON t.id = r.tournament_id
+         JOIN comp_teams ct ON ct.id = r.team_id
+        WHERE r.status = 'proposed'
+        ORDER BY r.created_at ASC`
+    );
+    res.json(rows.map(r => ({ ...r, subject_name: SUBJECTS[r.subject] || r.subject })));
+  } catch (e) {
+    console.error('rewards pending:', e.message);
+    res.json([]);
+  }
+});
+
+// ── GET /api/competitions/:id/rewards — rewards for one tournament ───────────
+router.get('/:id/rewards', async (req, res) => {
+  const id = parseInt(req.params.id, 10);
+  if (!id) return res.status(400).json({ error: 'bad_id' });
+  try {
+    const { rows } = await db.query(
+      `SELECT r.id, r.team_id, r.type, r.value, r.placement, r.status, r.note, ct.group_name
+         FROM comp_rewards r JOIN comp_teams ct ON ct.id = r.team_id
+        WHERE r.tournament_id=$1
+        ORDER BY r.placement ASC, r.type DESC`, [id]
+    );
+    res.json(rows);
+  } catch (e) {
+    console.error('tour rewards:', e.message);
+    res.json([]);
+  }
+});
+
+// ── POST /api/competitions/rewards/:rid/decide — approve / reject (dekanat) ──
+router.post('/rewards/:rid/decide', authorize('dekanat', 'admin'), [
+  body('decision').isIn(['approve', 'reject']),
+  body('value').optional({ nullable: true }).isFloat({ min: 0, max: 100 }),
+], async (req, res) => {
+  const rid = parseInt(req.params.rid, 10);
+  const { decision } = req.body;
+  const client = await db.getClient();
+  try {
+    await client.query('BEGIN');
+    const { rows: [r] } = await client.query('SELECT * FROM comp_rewards WHERE id=$1 FOR UPDATE', [rid]);
+    if (!r) { await client.query('ROLLBACK'); return res.status(404).json({ error: 'not_found' }); }
+    if (r.status !== 'proposed') { await client.query('ROLLBACK'); return res.status(400).json({ error: 'already_decided' }); }
+
+    if (decision === 'reject') {
+      await client.query("UPDATE comp_rewards SET status='rejected', approved_by=$1, decided_at=NOW() WHERE id=$2", [req.user.id, rid]);
+      await client.query('COMMIT');
+      return res.json({ id: rid, status: 'rejected' });
+    }
+
+    // approve — allow dekanat to adjust the discount value
+    const value = (req.body.value != null && r.type === 'discount') ? parseFloat(req.body.value) : r.value;
+    await client.query(
+      "UPDATE comp_rewards SET status='approved', value=$1, approved_by=$2, decided_at=NOW() WHERE id=$3",
+      [value, req.user.id, rid]
+    );
+
+    // For a discount: write one ledger row per student in the winning group
+    let granted = 0;
+    if (r.type === 'discount' && value > 0) {
+      const { rows: [team] } = await client.query('SELECT group_name FROM comp_teams WHERE id=$1', [r.team_id]);
+      if (team && team.group_name) {
+        const { rows: students } = await client.query(
+          `SELECT u.id FROM users u JOIN students s ON s.user_id=u.id
+            WHERE s.group_name=$1 AND u.role='student' AND u.is_active=TRUE`, [team.group_name]
+        );
+        for (const st of students) {
+          await client.query(
+            `INSERT INTO student_discounts (user_id, group_name, percent, reason, source, tournament_id, reward_id, granted_by)
+             VALUES ($1,$2,$3,$4,'liga',$5,$6,$7)`,
+            [st.id, team.group_name, value, r.note || 'IDU Liga sovrini', r.tournament_id, rid, req.user.id]
+          );
+          granted++;
+        }
+      }
+    }
+    await client.query('COMMIT');
+    res.json({ id: rid, status: 'approved', value, granted_to: granted });
+  } catch (e) {
+    await client.query('ROLLBACK').catch(() => {});
+    console.error('reward decide:', e.message);
+    res.status(500).json({ error: 'decide_failed' });
+  } finally {
+    client.release();
+  }
+});
+
+// ── GET /api/competitions/my/discounts — student sees their own discounts ────
+router.get('/my/discounts', async (req, res) => {
+  try {
+    const { rows } = await db.query(
+      `SELECT d.percent, d.reason, d.created_at, t.title AS tournament_title
+         FROM student_discounts d
+         LEFT JOIN comp_tournaments t ON t.id = d.tournament_id
+        WHERE d.user_id=$1 ORDER BY d.created_at DESC`, [req.user.id]
+    );
+    res.json(rows);
+  } catch (e) {
+    console.error('my discounts:', e.message);
+    res.json([]);
+  }
+});
+
 // Auto-propose rewards when a tournament completes (Phase 3 approves them).
 // Champion → trophy + 10% discount proposal; runner-up → 5% discount proposal.
 async function proposeRewards(client, tournamentId, championId, runnerUpId) {

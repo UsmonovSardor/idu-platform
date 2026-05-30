@@ -87,6 +87,23 @@ function _ligaInjectStyles() {
     + '.mr-start{background:linear-gradient(135deg,#2563eb,#3b82f6);color:#fff;border:none;padding:16px 34px;border-radius:14px;font-size:17px;font-weight:800;cursor:pointer;box-shadow:0 10px 30px rgba(37,99,235,.4)}'
     + '.mr-wait{color:#8aa0c6;font-size:15px;margin-top:14px}'
     + '.mr-winner{font-size:30px;font-weight:900;margin-bottom:8px}'
+    + '.rw-wrap{display:flex;flex-direction:column;gap:10px;margin-top:6px}'
+    + '.rw-row{display:flex;align-items:center;justify-content:space-between;gap:12px;flex-wrap:wrap;background:var(--card,#fff);border:1px solid var(--border,#e2e8f0);border-radius:14px;padding:12px 14px}'
+    + '.rw-main{display:flex;align-items:center;gap:12px;min-width:0}'
+    + '.rw-ico{font-size:26px}'
+    + '.rw-title{font-weight:800;color:var(--text,#0f172a)}'
+    + '.rw-sub{font-size:12px;color:#8aa0c6;margin-top:2px}'
+    + '.rw-right{display:flex;align-items:center;gap:10px;flex-wrap:wrap}'
+    + '.rw-badge{font-size:12px;font-weight:800;padding:4px 10px;border-radius:999px;white-space:nowrap}'
+    + '.rw-badge.ok{background:rgba(34,197,94,.15);color:#16a34a}'
+    + '.rw-badge.no{background:rgba(239,68,68,.15);color:#ef4444}'
+    + '.rw-badge.wait{background:rgba(245,158,11,.15);color:#d97706}'
+    + '.rw-ctrl{display:flex;align-items:center;gap:8px;flex-wrap:wrap}'
+    + '.rw-val{width:64px;padding:6px 8px;border:1px solid var(--border,#cbd5e1);border-radius:8px;font-weight:700;text-align:center}'
+    + '.rw-btn{border:none;padding:8px 14px;border-radius:10px;font-weight:800;font-size:13px;cursor:pointer}'
+    + '.rw-btn.ok{background:linear-gradient(135deg,#16a34a,#22c55e);color:#fff}'
+    + '.rw-btn.no{background:rgba(239,68,68,.12);color:#ef4444}'
+    + '.rw-note{font-size:12px;color:#8aa0c6;margin-top:10px;line-height:1.5}'
     + '@media(max-width:640px){.bracket-col{min-width:172px}.mr-opts{grid-template-columns:1fr}.mr-tscore{font-size:32px}}';
   var s = document.createElement('style');
   s.id = 'ligaStyles'; s.textContent = css;
@@ -118,7 +135,24 @@ async function renderLiga() {
     return;
   }
 
-  host.innerHTML = _ligaList.map(function (t) {
+  // Personal discount banner (students only)
+  var myDiscHtml = '';
+  if (!_ligaIsStaff()) {
+    try {
+      var mine = await api('GET', '/competitions/my/discounts');
+      if (Array.isArray(mine) && mine.length) {
+        var top = mine[0];
+        myDiscHtml = '<div class="rw-row" style="margin-bottom:14px;background:linear-gradient(135deg,rgba(34,197,94,.12),rgba(37,99,235,.10))">' +
+          '<div class="rw-main"><span class="rw-ico">🎓</span>' +
+          '<div><div class="rw-title">Sizda ' + _fmtScore(top.percent) + '% o\'qish chegirmasi bor</div>' +
+          '<div class="rw-sub">' + _esc(top.tournament_title || 'IDU Liga') +
+          (mine.length > 1 ? ' · jami ' + mine.length + ' ta chegirma' : '') + '</div></div></div>' +
+          '<span class="rw-badge ok">✓ Faol</span></div>';
+      }
+    } catch (e) {}
+  }
+
+  host.innerHTML = myDiscHtml + _ligaList.map(function (t) {
     var subj = LIGA_SUBJECTS.find(function (s) { return s.code === t.subject; });
     var stCls = 'liga-b-' + t.status;
     var stTxt = t.status === 'active' ? 'Jonli' : t.status === 'completed' ? 'Tugagan' : 'Tayyorlanmoqda';
@@ -163,6 +197,11 @@ async function openLigaDetail(id) {
   var t = data.tournament, teams = data.teams || [], matches = data.matches || [];
   var subj = LIGA_SUBJECTS.find(function (s) { return s.code === t.subject; });
 
+  // Phase 3 — load rewards (trophy + discount proposals/approvals)
+  var rewards = [];
+  try { rewards = await api('GET', '/competitions/' + id + '/rewards'); }
+  catch (e) { rewards = []; }
+
   // group matches by round
   var byRound = {};
   matches.forEach(function (m) { (byRound[m.round] = byRound[m.round] || []).push(m); });
@@ -204,7 +243,68 @@ async function openLigaDetail(id) {
       '<div>' + staffCtrl + '</div>' +
     '</div>' +
     '<div class="liga-section">🗺️ Turnir to\'ri (bracket)</div>' + bracketHtml +
-    '<div class="liga-section">📊 Liga jadvali — jamoa reytingi</div>' + tableHtml;
+    '<div class="liga-section">📊 Liga jadvali — jamoa reytingi</div>' + tableHtml +
+    _ligaRewardsHtml(id, rewards);
+}
+
+// Phase 3 — rewards & discount section
+function _ligaRewardsHtml(id, rewards) {
+  if (!rewards || !rewards.length) {
+    if (!_ligaIsStaff()) return '';
+    return '<div class="liga-section">🎁 Sovg\'alar</div>' +
+      '<div class="liga-empty" style="padding:18px">Turnir yakunlangach chempion guruhga sovg\'a va chegirma takliflari shu yerda paydo bo\'ladi.</div>';
+  }
+  var staff = _ligaIsStaff();
+  var rows = rewards.map(function (r) {
+    var isDisc = r.type === 'discount';
+    var icon = r.type === 'trophy' ? '🏆' : '🎓';
+    var title = r.type === 'trophy'
+      ? 'Chempion kubogi'
+      : (isDisc ? (_fmtScore(r.value) + '% o\'qish chegirmasi') : (r.note || 'Sovg\'a'));
+    var badge = r.status === 'approved'
+      ? '<span class="rw-badge ok">✓ Tasdiqlangan</span>'
+      : r.status === 'rejected'
+        ? '<span class="rw-badge no">✕ Rad etilgan</span>'
+        : '<span class="rw-badge wait">⏳ Taklif</span>';
+    var ctrl = '';
+    if (staff && r.status === 'proposed') {
+      var valInput = isDisc
+        ? '<input type="number" min="0" max="100" step="0.5" value="' + r.value + '" id="rwval' + r.id + '" class="rw-val" title="Chegirma %"> %'
+        : '';
+      ctrl = '<div class="rw-ctrl">' + valInput +
+        '<button class="rw-btn ok" onclick="ligaDecideReward(' + r.id + ',\'approve\',' + (isDisc ? 'true' : 'false') + ')">Tasdiqlash</button>' +
+        '<button class="rw-btn no" onclick="ligaDecideReward(' + r.id + ',\'reject\',false)">Rad etish</button></div>';
+    }
+    return '<div class="rw-row">' +
+      '<div class="rw-main"><span class="rw-ico">' + icon + '</span>' +
+        '<div><div class="rw-title">' + title + '</div>' +
+        '<div class="rw-sub">' + _esc(r.group_name || '') +
+          (r.placement ? ' · ' + (r.placement === 1 ? '🥇 1-o\'rin' : r.placement === 2 ? '🥈 2-o\'rin' : r.placement + '-o\'rin') : '') +
+        '</div></div></div>' +
+      '<div class="rw-right">' + badge + ctrl + '</div></div>';
+  }).join('');
+  return '<div class="liga-section">🎁 Sovg\'alar va chegirmalar</div>' +
+    '<div class="rw-wrap">' + rows + '</div>' +
+    (staff ? '<div class="rw-note">ℹ️ Chegirma faqat siz tasdiqlaganingizdan keyin yoziladi. Tizim avtomatik pul yechmaydi — bu faqat huquq qaydномasi.</div>' : '');
+}
+
+async function ligaDecideReward(rid, decision, isDisc) {
+  var body = { decision: decision };
+  if (decision === 'approve' && isDisc) {
+    var inp = document.getElementById('rwval' + rid);
+    if (inp) { var v = parseFloat(inp.value); if (!isNaN(v)) body.value = v; }
+  }
+  if (decision === 'reject' && !confirm('Bu sovg\'a taklifini rad etasizmi?')) return;
+  try {
+    var res = await api('POST', '/competitions/rewards/' + rid + '/decide', body);
+    if (decision === 'approve' && res && res.granted_to != null && res.granted_to > 0)
+      showToast('🎓', 'Chegirma berildi', res.granted_to + ' ta talabaga ' + _fmtScore(res.value) + '% chegirma yozildi');
+    else
+      showToast('✅', 'Sovg\'a', decision === 'approve' ? 'Tasdiqlandi' : 'Rad etildi');
+    if (_ligaActiveId) openLigaDetail(_ligaActiveId);
+  } catch (e) {
+    showToast('❌', 'Xatolik', 'Amalni bajarib bo\'lmadi');
+  }
 }
 
 function _matchCard(m) {
