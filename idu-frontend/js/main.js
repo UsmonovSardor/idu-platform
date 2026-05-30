@@ -296,7 +296,7 @@ async function realLoginStart(role, loginInputId, passInputId, btnId) {
     var fab2 = document.getElementById('chatFab');
     if (fab2) fab2.style.display = 'flex';
     if (realRole === 'student' && typeof renderXPWidget === 'function') renderXPWidget();
-    if (realRole === 'student' && typeof refreshEngagement === 'function') refreshEngagement();
+    // refreshEngagement is triggered by showPage('dashboard') — no need to call twice
     if (typeof initDefaultChatRooms === 'function') setTimeout(initDefaultChatRooms, 2000);
     if (window.IDU) {
       setTimeout(function(){

@@ -18,7 +18,7 @@ const { realIp } = require('./security');
 const CONFIGS = {
   general: {
     keyPrefix:  'rl:g',
-    points:     parseInt(process.env.RATE_LIMIT_MAX_REQUESTS || '100', 10),
+    points:     parseInt(process.env.RATE_LIMIT_MAX_REQUESTS || '300', 10),
     duration:   Math.floor(parseInt(process.env.RATE_LIMIT_WINDOW_MS || '900000', 10) / 1000),
   },
   auth: {

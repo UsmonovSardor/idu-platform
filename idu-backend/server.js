@@ -203,7 +203,8 @@ app.get('/health', (_req, res) => {
 });
 
 // ── API routes (v1 + legacy /api/* aliases) ──────────────────────────────────
-app.use('/api/v1', generalLimiter);
+// NOTE: mount the limiter ONCE on /api — it already covers /api/v1/* as a prefix.
+// Mounting on both double-counted every request (each cost 2 points).
 app.use('/api',    generalLimiter);
 // Audit log middleware — fire-and-forget, after rate limiter
 app.use('/api', audit());
