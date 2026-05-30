@@ -12,13 +12,41 @@
  */
 
 const { RateLimiterMemory, RateLimiterRedis } = require('rate-limiter-flexible');
+const jwt = require('jsonwebtoken');
 const { realIp } = require('./security');
+
+/**
+ * Per-user rate-limit key.
+ *
+ * Critical for a university platform: hundreds of students on campus Wi-Fi
+ * share ONE public (NAT) IP. Keying by IP would make them all share a single
+ * budget and trip 429 instantly during launch. So we key by authenticated
+ * user id (from the JWT) whenever possible, giving each user their own bucket.
+ * Falls back to IP only for unauthenticated traffic (login page, public API).
+ */
+function rlKey(req) {
+  let token = null;
+  if (req.cookies && req.cookies.idu_token) token = req.cookies.idu_token;
+  if (!token) {
+    const h = req.headers['authorization'] || '';
+    if (h.startsWith('Bearer ')) token = h.slice(7);
+  }
+  if (token) {
+    try {
+      const p = jwt.verify(token, process.env.JWT_SECRET);
+      if (p && p.sub) return `uid:${p.sub}`;
+    } catch (e) { /* invalid/expired -> fall through to IP */ }
+  }
+  return `ip:${realIp(req)}`;
+}
 
 // Limiter configs
 const CONFIGS = {
   general: {
     keyPrefix:  'rl:g',
-    points:     parseInt(process.env.RATE_LIMIT_MAX_REQUESTS || '300', 10),
+    // Per-user budget (see rlKey). Generous so the SPA's many calls per
+    // navigation never trip it for a normal user.
+    points:     parseInt(process.env.RATE_LIMIT_MAX_REQUESTS || '1000', 10),
     duration:   Math.floor(parseInt(process.env.RATE_LIMIT_WINDOW_MS || '900000', 10) / 1000),
   },
   auth: {
@@ -86,7 +114,7 @@ function makeMiddleware(getLimiter, keyFn) {
 }
 
 module.exports = {
-  generalLimiter: makeMiddleware(() => _general, req => `ip:${realIp(req)}`),
+  generalLimiter: makeMiddleware(() => _general, rlKey),
   authLimiter:    makeMiddleware(() => _auth,    req => `ip:${realIp(req)}`),
   uploadLimiter:  makeMiddleware(() => _upload,  req =>
     req.user ? `uid:${req.user.id}` : `ip:${realIp(req)}`
