@@ -4437,29 +4437,34 @@ window.addEventListener('unhandledrejection', function(evt) {
 });
 
 window.addEventListener('DOMContentLoaded', function() {
-  // ── JWT AUTO-LOGIN: if token exists, verify with server and go straight to dashboard ──
+  // ── JWT AUTO-LOGIN: verify token → skip landing page ────────────────────────
   var jwt = _lsGet('idu_jwt');
   if (jwt) {
-    // Show loading state on landing page while we verify
-    var landingEl = document.getElementById('landing-page') || document.getElementById('page-landing');
     fetch((typeof API_BASE !== 'undefined' ? API_BASE : '') + '/auth/me', {
       headers: { 'Authorization': 'Bearer ' + jwt }
     }).then(function(r) {
       if (!r.ok) throw new Error('token expired');
       return r.json();
     }).then(function(me) {
-      // Token valid — launch app immediately, skip landing page
+      // ✅ Token valid — hide loader, launch dashboard
+      document.documentElement.removeAttribute('data-autologin');
+      var loaderEl = document.getElementById('idu-autologin-loader');
+      if (loaderEl) loaderEl.style.display = 'none';
       var role = me.role;
       var u = { login: me.login, name: me.full_name, role: role, phone: me.phone || '', gpa: me.gpa || 0 };
       if (typeof launchApp === 'function') launchApp(role, u);
     }).catch(function() {
-      // Token expired or invalid — clear it, show landing page normally
+      // ❌ Token expired — clear, show landing page
       _lsDel('idu_jwt');
       _apiToken = null;
+      document.documentElement.removeAttribute('data-autologin');
+      var authEl = document.getElementById('authScreen');
+      if (authEl) authEl.style.display = '';
+      var appEl = document.getElementById('appScreen');
+      if (appEl) { appEl.style.display = 'none'; appEl.classList.remove('visible'); }
       var saved = _lsGet('idu_session');
       if (saved) loadSavedSession();
     });
-    // Don't call loadSavedSession below — JWT path handles it
   } else {
     var saved = _lsGet('idu_session');
     if (saved) loadSavedSession();

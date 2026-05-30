@@ -356,8 +356,8 @@ async function _doNicknameSearch(q, box) {
     box.innerHTML = results.map(function(u) {
       var ini = (u.full_name || '?').split(' ').filter(Boolean).map(function(p){return p[0];}).join('').slice(0,2).toUpperCase();
       var avHtml = u.avatar_url
-        ? '<div class="nick-sr-av" style="background-image:url(\''+u.avatar_url+'\');background-size:cover;background-position:center"></div>'
-        : '<div class="nick-sr-av" style="background:linear-gradient(135deg,#1B4FD8,#3B82F6);display:flex;align-items:center;justify-content:center;color:#fff;font-weight:700;font-size:13px">'+ini+'</div>';
+        ? '<div class="nick-sr-av"><img src="'+u.avatar_url+'" onerror="this.parentNode.innerHTML=\''+ini+'\'" alt=""></div>'
+        : '<div class="nick-sr-av">'+ini+'</div>';
       var roleMap = { student:'Talaba', teacher:"O'qituvchi", dekanat:'Dekanat', admin:'Admin', investor:'Investor' };
       var meta = (u.year_of_study ? u.year_of_study+'-kurs · ' : '') + (u.faculty || '');
       return '<div class="nick-sr-item" onclick="showUserCard('+u.id+')">'

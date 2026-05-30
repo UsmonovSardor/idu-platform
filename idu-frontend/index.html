@@ -46,11 +46,11 @@
 <link rel="preconnect" href="https://cdnjs.cloudflare.com" crossorigin>
 <link rel="dns-prefetch" href="https://idu-platform-production.up.railway.app">
 <!-- Critical CSS preload — start fetching before parser hits the link tag -->
-<link rel="preload" href="css/style.css?v=20260530a" as="style">
+<link rel="preload" href="css/style.css?v=20260530b" as="style">
 <link rel="preload" href="css/utilities.css?v=20260525a" as="style">
 <script defer src="https://cdnjs.cloudflare.com/ajax/libs/dompurify/3.0.8/purify.min.js"></script>
 <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800&family=DM+Mono:wght@400;500;600&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="css/style.css?v=20260530a">
+<link rel="stylesheet" href="css/style.css?v=20260530b">
 <link rel="stylesheet" href="css/responsive.css?v=20260529a">
 <link rel="stylesheet" href="css/landing.css?v=20260529f">
 <link rel="stylesheet" href="css/utilities.css?v=20260525a">
@@ -104,6 +104,35 @@
     });
   }
 </script>
+<!-- JWT early-hide: if logged-in token exists, hide auth/landing instantly before render -->
+<script>
+(function(){
+  try {
+    var jwt = localStorage.getItem('idu_jwt');
+    if (jwt) document.documentElement.setAttribute('data-autologin','1');
+  } catch(e){}
+})();
+</script>
+<style>
+/* While verifying JWT: hide landing page, show centered spinner */
+html[data-autologin='1'] #authScreen { display:none !important; }
+html[data-autologin='1'] #appScreen  {
+  display:flex !important; align-items:center; justify-content:center;
+  background:var(--bg,#07152a); height:100vh;
+}
+#idu-autologin-loader {
+  display:none; flex-direction:column; align-items:center; gap:18px;
+}
+html[data-autologin='1'] #idu-autologin-loader { display:flex; }
+@keyframes idu-spin { to { transform:rotate(360deg); } }
+.idu-spin-ring {
+  width:52px; height:52px; border-radius:50%;
+  border:3px solid rgba(59,130,246,0.15);
+  border-top-color:#3b82f6;
+  animation: idu-spin 0.8s linear infinite;
+}
+.idu-spin-label { color:#60a5fa; font-family:'Outfit',sans-serif; font-size:14px; font-weight:600; }
+</style>
 </head>
 
 <body>
@@ -953,6 +982,11 @@
 <!-- ════════ APP SCREEN ════════ -->
 
 <div id="appScreen">
+  <!-- Auto-login loading spinner (hidden unless data-autologin is set) -->
+  <div id="idu-autologin-loader">
+    <div class="idu-spin-ring"></div>
+    <div class="idu-spin-label">Tizimga kirilmoqda...</div>
+  </div>
   <!-- DATE TIME BAR -->
   <div class="datetime-bar" id="datetimeBar">
     <div class="dtb-left">
@@ -4420,11 +4454,11 @@ function upmTab(name) {
   <script defer src="js/features/dark-mode.js?v=20260526a"></script>
   <script defer src="js/features/command-palette.js?v=20260528b"></script>
   <script defer src="js/features/onboarding.js?v=20260526a"></script>
-  <script defer src="js/features/profile.js?v=20260529b"></script>
+  <script defer src="js/features/profile.js?v=20260530a"></script>
   <script defer src="js/features/calendar.js?v=20260528a"></script>
   <script defer src="js/features/forum.js?v=20260528a"></script>
   <script defer src="js/features/bulk-export.js?v=20260528a"></script>
-  <script defer src="js/main.js?v=20260530a"></script>
+  <script defer src="js/main.js?v=20260530b"></script>
   <script defer src="js/enhancements.js?v=20260526a"></script>
   <!-- QR code generator (teacher) -->
   <script defer src="https://cdn.jsdelivr.net/npm/qrcodejs@1.0.0/qrcode.min.js" crossorigin="anonymous"></script>
