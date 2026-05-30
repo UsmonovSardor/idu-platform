@@ -575,6 +575,7 @@ const NAV_TABS = {
   ],
   teacher: [
     {id:'teacher-dashboard',icon:'🏠',label:'Bosh sahifa',labelRu:'Главная'},
+    {id:'calendar',icon:'🗓️',label:'Kalendar',labelRu:'Календарь'},
     {id:'teacher-timetable',icon:'📅',label:'Mening jadvalim',labelRu:'Моё расписание'},
     {id:'teacher-students',icon:'👥',label:'Talabalar',labelRu:'Студенты'},
     {id:'teacher-grade',icon:'✏️',label:'Baholash',labelRu:'Оценивание'},
@@ -586,6 +587,7 @@ const NAV_TABS = {
   ],
   dekanat: [
     {id:'dekanat-dashboard',icon:'🏛️',label:'Bosh sahifa',labelRu:'Главная'},
+    {id:'calendar',icon:'🗓️',label:'Kalendar',labelRu:'Календарь'},
     {id:'dekanat-schedule',icon:'📅',label:'Jadval',labelRu:'Расписание'},
     {id:'dekanat-students',icon:'🎓',label:'Talabalar',labelRu:'Студенты'},
     {id:'dekanat-teachers',icon:'👨‍🏫',label:'O\'qituvchilar',labelRu:'Преподаватели'},
@@ -616,9 +618,9 @@ function setupSidebar(role){
   let html = '';
   if(role==='dekanat'){
     const sections = [
-      {label:isRu?'ОСНОВНОЕ':'ASOSIY',items:base.slice(0,2)},
-      {label:isRu?'ДАННЫЕ':"MA'LUMOTLAR",items:base.slice(2,6)},
-      {label:isRu?'ДРУГОЕ':'BOSHQA',items:base.slice(6)}
+      {label:isRu?'ОСНОВНОЕ':'ASOSIY',items:base.slice(0,3)},
+      {label:isRu?'ДАННЫЕ':"MA'LUMOTLAR",items:base.slice(3,7)},
+      {label:isRu?'ДРУГОЕ':'BOSHQA',items:base.slice(7)}
     ];
     html = sections.map(sec=>`
       <div class="sidebar-section">
