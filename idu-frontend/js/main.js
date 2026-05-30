@@ -4440,13 +4440,17 @@ window.addEventListener('DOMContentLoaded', function() {
   // ── JWT AUTO-LOGIN: verify token → skip landing page ────────────────────────
   var jwt = _lsGet('idu_jwt');
   if (jwt) {
-    fetch((typeof API_BASE !== 'undefined' ? API_BASE : '') + '/auth/me', {
-      headers: { 'Authorization': 'Bearer ' + jwt }
+    // Correct URL: origin + /api/v1/auth/me
+    var meUrl = window.location.origin + '/api/v1/auth/me';
+    fetch(meUrl, {
+      headers: { 'Authorization': 'Bearer ' + jwt, 'Content-Type': 'application/json' }
     }).then(function(r) {
       if (!r.ok) throw new Error('token expired');
       return r.json();
     }).then(function(me) {
-      // ✅ Token valid — hide loader, launch dashboard
+      // ✅ Token valid — set token in memory, launch dashboard
+      _apiToken = jwt;
+      if (typeof setToken === 'function') setToken(jwt);
       document.documentElement.removeAttribute('data-autologin');
       var loaderEl = document.getElementById('idu-autologin-loader');
       if (loaderEl) loaderEl.style.display = 'none';
@@ -4454,7 +4458,7 @@ window.addEventListener('DOMContentLoaded', function() {
       var u = { login: me.login, name: me.full_name, role: role, phone: me.phone || '', gpa: me.gpa || 0 };
       if (typeof launchApp === 'function') launchApp(role, u);
     }).catch(function() {
-      // ❌ Token expired — clear, show landing page
+      // ❌ Token expired or network error — clear, show landing page
       _lsDel('idu_jwt');
       _apiToken = null;
       document.documentElement.removeAttribute('data-autologin');

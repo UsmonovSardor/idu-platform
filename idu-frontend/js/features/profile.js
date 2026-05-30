@@ -358,15 +358,21 @@ async function _doNicknameSearch(q, box) {
       var avHtml = u.avatar_url
         ? '<div class="nick-sr-av"><img src="'+u.avatar_url+'" onerror="this.parentNode.innerHTML=\''+ini+'\'" alt=""></div>'
         : '<div class="nick-sr-av">'+ini+'</div>';
-      var roleMap = { student:'Talaba', teacher:"O'qituvchi", dekanat:'Dekanat', admin:'Admin', investor:'Investor' };
-      var meta = (u.year_of_study ? u.year_of_study+'-kurs · ' : '') + (u.faculty || '');
+      var roleMap  = { student:'🎓 Talaba', teacher:"👨‍🏫 O'qituvchi", dekanat:'🏛 Dekanat', admin:'⚙️ Admin', investor:'💼 Investor' };
+      var roleColors = { student:'rgba(37,99,235,0.18)', teacher:'rgba(16,185,129,0.18)', dekanat:'rgba(124,58,237,0.18)', admin:'rgba(239,68,68,0.18)', investor:'rgba(234,88,12,0.18)' };
+      var roleTxt  = { student:'#60a5fa', teacher:'#34d399', dekanat:'#a78bfa', admin:'#f87171', investor:'#fb923c' };
+      var rBg  = roleColors[u.role]  || 'rgba(59,130,246,0.1)';
+      var rClr = roleTxt[u.role] || '#60a5fa';
+      var roleBadge = '<span style="font-size:10.5px;font-weight:700;color:'+rClr+';background:'+rBg+';border-radius:6px;padding:2px 7px;display:inline-block">'+(roleMap[u.role]||u.role)+'</span>';
+      var meta = (u.year_of_study ? u.year_of_study+'-kurs' : '') + (u.faculty ? (u.year_of_study?' · ':'')+u.faculty.substring(0,20) : '');
+      var codeStr = u.user_code ? u.user_code.slice(0,4)+' '+u.user_code.slice(4,8)+' '+u.user_code.slice(8,12)+' '+u.user_code.slice(12) : '#'+u.id;
       return '<div class="nick-sr-item" onclick="showUserCard('+u.id+')">'
         + avHtml
         + '<div class="nick-sr-info">'
-        + '<div class="nick-sr-name">'+_esc(u.full_name)+(u.nickname ? ' <span class="nick-sr-at">@'+_esc(u.nickname)+'</span>' : '')+'</div>'
-        + '<div class="nick-sr-meta">'+(roleMap[u.role]||u.role)+(meta?' · '+_esc(meta):'')+'</div>'
+        + '<div class="nick-sr-name" style="display:flex;align-items:center;gap:6px;flex-wrap:wrap">'+_esc(u.full_name)+(u.nickname ? '<span class="nick-sr-at">@'+_esc(u.nickname)+'</span>' : '')+roleBadge+'</div>'
+        + (meta ? '<div class="nick-sr-meta">'+_esc(meta)+'</div>' : '')
         + '</div>'
-        + '<div class="nick-sr-id">#'+u.id+'</div>'
+        + '<div class="nick-sr-id" style="font-family:monospace;letter-spacing:1px">'+codeStr+'</div>'
         + '</div>';
     }).join('');
     box.style.display = 'block';
