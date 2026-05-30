@@ -30,9 +30,9 @@ html,body{
   --shadow-accent:0 5px 22px rgba(8,145,178,0.2);
   --r:10px;--r2:14px;--r3:18px;
   /* Fonts */
-  --font-display:'Syne',sans-serif;
-  --font-body:'DM Sans',sans-serif;
-  --font-mono:'DM Mono',monospace;
+  --font-display:'Fira Code',monospace;
+  --font-body:'Fira Sans',sans-serif;
+  --font-mono:'Fira Code',monospace;
 }
 html{font-size:15px}
 body{font-family:var(--font-body);background:var(--bg);color:var(--text);min-height:100vh;-webkit-font-smoothing:antialiased;letter-spacing:-0.005em}
