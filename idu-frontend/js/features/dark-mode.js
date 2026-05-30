@@ -1,8 +1,8 @@
 'use strict';
 /* ══════════════════════════════════════════════════════════════
-   Dark Mode — Notion / Linear / Vercel style
-   Toggle: moon/sun button in topnav
-   Persists in localStorage, auto-detects system preference
+   Dark Mode — IDU Liquid Glass
+   DEFAULT: dark mode always (unless user explicitly switched to light)
+   Persists in localStorage
 ══════════════════════════════════════════════════════════════ */
 
 (function() {
@@ -11,7 +11,6 @@
     localStorage.setItem('idu_theme', dark ? 'dark' : 'light');
     var btn = document.getElementById('darkModeBtn');
     if (btn) btn.textContent = dark ? '☀️' : '🌙';
-    var tip = btn && btn.getAttribute('data-tip');
     if (btn) btn.setAttribute('data-tip', dark ? 'Yorug\' rejim' : 'Qorong\'u rejim');
   }
 
@@ -20,14 +19,14 @@
     _applyTheme(!isDark);
   };
 
-  // Apply on load
+  // Apply on load — DEFAULT is always dark
   var saved = localStorage.getItem('idu_theme');
-  if (saved) {
-    _applyTheme(saved === 'dark');
+  // Force dark: only respect saved 'light' preference, ignore old 'light' auto-detects
+  if (saved === 'light') {
+    _applyTheme(false);
   } else {
-    // Auto-detect system preference
-    var prefersDark = window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches;
-    _applyTheme(prefersDark);
+    // Dark by default — also overwrite any stale 'light' from system preference
+    _applyTheme(true);
   }
 
   // Inject dark mode button into topnav-right when DOM ready
@@ -49,13 +48,6 @@
     document.addEventListener('DOMContentLoaded', _injectBtn);
   } else {
     _injectBtn();
-  }
-
-  // Listen for system preference changes
-  if (window.matchMedia) {
-    window.matchMedia('(prefers-color-scheme: dark)').addEventListener('change', function(e) {
-      if (!localStorage.getItem('idu_theme')) _applyTheme(e.matches);
-    });
   }
 })();
 
