@@ -23,6 +23,11 @@ function setupChip(role,user){
   document.getElementById('chipAvatar').textContent=(user.name||'?').split(' ').map(x=>x[0]).join('').slice(0,2).toUpperCase();
   document.getElementById('chipName').textContent=user.name||user.login;
   document.getElementById('chipRole').textContent=roleLabels[role]||role;
+  // Top-left profile button
+  var tpa=document.getElementById('topProfAvatar');
+  var tpn=document.getElementById('topProfName');
+  if(tpa){ tpa.style.background=colors[role]||'#666'; tpa.textContent=(user.name||'?').split(' ').filter(Boolean).map(x=>x[0]).join('').slice(0,2).toUpperCase(); }
+  if(tpn){ tpn.textContent=(user.name||user.login||'').split(' ')[0]||''; }
 }
 
 function _months(){ return currentLang==='ru'?MONTHS_RU:MONTHS_UZ; }

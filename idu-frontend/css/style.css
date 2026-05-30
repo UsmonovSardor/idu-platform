@@ -2841,3 +2841,26 @@ body, .card, .stat-card, .topnav, .sidebar, .modal-card, input, select, textarea
 .wl-name { font-weight:700; font-size:13px; color:var(--text1); white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
 .wl-grp { font-size:11px; color:var(--text3); }
 .wl-xp { font-weight:800; font-size:14px; color:var(--primary); white-space:nowrap; }
+
+/* Top-left profile button (before IDU logo) */
+.top-prof-btn {
+  display:flex; align-items:center; gap:8px; cursor:pointer;
+  background:rgba(255,255,255,0.10); border:1px solid rgba(255,255,255,0.18);
+  border-radius:30px; padding:4px 12px 4px 4px; margin-right:10px;
+  transition: all .18s ease; flex-shrink:0;
+}
+.top-prof-btn:hover { background:rgba(255,255,255,0.20); transform:translateY(-1px); }
+.top-prof-av {
+  width:30px; height:30px; border-radius:50%; flex-shrink:0;
+  display:flex; align-items:center; justify-content:center;
+  color:#fff; font-weight:800; font-size:12px; letter-spacing:.3px;
+  box-shadow:0 1px 4px rgba(0,0,0,0.2);
+}
+.top-prof-name {
+  font-size:13px; font-weight:700; color:#fff; white-space:nowrap;
+  max-width:120px; overflow:hidden; text-overflow:ellipsis;
+}
+@media (max-width: 720px){
+  .top-prof-name { display:none; }
+  .top-prof-btn { padding:4px; margin-right:6px; }
+}

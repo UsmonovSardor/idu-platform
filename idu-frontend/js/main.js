@@ -558,9 +558,8 @@ async function sendForgotOTP() {
 // ════════════════════════════════════
 const NAV_TABS = {
   student: [
-    {id:'profile',icon:'👤',label:'Profil',labelRu:'Профиль'},
-    {id:'calendar',icon:'🗓️',label:'Kalendar',labelRu:'Календарь'},
     {id:'dashboard',icon:'🏠',label:'Bosh sahifa',labelRu:'Главная'},
+    {id:'calendar',icon:'🗓️',label:'Kalendar',labelRu:'Календарь'},
     {id:'timetable',icon:'📅',label:'Jadval',labelRu:'Расписание'},
     {id:'grades',icon:'📊',label:'Baholar',labelRu:'Оценки'},
     {id:'tasks',icon:'📝',label:'Vazifalar',labelRu:'Задания',badge:5},

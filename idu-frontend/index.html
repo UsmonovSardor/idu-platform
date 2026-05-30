@@ -46,11 +46,11 @@
 <link rel="preconnect" href="https://cdnjs.cloudflare.com" crossorigin>
 <link rel="dns-prefetch" href="https://idu-platform-production.up.railway.app">
 <!-- Critical CSS preload — start fetching before parser hits the link tag -->
-<link rel="preload" href="css/style.css?v=20260530e" as="style">
+<link rel="preload" href="css/style.css?v=20260530f" as="style">
 <link rel="preload" href="css/utilities.css?v=20260525a" as="style">
 <script defer src="https://cdnjs.cloudflare.com/ajax/libs/dompurify/3.0.8/purify.min.js"></script>
 <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800&family=DM+Mono:wght@400;500;600&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="css/style.css?v=20260530e">
+<link rel="stylesheet" href="css/style.css?v=20260530f">
 <link rel="stylesheet" href="css/responsive.css?v=20260529a">
 <link rel="stylesheet" href="css/landing.css?v=20260529f">
 <link rel="stylesheet" href="css/utilities.css?v=20260525a">
@@ -1005,6 +1005,10 @@ html[data-autologin='1'] #idu-autologin-loader { display:flex; }
     <!-- Mobile menu toggle (only visible on small screens via CSS) -->
     <button class="mobile-menu-btn" id="mobileMenuBtn" onclick="toggleMobileSidebar()" aria-label="Menu">
       ☰
+    </button>
+    <button class="top-prof-btn" id="topProfileBtn" onclick="showPage('profile')" data-tip="Profil" aria-label="Profil">
+      <div class="top-prof-av" id="topProfAvatar"></div>
+      <span class="top-prof-name" id="topProfName"></span>
     </button>
     <div class="topnav-logo">
       <div class="topnav-logo-icon">IDU</div>
@@ -4433,7 +4437,7 @@ function upmTab(name) {
   <!-- ===== IDU Platform — Modular Architecture ===== -->
   <script defer src="js/core/config.js?v=20260528e"></script>
   <script defer src="js/core/auth.js?v=20260517d"></script>
-  <script defer src="js/core/router.js?v=20260517d"></script>
+  <script defer src="js/core/router.js?v=20260530f"></script>
   <script defer src="js/core/ui-utils.js?v=20260522a"></script>
   <script defer src="js/core/events.js?v=20260525b"></script>
   <script defer src="js/ui/toast.js?v=20260517d"></script>
@@ -4465,7 +4469,7 @@ function upmTab(name) {
   <script defer src="js/features/calendar.js?v=20260528a"></script>
   <script defer src="js/features/forum.js?v=20260528a"></script>
   <script defer src="js/features/bulk-export.js?v=20260528a"></script>
-  <script defer src="js/main.js?v=20260530e"></script>
+  <script defer src="js/main.js?v=20260530f"></script>
   <script defer src="js/enhancements.js?v=20260526a"></script>
   <!-- QR code generator (teacher) -->
   <script defer src="https://cdn.jsdelivr.net/npm/qrcodejs@1.0.0/qrcode.min.js" crossorigin="anonymous"></script>
