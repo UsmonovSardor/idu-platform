@@ -92,10 +92,24 @@ async function setupSocket(httpServer) {
 
   io.use(socketAuth);
 
+  // ── Presence tracking ──────────────────────────────────────────────────────
+  // Map<userId, connectionCount> so multiple tabs don't flip a user offline early.
+  const onlineCounts = new Map();
+  io._onlineUsers = new Set(); // read by messages.js /presence endpoint
+
   // ── Connection handler ─────────────────────────────────────────────────────
   io.on('connection', async (socket) => {
     const user = socket.user;
     logger.info('[socket.io] connected uid=%d role=%s', user.id, user.role);
+
+    // Mark online (broadcast only on first connection for this user)
+    const prev = onlineCounts.get(user.id) || 0;
+    onlineCounts.set(user.id, prev + 1);
+    io._onlineUsers.add(user.id);
+    if (prev === 0) {
+      io.emit('presence:update', { userId: user.id, online: true });
+    }
+    db.query('UPDATE users SET last_seen=NOW() WHERE id=$1', [user.id]).catch(() => {});
 
     // Auto-join all rooms the user is a member of
     try {
@@ -183,6 +197,15 @@ async function setupSocket(httpServer) {
     // ── disconnect ────────────────────────────────────────────────────────────
     socket.on('disconnect', (reason) => {
       logger.info('[socket.io] disconnect uid=%d reason=%s', user.id, reason);
+      const n = (onlineCounts.get(user.id) || 1) - 1;
+      if (n <= 0) {
+        onlineCounts.delete(user.id);
+        io._onlineUsers.delete(user.id);
+        io.emit('presence:update', { userId: user.id, online: false, last_seen: new Date().toISOString() });
+        db.query('UPDATE users SET last_seen=NOW() WHERE id=$1', [user.id]).catch(() => {});
+      } else {
+        onlineCounts.set(user.id, n);
+      }
     });
   });
 
