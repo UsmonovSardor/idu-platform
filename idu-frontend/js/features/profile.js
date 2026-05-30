@@ -340,8 +340,16 @@ var _searchTimer = null;
 function onNicknameSearchInput(val) {
   var q = val.trim();
   var box = document.getElementById('nickSearchResults');
+  var inp = document.getElementById('nickSearchInput');
   if (!box) return;
   if (!q || q.length < 2) { box.innerHTML = ''; box.style.display = 'none'; return; }
+  // Position the fixed dropdown under the input
+  if (inp) {
+    var r = inp.getBoundingClientRect();
+    box.style.top    = (r.bottom + 6) + 'px';
+    box.style.left   = r.left + 'px';
+    box.style.width  = r.width + 'px';
+  }
   clearTimeout(_searchTimer);
   _searchTimer = setTimeout(function() { _doNicknameSearch(q, box); }, 350);
 }
