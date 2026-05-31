@@ -62,10 +62,16 @@ window.realAutoLogin = async function realAutoLogin() {
   const btn = document.getElementById('loginSubmitBtn');
 
   function stopLoading(){ if(btn){ btn.innerHTML = '<span>Kirish</span><span style="font-size:16px">&rarr;</span>'; btn.disabled = false; } }
-  function showErr(msg){ stopLoading(); if(errMsg) errMsg.textContent = msg; if(errEl) errEl.classList.add('show'); }
+  function showErr(msg, inputId){
+    stopLoading();
+    if(errMsg) errMsg.textContent = msg;
+    if(errEl){ errEl.classList.add('show'); errEl.scrollIntoView({block:'nearest'}); }
+    const inp = inputId ? document.getElementById(inputId) : null;
+    if(inp){ inp.style.borderColor='#ef4444'; inp.classList.add('login-input-shake'); setTimeout(()=>inp.classList.remove('login-input-shake'),400); }
+  }
 
-  if (!login) return showErr('Login kiriting');
-  if (!pass) return showErr('Parol kiriting');
+  if (!login) return showErr('Login kiriting', 'mainLogin');
+  if (!pass) return showErr('Parol kiriting', 'mainPass');
   if (btn) { btn.innerHTML = '<span>Kirish...</span>'; btn.disabled = true; }
 
   try {

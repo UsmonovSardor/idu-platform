@@ -195,6 +195,9 @@ body{font-family:var(--font-body);background:var(--bg);color:var(--text);min-hei
 .login-submit:active{transform:none}
 .login-error-box{background:#FFF5F5;border:1px solid #FCA5A5;color:#DC2626;border-radius:9px;padding:9px 13px;font-size:13px;font-weight:500;margin-bottom:13px;display:none;align-items:center;gap:7px}
 .login-error-box.show{display:flex}
+@keyframes loginShake{0%,100%{transform:translateX(0)}20%{transform:translateX(-6px)}40%{transform:translateX(6px)}60%{transform:translateX(-4px)}80%{transform:translateX(4px)}}
+.login-input-shake{animation:loginShake 0.4s ease}
+.login-input-field:focus{border-color:#3b82f6 !important}
 .demo-section{margin-top:18px;padding:14px;background:#F8FAFB;border-radius:10px;border:1px solid #EEF2FF}
 .demo-section-title{font-size:10px;font-weight:700;color:#94A3B8;text-transform:uppercase;letter-spacing:1.2px;margin-bottom:10px}
 .demo-grid{display:grid;grid-template-columns:repeat(5,1fr);gap:6px}
