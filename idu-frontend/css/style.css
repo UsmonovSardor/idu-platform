@@ -3214,3 +3214,392 @@ textarea, select {
 /* ── "font-mono" utility class ───────────────────────────────── */
 .font-mono { font-family:'Fira Code',monospace; }
 
+
+/* ╔══════════════════════════════════════════════════════════════╗
+   ║   OBSIDIAN GLASS — PREMIUM LAYER  v2.0                      ║
+   ║   Login modal dark glass · Timetable depth · Animations     ║
+   ║   Micro-interactions · Form polish · Empty states           ║
+   ╚══════════════════════════════════════════════════════════════╝ */
+
+/* ── LOGIN MODAL — Complete Obsidian Glass Redesign ────────────── */
+.login-modal-bg {
+  background: rgba(2,7,20,0.75) !important;
+  backdrop-filter: blur(20px) !important;
+  -webkit-backdrop-filter: blur(20px) !important;
+}
+.login-modal {
+  background: linear-gradient(160deg, #0d1a36 0%, #080f20 100%) !important;
+  border: 1px solid rgba(99,140,255,0.18) !important;
+  box-shadow:
+    0 0 0 1px rgba(99,140,255,0.08),
+    0 32px 80px rgba(0,0,0,0.65),
+    0 8px 32px rgba(59,111,255,0.14),
+    inset 0 1px 0 rgba(255,255,255,0.07) !important;
+}
+.login-modal::before {
+  content: '';
+  position: absolute; top: 0; left: 15%; right: 15%; height: 1px;
+  background: linear-gradient(90deg, transparent, rgba(59,111,255,0.9), rgba(34,211,238,0.7), transparent);
+  z-index: 1;
+}
+.login-left {
+  background: linear-gradient(160deg, #0d1f45 0%, #091630 40%, #091d35 100%) !important;
+  border-right: 1px solid rgba(99,140,255,0.12) !important;
+}
+.login-right { background: transparent !important; }
+.lr-title { color: #EDF2FF !important; }
+.lr-sub   { color: #6B8BB5 !important; }
+.login-input-field {
+  background: rgba(8,15,32,0.8) !important;
+  border: 1px solid rgba(99,140,255,0.18) !important;
+  color: #EDF2FF !important;
+  border-radius: 10px !important;
+  transition: border-color 0.2s, box-shadow 0.2s !important;
+}
+.login-input-field:focus {
+  border-color: rgba(59,111,255,0.55) !important;
+  background: rgba(13,22,41,0.9) !important;
+  box-shadow: 0 0 0 3px rgba(59,111,255,0.12) !important;
+}
+.login-input-field::placeholder { color: #3D587A !important; }
+.login-input-icon { color: #6B8BB5 !important; }
+.login-eye { color: #3D587A !important; }
+.login-eye:hover { color: #6B8BB5 !important; }
+.login-submit {
+  background: linear-gradient(135deg, #22C55E, #16A34A) !important;
+  box-shadow: 0 0 20px rgba(34,197,94,0.30), 0 4px 14px rgba(34,197,94,0.22) !important;
+  border-radius: 10px !important;
+  font-weight: 700 !important;
+  letter-spacing: 0.1px !important;
+}
+.login-submit:hover {
+  transform: translateY(-2px) !important;
+  box-shadow: 0 0 32px rgba(34,197,94,0.45), 0 8px 22px rgba(34,197,94,0.32) !important;
+}
+#login-forgot-btn { color: #3D587A !important; }
+#login-forgot-btn:hover { color: #6B8BB5 !important; }
+.login-note {
+  background: rgba(8,15,32,0.6) !important;
+  border: 1px solid rgba(99,140,255,0.12) !important;
+  color: #3D587A !important;
+  border-radius: 10px !important;
+}
+/* Demo cards — dark glass */
+.demo-section {
+  background: rgba(8,15,32,0.6) !important;
+  border: 1px solid rgba(99,140,255,0.12) !important;
+  border-radius: 10px !important;
+}
+.demo-section-title { color: #3D587A !important; }
+.demo-card {
+  background: rgba(13,22,41,0.8) !important;
+  border: 1px solid rgba(99,140,255,0.14) !important;
+  transition: all 0.18s !important;
+}
+.demo-card:hover {
+  border-color: rgba(99,140,255,0.35) !important;
+  background: rgba(59,111,255,0.1) !important;
+  transform: translateY(-2px) !important;
+  box-shadow: 0 8px 20px rgba(0,0,0,0.3) !important;
+}
+.demo-card-login { color: #93B4FF !important; }
+.demo-card-pass  { color: #3D587A !important; }
+.dc-s { color: #93B4FF !important; background: rgba(59,111,255,0.15) !important; }
+.dc-t { color: #4ade80 !important; background: rgba(34,197,94,0.15) !important; }
+.dc-d { color: #c4b5fd !important; background: rgba(139,92,246,0.15) !important; }
+.dc-i { color: #fbbf24 !important; background: rgba(234,179,8,0.15) !important; }
+
+/* ── FORGOT / OTP / PHONE MODALS — dark glass ──────────────────── */
+#forgotModal > div,
+#forgotModalOtp > div,
+#phoneSetupModal > div {
+  background: linear-gradient(160deg, #0d1a36, #080f20) !important;
+  border: 1px solid rgba(99,140,255,0.18) !important;
+  box-shadow: 0 32px 80px rgba(0,0,0,0.65), inset 0 1px 0 rgba(255,255,255,0.06) !important;
+  color: #EDF2FF !important;
+}
+#forgotModal h2, #forgotModal p,
+#forgotModal label, #forgotModal div { color: inherit !important; }
+#forgotModal input, #forgotModalOtp input, #phoneSetupModal input {
+  background: rgba(8,15,32,0.8) !important;
+  border: 1px solid rgba(99,140,255,0.18) !important;
+  color: #EDF2FF !important;
+  border-radius: 10px !important;
+}
+#forgotModal input:focus, #forgotModalOtp input:focus, #phoneSetupModal input:focus {
+  border-color: rgba(59,111,255,0.55) !important;
+  box-shadow: 0 0 0 3px rgba(59,111,255,0.12) !important;
+}
+
+/* ── GUIDE / FAQ / ABOUT MODALS — dark glass ───────────────────── */
+#guideModal > div,
+#faqModal > div,
+#aboutModal > div,
+#featModal > div {
+  background: linear-gradient(160deg, #0d1a36, #080f20) !important;
+  border: 1px solid rgba(99,140,255,0.18) !important;
+  box-shadow: 0 32px 80px rgba(0,0,0,0.65), inset 0 1px 0 rgba(255,255,255,0.06) !important;
+}
+#guideModal span[style], #faqModal span[style] { color: #EDF2FF !important; }
+.faq-item {
+  background: rgba(13,22,41,0.7) !important;
+  border: 1px solid rgba(99,140,255,0.12) !important;
+}
+.faq-q {
+  background: transparent !important;
+  color: #EDF2FF !important;
+}
+.faq-q:hover { background: rgba(59,111,255,0.08) !important; }
+.faq-a {
+  background: rgba(8,15,32,0.5) !important;
+  border-top: 1px solid rgba(99,140,255,0.08) !important;
+  color: #6B8BB5 !important;
+}
+.guide-step-card { border-bottom: 1px solid rgba(99,140,255,0.08) !important; }
+.guide-step-title { color: #EDF2FF !important; }
+.guide-step-desc  { color: #6B8BB5 !important; }
+
+/* ── TIMETABLE — Dark depth cells ──────────────────────────────── */
+.timetable th {
+  background: rgba(8,15,32,0.9) !important;
+  border: 1px solid rgba(99,140,255,0.1) !important;
+  color: #6B8BB5 !important;
+  font-size: 11px !important; letter-spacing: 0.5px !important;
+  text-transform: uppercase !important;
+}
+.timetable td {
+  background: rgba(13,22,41,0.6) !important;
+  border: 1px solid rgba(99,140,255,0.07) !important;
+}
+.timetable .time-col {
+  background: rgba(8,15,32,0.9) !important;
+  color: #3D587A !important;
+  border: 1px solid rgba(99,140,255,0.07) !important;
+}
+/* Timetable cells — glass colored */
+.tt-blue   { background: rgba(59,111,255,0.14) !important; border-color: rgba(59,111,255,0.3) !important; color: #93B4FF !important; }
+.tt-green  { background: rgba(34,197,94,0.12) !important;  border-color: rgba(34,197,94,0.3) !important;  color: #4ade80 !important;  }
+.tt-purple { background: rgba(139,92,246,0.12) !important; border-color: rgba(139,92,246,0.3) !important; color: #c4b5fd !important; }
+.tt-orange { background: rgba(249,115,22,0.12) !important; border-color: rgba(249,115,22,0.3) !important; color: #fdba74 !important; }
+.tt-red    { background: rgba(239,68,68,0.12) !important;  border-color: rgba(239,68,68,0.3) !important;  color: #fca5a5 !important;  }
+.tt-teal   { background: rgba(20,184,166,0.12) !important; border-color: rgba(20,184,166,0.3) !important; color: #5eead4 !important;  }
+.tt-pink   { background: rgba(236,72,153,0.12) !important; border-color: rgba(236,72,153,0.3) !important; color: #f9a8d4 !important;  }
+.tt-cell:hover { transform: scale(1.025) !important; box-shadow: 0 8px 24px rgba(0,0,0,0.35) !important; z-index: 2; }
+.tt-cell-room {
+  background: rgba(255,255,255,0.08) !important;
+  color: inherit !important; opacity: 0.8;
+}
+
+/* ── TOPNAV — Floating glass upgrade ───────────────────────────── */
+.topnav {
+  background: rgba(8,15,32,0.88) !important;
+  backdrop-filter: blur(20px) saturate(160%) !important;
+  -webkit-backdrop-filter: blur(20px) saturate(160%) !important;
+  border-bottom: 1px solid rgba(99,140,255,0.08) !important;
+}
+
+/* ── FORM INPUTS — Premium dark glass ──────────────────────────── */
+.form-input, .form-select, input[type="text"], input[type="email"],
+input[type="password"], input[type="number"], input[type="tel"],
+textarea, select {
+  background: rgba(8,15,32,0.8) !important;
+  border: 1px solid rgba(99,140,255,0.16) !important;
+  color: #EDF2FF !important;
+  border-radius: 9px !important;
+  transition: border-color 0.2s, box-shadow 0.2s, background 0.2s !important;
+}
+.form-input:focus, .form-select:focus, input:focus, textarea:focus, select:focus {
+  border-color: rgba(59,111,255,0.5) !important;
+  background: rgba(13,22,41,0.9) !important;
+  box-shadow: 0 0 0 3px rgba(59,111,255,0.1) !important;
+  outline: none !important;
+}
+input::placeholder, textarea::placeholder { color: #3D587A !important; }
+.form-label { color: #6B8BB5 !important; font-weight: 600 !important; }
+
+/* ── BADGE system — glass colors ───────────────────────────────── */
+.card-badge, [class^="cb-"], [class^="dr-"], .status-tag {
+  font-weight: 700 !important; letter-spacing: 0.3px !important;
+}
+.cb-blue   { background: rgba(59,111,255,0.15) !important;  color: #93B4FF !important; border: 1px solid rgba(59,111,255,0.25) !important; }
+.cb-green  { background: rgba(34,197,94,0.15) !important;   color: #4ade80 !important; border: 1px solid rgba(34,197,94,0.25) !important; }
+.cb-orange { background: rgba(249,115,22,0.15) !important;  color: #fdba74 !important; border: 1px solid rgba(249,115,22,0.25) !important; }
+.cb-red    { background: rgba(239,68,68,0.15) !important;   color: #fca5a5 !important; border: 1px solid rgba(239,68,68,0.25) !important; }
+.cb-purple { background: rgba(139,92,246,0.15) !important;  color: #c4b5fd !important; border: 1px solid rgba(139,92,246,0.25) !important; }
+.dr-student { background: rgba(59,111,255,0.15) !important; color: #93B4FF !important; }
+.dr-teacher { background: rgba(34,197,94,0.15) !important;  color: #4ade80 !important; }
+.dr-dekanat { background: rgba(139,92,246,0.15) !important; color: #c4b5fd !important; }
+.dr-investor{ background: rgba(234,179,8,0.15) !important;  color: #fbbf24 !important; }
+
+/* ── PROGRESS BARS — glow effect ───────────────────────────────── */
+.xp-bar-fill, .lp-progress-fill {
+  box-shadow: 0 0 10px rgba(59,111,255,0.4) !important;
+}
+[class*="bar-fill"] { transition: width 0.6s cubic-bezier(0.22,1,0.36,1) !important; }
+
+/* ── EMPTY STATES — dark glass ─────────────────────────────────── */
+.iu-empty-wrap {
+  background: rgba(8,15,32,0.5) !important;
+  border: 1px dashed rgba(99,140,255,0.15) !important;
+  border-radius: 14px !important;
+}
+.iu-empty-icon { color: #3D587A !important; }
+.iu-empty-title { color: #6B8BB5 !important; }
+.iu-empty-sub   { color: #3D587A !important; }
+
+/* ── SKELETON — dark shimmer ───────────────────────────────────── */
+.iu-skel-line, .skeleton-tr {
+  background: linear-gradient(90deg, rgba(99,140,255,0.05) 25%, rgba(99,140,255,0.1) 50%, rgba(99,140,255,0.05) 75%) !important;
+  background-size: 200% 100% !important;
+  animation: skel-shimmer 1.5s infinite !important;
+}
+@keyframes skel-shimmer {
+  0%   { background-position: -200% 0; }
+  100% { background-position:  200% 0; }
+}
+
+/* ── TOAST NOTIFICATIONS — premium glass ───────────────────────── */
+.toast-item {
+  background: linear-gradient(160deg, rgba(13,22,41,0.95), rgba(8,15,32,0.98)) !important;
+  border: 1px solid rgba(99,140,255,0.2) !important;
+  backdrop-filter: blur(20px) !important;
+  color: #EDF2FF !important;
+  box-shadow: 0 8px 32px rgba(0,0,0,0.5), inset 0 1px 0 rgba(255,255,255,0.06) !important;
+}
+
+/* ── NOTIFICATION BELL & BADGES ─────────────────────────────────── */
+.notif-badge { background: var(--red) !important; box-shadow: 0 0 8px rgba(239,68,68,0.5) !important; }
+.nav-icon-btn {
+  background: rgba(99,140,255,0.07) !important;
+  border: 1px solid rgba(99,140,255,0.12) !important;
+}
+.nav-icon-btn:hover {
+  background: rgba(99,140,255,0.14) !important;
+  border-color: rgba(99,140,255,0.28) !important;
+}
+
+/* ── RATING / LEADERBOARD — premium rank colors ─────────────────── */
+[class*="rank-1"], .rank-gold   { color: #FCD34D !important; text-shadow: 0 0 12px rgba(252,211,77,0.45) !important; }
+[class*="rank-2"], .rank-silver { color: #CBD5E1 !important; text-shadow: 0 0 8px rgba(203,213,225,0.3) !important; }
+[class*="rank-3"], .rank-bronze { color: #FDBA74 !important; text-shadow: 0 0 8px rgba(253,186,116,0.35) !important; }
+
+/* ── FILTER CHIPS ────────────────────────────────────────────────── */
+.filter-chip {
+  background: rgba(8,15,32,0.6) !important;
+  border: 1px solid rgba(99,140,255,0.14) !important;
+  color: #6B8BB5 !important;
+  transition: all 0.18s !important;
+}
+.filter-chip:hover { border-color: rgba(99,140,255,0.3) !important; color: #EDF2FF !important; }
+.filter-chip.active {
+  background: rgba(59,111,255,0.2) !important;
+  border-color: rgba(59,111,255,0.4) !important;
+  color: #93B4FF !important;
+}
+
+/* ── AI TUTOR CHAT ───────────────────────────────────────────────── */
+.ai-chat-bubble-bot {
+  background: rgba(59,111,255,0.1) !important;
+  border: 1px solid rgba(59,111,255,0.18) !important;
+  color: #EDF2FF !important;
+}
+.ai-chat-bubble-user {
+  background: rgba(34,211,238,0.08) !important;
+  border: 1px solid rgba(34,211,238,0.18) !important;
+  color: #EDF2FF !important;
+}
+.ai-textarea {
+  background: rgba(8,15,32,0.8) !important;
+  border: 1px solid rgba(99,140,255,0.18) !important;
+  color: #EDF2FF !important;
+}
+
+/* ── PAGE HEADER ─────────────────────────────────────────────────── */
+.ph-title {
+  background: linear-gradient(135deg, #EDF2FF 0%, #93B4FF 60%, #22D3EE 100%);
+  -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+  background-clip: text; color: transparent !important;
+  font-family: var(--font-display) !important;
+  letter-spacing: -0.03em !important;
+}
+.ph-sub { color: #3D587A !important; }
+
+/* ── SIDEBAR ITEMS — better hover depth ─────────────────────────── */
+.sidebar-item { cursor: pointer !important; }
+.sidebar-item:hover { box-shadow: inset 0 0 0 1px rgba(99,140,255,0.1) !important; }
+
+/* ── SELECT / DROPDOWN ───────────────────────────────────────────── */
+select option { background: #080f20 !important; color: #EDF2FF !important; }
+
+/* ── BUTTON AUTH (login submit) shimmer ──────────────────────────── */
+@keyframes btnShimmer {
+  0%   { left: -60%; }
+  60%, 100% { left: 130%; }
+}
+.login-submit::after, .btn-primary::after, .hb-primary::after, .lp-primary-btn::after {
+  content: '' !important;
+  position: absolute; top: 0; left: -60%;
+  width: 35%; height: 100%;
+  background: linear-gradient(90deg, transparent, rgba(255,255,255,0.15), transparent);
+  transform: skewX(-18deg);
+  animation: btnShimmer 4s ease-in-out 3s infinite;
+  pointer-events: none;
+}
+.login-submit, .btn-primary, .hb-primary, .lp-primary-btn { position: relative; overflow: hidden; }
+
+/* ── HERO CARD FLOAT ANIMATION ───────────────────────────────────── */
+@keyframes lp-float {
+  0%, 100% { transform: translateZ(40px) translateY(0px); }
+  50%       { transform: translateZ(40px) translateY(-10px); }
+}
+.lp-hero-card { animation: lp-card 0.75s cubic-bezier(0.22,1,0.36,1) 0.28s both, lp-float 5s ease-in-out 1.5s infinite !important; }
+
+/* ── COMMAND PALETTE ─────────────────────────────────────────────── */
+.cmd-palette-modal {
+  background: linear-gradient(160deg, #0d1a36, #080f20) !important;
+  border: 1px solid rgba(99,140,255,0.2) !important;
+  box-shadow: 0 32px 80px rgba(0,0,0,0.7) !important;
+}
+.cmd-palette-input { color: #EDF2FF !important; caret-color: #3B6FFF !important; }
+.cmd-item:hover, .cmd-item.selected { background: rgba(59,111,255,0.12) !important; }
+
+/* ── SCROLLBAR ───────────────────────────────────────────────────── */
+::-webkit-scrollbar { width: 5px; height: 5px; }
+::-webkit-scrollbar-track { background: transparent; }
+::-webkit-scrollbar-thumb { background: rgba(99,140,255,0.2); border-radius: 3px; }
+::-webkit-scrollbar-thumb:hover { background: rgba(99,140,255,0.35); }
+
+/* ── STATUS TAGS — unified dark glass ───────────────────────────── */
+.st-active, .status-tag.active {
+  background: rgba(34,197,94,0.12) !important;
+  color: #4ade80 !important;
+  border: 1px solid rgba(34,197,94,0.25) !important;
+}
+.st-ok { background: rgba(59,111,255,0.12) !important; color: #93B4FF !important; border: 1px solid rgba(59,111,255,0.25) !important; }
+.st-warning { background: rgba(234,179,8,0.12) !important; color: #fbbf24 !important; border: 1px solid rgba(234,179,8,0.25) !important; }
+.st-danger  { background: rgba(239,68,68,0.12) !important; color: #fca5a5 !important; border: 1px solid rgba(239,68,68,0.25) !important; }
+
+/* ── MODAL CLOSE BUTTONS ─────────────────────────────────────────── */
+.lm-close, [onclick*="close"], [onclick*="Close"] {
+  background: rgba(99,140,255,0.08) !important;
+  border: 1px solid rgba(99,140,255,0.14) !important;
+  color: #6B8BB5 !important;
+  transition: all 0.18s !important;
+}
+.lm-close:hover { background: rgba(239,68,68,0.1) !important; color: #fca5a5 !important; border-color: rgba(239,68,68,0.25) !important; }
+
+/* ── REDUCED MOTION ──────────────────────────────────────────────── */
+@media (prefers-reduced-motion: reduce) {
+  .lp-hero-card, [class*="shimmer"], [class*="float"], [class*="pulse"] {
+    animation: none !important;
+  }
+}
+
+/* ── MOBILE MODAL ADJUSTMENTS ────────────────────────────────────── */
+@media (max-width: 768px) {
+  .login-modal { border-radius: 20px !important; margin: 16px !important; }
+  .login-left { display: none !important; }
+  .login-right { padding: 28px 22px 24px !important; }
+  .login-modal::before { left: 10%; right: 10%; }
+  .lr-title { font-size: 22px !important; }
+}
