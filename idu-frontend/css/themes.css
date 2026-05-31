@@ -785,3 +785,278 @@
   animation: none !important;
   transition: none !important;
 }
+
+/* ╔══════════════════════════════════════════════════════════════╗
+   ║  UI/UX PRO MAX — IMPROVEMENTS v1.0                          ║
+   ║  Touch targets · Focus states · Micro-interactions          ║
+   ║  Typography · Animations · Accessibility                    ║
+   ╚══════════════════════════════════════════════════════════════╝ */
+
+/* ── 1. FOCUS STATES (WCAG AA) ─────────────────────────────── */
+:focus-visible {
+  outline: 2px solid var(--primary);
+  outline-offset: 2px;
+  border-radius: 4px;
+}
+button:focus-visible,
+a:focus-visible,
+input:focus-visible,
+select:focus-visible,
+textarea:focus-visible {
+  outline: 2px solid var(--primary);
+  outline-offset: 2px;
+  box-shadow: 0 0 0 4px rgba(59,111,255,0.15);
+}
+[data-theme="light"] :focus-visible { outline-color: #3B6FFF; }
+[data-theme="dark"]  :focus-visible { outline-color: #3B6FFF; }
+
+/* ── 2. TOUCH TARGETS — min 44px (WCAG 2.5.5) ──────────────── */
+@media (max-width: 768px) {
+  .sidebar-item,
+  .nav-icon-btn,
+  .lp-theme-btn,
+  .lang-option,
+  .lp-drop-item,
+  .filter-chip,
+  .tab-btn {
+    min-height: 44px !important;
+    min-width: 44px !important;
+  }
+  .nav-icon-btn { width: 44px !important; height: 44px !important; }
+  .lp-cta-btn  { padding: 10px 20px !important; min-height: 44px !important; }
+  .lp-primary-btn  { min-height: 44px !important; }
+  .lp-secondary-btn { min-height: 44px !important; }
+  .login-submit { min-height: 48px !important; }
+  .btn { min-height: 44px !important; }
+}
+
+/* ── 3. CURSOR POINTER everywhere clickable ─────────────────── */
+.sidebar-item,
+.lp-stat-card,
+.lp-feat-card,
+.card,
+.stat-card,
+.filter-chip,
+.lang-option,
+.lp-drop-item,
+.demo-card,
+.lp-pill,
+.tab-btn,
+.topnav-tab,
+.modal-close,
+.lp-theme-btn,
+.lm-close,
+[onclick],
+[data-action] {
+  cursor: pointer;
+}
+
+/* ── 4. MICRO-INTERACTIONS — button press ───────────────────── */
+.btn:active,
+.lp-primary-btn:active,
+.lp-secondary-btn:active,
+.login-submit:active,
+.lp-cta-btn:active {
+  transform: scale(0.97) translateY(1px) !important;
+  transition: transform 0.08s !important;
+}
+.sidebar-item:active { transform: translateX(2px) scale(0.98) !important; }
+.filter-chip:active  { transform: scale(0.95) !important; }
+
+/* ── 5. CARD HOVER — premium lift with glow ─────────────────── */
+.lp-stat-card,
+.lp-feat-card,
+.lp-sec-card,
+.lp-test-card,
+.lp-trust-stat {
+  will-change: transform;
+  transition: transform 0.28s cubic-bezier(0.22,1,0.36,1),
+              box-shadow 0.28s ease,
+              border-color 0.28s ease !important;
+}
+
+/* ── 6. SCROLL REVEAL — entrance animations ─────────────────── */
+.sr-fade-up {
+  opacity: 0;
+  transform: translateY(32px);
+  transition: opacity 0.6s cubic-bezier(0.22,1,0.36,1),
+              transform 0.6s cubic-bezier(0.22,1,0.36,1);
+}
+.sr-fade-up.visible { opacity: 1; transform: translateY(0); }
+
+.sr-fade-left {
+  opacity: 0;
+  transform: translateX(-24px);
+  transition: opacity 0.55s cubic-bezier(0.22,1,0.36,1),
+              transform 0.55s cubic-bezier(0.22,1,0.36,1);
+}
+.sr-fade-left.visible { opacity: 1; transform: translateX(0); }
+
+.sr-scale {
+  opacity: 0;
+  transform: scale(0.92);
+  transition: opacity 0.5s cubic-bezier(0.22,1,0.36,1),
+              transform 0.5s cubic-bezier(0.22,1,0.36,1);
+}
+.sr-scale.visible { opacity: 1; transform: scale(1); }
+
+/* Stagger delays for grids */
+.sr-stagger:nth-child(1) { transition-delay: 0ms !important; }
+.sr-stagger:nth-child(2) { transition-delay: 80ms !important; }
+.sr-stagger:nth-child(3) { transition-delay: 160ms !important; }
+.sr-stagger:nth-child(4) { transition-delay: 240ms !important; }
+.sr-stagger:nth-child(5) { transition-delay: 320ms !important; }
+.sr-stagger:nth-child(6) { transition-delay: 400ms !important; }
+
+/* ── 7. STAT NUMBER COUNTER ANIMATION ───────────────────────── */
+@keyframes countUp {
+  from { opacity: 0; transform: translateY(10px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+.stat-num-animated { animation: countUp 0.6s cubic-bezier(0.22,1,0.36,1) both; }
+
+/* ── 8. SECTION DIVIDERS — elegant separators ───────────────── */
+.lp-section-divider {
+  height: 1px;
+  background: linear-gradient(90deg,
+    transparent, rgba(99,140,255,0.3), rgba(34,211,238,0.2), transparent);
+  margin: 0 88px;
+}
+[data-theme="light"] .lp-section-divider {
+  background: linear-gradient(90deg,
+    transparent, rgba(59,111,255,0.15), rgba(14,165,233,0.12), transparent);
+}
+
+/* ── 9. TYPING CURSOR for AI sections ───────────────────────── */
+@keyframes blink { 0%,100% { opacity: 1; } 50% { opacity: 0; } }
+.typing-cursor::after {
+  content: '|';
+  animation: blink 1s step-end infinite;
+  color: var(--primary);
+  margin-left: 2px;
+}
+
+/* ── 10. BADGE PULSE for notifications ──────────────────────── */
+@keyframes notifPulse {
+  0%, 100% { box-shadow: 0 0 0 0 rgba(239,68,68,0.4); }
+  50%       { box-shadow: 0 0 0 4px rgba(239,68,68,0); }
+}
+.notif-badge { animation: notifPulse 2s ease-in-out infinite; }
+
+/* ── 11. SKELETON LOADING — shimmer ────────────────────────── */
+@keyframes shimmerMove {
+  0%   { transform: translateX(-100%); }
+  100% { transform: translateX(100%); }
+}
+.skeleton {
+  position: relative;
+  overflow: hidden;
+  background: var(--white);
+  border-radius: var(--r);
+}
+.skeleton::after {
+  content: '';
+  position: absolute; inset: 0;
+  background: linear-gradient(90deg,
+    transparent 0%, rgba(99,140,255,0.06) 50%, transparent 100%);
+  animation: shimmerMove 1.5s infinite;
+}
+
+/* ── 12. PROGRESS BAR ANIMATION ─────────────────────────────── */
+@keyframes progressFill {
+  from { width: 0; }
+}
+[class*="progress"] > * { animation: progressFill 1s cubic-bezier(0.22,1,0.36,1) 0.3s both; }
+
+/* ── 13. TOOLTIP ────────────────────────────────────────────── */
+[data-tip] { position: relative; }
+[data-tip]::after {
+  content: attr(data-tip);
+  position: absolute;
+  bottom: calc(100% + 6px);
+  left: 50%;
+  transform: translateX(-50%);
+  background: rgba(2,7,20,0.92);
+  color: #EDF2FF;
+  font-size: 11px;
+  font-weight: 500;
+  padding: 4px 9px;
+  border-radius: 6px;
+  white-space: nowrap;
+  pointer-events: none;
+  opacity: 0;
+  transition: opacity 0.15s, transform 0.15s;
+  transform: translateX(-50%) translateY(4px);
+  border: 1px solid rgba(99,140,255,0.15);
+  backdrop-filter: blur(8px);
+  z-index: 9999;
+  font-family: var(--font-body);
+}
+[data-tip]:hover::after {
+  opacity: 1;
+  transform: translateX(-50%) translateY(0);
+}
+[data-theme="light"] [data-tip]::after {
+  background: rgba(15,23,42,0.92);
+  color: #F8FAFF;
+}
+
+/* ── 14. IMPROVED LINE-HEIGHTS ───────────────────────────────── */
+.lp-hero-desc,
+.lp-feat-card p,
+.lp-sec-card p,
+.lp-test-quote,
+.lp-how-step p,
+.ph-sub,
+.card p,
+.sidebar-label {
+  line-height: 1.65;
+}
+
+/* ── 15. SMOOTH SCROLL ───────────────────────────────────────── */
+html { scroll-behavior: smooth; }
+
+/* ── 16. SELECTION COLOR ─────────────────────────────────────── */
+::selection {
+  background: rgba(59,111,255,0.25);
+  color: var(--text);
+}
+
+/* ── 17. IMPROVED IMAGE RENDERING ───────────────────────────── */
+img { image-rendering: -webkit-optimize-contrast; }
+
+/* ── 18. PREVENT LAYOUT SHIFT on async content ──────────────── */
+.stat-card-val:empty,
+.lp-stat-num:empty {
+  min-height: 1.2em;
+  background: var(--border);
+  border-radius: 4px;
+}
+
+/* ── 19. REDUCED MOTION ─────────────────────────────────────── */
+@media (prefers-reduced-motion: reduce) {
+  .sr-fade-up, .sr-fade-left, .sr-scale {
+    opacity: 1 !important;
+    transform: none !important;
+    transition: none !important;
+  }
+  .notif-badge { animation: none !important; }
+  .skeleton::after { animation: none !important; }
+  html { scroll-behavior: auto !important; }
+}
+
+/* ── 20. DARK jdm-box / prm-box ─────────────────────────────── */
+[data-theme="dark"] .jdm-box,
+[data-theme="dark"] .prm-box {
+  background: linear-gradient(160deg, #0d1a36, #080f20) !important;
+  border: 1px solid rgba(99,140,255,0.18) !important;
+  box-shadow: 0 24px 80px rgba(0,0,0,0.65) !important;
+  color: #EDF2FF !important;
+}
+
+/* ── 21. STAGGER ANIMATION for feature grid ─────────────────── */
+.lp-feat-grid .lp-feat-card,
+.lp-sec-grid .lp-sec-card,
+.stats-grid .stat-card {
+  transition-delay: calc(var(--i, 0) * 60ms);
+}
