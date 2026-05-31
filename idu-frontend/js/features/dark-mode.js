@@ -1,53 +1,66 @@
 'use strict';
 /* ══════════════════════════════════════════════════════════════
-   Dark Mode — IDU Liquid Glass
-   DEFAULT: dark mode always (unless user explicitly switched to light)
-   Persists in localStorage
+   IDU Theme System — 3 themes: dark · light · blue
+   Persists in localStorage as 'idu_theme'
+   DEFAULT: dark
 ══════════════════════════════════════════════════════════════ */
 
-(function() {
-  function _applyTheme(dark) {
-    document.documentElement.setAttribute('data-theme', dark ? 'dark' : 'light');
-    localStorage.setItem('idu_theme', dark ? 'dark' : 'light');
-    var btn = document.getElementById('darkModeBtn');
-    if (btn) btn.textContent = dark ? '☀️' : '🌙';
-    if (btn) btn.setAttribute('data-tip', dark ? 'Yorug\' rejim' : 'Qorong\'u rejim');
+(function () {
+  var THEMES = ['dark', 'light', 'blue'];
+  var DEFAULT = 'dark';
+
+  function _applyTheme(theme) {
+    if (!THEMES.includes(theme)) theme = DEFAULT;
+    document.documentElement.setAttribute('data-theme', theme);
+    localStorage.setItem('idu_theme', theme);
+    _updateToggleUI(theme);
   }
 
-  window.toggleDarkMode = function() {
-    var isDark = document.documentElement.getAttribute('data-theme') === 'dark';
-    _applyTheme(!isDark);
+  function _updateToggleUI(theme) {
+    document.querySelectorAll('.lp-theme-btn').forEach(function (btn) {
+      btn.classList.toggle('active', btn.getAttribute('data-t') === theme);
+    });
+    // App topnav dark-mode btn (legacy)
+    var legacyBtn = document.getElementById('darkModeBtn');
+    if (legacyBtn) {
+      legacyBtn.textContent = theme === 'dark' ? '☀️' : theme === 'light' ? '🌙' : '💎';
+      legacyBtn.setAttribute('data-tip',
+        theme === 'dark' ? "Yorug' rejim" :
+        theme === 'light' ? "Qorong'u rejim" : 'Ko\'k rejim');
+    }
+  }
+
+  // Public API
+  window.setTheme = _applyTheme;
+  window.toggleDarkMode = function () {
+    var cur = document.documentElement.getAttribute('data-theme') || DEFAULT;
+    var next = cur === 'dark' ? 'light' : cur === 'light' ? 'blue' : 'dark';
+    _applyTheme(next);
   };
 
-  // Apply on load — DEFAULT is always dark
+  // Apply saved or default
   var saved = localStorage.getItem('idu_theme');
-  // Force dark: only respect saved 'light' preference, ignore old 'light' auto-detects
-  if (saved === 'light') {
-    _applyTheme(false);
-  } else {
-    // Dark by default — also overwrite any stale 'light' from system preference
-    _applyTheme(true);
-  }
+  _applyTheme(THEMES.includes(saved) ? saved : DEFAULT);
 
-  // Inject dark mode button into topnav-right when DOM ready
-  function _injectBtn() {
+  // Inject legacy dark-mode button into app topnav
+  function _injectLegacyBtn() {
     var right = document.querySelector('.topnav-right');
     if (!right || document.getElementById('darkModeBtn')) return;
     var btn = document.createElement('div');
     btn.id = 'darkModeBtn';
     btn.className = 'nav-icon-btn';
-    var isDark = document.documentElement.getAttribute('data-theme') === 'dark';
-    btn.textContent = isDark ? '☀️' : '🌙';
-    btn.setAttribute('data-tip', isDark ? 'Yorug\' rejim' : 'Qorong\'u rejim');
+    var cur = document.documentElement.getAttribute('data-theme') || DEFAULT;
+    btn.textContent = cur === 'dark' ? '☀️' : cur === 'light' ? '🌙' : '💎';
+    btn.setAttribute('data-tip', "Tema o'zgartirish");
     btn.style.cssText = 'font-size:17px;cursor:pointer';
     btn.onclick = window.toggleDarkMode;
     right.insertBefore(btn, right.firstChild);
   }
 
   if (document.readyState === 'loading') {
-    document.addEventListener('DOMContentLoaded', _injectBtn);
+    document.addEventListener('DOMContentLoaded', _injectLegacyBtn);
   } else {
-    _injectBtn();
+    _injectLegacyBtn();
   }
 })();
 
