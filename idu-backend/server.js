@@ -305,6 +305,14 @@ app.get('*', (req, res) => {
     return res.status(404).json({ error: 'API route not found' });
   }
   if (!frontendDir) return res.status(500).send('Frontend not found');
+  // For .html requests pointing to non-existent files, serve 404 page
+  if (req.path.endsWith('.html') && req.path !== '/') {
+    const requestedFile = path.join(frontendDir, req.path);
+    const fs = require('fs');
+    if (!fs.existsSync(requestedFile)) {
+      return res.status(404).sendFile(path.join(frontendDir, '404.html'));
+    }
+  }
   // Force browser to always re-fetch index.html so new script versions take effect
   res.setHeader('Cache-Control', 'no-store, no-cache, must-revalidate');
   res.setHeader('Pragma', 'no-cache');
