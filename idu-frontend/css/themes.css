@@ -507,6 +507,90 @@
 [data-theme="light"] .logout-btn { background: rgba(220,38,38,0.06) !important; color: #DC2626 !important; }
 
 /* ══════════════════════════════════════
+   LIGHT — Dashboard dynamic cards
+   (streak, ring, qa-wrap, xp, engagement)
+══════════════════════════════════════ */
+
+/* Quick-actions grid */
+[data-theme="light"] .qa-wrap {
+  background: #FFFFFF !important;
+  border-color: rgba(59,111,255,0.10) !important;
+  box-shadow: 0 1px 4px rgba(59,111,255,0.06) !important;
+}
+[data-theme="light"] .qa-lbl { color: #475569 !important; }
+
+/* Streak mini-card */
+[data-theme="light"] .streak-mini-card {
+  background: #FFFFFF !important;
+  border-color: rgba(59,111,255,0.12) !important;
+  box-shadow: 0 1px 4px rgba(59,111,255,0.06) !important;
+}
+[data-theme="light"] .streak-mini-label { color: #94A3B8 !important; }
+[data-theme="light"] .streak-mini-sub   { color: #64748B !important; }
+
+/* Progress ring card */
+[data-theme="light"] .progress-ring-card {
+  background: #FFFFFF !important;
+  border-color: rgba(59,111,255,0.12) !important;
+  box-shadow: 0 1px 4px rgba(59,111,255,0.06) !important;
+}
+[data-theme="light"] .ring-details-title { color: #94A3B8 !important; }
+[data-theme="light"] .ring-stat-row      { color: #0F172A !important; }
+[data-theme="light"] .ring-stat-key      { color: #64748B !important; }
+[data-theme="light"] .ring-pct-unit      { color: #94A3B8 !important; }
+
+/* XP bar, badge row, achievement cards */
+[data-theme="light"] .xp-bar-wrap { background: rgba(59,111,255,0.08) !important; }
+[data-theme="light"] .badge-row   { border-color: rgba(59,111,255,0.08) !important; }
+[data-theme="light"] .badge-name  { color: #0F172A !important; }
+[data-theme="light"] .badge-desc  { color: #64748B !important; }
+[data-theme="light"] .badge-reward { color: #3B6FFF !important; }
+
+/* Engagement / daily challenge cards */
+[data-theme="light"] .daily-challenge-card,
+[data-theme="light"] .review-badge-card,
+[data-theme="light"] .xp-widget-card,
+[data-theme="light"] .eng-card,
+[data-theme="light"] [class*="daily-"],
+[data-theme="light"] [class*="review-"] {
+  background: #FFFFFF !important;
+  border-color: rgba(59,111,255,0.12) !important;
+  color: #0F172A !important;
+}
+
+/* Text elements that inherit dark colors */
+[data-theme="light"] .card-title         { color: #0F172A !important; }
+[data-theme="light"] .card-header        { border-color: rgba(59,111,255,0.08) !important; }
+[data-theme="light"] .ph-title           { color: #0F172A !important; }
+[data-theme="light"] .stat-card-change   { color: #64748B !important; }
+[data-theme="light"] .page-header-title  { color: #0F172A !important; }
+
+/* Activity feed rows */
+[data-theme="light"] .activity-item { border-color: rgba(59,111,255,0.08) !important; color: #0F172A !important; }
+
+/* Subj-cards (exam subject picker) */
+[data-theme="light"] .subj-card {
+  background: #FFFFFF !important;
+  border-color: rgba(59,111,255,0.14) !important;
+}
+[data-theme="light"] .subj-card-title { color: #0F172A !important; }
+[data-theme="light"] .subj-card-meta  { color: #64748B !important; }
+
+/* Filter bars */
+[data-theme="light"] .filter-bar {
+  background: #FFFFFF !important;
+  border-color: rgba(59,111,255,0.12) !important;
+}
+
+/* Info / note boxes */
+[data-theme="light"] .info-box      { color: #0F172A !important; }
+[data-theme="light"] .info-box-warn { color: #0F172A !important; }
+
+/* Timetable cells */
+[data-theme="light"] .timetable th { background: #EEF4FF !important; color: #64748B !important; }
+[data-theme="light"] .timetable td { background: #FFFFFF !important; border-color: rgba(59,111,255,0.07) !important; }
+
+/* ══════════════════════════════════════
    BLUE THEME (Sapphire)
    data-theme="blue" on <html>
 ══════════════════════════════════════ */
