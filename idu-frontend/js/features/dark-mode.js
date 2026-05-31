@@ -6,7 +6,7 @@
 ══════════════════════════════════════════════════════════════ */
 
 (function () {
-  var THEMES = ['dark', 'light', 'blue'];
+  var THEMES = ['dark', 'light'];
   var DEFAULT = 'dark';
 
   function _applyTheme(theme) {
@@ -34,8 +34,7 @@
   window.setTheme = _applyTheme;
   window.toggleDarkMode = function () {
     var cur = document.documentElement.getAttribute('data-theme') || DEFAULT;
-    var next = cur === 'dark' ? 'light' : cur === 'light' ? 'blue' : 'dark';
-    _applyTheme(next);
+    _applyTheme(cur === 'dark' ? 'light' : 'dark');
   };
 
   // Apply saved or default
@@ -50,7 +49,7 @@
     btn.id = 'darkModeBtn';
     btn.className = 'nav-icon-btn';
     var cur = document.documentElement.getAttribute('data-theme') || DEFAULT;
-    btn.textContent = cur === 'dark' ? '☀️' : cur === 'light' ? '🌙' : '💎';
+    btn.textContent = cur === 'dark' ? '☀️' : '🌙';
     btn.setAttribute('data-tip', "Tema o'zgartirish");
     btn.style.cssText = 'font-size:17px;cursor:pointer';
     btn.onclick = window.toggleDarkMode;
