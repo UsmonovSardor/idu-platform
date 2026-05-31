@@ -684,3 +684,104 @@
   background: rgba(77,138,255,0.10) !important;
   border-color: rgba(77,138,255,0.20) !important;
 }
+
+/* ══════════════════════════════════════
+   ADDITIONAL FIXES — both themes
+══════════════════════════════════════ */
+
+/* ── Dark: Feature card text better contrast ───────────────── */
+[data-theme="dark"] .lp-feat-card p { color: #8BA5C8 !important; }
+[data-theme="dark"] .lp-feat-card h3 { color: #EDF2FF !important; }
+[data-theme="dark"] .lp-how-step h3 { color: #EDF2FF !important; }
+[data-theme="dark"] .lp-how-step p  { color: #8BA5C8 !important; }
+[data-theme="dark"] .lp-sec-card h3 { color: #EDF2FF !important; }
+[data-theme="dark"] .lp-sec-card p  { color: #8BA5C8 !important; }
+[data-theme="dark"] .lp-test-quote  { color: #CBD5E1 !important; }
+[data-theme="dark"] .lp-cta-title   { color: #fff !important; }
+[data-theme="dark"] .lp-cta-sub     { color: rgba(255,255,255,0.75) !important; }
+
+/* ── Dark: Section backgrounds ────────────────────────────── */
+[data-theme="dark"] .lp-features {
+  background: radial-gradient(ellipse 55% 45% at 50% 0%, rgba(59,111,255,0.09) 0%, transparent 55%), #080f20 !important;
+}
+[data-theme="dark"] .lp-how    { background: #080f20 !important; }
+[data-theme="dark"] .lp-trust  { background: #080f20 !important; }
+[data-theme="dark"] .lp-sec    { background: #020714 !important; }
+[data-theme="dark"] .lp-compare { background: #020714 !important; }
+
+/* ── Light: CTA section ────────────────────────────────────── */
+[data-theme="light"] .lp-cta-section {
+  background:
+    radial-gradient(ellipse 80% 70% at 50% 115%, rgba(22,163,74,0.18) 0%, transparent 55%),
+    radial-gradient(ellipse 55% 45% at 50% 0%, rgba(34,197,94,0.10) 0%, transparent 48%),
+    linear-gradient(150deg, #f0fdf4 0%, #dcfce7 45%, #f0fdf4 100%) !important;
+  border: 1px solid rgba(22,163,74,0.20) !important;
+  box-shadow: 0 28px 64px rgba(22,163,74,0.08), inset 0 1px 0 rgba(22,163,74,0.12) !important;
+}
+[data-theme="light"] .lp-cta-section::before {
+  background: linear-gradient(90deg, transparent, rgba(22,163,74,0.40), rgba(74,222,128,0.50), transparent) !important;
+}
+[data-theme="light"] .lp-cta-title { color: #14532D !important; }
+[data-theme="light"] .lp-cta-sub   { color: #166534 !important; opacity: 0.8; }
+
+/* ── Light: Section backgrounds ───────────────────────────── */
+[data-theme="light"] .lp-features {
+  background: linear-gradient(160deg, rgba(240,244,255,0.8), #f8faff) !important;
+}
+[data-theme="light"] .lp-how    { background: rgba(240,244,255,0.6) !important; }
+[data-theme="light"] .lp-trust  { background: rgba(240,244,255,0.6) !important; }
+[data-theme="light"] .lp-sec    { background: #f8faff !important; }
+[data-theme="light"] .lp-compare { background: #f8faff !important; }
+
+/* ── Light: Section title accents ─────────────────────────── */
+[data-theme="light"] .lp-feat-title-accent {
+  background: linear-gradient(135deg, #3B6FFF, #0EA5E9) !important;
+  -webkit-background-clip: text !important;
+  -webkit-text-fill-color: transparent !important;
+  background-clip: text !important;
+}
+[data-theme="light"] .lp-cta-main-btn {
+  background: linear-gradient(135deg, #16A34A, #15803D) !important;
+  color: #fff !important;
+  box-shadow: 0 0 20px rgba(22,163,74,0.30) !important;
+}
+
+/* ── Light: How steps ─────────────────────────────────────── */
+[data-theme="light"] .lp-how-num { box-shadow: 0 8px 24px rgba(59,111,255,0.22) !important; }
+[data-theme="light"] .lp-how-step h3 { color: #0F172A !important; }
+[data-theme="light"] .lp-how-step p  { color: #475569 !important; }
+[data-theme="light"] .lp-how-line {
+  background: linear-gradient(90deg, rgba(59,111,255,0.25), rgba(59,111,255,0.05)) !important;
+}
+
+/* ── Light: Stats section border ──────────────────────────── */
+[data-theme="light"] .lp-stats::before {
+  background: linear-gradient(90deg, transparent, rgba(59,111,255,0.18), rgba(14,165,233,0.14), transparent) !important;
+}
+
+/* ── Light: Features section border ───────────────────────── */
+[data-theme="light"] .lp-features::before {
+  background: linear-gradient(90deg, transparent, rgba(59,111,255,0.18), rgba(14,165,233,0.14), transparent) !important;
+}
+
+/* ── Light: Section titles ────────────────────────────────── */
+[data-theme="light"] .lp-feat-title  { color: #0F172A !important; }
+[data-theme="light"] .lp-feat-tag    { color: #3B6FFF !important; }
+[data-theme="light"] .lp-cmp-feature { color: #0F172A !important; }
+
+/* ── Theme toggle button layout fix ───────────────────────── */
+.lp-theme-toggle { flex-shrink: 0; }
+.lp-theme-btn svg { display: block; }
+
+/* ── Dark: lp-stats border ────────────────────────────────── */
+[data-theme="dark"] .lp-stats::before {
+  background: linear-gradient(90deg, transparent, rgba(59,111,255,0.38), rgba(34,211,238,0.28), transparent) !important;
+}
+
+/* ── Scroll reveal fix — always show, no hidden state ─────── */
+.lp-reveal {
+  opacity: 1 !important;
+  transform: none !important;
+  animation: none !important;
+  transition: none !important;
+}
