@@ -9,23 +9,40 @@ function fillStudent(l,p,c,g){
   document.getElementById('sGroup').value=g;
 }
 
-function renderStudentList(){
+async function renderStudentList(){
   const el=document.getElementById('teacherStudentBody');if(!el)return;
-  const grp=document.getElementById('studGroupFilter')?.value||'all';
-  const list=grp==='all'?STUDENTS_DATA:STUDENTS_DATA.filter(s=>s.group===grp);
-  el.innerHTML=list.map((s,i)=>`
-    <tr>
-      <td>${i+1}</td>
-      <td><div style="display:flex;align-items:center;gap:8px">
-        <div class="dt-avatar" style="background:#1B4FD8">${s.name.split(' ').map(x=>x[0]).join('')}</div>
-        <span>${s.name}</span>
-      </div></td>
-      <td><span class="card-badge cb-blue">${s.group}</span></td>
-      <td><span class="font-mono">${s.avg}</span></td>
-      <td><span class="${s.att<85?'status-tag st-warning':'status-tag st-active'}">${s.att}%</span></td>
-      <td><span class="status-tag ${s.avg>=70&&s.att>=85?'st-active':s.avg>=55?'st-ok':'st-warning'}">${s.avg>=70&&s.att>=85?'A\'lo':'Qoniqarli'}</span></td>
-      <td><button class="btn btn-secondary btn-sm" onclick="openStudentDetail(${s.id})">Ko'rish</button></td>
-    </tr>`).join('');
+  el.innerHTML='<tr><td colspan="7" style="text-align:center;padding:20px;color:var(--text2)">⏳ Yuklanmoqda...</td></tr>';
+  try {
+    const grp=document.getElementById('studGroupFilter')?.value||'';
+    const params=new URLSearchParams({limit:200});
+    if(grp&&grp!=='all') params.append('group',grp);
+    const data=await api('GET','/students?'+params.toString());
+    const students=Array.isArray(data)?data:(data.data||[]);
+    if(!students.length){
+      el.innerHTML='<tr><td colspan="7" style="text-align:center;color:var(--text3);padding:20px">Talabalar topilmadi</td></tr>';
+      return;
+    }
+    el.innerHTML=students.map((s,i)=>{
+      const name=s.full_name||s.name||'Noma\'lum';
+      const group=s.group_name||s.group||'—';
+      const gpa=parseFloat(s.gpa||0);
+      const ini=name.split(' ').filter(Boolean).map(x=>x[0]).join('').substring(0,2).toUpperCase();
+      return `<tr>
+        <td>${i+1}</td>
+        <td><div style="display:flex;align-items:center;gap:8px">
+          <div class="dt-avatar" style="background:#1B4FD8">${ini}</div>
+          <span>${name}</span>
+        </div></td>
+        <td><span class="card-badge cb-blue">${group}</span></td>
+        <td><span class="font-mono">${gpa.toFixed(2)}</span></td>
+        <td>—</td>
+        <td><span class="status-tag st-active">Faol</span></td>
+        <td><button class="btn btn-secondary btn-sm" onclick="openStudentDetail(${s.id})">Ko'rish</button></td>
+      </tr>`;
+    }).join('');
+  } catch(e){
+    el.innerHTML='<tr><td colspan="7" style="text-align:center;color:var(--red);padding:20px">Xato: '+e.message+'</td></tr>';
+  }
 }
 
 function filterStudents(){

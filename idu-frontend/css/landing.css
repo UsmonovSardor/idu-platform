@@ -6,19 +6,19 @@
 
 /* ── Obsidian Glass tokens ── */
 #authScreen {
-  --bg:       #020714;
-  --bg2:      #080f20;
-  --bg3:      #0d1629;
+  --bg:       #071524;
+  --bg2:      #0b1e35;
+  --bg3:      #112240;
   --blue:     #3B6FFF;
   --blue2:    #2952e3;
   --sky:      #22D3EE;
   --green:    #22C55E;
   --text:     #EDF2FF;
-  --text2:    #6B8BB5;
-  --text3:    #3D587A;
-  --border:   rgba(99,140,255,0.12);
-  --border-h: rgba(99,140,255,0.28);
-  --card:     rgba(8,15,32,0.92);
+  --text2:    #8fa5c8;
+  --text3:    #4a6a90;
+  --border:   rgba(99,140,255,0.18);
+  --border-h: rgba(99,140,255,0.36);
+  --card:     rgba(11,30,53,0.90);
   --glow:     rgba(59,111,255,0.35);
   --pglow:    rgba(59,111,255,0.35);
   --btn:      linear-gradient(135deg,#22C55E 0%,#16A34A 100%);
@@ -157,9 +157,9 @@
   padding: 116px 88px 56px;
   position: relative; overflow: hidden;
   background:
-    radial-gradient(ellipse 110% 70% at -5% 55%, rgba(59,111,255,0.18) 0%, transparent 52%),
-    radial-gradient(ellipse 80% 60% at 108% 35%, rgba(34,211,238,0.10) 0%, transparent 48%),
-    radial-gradient(ellipse 55% 45% at 50% -10%, rgba(59,111,255,0.13) 0%, transparent 45%),
+    radial-gradient(ellipse 110% 70% at -5% 55%, rgba(59,111,255,0.26) 0%, transparent 52%),
+    radial-gradient(ellipse 80% 60% at 108% 35%, rgba(34,211,238,0.15) 0%, transparent 48%),
+    radial-gradient(ellipse 55% 45% at 50% -10%, rgba(59,111,255,0.18) 0%, transparent 45%),
     var(--bg);
 }
 
@@ -429,14 +429,15 @@
 }
 .lp-stat-card {
   position: relative;
-  background: linear-gradient(145deg, rgba(13,22,41,0.92), rgba(8,15,32,0.96));
-  border: 1px solid rgba(99,140,255,0.12);
+  background: linear-gradient(145deg, rgba(17,34,64,0.92), rgba(11,30,53,0.96));
+  border: 1px solid rgba(99,140,255,0.22);
   border-radius: 20px; padding: 26px 12px 22px; text-align: center;
   transition: transform 0.28s cubic-bezier(0.22,1,0.36,1), box-shadow 0.28s ease, border-color 0.28s ease;
   overflow: hidden;
   box-shadow:
-    0 0 0 1px rgba(99,140,255,0.08),
-    0 24px 48px rgba(0,0,0,0.42),
+    0 0 0 1px rgba(99,140,255,0.10),
+    0 20px 48px rgba(59,111,255,0.08),
+    0 24px 48px rgba(0,0,0,0.35),
     inset 0 1px 0 rgba(255,255,255,0.07);
 }
 .lp-stat-card::before {
@@ -507,10 +508,10 @@
 .lp-feat-card {
   position: relative;
   display: flex; flex-direction: column;
-  background: linear-gradient(160deg, rgba(13,22,41,0.88), rgba(8,15,32,0.94));
-  border: 1px solid rgba(99,140,255,0.14);
+  background: linear-gradient(160deg, rgba(17,34,64,0.90), rgba(11,30,53,0.95));
+  border: 1px solid rgba(99,140,255,0.20);
   border-radius: 22px; padding: 28px; overflow: hidden;
-  box-shadow: 0 6px 26px rgba(0,0,0,0.4), inset 0 1px 0 rgba(255,255,255,0.06);
+  box-shadow: 0 8px 32px rgba(0,0,0,0.35), 0 0 20px rgba(59,111,255,0.04), inset 0 1px 0 rgba(255,255,255,0.07);
   transition: transform 0.32s cubic-bezier(0.22,1,0.36,1), box-shadow 0.32s, border-color 0.32s;
   backdrop-filter: blur(12px);
   -webkit-backdrop-filter: blur(12px);

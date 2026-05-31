@@ -1663,22 +1663,41 @@ function refreshAllGroupDropdowns(){
     if(groups.includes(cur)) sel.value=cur;
   });
 }
-function renderDekanatTeachers(){
+async function renderDekanatTeachers(){
   const el=document.getElementById('dekanatTeacherBody');if(!el)return;
-  el.innerHTML=TEACHERS_DATA.map((t,i)=>`
-    <tr>
-      <td>${i+1}</td>
-      <td><div style="display:flex;align-items:center;gap:8px">
-        <div class="dt-avatar" style="background:#16A34A">${t.name.split(' ').map(x=>x[0]).join('')}</div>
-        ${t.name}
-      </div></td>
-      <td>${t.dept}</td>
-      <td>${t.subjects.join(', ')}</td>
-      <td>${t.groups.join(', ')}</td>
-      <td>${t.hours}</td>
-      <td>⭐ ${t.rating}</td>
-      <td><span class="status-tag st-active">Faol</span></td>
-    </tr>`).join('');
+  el.innerHTML='<tr><td colspan="8" style="text-align:center;padding:20px;color:var(--text2)">⏳ Yuklanmoqda...</td></tr>';
+  try {
+    const data = await api('GET','/teachers?limit=200');
+    const teachers = Array.isArray(data) ? data : (data.data || []);
+    if(!teachers.length){
+      el.innerHTML='<tr><td colspan="8" style="text-align:center;color:var(--text3);padding:20px">O\'qituvchilar topilmadi</td></tr>';
+      return;
+    }
+    el.innerHTML=teachers.map((t,i)=>{
+      const name = t.full_name || t.name || 'Noma\'lum';
+      const dept = t.department || t.dept || '—';
+      const subjects = Array.isArray(t.subjects) ? t.subjects : [];
+      const groups  = Array.isArray(t.groups)   ? t.groups  : [];
+      const hours   = t.course_count ? t.course_count*4 : (t.hours || '—');
+      const rating  = t.rating || 4.5;
+      const ini     = name.split(' ').filter(Boolean).map(x=>x[0]).join('').substring(0,2).toUpperCase();
+      return `<tr>
+        <td>${i+1}</td>
+        <td><div style="display:flex;align-items:center;gap:8px">
+          <div class="dt-avatar" style="background:#16A34A">${ini}</div>
+          ${name}
+        </div></td>
+        <td>${dept}</td>
+        <td>${subjects.length ? subjects.join(', ') : (t.title||'—')}</td>
+        <td>${groups.length  ? groups.join(', ')   : '—'}</td>
+        <td>${hours}</td>
+        <td>⭐ ${rating}</td>
+        <td><span class="status-tag st-active">Faol</span></td>
+      </tr>`;
+    }).join('');
+  } catch(e) {
+    el.innerHTML='<tr><td colspan="8" style="text-align:center;color:var(--red);padding:20px">Xato: '+e.message+'</td></tr>';
+  }
 }
 var _dekFilter='all';
 function renderDekanatAttendance(){
