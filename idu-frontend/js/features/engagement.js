@@ -232,16 +232,18 @@ async function renderWeeklyLeaderboard() {
     }
     el.innerHTML = header + rows.map(function (r, i) {
       var isMe = r.id === myId;
-      var medal = i === 0 ? '🥇' : i === 1 ? '🥈' : i === 2 ? '🥉' : '#' + r.rank;
+      var rankNum = r.rank || (i + 1);
+      var rankClass = i === 0 ? ' r1' : i === 1 ? ' r2' : i === 2 ? ' r3' : '';
+      var rankHtml = i === 0 ? '1' : i === 1 ? '2' : i === 2 ? '3' : rankNum;
       var ini = (r.full_name || '?').split(' ').filter(Boolean).map(function (p) { return p[0]; }).join('').slice(0, 2).toUpperCase();
       var av = r.avatar_url
         ? '<img src="' + r.avatar_url + '" class="wl-av" onerror="this.outerHTML=\'<div class=&quot;wl-av wl-av-f&quot;>' + ini + '</div>\'">'
         : '<div class="wl-av wl-av-f">' + ini + '</div>';
       return '<div class="wl-row' + (isMe ? ' wl-me' : '') + '">' +
-        '<div class="wl-rank">' + medal + '</div>' + av +
-        '<div class="wl-info"><div class="wl-name">' + _esc(r.full_name) + (isMe ? ' (Siz)' : '') + '</div>' +
+        '<div class="wl-rank' + rankClass + '">' + rankHtml + '</div>' + av +
+        '<div class="wl-info"><div class="wl-name">' + _esc(r.full_name) + (isMe ? ' <span style="font-size:10px;color:var(--primary);font-weight:700">· Siz</span>' : '') + '</div>' +
           '<div class="wl-grp">' + _esc(r.group_name || '') + '</div></div>' +
-        '<div class="wl-xp">' + (r.week_xp || 0) + ' XP</div></div>';
+        '<div class="wl-xp">' + (r.week_xp || 0).toLocaleString() + '<span class="wl-xp-label">XP</span></div></div>';
     }).join('');
   } catch (e) { el.innerHTML = '<div style="color:#f87171;padding:12px">Xato: ' + e.message + '</div>'; }
 }

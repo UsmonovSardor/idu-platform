@@ -53,11 +53,11 @@ function renderBadgeStrip(badges) {
     }).join('') + '</div>';
 }
 
-// ── Leaderboard page ──────────────────────────────────────────────────────────
+// ── Leaderboard page — 21st.dev "Top Authors" style ──────────────────────────
 async function renderLeaderboard() {
   var el = document.getElementById('leaderboardList');
   if (!el) return;
-  el.innerHTML = '<div style="text-align:center;color:#94A3B8;padding:20px">Yuklanmoqda...</div>';
+  el.innerHTML = '<div style="padding:20px 0;text-align:center;color:var(--text3);font-size:13px">⏳ Yuklanmoqda...</div>';
 
   var group = (document.getElementById('lbGroupFilter')||{}).value || '';
   var q = group ? '?group=' + encodeURIComponent(group) : '';
@@ -65,28 +65,59 @@ async function renderLeaderboard() {
   try {
     var rows = await api('GET', '/gamification/leaderboard' + q);
     if (!rows.length) {
-      el.innerHTML = '<div style="text-align:center;color:#94A3B8;padding:20px">Hali ma\'lumot yo\'q</div>';
+      el.innerHTML = '<div style="padding:32px 0;text-align:center;color:var(--text3);font-size:13px">Hali ma\'lumot yo\'q</div>';
       return;
     }
     var myId = window.CURRENT_USER ? window.CURRENT_USER.id : null;
-    el.innerHTML = rows.map(function(r, i) {
+    // Header inspired by 21st.dev
+    var now = new Date();
+    var months = ['Yanvar','Fevral','Mart','Aprel','May','Iyun','Iyul','Avgust','Sentabr','Oktabr','Noyabr','Dekabr'];
+    var monthLabel = months[now.getMonth()] + ' ' + now.getFullYear();
+    var html = '<div class="lb-page-header">'
+      + '<div class="lb-page-title">Top Talabalar</div>'
+      + '<div class="lb-page-sub">' + monthLabel + ' · Eng faol o\'quvchilar XP reytingi</div>'
+      + '</div>';
+    html += rows.map(function(r, i) {
       var isMe = r.id === myId;
-      var medalIcon = i===0?'🥇':i===1?'🥈':i===2?'🥉':r.rank+'';
+      var rankClass = i===0?' lb-r1':i===1?' lb-r2':i===2?' lb-r3':'';
+      var rankHtml = i===0?'🥇':i===1?'🥈':i===2?'🥉':String(r.rank||i+1);
       var color = getLevelColor(r.level);
-      return '<div style="display:flex;align-items:center;gap:12px;padding:12px 14px;border-radius:12px;margin-bottom:8px;background:' + (isMe?'#EFF6FF':'#F8FAFC') + ';border:' + (isMe?'2px solid #1B4FD8':'1.5px solid #E2E8F0') + '">'
-        + '<div style="font-size:' + (i<3?'22px':'14px') + ';width:32px;text-align:center;font-weight:900;color:' + (i<3?'inherit':'#94A3B8') + '">' + medalIcon + '</div>'
-        + '<div style="flex:1">'
-        + '<div style="font-weight:700;font-size:13px' + (isMe?';color:#1B4FD8':'')+'">' + r.full_name + (isMe?' (Siz)':'') + '</div>'
-        + '<div style="font-size:11px;color:#94A3B8">' + (r.group_name||'') + ' · Level ' + r.level + ' ' + getLevelName(r.level) + '</div>'
+      var ini = (r.full_name||'?').split(' ').filter(Boolean).map(function(p){return p[0];}).join('').slice(0,2).toUpperCase();
+      var avHtml = r.avatar_url
+        ? '<div class="lb-av"><img src="' + r.avatar_url + '" onerror="this.parentNode.innerHTML=\'' + ini + '\'"></div>'
+        : '<div class="lb-av" style="background:' + color + 'cc">' + ini + '</div>';
+      var badgesHtml = '';
+      if (r.badges && r.badges.length) {
+        badgesHtml = '<div class="lb-badges">'
+          + r.badges.slice(0,3).map(function(b){
+            return '<span class="lb-badge-chip" style="background:' + (b.color||'#94A3B8') + '18;border-color:' + (b.color||'#94A3B8') + '44;color:' + (b.color||'#64748B') + '">'
+              + (b.icon||'🏅') + ' ' + (b.name||b.badge_code) + '</span>';
+          }).join('')
+          + '</div>';
+      }
+      return '<div class="lb-row' + (isMe?' lb-row-me':'') + '">'
+        + '<div class="lb-rank' + rankClass + '">' + rankHtml + '</div>'
+        + avHtml
+        + '<div class="lb-body">'
+          + '<div class="lb-name">' + (r.full_name||'—') + (isMe?' <span style="font-size:10px;color:var(--primary);font-weight:700">· Siz</span>':'') + '</div>'
+          + '<div class="lb-meta">' + (r.group_name||'') + (r.group_name&&r.level?' · ':'') + (r.level?'Level '+r.level+' '+getLevelName(r.level):'') + '</div>'
+          + badgesHtml
         + '</div>'
-        + '<div style="text-align:right">'
-        + '<div style="font-size:16px;font-weight:900;color:' + color + '">' + (r.xp||0).toLocaleString() + '</div>'
-        + '<div style="font-size:10px;color:#94A3B8">' + r.badge_count + ' badge</div>'
+        + '<div class="lb-stats">'
+          + '<div class="lb-stat">'
+            + '<div class="lb-stat-val">' + (r.xp||0).toLocaleString() + '</div>'
+            + '<div class="lb-stat-key">XP</div>'
+          + '</div>'
+          + '<div class="lb-stat">'
+            + '<div class="lb-stat-val">' + (r.badge_count||0) + '</div>'
+            + '<div class="lb-stat-key">Badge</div>'
+          + '</div>'
         + '</div>'
         + '</div>';
     }).join('');
+    el.innerHTML = html;
   } catch(e) {
-    el.innerHTML = '<div style="color:#DC2626;padding:12px">Xato: ' + e.message + '</div>';
+    el.innerHTML = '<div style="color:var(--red);padding:14px;font-size:13px">Xato: ' + e.message + '</div>';
   }
 }
 
