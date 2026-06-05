@@ -194,7 +194,16 @@ function openQRScanner() {
   var modal = document.getElementById('qrScanModal');
   if (!modal) return;
   modal.classList.add('open');
-  _startQRScanner();
+  // Lazy-load jsQR (43KB) only when student opens QR scanner
+  if (typeof jsQR === 'undefined') {
+    var s = document.createElement('script');
+    s.src = 'https://cdn.jsdelivr.net/npm/jsqr@1.4.0/dist/jsQR.min.js';
+    s.crossOrigin = 'anonymous';
+    s.onload = function() { _startQRScanner(); };
+    document.head.appendChild(s);
+  } else {
+    _startQRScanner();
+  }
 }
 
 function closeQRScanner() {

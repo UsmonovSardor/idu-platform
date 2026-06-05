@@ -3497,3 +3497,63 @@ textarea, select {
 
 /* ── Mobile modal ───────────────────────────────────────────── */
 @media(max-width:768px){[data-theme="dark"] .login-modal{border-radius:20px !important;margin:16px !important;}[data-theme="dark"] .login-left{display:none !important;}[data-theme="dark"] .login-right{padding:28px 22px 24px !important;}}
+
+/* ════════════════════════════════════════════════════════════════════
+   RESPONSIVE & DESIGN POLISH v20260605
+   ════════════════════════════════════════════════════════════════════ */
+
+/* ── Hero mobile ─────────────────────────────────────────────── */
+@media(max-width:768px){
+  .hero-title{font-size:34px;letter-spacing:-0.8px;margin-bottom:14px}
+  .hero-sub{font-size:14.5px;margin-bottom:28px}
+  .hero-btns{flex-direction:column;align-items:stretch;gap:10px}
+  .hero-btns .btn,.hero-btns a{text-align:center;justify-content:center}
+}
+@media(max-width:480px){
+  .hero-title{font-size:28px;letter-spacing:-0.5px}
+}
+
+/* ── Stats grid mobile ───────────────────────────────────────── */
+@media(max-width:640px){
+  .stats-grid{grid-template-columns:repeat(2,1fr);gap:10px}
+  .stats-grid-3{grid-template-columns:repeat(2,1fr);gap:10px}
+}
+@media(max-width:360px){
+  .stats-grid,.stats-grid-3{grid-template-columns:1fr}
+}
+
+/* ── Stat card active press feedback ─────────────────────────── */
+.stat-card{cursor:default;transition:box-shadow 0.22s,transform 0.22s,border-color 0.22s}
+.stat-card:active{transform:translateY(-2px) scale(0.98)}
+
+/* ── Page layout mobile padding ─────────────────────────────── */
+@media(max-width:640px){
+  .page{padding:16px 14px}
+  .page-header{margin-bottom:14px}
+  .page-header-left .ph-title{font-size:18px}
+}
+
+/* ── Table horizontal scroll on mobile ───────────────────────── */
+@media(max-width:768px){
+  .table-wrap{overflow-x:auto;-webkit-overflow-scrolling:touch;border-radius:12px}
+  .table-wrap table{min-width:520px}
+}
+
+/* ── Sidebar collapse on mobile ──────────────────────────────── */
+@media(max-width:640px){
+  .sidebar{width:100%;border-right:none;border-bottom:1px solid var(--border);padding:8px 0}
+}
+
+/* ── Button active tap feedback ──────────────────────────────── */
+.btn:active{transform:translateY(0) scale(0.96)!important;transition:transform 0.08s!important}
+.btn-auth:active{transform:scale(0.97)!important}
+
+/* ── Focus ring (keyboard nav) ───────────────────────────────── */
+.btn:focus-visible,.sidebar-item:focus-visible,.nav-item:focus-visible{
+  outline:2px solid var(--primary);outline-offset:2px
+}
+
+/* ── Smooth color transitions for theme switch ───────────────── */
+body,*{transition:background-color 0.2s,border-color 0.2s,color 0.15s}
+/* exclude animation-critical elements */
+.page,.stat-card,.ripple-wave,.skel,.skeleton-card,.lp-hero-card{transition:none}

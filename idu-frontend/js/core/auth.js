@@ -138,6 +138,18 @@ function launchApp(role, user) {
   initDates();
   const btn=document.getElementById('addIdeaBtn');
   if(btn) btn.style.display = (role==='student'||role==='dekanat') ? '' : 'none';
+
+  // Lazy-load socket.io only after login — saves 38KB for unauthenticated landing page visitors
+  if (typeof io === 'undefined' && !window._socketIoLoading) {
+    window._socketIoLoading = true;
+    var meta = document.querySelector('meta[name="api-base"]');
+    var backendOrigin = (meta && meta.content)
+      ? meta.content.replace(/\/api.*$/, '')
+      : window.location.origin;
+    var s = document.createElement('script');
+    s.src = backendOrigin + '/socket.io/socket.io.js';
+    document.head.appendChild(s);
+  }
 }
 
 function doAutoLogin() {

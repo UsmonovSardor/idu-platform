@@ -46,13 +46,13 @@
 <link rel="preconnect" href="https://cdnjs.cloudflare.com" crossorigin>
 <link rel="dns-prefetch" href="https://idu-platform-production.up.railway.app">
 <!-- Critical CSS preload — start fetching before parser hits the link tag -->
-<link rel="preload" href="css/style.css?v=20260601c" as="style">
+<link rel="preload" href="css/style.css?v=20260605c" as="style">
 <link rel="preload" href="css/themes.css?v=20260601b" as="style">
 <link rel="preload" href="css/landing.css?v=20260531e" as="style">
 <link rel="preload" href="css/utilities.css?v=20260525a" as="style">
 <script defer src="https://cdnjs.cloudflare.com/ajax/libs/dompurify/3.0.8/purify.min.js"></script>
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Fira+Code:wght@600;700&family=Fira+Sans:wght@400;500;600&display=swap">
-<link rel="stylesheet" href="css/style.css?v=20260601c">
+<link rel="stylesheet" href="css/style.css?v=20260605c">
 <link rel="stylesheet" href="css/themes.css?v=20260601b">
 <link rel="stylesheet" href="css/responsive.css?v=20260529a">
 <link rel="stylesheet" href="css/landing.css?v=20260531e">
@@ -61,19 +61,7 @@
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/katex.min.css" crossorigin="anonymous">
 <script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/katex.min.js" crossorigin="anonymous"></script>
 <script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/contrib/auto-render.min.js" crossorigin="anonymous" onload="initKaTeX()"></script>
-<!-- socket.io client — loaded from the backend origin (works on both same-origin and
-     cross-origin deployments where captivating-growth is a static-only server) -->
-<script>
-(function() {
-  var meta = document.querySelector('meta[name="api-base"]');
-  var backendOrigin = (meta && meta.content)
-    ? meta.content.replace(/\/api.*$/, '')   // strip /api/v1 → keep https://host
-    : window.location.origin;                // same-origin fallback (idu-platform itself)
-  var s = document.createElement('script');
-  s.src = backendOrigin + '/socket.io/socket.io.js';
-  document.head.appendChild(s);
-}());
-</script>
+<!-- socket.io loaded lazily in launchApp() after login — not needed on landing page -->
 <script>
   // ── Service Worker registration + auto-refresh on new deploy ──────────
   // Strategy: always fetch sw.js fresh (cache:'no-store'), call .update()
@@ -4464,7 +4452,7 @@ function upmTab(name) {
 </div>
   <!-- ===== IDU Platform — Modular Architecture ===== -->
   <script defer src="js/core/config.js?v=20260528e"></script>
-  <script defer src="js/core/auth.js?v=20260517d"></script>
+  <script defer src="js/core/auth.js?v=20260605c"></script>
   <script defer src="js/core/router.js?v=20260530f"></script>
   <script defer src="js/core/ui-utils.js?v=20260522a"></script>
   <script defer src="js/core/events.js?v=20260525b"></script>
@@ -4485,10 +4473,10 @@ function upmTab(name) {
   <script defer src="js/features/reports.js?v=20260517d"></script>
   <script defer src="js/features/stats.js?v=20260521a"></script>
   <script defer src="js/features/notifications.js?v=20260605b"></script>
-  <script defer src="js/features/attendance.js?v=20260605b"></script>
+  <script defer src="js/features/attendance.js?v=20260605c"></script>
   <script defer src="js/features/chat.js?v=20260530p"></script>
-  <script defer src="js/features/gamification.js?v=20260601c"></script>
-  <script defer src="js/features/engagement.js?v=20260601c"></script>
+  <script defer src="js/features/gamification.js?v=20260605c"></script>
+  <script defer src="js/features/engagement.js?v=20260605c"></script>
   <script defer src="js/pages/rector.js?v=20260520f"></script>
   <script defer src="js/features/teacher-exams.js?v=20260605b"></script>
   <script defer src="js/features/dark-mode.js?v=20260531d"></script>
@@ -4504,8 +4492,7 @@ function upmTab(name) {
   <script defer src="js/enhancements.js?v=20260526a"></script>
   <!-- QR code generator (teacher) -->
   <script defer src="https://cdn.jsdelivr.net/npm/qrcodejs@1.0.0/qrcode.min.js" crossorigin="anonymous"></script>
-  <!-- QR code scanner (student camera) -->
-  <script defer src="https://cdn.jsdelivr.net/npm/jsqr@1.4.0/dist/jsQR.min.js" crossorigin="anonymous"></script>
+  <!-- jsQR loaded lazily in openQRScanner() — saves 43KB for all users -->
 
 <script>
 /* ── Landing page interactions ───────────────────────────────── */
