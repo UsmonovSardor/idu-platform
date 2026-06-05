@@ -1144,3 +1144,39 @@ img { image-rendering: -webkit-optimize-contrast; }
 .stats-grid .stat-card {
   transition-delay: calc(var(--i, 0) * 60ms);
 }
+
+/* ── 22. MOBILE BOTTOM NAV — THEME OVERRIDES ────────────────── */
+
+/* Light theme: clean white glass */
+[data-theme="light"] .mob-nav {
+  background: rgba(255,255,255,0.94) !important;
+  border-top-color: rgba(59,111,255,0.10) !important;
+  box-shadow: 0 -1px 0 rgba(59,111,255,0.08), 0 -8px 24px rgba(59,111,255,0.06) !important;
+}
+[data-theme="light"] .mob-nav-label { color: #94A3B8 !important; }
+[data-theme="light"] .mob-nav-item.active .mob-nav-label { color: #3B6FFF !important; }
+[data-theme="light"] .mob-nav-item.active::before { background: #3B6FFF !important; }
+[data-theme="light"] .mob-nav-item:active { background: rgba(59,111,255,0.06) !important; }
+
+/* Dark theme: obsidian glass (default theme in :root so already correct,
+   but explicit override ensures it wins if CSS order changes) */
+[data-theme="dark"] .mob-nav {
+  background: rgba(8,15,32,0.92) !important;
+  border-top-color: rgba(99,140,255,0.12) !important;
+  box-shadow: 0 -1px 0 rgba(99,140,255,0.08), 0 -8px 30px rgba(0,0,0,0.45) !important;
+}
+[data-theme="dark"] .mob-nav-label { color: #3D587A !important; }
+[data-theme="dark"] .mob-nav-item.active .mob-nav-label { color: #7ba8ff !important; }
+[data-theme="dark"] .mob-nav-item.active::before { background: var(--primary) !important; }
+[data-theme="dark"] .mob-nav-badge { border-color: #080f20 !important; }
+
+/* Blue theme: deep navy glass */
+[data-theme="blue"] .mob-nav {
+  background: rgba(5,18,40,0.94) !important;
+  border-top-color: rgba(77,138,255,0.16) !important;
+  box-shadow: 0 -1px 0 rgba(77,138,255,0.12), 0 -8px 30px rgba(0,0,0,0.5) !important;
+}
+[data-theme="blue"] .mob-nav-label { color: #4a6a90 !important; }
+[data-theme="blue"] .mob-nav-item.active .mob-nav-label { color: #7BB8FF !important; }
+[data-theme="blue"] .mob-nav-item.active::before { background: #4D8AFF !important; }
+[data-theme="blue"] .mob-nav-badge { border-color: #051228 !important; }

@@ -343,4 +343,31 @@ document.addEventListener('DOMContentLoaded', function() {
   function _pageLabel(id) { return PAGE_LABELS[id] || id; }
 })();
 
-console.log('✅ Enhancements v8 loaded (mobNav + swipe + streak + ring + notifs)');
+// ── Table overflow hint ─────────────────────────────────────────────────────
+(function() {
+  function checkTableOverflow() {
+    document.querySelectorAll('.table-wrap').forEach(function(wrap) {
+      wrap.classList.toggle('has-overflow', wrap.scrollWidth > wrap.clientWidth + 4);
+    });
+  }
+  // Run on page show and resize
+  document.addEventListener('DOMContentLoaded', checkTableOverflow);
+  window.addEventListener('resize', checkTableOverflow);
+
+  // Patch showPage to recheck after each navigation
+  (function patchShowPageForOverflow() {
+    if (typeof window.showPage !== 'function') {
+      return setTimeout(patchShowPageForOverflow, 300);
+    }
+    if (window.showPage._overflowPatched) return;
+    var orig = window.showPage;
+    window.showPage = function(id) {
+      var r = orig.apply(this, arguments);
+      setTimeout(checkTableOverflow, 80);
+      return r;
+    };
+    window.showPage._overflowPatched = true;
+  }());
+}());
+
+console.log('✅ Enhancements v9 loaded (mobNav + swipe + streak + ring + notifs + overflow)');

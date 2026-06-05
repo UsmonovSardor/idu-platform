@@ -574,3 +574,153 @@ img, video { max-width: 100%; height: auto; }
   .page { padding: 0 !important; }
   body { background: #fff !important; }
 }
+
+/* ══════════════════════════════════════════════════════════════
+   SENIOR RESPONSIVE ADDITIONS v8.0
+   ══════════════════════════════════════════════════════════════ */
+
+/* ── Fluid typography (clamp) ────────────────────────────────── */
+.ph-title,
+.page-header h2,
+.page-header-title { font-size: clamp(18px, 4vw, 24px); }
+
+.stat-card-val { font-size: clamp(20px, 5vw, 30px); line-height: 1.1; }
+
+h1 { font-size: clamp(22px, 5vw, 36px); }
+h2 { font-size: clamp(18px, 4vw, 28px); }
+h3 { font-size: clamp(15px, 3vw, 20px); }
+
+/* ── Table overflow hint ─────────────────────────────────────── */
+/* Gradient "more content" indicator on right edge of scrollable table */
+.table-wrap::after {
+  content: '';
+  position: absolute;
+  top: 0; right: 0; bottom: 0;
+  width: 40px;
+  background: linear-gradient(to left, var(--white), transparent);
+  pointer-events: none;
+  border-radius: 0 12px 12px 0;
+  opacity: 0;
+  transition: opacity 0.2s;
+}
+.table-wrap { position: relative; }
+.table-wrap.has-overflow::after { opacity: 1; }
+
+/* ── 44px minimum touch targets ─────────────────────────────── */
+@media (max-width: 768px) {
+  .btn          { min-height: 44px; }
+  .nav-icon-btn { min-width:  44px; min-height: 44px; }
+  .sidebar-item { min-height: 44px; }
+  .mob-nav-item { min-height: 44px; }
+  select, input[type="date"], input[type="time"] { min-height: 44px; }
+}
+
+/* ── Pill tabs mobile ────────────────────────────────────────── */
+@media (max-width: 640px) {
+  .pill-tabs { overflow-x: auto; scrollbar-width: none; }
+  .pill-tabs::-webkit-scrollbar { display: none; }
+  .pill-tab { flex-shrink: 0; white-space: nowrap; }
+}
+
+/* ── Form inputs mobile ──────────────────────────────────────── */
+@media (max-width: 768px) {
+  .form-input,
+  .form-select,
+  .login-input-field { min-height: 48px; }
+
+  /* Two-col form grids → single column on mobile */
+  .form-grid-2 { grid-template-columns: 1fr !important; }
+}
+
+/* ── Card hover disabled on touch devices ────────────────────── */
+@media (hover: none) {
+  .stat-card:hover { transform: none; box-shadow: var(--shadow-sm); }
+  .forum-item:hover { transform: none; }
+  .btn:hover { transform: none; }
+}
+
+/* ── Modal: prevent content shift when keyboard opens ───────── */
+@media (max-width: 768px) {
+  .modal-bg {
+    align-items: flex-end;
+    /* Account for keyboard — sheet stays at bottom */
+  }
+  .modal-box {
+    padding-bottom: max(32px, var(--safe-bottom));
+  }
+
+  /* Drag handle on bottom sheets */
+  .modal-box::before {
+    content: '';
+    display: block;
+    width: 40px; height: 4px;
+    background: var(--border2);
+    border-radius: 2px;
+    margin: -8px auto 16px;
+  }
+}
+
+/* ── Grade/score table: hide less important cols on mobile ────── */
+@media (max-width: 480px) {
+  .grade-col-secondary,
+  .att-col-room { display: none !important; }
+}
+
+/* ── Chat mobile ─────────────────────────────────────────────── */
+@media (max-width: 768px) {
+  .chat-sidebar { display: none; }
+  .chat-main { width: 100% !important; }
+  .chat-input-wrap { padding: 8px 12px calc(8px + var(--safe-bottom)); }
+}
+
+/* ── Timetable: sticky first column on mobile ────────────────── */
+@media (max-width: 768px) {
+  .timetable th:first-child,
+  .timetable td:first-child {
+    position: sticky;
+    left: 0;
+    z-index: 1;
+    background: var(--white);
+  }
+}
+
+/* ── Gamification / leaderboard ─────────────────────────────── */
+@media (max-width: 480px) {
+  .lb-rank-col { min-width: 32px; }
+  .lb-score-col { min-width: 56px; }
+  .lb-name-col { max-width: 120px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+}
+
+/* ── Page header actions: full-width on very small screens ───── */
+@media (max-width: 400px) {
+  .page-header-right .btn {
+    flex: 1 1 100%;
+    width: 100%;
+  }
+}
+
+/* ── Notification badge pulse ────────────────────────────────── */
+@keyframes navBadgePulse {
+  0%, 100% { box-shadow: 0 0 0 0 rgba(239,68,68,0.5); }
+  50%       { box-shadow: 0 0 0 4px rgba(239,68,68,0); }
+}
+.mob-nav-badge { animation: navBadgePulse 2s infinite; }
+
+/* ── Sidebar active indicator ────────────────────────────────── */
+.sidebar-item.active::before {
+  content: '';
+  position: absolute;
+  left: 0; top: 50%;
+  transform: translateY(-50%);
+  width: 3px; height: 60%;
+  background: var(--primary);
+  border-radius: 0 3px 3px 0;
+}
+.sidebar-item { position: relative; }
+
+/* ── Reduced motion ──────────────────────────────────────────── */
+@media (prefers-reduced-motion: reduce) {
+  .mob-nav-badge { animation: none; }
+  .sidebar-item { transition: none; }
+  * { scroll-behavior: auto !important; }
+}
