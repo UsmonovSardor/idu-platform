@@ -21,6 +21,21 @@ const { registerBattle } = require('./services/battle');
 const JWT_SECRET  = process.env.JWT_SECRET;
 const IS_PROD     = process.env.NODE_ENV === 'production';
 
+// Per-user per-room message rate limit: max 10 messages per 10 seconds
+const _msgRateMap = new Map(); // `${userId}:${roomId}` → { count, resetAt }
+function checkMsgRate(userId, roomId) {
+  const key = `${userId}:${roomId}`;
+  const now = Date.now();
+  const bucket = _msgRateMap.get(key);
+  if (!bucket || now > bucket.resetAt) {
+    _msgRateMap.set(key, { count: 1, resetAt: now + 10000 });
+    return true;
+  }
+  if (bucket.count >= 10) return false;
+  bucket.count++;
+  return true;
+}
+
 // ── Auth middleware ────────────────────────────────────────────────────────────
 async function socketAuth(socket, next) {
   try {
@@ -145,6 +160,9 @@ async function setupSocket(httpServer) {
 
       if (isNaN(roomId) || !content || content.length > 2000) {
         return ack?.({ error: 'Invalid message' });
+      }
+      if (!checkMsgRate(user.id, roomId)) {
+        return ack?.({ error: 'Juda tez yuboryapsiz. Biroz kuting.' });
       }
 
       try {

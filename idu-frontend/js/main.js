@@ -4,7 +4,7 @@
 
 // API_BASE is set by core/config.js from <meta name="api-base"> — preserve it.
 // This is a safety fallback only if config.js somehow didn't run first.
-if (typeof API_BASE === 'undefined') var API_BASE = 'https://idu-platform-production.up.railway.app/api';
+if (typeof API_BASE === 'undefined') var API_BASE = window.location.origin + '/api/v1';
 
 // JWT token storage (memory-first, localStorage fallback for "remember me")
 var _apiToken = null;
@@ -207,9 +207,10 @@ let quizIdx = 0, quizScore = 0, quizAnswered = false;
 let ideaFormVisible = false;
 let currentTTGroup = 'CS-2301';
 let currentDekScheduleGroup = 'CS-2301';
-// ── Backend URL (Railway production server) ──────────────────
-// Eski: 'http://localhost:8000' → Railway deployga o'zgartirildi
-const BACKEND_URL = 'https://idu-platform-production.up.railway.app';
+// Derives origin from API_BASE so it works on any deployment (local, staging, prod)
+const BACKEND_URL = (typeof API_BASE !== 'undefined')
+  ? API_BASE.replace(/\/api\/v1\/?$/, '').replace(/\/api\/?$/, '')
+  : window.location.origin;
 
 // ── Xavfsiz storage (sandbox va private rejimda ham ishlaydi) ──
 const _mem = {};
@@ -680,6 +681,11 @@ function setupSidebar(role){
 function showPage(id){
   // XAVFSIZLIK: dekanat sahifalariga ruxsatsiz kirishni bloklash
   if (!secureShowPage(id)) return;
+  // Clear dashboard-specific timers when leaving dashboard
+  if (currentPage === 'dashboard' && id !== 'dashboard' && window._nextClassTimer) {
+    clearInterval(window._nextClassTimer);
+    window._nextClassTimer = null;
+  }
   document.querySelectorAll('.page').forEach(p=>p.classList.remove('active'));
   const pg=document.getElementById('page-'+id);
   if(pg) pg.classList.add('active');
@@ -1170,7 +1176,7 @@ function _setGradeView(view, btn) {
 // ════════════════════════════════════════════════════════════════════
 // ACTIVITY FEED — GitHub style  (v20260526)
 // ════════════════════════════════════════════════════════════════════
-var _activityLog = JSON.parse(localStorage.getItem('idu_activity') || '[]');
+var _activityLog = (function(){try{return JSON.parse(localStorage.getItem('idu_activity')||'[]');}catch(e){localStorage.removeItem('idu_activity');return[];}}());
 
 function _logActivity(icon, text, color) {
   color = color || '#2563eb';
@@ -1211,7 +1217,7 @@ function _renderDashStreakRow() {
   var fireColor = streak >= 14 ? '#f59e0b' : streak >= 7 ? '#ef4444' : streak >= 3 ? '#3b82f6' : '#64748b';
 
   // 7-day history
-  var history = JSON.parse(localStorage.getItem('idu_streak_history') || '[]');
+  var history = (function(){try{return JSON.parse(localStorage.getItem('idu_streak_history')||'[]');}catch(e){return[];}}());
   var heatDots = '';
   for (var d = 6; d >= 0; d--) {
     var dt = new Date(); dt.setDate(dt.getDate() - d);
@@ -1342,7 +1348,7 @@ function _scheduleSmartNotifs() {
 // Track streak history for heatmap
 function _trackTodayStreak() {
   var today = new Date().toISOString().slice(0, 10);
-  var history = JSON.parse(localStorage.getItem('idu_streak_history') || '[]');
+  var history = (function(){try{return JSON.parse(localStorage.getItem('idu_streak_history')||'[]');}catch(e){return[];}}());
   if (history.indexOf(today) < 0) {
     history.push(today);
     // Keep only last 30 days
@@ -1696,7 +1702,7 @@ async function renderDekanatTeachers(){
       </tr>`;
     }).join('');
   } catch(e) {
-    el.innerHTML='<tr><td colspan="8" style="text-align:center;color:var(--red);padding:20px">Xato: '+e.message+'</td></tr>';
+    el.innerHTML='<tr><td colspan="8" style="text-align:center;color:var(--red);padding:20px">Xato: '+safeHTML(e.message)+'</td></tr>';
   }
 }
 var _dekFilter='all';

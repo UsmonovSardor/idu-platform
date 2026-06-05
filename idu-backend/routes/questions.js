@@ -69,7 +69,7 @@ router.get(
     query('type').optional().isIn(VALID_TYPES),
     query('chapter').optional().isInt({ min: 1 }).toInt(),
     query('page').optional().isInt({ min: 1 }).toInt(),
-    query('limit').optional().isInt({ min: 1, max: 5000 }).toInt(),
+    query('limit').optional().isInt({ min: 1, max: 200 }).toInt(),
   ],
   validate,
   async (req, res) => {

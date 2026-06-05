@@ -64,7 +64,9 @@ function cache(ttlSeconds = 30) {
 /* Call after a write operation to drop cached reads for the same user.
    Optionally pass a path prefix to be more targeted. */
 function invalidate(userId, pathPrefix) {
-  const prefix = (userId ?? '') + ':' + (pathPrefix ?? '');
+  // Guard: don't wipe the entire cache if both args are falsy
+  if (!userId && !pathPrefix) return;
+  const prefix = (userId || '') + ':' + (pathPrefix || '');
   for (const key of store.keys()) {
     if (key.startsWith(prefix)) store.delete(key);
   }

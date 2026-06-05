@@ -88,18 +88,21 @@ router.get('/leaderboard', async (req, res) => {
 // Internal helper also callable from other routes
 async function awardXP(userId, amount, reason, client) {
   const q = client || db;
-  await q.query(
-    'INSERT INTO user_xp (user_id, xp, level) VALUES ($1,$2,1) ON CONFLICT (user_id) DO UPDATE SET xp = user_xp.xp + $2, updated_at=NOW()',
+  // Atomic upsert + level recalc in a single round-trip to avoid race conditions
+  // when multiple events (exam, streak, challenge) award XP concurrently.
+  const { rows: [row] } = await q.query(
+    `INSERT INTO user_xp (user_id, xp, level) VALUES ($1,$2,1)
+     ON CONFLICT (user_id) DO UPDATE
+       SET xp = user_xp.xp + $2, updated_at = NOW()
+     RETURNING xp`,
     [userId, amount]
   );
+  const { level } = xpToLevel(row.xp);
+  await q.query('UPDATE user_xp SET level=$1 WHERE user_id=$2', [level, userId]);
   await q.query(
     'INSERT INTO xp_log (user_id, amount, reason) VALUES ($1,$2,$3)',
     [userId, amount, reason]
   );
-  // Update level
-  const { rows: [row] } = await q.query('SELECT xp FROM user_xp WHERE user_id=$1', [userId]);
-  const { level } = xpToLevel(row.xp);
-  await q.query('UPDATE user_xp SET level=$1 WHERE user_id=$2', [level, userId]);
 }
 
 async function awardBadge(userId, badgeCode, client) {
