@@ -6,6 +6,7 @@ const { body, param, query } = require('express-validator');
 const db                    = require('../config/database');
 const validate              = require('../middleware/validate');
 const { authenticate, authorize } = require('../middleware/auth');
+const { cache } = require('../middleware/cache');
 
 const router = express.Router();
 router.use(authenticate);
@@ -15,7 +16,7 @@ const VALID_EXAM_TYPES = ['test', 'sesiya'];
 
 // ?? GET /api/exams/session-state ??????????????????????????????????????????????
 // Check if test/sesiya is currently open (dekanat controls this)
-router.get('/session-state', async (req, res) => {
+router.get('/session-state', cache(30), async (req, res) => {
   const { rows } = await db.query(
     `SELECT exam_type, is_open, opened_at, closes_at
      FROM exam_sessions
@@ -272,6 +273,7 @@ router.get(
     query('subject').optional().isIn(VALID_SUBJECTS),
   ],
   validate,
+  cache(60),
   async (req, res) => {
     let conditions = [];
     const params = [];

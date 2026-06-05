@@ -3564,9 +3564,10 @@ textarea, select {
 }
 
 /* ── Smooth color transitions for theme switch ───────────────── */
-body,*{transition:background-color 0.2s,border-color 0.2s,color 0.15s}
-/* exclude animation-critical elements */
-.page,.stat-card,.ripple-wave,.skel,.skeleton-card,.lp-hero-card{transition:none}
+/* Applied only to specific elements — NOT body,* (kills performance) */
+.card,.stat-card,.sidebar,.topnav,.mob-nav,.btn,.sidebar-item,.form-input,.form-select{
+  transition:background-color 0.2s,border-color 0.2s,color 0.15s
+}
 
 /* ════════════════════════════════════════════════════════════════════
    BENTO ENHANCEMENTS v20260605 — Plus Jakarta Sans era

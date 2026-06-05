@@ -3,6 +3,7 @@
 const express = require('express');
 const db      = require('../config/database');
 const { authenticate, authorize } = require('../middleware/auth');
+const { cache } = require('../middleware/cache');
 
 const router = express.Router();
 router.use(authenticate);
@@ -33,7 +34,7 @@ function xpToLevel(xp) {
 }
 
 // ── GET /api/gamification/me ─────────────────────────────────────────────────
-router.get('/me', async (req, res) => {
+router.get('/me', cache(60), async (req, res) => {
   const uid = req.user.id;
 
   // Ensure xp row exists
@@ -63,7 +64,7 @@ router.get('/me', async (req, res) => {
 });
 
 // ── GET /api/gamification/leaderboard ────────────────────────────────────────
-router.get('/leaderboard', async (req, res) => {
+router.get('/leaderboard', cache(120), async (req, res) => {
   const { group } = req.query;
   let cond = "u.role='student'";
   const params = [];
@@ -219,7 +220,7 @@ async function touchStreak(userId) {
 }
 
 // GET /api/gamification/streak  (also extends streak — called on app load)
-router.get('/streak', async (req, res) => {
+router.get('/streak', cache(60), async (req, res) => {
   try {
     const s = await touchStreak(req.user.id);
     res.json(s);
@@ -276,7 +277,7 @@ async function recordResult(userId, questionId, subject, isCorrect) {
 //  DAILY CHALLENGE
 // ════════════════════════════════════════════════════════════════════════════
 // GET /api/gamification/daily — today's challenge (creates it if missing)
-router.get('/daily', async (req, res) => {
+router.get('/daily', cache(300), async (req, res) => {
   const uid = req.user.id;
   try {
     let { rows: [ch] } = await db.query(
@@ -396,7 +397,7 @@ const SUBJECTS = {
 };
 
 // GET /api/gamification/mastery — skill tree
-router.get('/mastery', async (req, res) => {
+router.get('/mastery', cache(120), async (req, res) => {
   const uid = req.user.id;
   try {
     const { rows } = await db.query('SELECT subject, correct, total, mastery FROM subject_mastery WHERE user_id=$1', [uid]);
@@ -417,7 +418,7 @@ router.get('/mastery', async (req, res) => {
 // ════════════════════════════════════════════════════════════════════════════
 //  WEEKLY LEADERBOARD — from xp_log (last 7 days)
 // ════════════════════════════════════════════════════════════════════════════
-router.get('/leaderboard/weekly', async (req, res) => {
+router.get('/leaderboard/weekly', cache(120), async (req, res) => {
   const uid = req.user.id;
   try {
     const { rows } = await db.query(

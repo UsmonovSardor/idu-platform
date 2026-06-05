@@ -8,6 +8,7 @@ const validate                    = require('../middleware/validate');
 const { promptSanitize }          = require('../middleware/security');
 const { logger }                  = require('../middleware/logger');
 const { sendMail, submissionGradedTemplate } = require('../services/email');
+const { cache } = require('../middleware/cache');
 
 router.use(authenticate);
 
@@ -120,7 +121,7 @@ router.post(
 );
 
 // GET /api/submissions/my — talaba o'z javoblarini ko'radi
-router.get('/my', async (req, res) => {
+router.get('/my', cache(60), async (req, res) => {
   const { rows } = await db.query(
     `SELECT s.*, a.title AS assignment_title, a.description AS assignment_desc,
             a.deadline, a.max_score, a.subject

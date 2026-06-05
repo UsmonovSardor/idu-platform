@@ -3,6 +3,7 @@ const express  = require('express');
 const router   = express.Router();
 const db       = require('../config/database');
 const { authenticate } = require('../middleware/auth');
+const { cache } = require('../middleware/cache');
 
 // All assignments routes require authentication
 router.use(authenticate);
@@ -15,7 +16,7 @@ function teacherOnly(req, res, next) {
 }
 
 // GET /api/assignments — talaba o'z guruhidagi vazifalarni ko'radi
-router.get('/', async (req, res) => {
+router.get('/', cache(60), async (req, res) => {
   const userId = req.user?.id;
   const role   = req.user?.role;
   let rows;

@@ -4,6 +4,7 @@ const express = require('express');
 const { body, validationResult } = require('express-validator');
 const db = require('../config/database');
 const { authenticate, authorize } = require('../middleware/auth');
+const { cache } = require('../middleware/cache');
 
 const router = express.Router();
 router.use(authenticate);
@@ -22,7 +23,7 @@ async function getScopeCtx(userId) {
 }
 
 // ── GET /api/events?from=YYYY-MM-DD&to=YYYY-MM-DD ────────────────────────────
-router.get('/', async (req, res) => {
+router.get('/', cache(120), async (req, res) => {
   const uid = req.user.id;
   const from = String(req.query.from || '').slice(0, 10) || '1970-01-01';
   const to   = String(req.query.to   || '').slice(0, 10) || '2999-12-31';
