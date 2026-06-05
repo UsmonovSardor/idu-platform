@@ -121,7 +121,15 @@ function renderExamQuestions(qs) {
       }).join('')
       + '</div></div>';
   }).join('');
-  if (typeof renderMathInPage === 'function') renderMathInPage(el);
+  _renderMathWhenReady(el);
+}
+
+function _renderMathWhenReady(el, tries) {
+  if (typeof renderMathInPage === 'function' && window._katexReady) {
+    renderMathInPage(el);
+  } else if ((tries || 0) < 30) {
+    setTimeout(function() { _renderMathWhenReady(el, (tries || 0) + 1); }, 100);
+  }
 }
 
 async function uploadExamFile() {
@@ -136,11 +144,16 @@ async function uploadExamFile() {
   fd.append('file', inp.files[0]);
 
   try {
-    var token = localStorage.getItem('idu_token') || sessionStorage.getItem('idu_token') || '';
-    var base  = (window.API_BASE || '/api');
+    var base = (window.API_BASE || '/api/v1');
+    var headers = {};
+    // Use in-memory token if available (set by config.js apiLogin); cookie sent automatically
+    var memToken = (typeof _apiToken !== 'undefined' && _apiToken) ? _apiToken
+                 : (localStorage.getItem('idu_jwt') || '');
+    if (memToken) headers['Authorization'] = 'Bearer ' + memToken;
     var res = await fetch(base + '/teacher-exams/' + _curTeacherExamId + '/upload', {
       method: 'POST',
-      headers: { 'Authorization': 'Bearer ' + token },
+      headers: headers,
+      credentials: 'include', // send httpOnly cookie
       body: fd
     });
     var data = await res.json();
@@ -213,40 +226,112 @@ function closeExamEditor() {
   renderTeacherExamsList();
 }
 
+var _erAllRows = [];
+var _erExamId  = null;
+
 async function showTeacherExamResults(examId, title) {
   var m = document.getElementById('examResultsModal');
   if (!m) return;
+  _erExamId = examId;
   m.style.display = 'flex';
   document.getElementById('erTitle').textContent = title || 'Natijalar';
   document.getElementById('erBody').innerHTML = '<div style="text-align:center;color:#94A3B8;padding:16px">Yuklanmoqda...</div>';
 
   try {
-    var rows = await api('GET', '/teacher-exams/' + examId + '/results');
-    if (!rows.length) {
-      document.getElementById('erBody').innerHTML = '<div style="text-align:center;color:#94A3B8;padding:24px">Hali hech kim topshirmadi</div>';
-      return;
+    _erAllRows = await api('GET', '/teacher-exams/' + examId + '/results');
+
+    // Build filter bar (only once)
+    var filterBar = document.getElementById('erFilterBar');
+    if (!filterBar) {
+      filterBar = document.createElement('div');
+      filterBar.id = 'erFilterBar';
+      filterBar.style.cssText = 'display:flex;gap:8px;flex-wrap:wrap;padding:10px 0 6px';
+      filterBar.innerHTML =
+        '<input id="erSearchName" placeholder="🔍 Talaba ismi..." oninput="_erRender()" style="flex:1;min-width:140px;padding:7px 10px;border:1px solid #E2E8F0;border-radius:8px;font-size:13px">'
+        + '<select id="erFilterStatus" onchange="_erRender()" style="padding:7px 10px;border:1px solid #E2E8F0;border-radius:8px;font-size:13px">'
+        + '<option value="">Barcha holat</option>'
+        + '<option value="submitted">✓ Topshirildi</option>'
+        + '<option value="auto_submitted">⏰ Avto</option>'
+        + '<option value="cheated">⚠️ Hiyla</option>'
+        + '<option value="in_progress">⌛ Jarayonda</option>'
+        + '</select>'
+        + '<select id="erFilterScore" onchange="_erRender()" style="padding:7px 10px;border:1px solid #E2E8F0;border-radius:8px;font-size:13px">'
+        + '<option value="">Barcha ball</option>'
+        + '<option value="pass">≥56 (O\'tdi)</option>'
+        + '<option value="fail"><56 (O\'tmadi)</option>'
+        + '<option value="excellent">≥86 (A\'lo)</option>'
+        + '</select>'
+        + '<button onclick="_erExport()" style="padding:7px 12px;background:#1B4FD8;color:#fff;border:none;border-radius:8px;font-size:12px;cursor:pointer;white-space:nowrap">📥 Excel</button>';
+      document.getElementById('erBody').before(filterBar);
     }
-    document.getElementById('erBody').innerHTML = '<div style="overflow:auto"><table class="dekanat-table"><thead><tr><th>#</th><th>Talaba</th><th>Ball</th><th>To\'g\'ri</th><th>Holat</th><th>Vaqt</th></tr></thead><tbody>'
-      + rows.map(function(r, i) {
-        var statusLabel = r.status==='submitted'?'<span style="color:#16A34A">✓ Topshirildi</span>'
-          : r.status==='auto_submitted'?'<span style="color:#D97706">⏰ Avto</span>'
-          : r.status==='cheated'?'<span style="color:#DC2626">⚠️ Hiyla</span>'
-          : '<span style="color:#94A3B8">In progress</span>';
-        var cheatBadge = r.cheat_warnings > 0
-          ? ' <span style="background:#FEE2E2;color:#DC2626;font-size:10px;padding:1px 6px;border-radius:8px">⚠️ ' + r.cheat_warnings + '</span>'
-          : '';
-        return '<tr>'
-          + '<td style="padding:8px 10px;color:#94A3B8">' + (i+1) + '</td>'
-          + '<td style="padding:8px 10px;font-weight:600">' + escTe(r.full_name) + cheatBadge + '<br><span style="font-size:10px;color:#94A3B8">' + escTe(r.email||'') + '</span></td>'
-          + '<td style="padding:8px 10px;text-align:center;font-weight:800;color:' + ((r.score||0)>=71?'#16A34A':(r.score||0)>=56?'#D97706':'#DC2626') + '">' + (r.score||0) + '</td>'
-          + '<td style="padding:8px 10px;text-align:center">' + (r.correct_count||0) + '/' + (r.total_count||0) + '</td>'
-          + '<td style="padding:8px 10px">' + statusLabel + '</td>'
-          + '<td style="padding:8px 10px;font-size:11px;color:#64748B">' + (r.submitted_at ? new Date(r.submitted_at).toLocaleString() : '—') + '</td>'
-          + '</tr>';
-      }).join('') + '</tbody></table></div>';
+
+    _erRender();
   } catch(e) {
     document.getElementById('erBody').innerHTML = '<div style="color:#DC2626;padding:12px">' + e.message + '</div>';
   }
+}
+
+function _erRender() {
+  var nameQ   = ((document.getElementById('erSearchName') || {}).value || '').trim().toLowerCase();
+  var statusQ = ((document.getElementById('erFilterStatus') || {}).value || '');
+  var scoreQ  = ((document.getElementById('erFilterScore') || {}).value || '');
+
+  var rows = _erAllRows.filter(function(r) {
+    if (nameQ && !(r.full_name || '').toLowerCase().includes(nameQ)) return false;
+    if (statusQ && r.status !== statusQ) return false;
+    if (scoreQ === 'pass'      && (r.score || 0) < 56)  return false;
+    if (scoreQ === 'fail'      && (r.score || 0) >= 56) return false;
+    if (scoreQ === 'excellent' && (r.score || 0) < 86)  return false;
+    return true;
+  });
+
+  var el = document.getElementById('erBody');
+  if (!rows.length) {
+    el.innerHTML = '<div style="text-align:center;color:#94A3B8;padding:24px">Hech narsa topilmadi</div>';
+    return;
+  }
+
+  var avg = rows.length ? Math.round(rows.reduce(function(s,r){return s+(r.score||0);},0)/rows.length) : 0;
+  var passCount = rows.filter(function(r){return (r.score||0)>=56;}).length;
+
+  el.innerHTML = '<div style="display:flex;gap:12px;margin-bottom:10px;font-size:12px">'
+    + '<span style="background:#F1F5F9;padding:4px 10px;border-radius:8px">Jami: <b>' + rows.length + '</b></span>'
+    + '<span style="background:#DCFCE7;padding:4px 10px;border-radius:8px;color:#16A34A">O\'tdi: <b>' + passCount + '</b></span>'
+    + '<span style="background:#FEE2E2;padding:4px 10px;border-radius:8px;color:#DC2626">O\'tmadi: <b>' + (rows.length - passCount) + '</b></span>'
+    + '<span style="background:#EFF6FF;padding:4px 10px;border-radius:8px;color:#1B4FD8">O\'rtacha: <b>' + avg + '</b></span>'
+    + '</div>'
+    + '<div style="overflow:auto"><table class="dekanat-table"><thead><tr><th>#</th><th>Talaba</th><th>Ball</th><th>To\'g\'ri</th><th>Holat</th><th>Vaqt</th></tr></thead><tbody>'
+    + rows.map(function(r, i) {
+      var statusLabel = r.status==='submitted'?'<span style="color:#16A34A">✓ Topshirildi</span>'
+        : r.status==='auto_submitted'?'<span style="color:#D97706">⏰ Avto</span>'
+        : r.status==='cheated'?'<span style="color:#DC2626">⚠️ Hiyla</span>'
+        : '<span style="color:#94A3B8">⌛ Jarayonda</span>';
+      var cheatBadge = r.cheat_warnings > 0
+        ? ' <span style="background:#FEE2E2;color:#DC2626;font-size:10px;padding:1px 6px;border-radius:8px">⚠️ ' + r.cheat_warnings + '</span>' : '';
+      return '<tr>'
+        + '<td style="padding:8px 10px;color:#94A3B8">' + (i+1) + '</td>'
+        + '<td style="padding:8px 10px;font-weight:600">' + escTe(r.full_name) + cheatBadge + '<br><span style="font-size:10px;color:#94A3B8">' + escTe(r.email||'') + '</span></td>'
+        + '<td style="padding:8px 10px;text-align:center;font-weight:800;color:' + ((r.score||0)>=71?'#16A34A':(r.score||0)>=56?'#D97706':'#DC2626') + '">' + (r.score||0) + '</td>'
+        + '<td style="padding:8px 10px;text-align:center">' + (r.correct_count||0) + '/' + (r.total_count||0) + '</td>'
+        + '<td style="padding:8px 10px">' + statusLabel + '</td>'
+        + '<td style="padding:8px 10px;font-size:11px;color:#64748B">' + (r.submitted_at ? new Date(r.submitted_at).toLocaleString() : '—') + '</td>'
+        + '</tr>';
+    }).join('') + '</tbody></table></div>';
+}
+
+function _erExport() {
+  if (!_erAllRows.length) return;
+  var header = ['#','Talaba','Ball','To\'g\'ri/Jami','Holat','Vaqt'];
+  var csvRows = [header.join(',')].concat(_erAllRows.map(function(r,i){
+    return [i+1, '"'+(r.full_name||'').replace(/"/g,'""')+'"', r.score||0,
+            (r.correct_count||0)+'/'+(r.total_count||0), r.status||'',
+            r.submitted_at ? new Date(r.submitted_at).toLocaleString() : ''].join(',');
+  }));
+  var blob = new Blob(['﻿'+csvRows.join('\n')], {type:'text/csv;charset=utf-8'});
+  var a = document.createElement('a');
+  a.href = URL.createObjectURL(blob);
+  a.download = 'natijalar_' + (_erExamId||'exam') + '.csv';
+  a.click();
 }
 
 function closeExamResults() {
@@ -382,7 +467,7 @@ function renderExamQuestion() {
   html += '</div>';
 
   document.getElementById('etQuestion').innerHTML = html;
-  if (typeof renderMathInPage === 'function') renderMathInPage(document.getElementById('etQuestion'));
+  _renderMathWhenReady(document.getElementById('etQuestion'));
 
   // Nav buttons
   document.getElementById('etPrevBtn').disabled = _stCurIdx === 0;

@@ -33,11 +33,11 @@ function renderAtRisk(){
 }
 
 function getGrade(total){
-  if(total>=86)return{letter:'A (a\'lo)',cls:'gc-a'};
-  if(total>=71)return{letter:'B (yaxshi)',cls:'gc-b'};
-  if(total>=56)return{letter:'C (qoniq.)',cls:'gc-c'};
-  if(total>=41)return{letter:'D (qoniq.)',cls:'gc-d'};
-  return{letter:'F (qoniq.)',cls:'gc-f'};
+  if(total>=86)return{letter:'A ('+_t("a'lo",'отл.','exc.')+')',cls:'gc-a'};
+  if(total>=71)return{letter:'B ('+_t('yaxshi','хор.','good')+')',cls:'gc-b'};
+  if(total>=56)return{letter:'C ('+_t('qoniq.','удовл.','sat.')+')',cls:'gc-c'};
+  if(total>=41)return{letter:'D ('+_t('qoniq.','удовл.','sat.')+')',cls:'gc-d'};
+  return{letter:'F ('+_t('qoniq.','неуд.','unsat.')+')',cls:'gc-f'};
 }
 
 function filterGradesSt(f,btn){
@@ -104,10 +104,10 @@ function _renderGradesTable() {
     el.innerHTML = '<tr><td colspan="9" style="text-align:center;padding:40px 20px">' +
       '<div style="font-size:40px;margin-bottom:10px">📊</div>' +
       '<div style="font-size:14px;font-weight:700;color:var(--text1);margin-bottom:6px">' +
-        (q || _stGradeFilter !== 'all' ? 'Natija topilmadi' : 'Hali baholar kiritilmagan') +
+        (q || _stGradeFilter !== 'all' ? _t('Natija topilmadi','Результаты не найдены','No results') : _t('Hali baholar kiritilmagan','Оценки ещё не выставлены','No grades yet')) +
       '</div>' +
       '<div style="font-size:12px;color:var(--text3)">' +
-        (q || _stGradeFilter !== 'all' ? 'Qidiruv yoki filtrni o\'zgartiring' : 'O\'qituvchi baholarni kiritganda bu yerda ko\'rinadi') +
+        (q || _stGradeFilter !== 'all' ? _t("Qidiruv yoki filtrni o'zgartiring","Измените фильтр или запрос","Change filter or query") : _t("O'qituvchi baholarni kiritganda bu yerda ko'rinadi","Оценки появятся, когда преподаватель их выставит","Grades will appear when the teacher enters them")) +
       '</div>' +
     '</td></tr>';
     _updateGradeStats([], 0, 0, 0, 0);
@@ -125,7 +125,7 @@ function _renderGradesTable() {
     const tc = total>=86?'#166534':total>=71?'#1E40AF':total>=56?'#92400E':'#991B1B';
     const tb = total>=86?'#DCFCE7':total>=71?'#DBEAFE':total>=56?'#FEF3C7':'#FEE2E2';
     const st = total>=86?'st-active':total>=56?'st-ok':total<55?'st-warning':'st-neutral';
-    const stl = total>=86?"A'lo":total>=71?'Yaxshi':total>=56?'Qoniqarli':'Qoniqarsiz';
+    const stl = total>=86?_t("A'lo",'Отлично','Excellent'):total>=71?_t('Yaxshi','Хорошо','Good'):total>=56?_t('Qoniqarli','Удовл.','Satisf.'):_t('Qoniqarsiz','Неудовл.','Unsatisf.');
     const cb = v => v>=0?`style="background:${v>=Math.round(v*0.85)?'#D1FAE5':v>=Math.round(v*0.6)?'#FEF9C3':'#FEE2E2'};padding:2px 9px;border-radius:5px;font-weight:700"`: '';
     return '<tr>'
       + '<td>' + (idx+1) + '</td>'
@@ -180,7 +180,7 @@ function renderRating(){
       <div class="rank-pos${i<3?' rp-'+(i+1):''}">${i<3?['🥇','🥈','🥉'][i]:i+1}</div>
       <div class="rank-avatar" style="background:${colors[i]||'#666'}">${s.name.split(' ').map(x=>x[0]).join('')}</div>
       <div class="rank-info">
-        <div class="rank-name">${s.name}${s.name===currentUser?.name?' (Siz)':''}</div>
+        <div class="rank-name">${s.name}${s.name===currentUser?.name?' ('+_t('Siz','Вы','You')+')':''}</div>
         <div class="rank-dept">${s.group}</div>
       </div>
       <div class="rank-score">${s.avg}</div>

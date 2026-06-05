@@ -111,7 +111,7 @@ function _startAttPoll(sessionId) {
           + '<div><div style="font-weight:600;font-size:13px">' + (r.full_name || r.email) + '</div>'
           + '<div style="font-size:11px;color:#94A3B8">' + new Date(r.marked_at).toLocaleTimeString() + ' · ' + r.method + '</div></div>'
           + '</div>';
-      }).join('') || '<div style="text-align:center;color:#94A3B8;padding:16px;font-size:13px">Hali hech kim kelmadi</div>';
+      }).join('') || '<div style="text-align:center;color:#94A3B8;padding:16px;font-size:13px">' + _t('Hali hech kim kelmadi','Пока никто не отметился','No one checked in yet') + '</div>';
     }).catch(function(){});
   }, 3000);
 }
@@ -144,7 +144,7 @@ async function _loadSessionSummary(sessionId) {
     var pct = data.totalCount > 0 ? Math.round(100 * data.presentCount / data.totalCount) : 0;
     el.innerHTML = '<div style="text-align:center;margin-bottom:16px">'
       + '<div style="font-size:48px;font-weight:900;color:#1B4FD8">' + pct + '%</div>'
-      + '<div style="color:#64748B;font-size:13px">' + data.presentCount + ' / ' + data.totalCount + ' talaba keldi</div>'
+      + '<div style="color:#64748B;font-size:13px">' + data.presentCount + ' / ' + data.totalCount + ' ' + _t('talaba keldi','студентов отметились','students present') + '</div>'
       + '</div>'
       + '<div style="background:#F0FDF4;border-radius:10px;padding:12px;font-size:13px;color:#16A34A;font-weight:600">'
       + '✅ ' + data.subject + ' — ' + data.group_name + '</div>';
@@ -276,11 +276,11 @@ function openStudentAttModal() {
 async function renderMyAttendance() {
   var el = document.getElementById('myAttendanceList');
   if (!el) return;
-  el.innerHTML = '<div style="text-align:center;color:#94A3B8;padding:16px">Yuklanmoqda...</div>';
+  el.innerHTML = '<div style="text-align:center;color:#94A3B8;padding:16px">' + _t('Yuklanmoqda...','Загрузка...','Loading...') + '</div>';
   try {
     var rows = await api('GET', '/attendance/my');
     if (!rows.length) {
-      el.innerHTML = '<div style="text-align:center;color:#94A3B8;padding:24px">Hali davomat yo\'q</div>';
+      el.innerHTML = '<div style="text-align:center;color:#94A3B8;padding:24px">' + _t("Hali davomat yo'q","Посещаемости пока нет","No attendance yet") + '</div>';
       return;
     }
     el.innerHTML = rows.map(function(r) {
@@ -290,11 +290,11 @@ async function renderMyAttendance() {
         + '<div style="font-weight:700;font-size:13px">' + r.subject + '</div>'
         + '<div style="font-size:11px;color:#94A3B8">' + r.group_name + ' · ' + d.toLocaleDateString() + ' ' + d.toLocaleTimeString() + '</div>'
         + '</div>'
-        + '<div style="background:#DCFCE7;color:#16A34A;font-size:11px;font-weight:700;padding:3px 10px;border-radius:20px">✓ Keldi</div>'
+        + '<div style="background:#DCFCE7;color:#16A34A;font-size:11px;font-weight:700;padding:3px 10px;border-radius:20px">✓ ' + _t('Keldi','Присутствовал','Present') + '</div>'
         + '</div>';
     }).join('');
   } catch(e) {
-    el.innerHTML = '<div style="color:#DC2626;text-align:center;padding:16px">Xato: ' + e.message + '</div>';
+    el.innerHTML = '<div style="color:#DC2626;text-align:center;padding:16px">' + _t('Xato','Ошибка','Error') + ': ' + e.message + '</div>';
   }
 }
 
@@ -319,7 +319,7 @@ async function renderAttendanceReport() {
   try {
     var rows = await api('GET', '/attendance/report' + q);
     if (!rows.length) {
-      el.innerHTML = '<tr><td colspan="6" style="text-align:center;color:#94A3B8;padding:24px">Ma\'lumot topilmadi</td></tr>';
+      el.innerHTML = '<tr><td colspan="6" style="text-align:center;color:#94A3B8;padding:24px">' + _t("Ma'lumot topilmadi","Данные не найдены","No data found") + '</td></tr>';
       return;
     }
     el.innerHTML = rows.map(function(r) {
@@ -330,7 +330,7 @@ async function renderAttendanceReport() {
         + '<td style="padding:10px 12px">' + r.teacher_name + '</td>'
         + '<td style="padding:10px 12px;text-align:center"><span style="background:#DBEAFE;color:#1D4ED8;font-weight:700;padding:3px 10px;border-radius:20px">' + r.present_count + '</span></td>'
         + '<td style="padding:10px 12px"><span style="background:' + (r.closed_at ? '#F0FDF4' : '#FFF7ED') + ';color:' + (r.closed_at ? '#16A34A' : '#EA580C') + ';font-size:11px;padding:3px 8px;border-radius:12px">'
-        + (r.closed_at ? '✓ Yopildi' : '● Faol') + '</span></td>'
+        + (r.closed_at ? '✓ ' + _t('Yopildi','Закрыто','Closed') : '● ' + _t('Faol','Активно','Active')) + '</span></td>'
         + '</tr>';
     }).join('');
   } catch(e) {

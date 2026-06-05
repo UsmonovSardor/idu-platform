@@ -3878,6 +3878,15 @@ function toggleLangDrop(){
   }
 }
 
+// Inline translation helper — use in any JS file: _t('O\'zbek matni','Русский текст','English')
+function _t(uz, ru, en) {
+  if (typeof currentLang !== 'undefined') {
+    if (currentLang === 'ru') return ru !== undefined ? ru : uz;
+    if (currentLang === 'en') return en !== undefined ? en : (ru !== undefined ? ru : uz);
+  }
+  return uz;
+}
+
 var LD={
   uz:{flag:'🇺🇿',code:'UZ',
     navAbout:'Tizim haqida',navFeat:'Imkoniyatlar',navCont:'Kontaktlar',navPart:'Hamkorlar',
@@ -4463,6 +4472,8 @@ function setLang(lang){
       // Chiqish / Выйти button
       var chiqishEl=document.querySelector('[onclick="logout()"]');
       if(chiqishEl) chiqishEl.textContent=_L.appChiqish||chiqishEl.textContent;
+      // Re-render current page with new language
+      if(currentPage && typeof showPage==='function') showPage(currentPage);
     }, 30);
   }
 }
@@ -5168,8 +5179,22 @@ function submitRealEtiraz(qi) {
   showToast('✅', "E'tiroz yuborildi!", "Dekanat ko'rib chiqadi", 'green');
 }
 
-function renderDekanatSesiya() {
-  // Re-sync UI with current state (silent — no toast on page open)
+async function renderDekanatSesiya() {
+  // Load live session state from DB so it survives page reloads and deploys
+  try {
+    var sessions = await api('GET', '/exams/session-state');
+    // Reset both to false, then set whatever is open in DB
+    SESIYA_STATE.test = false;
+    SESIYA_STATE.real = false;
+    if (Array.isArray(sessions)) {
+      sessions.forEach(function(s) {
+        if (s.is_open) {
+          var key = s.exam_type === 'sesiya' ? 'real' : 'test';
+          SESIYA_STATE[key] = true;
+        }
+      });
+    }
+  } catch(e) { /* keep defaults on network error */ }
   setSesiyaState('test', SESIYA_STATE.test, true);
   setSesiyaState('real', SESIYA_STATE.real, true);
   loadSesiyaEtirazlar();

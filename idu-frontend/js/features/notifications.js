@@ -106,8 +106,8 @@ async function renderNotifications() {
           combined.push({
             icon: '📝',
             color: '#EFF6FF',
-            title: "Yangi javoblar",
-            text: total + " ta talaba topshiriq yubordi — Vazifalar bo'limini ko'ring",
+            title: _t("Yangi javoblar","Новые ответы","New submissions"),
+            text: total + ' ' + _t("ta talaba topshiriq yubordi — Vazifalar bo'limini ko'ring","студентов сдали задание — откройте раздел Задания","students submitted — check Assignments"),
             time: '',
             unread: total > 0
           });
@@ -126,8 +126,8 @@ async function renderNotifications() {
           combined.push({
             icon: '📊',
             color: '#F0FDF4',
-            title: (s.assignment_title || 'Vazifa') + " — Baholandi",
-            text: 'Yakuniy ball: ' + s.teacher_score + (s.teacher_comment ? ' | ' + s.teacher_comment : ''),
+            title: (s.assignment_title || _t('Vazifa','Задание','Assignment')) + ' — ' + _t('Baholandi','Оценено','Graded'),
+            text: _t('Yakuniy ball','Итоговый балл','Final score') + ': ' + s.teacher_score + (s.teacher_comment ? ' | ' + s.teacher_comment : ''),
             time: s.updated_at ? _timeAgo(s.updated_at) : '',
             unread: false
           });
@@ -152,11 +152,11 @@ function _timeAgo(dateStr) {
   try {
     var diff = Date.now() - new Date(dateStr).getTime();
     var min = Math.floor(diff / 60000);
-    if (min < 1) return 'Hozirgina';
-    if (min < 60) return min + ' daqiqa oldin';
+    if (min < 1) return _t('Hozirgina','Только что','Just now');
+    if (min < 60) return min + ' ' + _t('daqiqa oldin','мин. назад','min ago');
     var h = Math.floor(min / 60);
-    if (h < 24) return h + ' soat oldin';
-    return Math.floor(h / 24) + ' kun oldin';
+    if (h < 24) return h + ' ' + _t('soat oldin','ч. назад','hr ago');
+    return Math.floor(h / 24) + ' ' + _t('kun oldin','дн. назад','days ago');
   } catch(e) { return ''; }
 }
 
@@ -168,8 +168,8 @@ function _renderNotifList() {
     el.innerHTML =
       '<div style="padding:40px 20px;text-align:center">' +
         '<div style="font-size:48px;margin-bottom:12px">🔔</div>' +
-        '<div style="font-size:15px;font-weight:700;color:var(--text);margin-bottom:6px">Bildirishnomalar yo\'q</div>' +
-        '<div style="font-size:13px;color:var(--text3)">Yangi e\'lonlar va bildirishnomalar bu yerda ko\'rinadi</div>' +
+        '<div style="font-size:15px;font-weight:700;color:var(--text);margin-bottom:6px">' + _t("Bildirishnomalar yo'q","Нет уведомлений","No notifications") + '</div>' +
+        '<div style="font-size:13px;color:var(--text3)">' + _t("Yangi e'lonlar va bildirishnomalar bu yerda ko'rinadi","Новые объявления появятся здесь","New announcements will appear here") + '</div>' +
       '</div>';
     return;
   }
