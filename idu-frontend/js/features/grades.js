@@ -479,7 +479,7 @@ function renderGradeDistribution(){
         +'<span style="font-size:13px;color:#475569;font-weight:500">'+d.l+'</span>'
         +'<div style="display:flex;align-items:center;gap:10px">'
           +'<span style="font-size:11.5px;color:#94A3B8">'+d.cnt+' ta</span>'
-          +'<span style="font-size:13px;font-weight:800;font-family:'Fira Code','Cascadia Code',monospace;color:'+d.c+'">'+d.pct+'%</span>'
+          +'<span style="font-size:13px;font-weight:800;font-family:\'Fira Code\',\'Cascadia Code\',monospace;color:'+d.c+'">'+d.pct+'%</span>'
         +'</div>'
       +'</div>'
       +'<div style="height:8px;background:#F1F5F9;border-radius:4px;overflow:hidden">'

@@ -1,4 +1,4 @@
-/* IDU Platform — Service Worker v11
+/* IDU Platform — Service Worker v13
  * Strategies:
  *   • App shell (index.html) : network-first, offline fallback
  *   • Versioned CSS/JS (?v=…): cache-first (URL IS the cache buster — immutable)
@@ -9,7 +9,7 @@
  */
 'use strict';
 
-const VERSION      = 'v12';
+const VERSION      = 'v13';
 const STATIC_CACHE = 'idu-static-' + VERSION;
 const IMG_CACHE    = 'idu-img-'    + VERSION;
 const SHELL_CACHE  = 'idu-shell-'  + VERSION;
