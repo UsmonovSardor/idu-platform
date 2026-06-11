@@ -369,7 +369,7 @@ async function submitAssignmentAnswer() {
     if (aiBox) {
       aiBox.style.display = 'block';
       aiBox.innerHTML = '<div style="font-size:11px;font-weight:700;color:#93C5FD;margin-bottom:10px;text-transform:uppercase">🤖 AI Baholash natijasi</div>'
-        + '<div style="font-size:36px;font-weight:900;color:'+scoreColor+';margin-bottom:12px;font-family:\'DM Mono\',monospace">'+(aiScore||0)+' <span style="font-size:14px;font-weight:500;color:#64748B">/ 100</span></div>'
+        + '<div style="font-size:36px;font-weight:900;color:'+scoreColor+';margin-bottom:12px;font-family:'Fira Code','Cascadia Code',monospace">'+(aiScore||0)+' <span style="font-size:14px;font-weight:500;color:#64748B">/ 100</span></div>'
         + (ai.ijobiy    ?'<div style="color:#86EFAC;font-size:13px;line-height:1.5;margin-bottom:6px">✅ <b>Ijobiy:</b> '+ai.ijobiy+'</div>':'')
         + (ai.xatolar   ?'<div style="color:#FCA5A5;font-size:13px;line-height:1.5;margin-bottom:6px">⚠️ <b>Xatolar:</b> '+ai.xatolar+'</div>':'')
         + (ai.tavsiyalar?'<div style="color:#93C5FD;font-size:13px;line-height:1.5;margin-bottom:6px">💡 <b>Tavsiya:</b> '+ai.tavsiyalar+'</div>':'')

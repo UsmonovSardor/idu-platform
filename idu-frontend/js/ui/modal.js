@@ -211,15 +211,15 @@ function openStudentDetail(id){
     </div>
     <div class="stats-grid-3" style="margin-bottom:16px">
       <div style="text-align:center;padding:14px;background:var(--bg);border-radius:var(--r2)">
-        <div style="font-size:24px;font-weight:900;color:var(--primary);font-family:'DM Mono',monospace">${s.gpa}</div>
+        <div style="font-size:24px;font-weight:900;color:var(--primary);font-family:'Fira Code','Cascadia Code',monospace">${s.gpa}</div>
         <div style="font-size:12px;color:var(--text3)">GPA</div>
       </div>
       <div style="text-align:center;padding:14px;background:var(--bg);border-radius:var(--r2)">
-        <div style="font-size:24px;font-weight:900;color:var(--green);font-family:'DM Mono',monospace">${s.avg}</div>
+        <div style="font-size:24px;font-weight:900;color:var(--green);font-family:'Fira Code','Cascadia Code',monospace">${s.avg}</div>
         <div style="font-size:12px;color:var(--text3)">O'rt. ball</div>
       </div>
       <div style="text-align:center;padding:14px;background:var(--bg);border-radius:var(--r2)">
-        <div style="font-size:24px;font-weight:900;color:${s.att>=90?'var(--green)':'var(--orange)'};font-family:'DM Mono',monospace">${s.att}%</div>
+        <div style="font-size:24px;font-weight:900;color:${s.att>=90?'var(--green)':'var(--orange)'};font-family:'Fira Code','Cascadia Code',monospace">${s.att}%</div>
         <div style="font-size:12px;color:var(--text3)">Davomat</div>
       </div>
     </div>

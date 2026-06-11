@@ -89,7 +89,7 @@ function openSubjectsManager() {
           <input id="newSubjCode"  placeholder="kod" style="padding:9px;border:1.5px solid #E2E8F0;border-radius:8px;font-size:12px;outline:none">
         </div>
         <div style="font-size:11px;color:#94A3B8;margin-bottom:10px">Kod: faqat kichik harf va _ (masalan: fizika, chizmachilik)</div>
-        <button onclick="addNewSubject()" style="width:100%;padding:11px;background:linear-gradient(135deg,#1B4FD8,#3B82F6);color:white;border:none;border-radius:10px;font-size:14px;font-weight:700;cursor:pointer;font-family:'Outfit',sans-serif">➕ Qo'shish</button>
+        <button onclick="addNewSubject()" style="width:100%;padding:11px;background:linear-gradient(135deg,#1B4FD8,#3B82F6);color:white;border:none;border-radius:10px;font-size:14px;font-weight:700;cursor:pointer;font-family:'Plus Jakarta Sans',-apple-system,sans-serif">➕ Qo'shish</button>
       </div>
     </div>`;
   document.body.appendChild(modal);

@@ -120,6 +120,14 @@
         ents.forEach(function (en) { en.isIntersecting ? start() : stop(); });
       }, { threshold: 0.02 }).observe(hero);
     }
+
+    // Pause during active scroll — canvas O(n²) work competes with scroll budget
+    var _scrollTimer;
+    window.addEventListener('scroll', function () {
+      if (running) stop();
+      clearTimeout(_scrollTimer);
+      _scrollTimer = setTimeout(function () { if (!REDUCED) start(); }, 180);
+    }, { passive: true });
   }
 
   // ── 2. ANIMATED COUNT-UP for landing stats ────────────────────────────────

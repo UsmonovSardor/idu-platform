@@ -1764,7 +1764,7 @@ function renderGroupAvgChart(){
     +gdata.map(function(d){
       var h=Math.round((d.avg/maxV)*95);
       return '<div style="flex:1;display:flex;flex-direction:column;align-items:center;gap:4px">'
-        +'<span style="font-size:11px;font-weight:800;font-family:\'DM Mono\',monospace;color:'+d.c+'">'+d.avg+'</span>'
+        +'<span style="font-size:11px;font-weight:800;font-family:'Fira Code','Cascadia Code',monospace;color:'+d.c+'">'+d.avg+'</span>'
         +'<div style="width:100%;background:'+d.c+';border-radius:6px 6px 0 0;height:'+h+'px;opacity:0.88;transition:height 0.4s"></div>'
         +'<div style="font-size:9px;color:#94A3B8;text-align:center;line-height:1.3">'+d.g+'<br><span style="color:#CBD5E1">'+d.cnt+' ta</span></div>'
         +'</div>';
@@ -1806,7 +1806,7 @@ function renderSubjectAvgTable(){
         +'<td style="padding:10px 12px;border-bottom:1px solid #F8FAFC;color:#94A3B8;font-size:12px">'+(i+1)+'</td>'
         +'<td style="padding:10px 12px;border-bottom:1px solid #F8FAFC;font-weight:600">'+r.sub+'</td>'
         +'<td style="padding:10px 12px;border-bottom:1px solid #F8FAFC;text-align:center">'
-          +'<span style="background:'+r.tb+';color:'+r.tc+';padding:3px 11px;border-radius:7px;font-weight:800;font-family:\'DM Mono\',monospace">'+r.avg+'</span>'
+          +'<span style="background:'+r.tb+';color:'+r.tc+';padding:3px 11px;border-radius:7px;font-weight:800;font-family:'Fira Code','Cascadia Code',monospace">'+r.avg+'</span>'
         +'</td>'
         +'<td style="padding:10px 12px;border-bottom:1px solid #F8FAFC;text-align:center;color:#16A34A;font-weight:700">'+r.alo+'</td>'
         +'<td style="padding:10px 12px;border-bottom:1px solid #F8FAFC;text-align:center;color:'+( r.fail>0?'#DC2626':'#94A3B8')+';font-weight:700">'+r.fail+'</td>'
@@ -1863,7 +1863,7 @@ function renderTeacherPerformance(){
       var bg=bgPalette[i%bgPalette.length];
       var ini=t.name.replace('Prof. ','').split(' ').map(function(x){return x[0];}).join('');
       return '<div style="flex:1;display:flex;flex-direction:column;align-items:center;gap:3px">'
-        +'<span style="font-size:10px;font-weight:700;font-family:\'DM Mono\',monospace;color:'+bg+'">'+t.hours+'s</span>'
+        +'<span style="font-size:10px;font-weight:700;font-family:'Fira Code','Cascadia Code',monospace;color:'+bg+'">'+t.hours+'s</span>'
         +'<div style="width:100%;background:'+bg+';opacity:0.82;border-radius:5px 5px 0 0;height:'+h+'px"></div>'
         +'<div style="font-size:9.5px;color:#94A3B8;text-align:center;line-height:1.2">'+ini+'</div>'
       +'</div>';
@@ -1884,7 +1884,7 @@ function renderTeacherPerformance(){
       +'<td>'+t.dept+'</td>'
       +'<td style="text-align:center">'+t.subjects.length+'</td>'
       +'<td>'+t.groups.join(', ')+'</td>'
-      +'<td style="text-align:center;font-family:\'DM Mono\',monospace;font-weight:700;color:#1B4FD8">'+baseAvg+'</td>'
+      +'<td style="text-align:center;font-family:'Fira Code','Cascadia Code',monospace;font-weight:700;color:#1B4FD8">'+baseAvg+'</td>'
       +'<td style="text-align:center;color:#16A34A;font-weight:700">'+aloP+'%</td>'
       +'<td><span style="display:flex;align-items:center;gap:3px;font-weight:700;color:#D97706">⭐ '+t.rating.toFixed(1)+'</span></td>'
     +'</tr>';
@@ -1908,11 +1908,11 @@ function renderSemesterCompare(){
     var upPass=deltaPass>0;
     return '<tr>'
       +'<td style="font-weight:700">'+d.grp+'</td>'
-      +'<td style="font-family:\'DM Mono\',monospace;font-weight:600;text-align:center">'+d.avg1+'</td>'
-      +'<td style="font-family:\'DM Mono\',monospace;font-weight:700;text-align:center;color:#1B4FD8">'+d.avg2+'</td>'
+      +'<td style="font-family:'Fira Code','Cascadia Code',monospace;font-weight:600;text-align:center">'+d.avg1+'</td>'
+      +'<td style="font-family:'Fira Code','Cascadia Code',monospace;font-weight:700;text-align:center;color:#1B4FD8">'+d.avg2+'</td>'
       +'<td style="text-align:center" class="'+(upAvg?'delta-up':'delta-dn')+'">'+( upAvg?'↑ +':' ↓ ')+Math.abs(deltaAvg)+'</td>'
-      +'<td style="font-family:\'DM Mono\',monospace;text-align:center">'+d.pass1+'%</td>'
-      +'<td style="font-family:\'DM Mono\',monospace;text-align:center;font-weight:700;color:#1B4FD8">'+d.pass2+'%</td>'
+      +'<td style="font-family:'Fira Code','Cascadia Code',monospace;text-align:center">'+d.pass1+'%</td>'
+      +'<td style="font-family:'Fira Code','Cascadia Code',monospace;text-align:center;font-weight:700;color:#1B4FD8">'+d.pass2+'%</td>'
       +'<td style="text-align:center" class="'+(upPass?'delta-up':'delta-dn')+'">'+( upPass?'↑ +':' ↓ ')+Math.abs(deltaPass)+'%</td>'
     +'</tr>';
   }).join('');
@@ -1936,8 +1936,8 @@ function renderSemesterCompare(){
       var barColor=up?'#16A34A':'#DC2626';
       return '<tr>'
         +'<td style="padding:9px 12px;border-bottom:1px solid #F8FAFC;font-weight:600">'+r.sub+'</td>'
-        +'<td style="padding:9px 12px;border-bottom:1px solid #F8FAFC;text-align:center;font-family:\'DM Mono\',monospace;color:#64748B">'+r.s1+'</td>'
-        +'<td style="padding:9px 12px;border-bottom:1px solid #F8FAFC;text-align:center;font-family:\'DM Mono\',monospace;font-weight:800;color:#1B4FD8">'+r.s2+'</td>'
+        +'<td style="padding:9px 12px;border-bottom:1px solid #F8FAFC;text-align:center;font-family:'Fira Code','Cascadia Code',monospace;color:#64748B">'+r.s1+'</td>'
+        +'<td style="padding:9px 12px;border-bottom:1px solid #F8FAFC;text-align:center;font-family:'Fira Code','Cascadia Code',monospace;font-weight:800;color:#1B4FD8">'+r.s2+'</td>'
         +'<td style="padding:9px 12px;border-bottom:1px solid #F8FAFC">'
           +'<div style="display:flex;align-items:center;gap:8px">'
             +'<span style="font-weight:700;color:'+barColor+'">'+(up?'↑ +':' ↓ ')+Math.abs(delta)+'</span>'
@@ -5666,7 +5666,7 @@ function _buildTestQHtml(q, i, mode) {
   var html = '<div id="' + prefix + 'q-' + i + '" style="background:white;border:1.5px solid #E2E8F0;border-radius:12px;padding:18px 20px;margin-bottom:14px;transition:border-color 0.2s">';
   html += '<div style="display:flex;justify-content:space-between;align-items:flex-start;gap:12px;margin-bottom:14px">';
   html += '<div style="font-size:13.5px;font-weight:700;color:#0F172A;line-height:1.5"><span style="color:#94A3B8;margin-right:6px">' + (i+1) + '.</span>' + q.q + '</div>';
-  html += '<button onclick="' + eToggle + '(' + i + ')" style="white-space:nowrap;padding:4px 10px;background:#FFF7ED;border:1px solid #FED7AA;border-radius:6px;font-size:11px;font-weight:600;color:#EA580C;cursor:pointer;font-family:\'Outfit\',sans-serif">⚠️ E\'tiroz</button>';
+  html += '<button onclick="' + eToggle + '(' + i + ')" style="white-space:nowrap;padding:4px 10px;background:#FFF7ED;border:1px solid #FED7AA;border-radius:6px;font-size:11px;font-weight:600;color:#EA580C;cursor:pointer;font-family:'Plus Jakarta Sans',-apple-system,sans-serif">⚠️ E\'tiroz</button>';
   html += '</div>';
   html += '<div style="display:flex;flex-direction:column;gap:8px">';
   q.opts.forEach(function(opt, j) {
@@ -5678,10 +5678,10 @@ function _buildTestQHtml(q, i, mode) {
   html += '<input type="hidden" id="' + prefix + 'q' + i + 'ans" value="">';
   html += '<div id="' + eBox + i + '" style="display:none;margin-top:12px;background:#FFF7ED;border:1.5px solid #FED7AA;border-radius:10px;padding:14px">';
   html += '<div style="font-size:12px;font-weight:700;color:#92400E;margin-bottom:8px">⚠️ ' + (i+1) + '-savol bo\'yicha e\'tiroz:</div>';
-  html += '<textarea id="' + eText + i + '" placeholder="E\'tirozingiz sababini yozing..." style="width:100%;padding:10px;border:1.5px solid #FED7AA;border-radius:8px;font-family:\'Outfit\',sans-serif;font-size:13px;resize:vertical;min-height:70px;outline:none;box-sizing:border-box"></textarea>';
+  html += '<textarea id="' + eText + i + '" placeholder="E\'tirozingiz sababini yozing..." style="width:100%;padding:10px;border:1.5px solid #FED7AA;border-radius:8px;font-family:'Plus Jakarta Sans',-apple-system,sans-serif;font-size:13px;resize:vertical;min-height:70px;outline:none;box-sizing:border-box"></textarea>';
   html += '<div style="display:flex;gap:8px;margin-top:8px">';
-  html += '<button onclick="' + eSubmit + '(' + i + ')" style="padding:7px 16px;background:#EA580C;color:white;border:none;border-radius:7px;font-family:\'Outfit\',sans-serif;font-size:12.5px;font-weight:700;cursor:pointer">📤 Dekanatga yuborish</button>';
-  html += '<button onclick="document.getElementById(\'' + eBox + i + '\').style.display=\'none\'" style="padding:7px 14px;background:white;border:1.5px solid #E2E8F0;border-radius:7px;font-family:\'Outfit\',sans-serif;font-size:12.5px;cursor:pointer">Bekor</button>';
+  html += '<button onclick="' + eSubmit + '(' + i + ')" style="padding:7px 16px;background:#EA580C;color:white;border:none;border-radius:7px;font-family:'Plus Jakarta Sans',-apple-system,sans-serif;font-size:12.5px;font-weight:700;cursor:pointer">📤 Dekanatga yuborish</button>';
+  html += '<button onclick="document.getElementById(\'' + eBox + i + '\').style.display=\'none\'" style="padding:7px 14px;background:white;border:1.5px solid #E2E8F0;border-radius:7px;font-family:'Plus Jakarta Sans',-apple-system,sans-serif;font-size:12.5px;cursor:pointer">Bekor</button>';
   html += '</div></div></div>';
   return html;
 }

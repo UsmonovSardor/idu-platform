@@ -198,7 +198,7 @@ function finishGame(forced){
   document.getElementById('gameContent').innerHTML = `
     <div style="text-align:center;padding:30px">
       <div style="font-size:60px;margin-bottom:16px">${pct>=80?'🏆':pct>=50?'👍':'😅'}</div>
-      <div style="font-size:48px;font-weight:900;font-family:'DM Mono',monospace;color:${pct>=80?'var(--green)':pct>=50?'var(--primary)':'var(--orange)'}">
+      <div style="font-size:48px;font-weight:900;font-family:'Fira Code','Cascadia Code',monospace;color:${pct>=80?'var(--green)':pct>=50?'var(--primary)':'var(--orange)'}">
         ${pct}%
       </div>
       <div style="font-size:16px;color:var(--text2);margin:8px 0 20px">

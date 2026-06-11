@@ -54,12 +54,10 @@
   position: fixed; top: 0; left: 0; right: 0; z-index: 1000;
   display: flex; align-items: center; justify-content: space-between;
   padding: 0 56px; height: 62px;
-  background: rgba(2,6,23,0.85);
-  backdrop-filter: blur(18px) saturate(160%);
-  -webkit-backdrop-filter: blur(18px) saturate(160%);
+  background: rgba(2,6,23,0.95);
   border-bottom: 1px solid rgba(59,130,246,0.1);
   transition: background 0.3s, box-shadow 0.3s;
-  will-change: background;
+  /* backdrop-filter removed — causes GPU repaint every scroll frame */
 }
 /* iridescent top bar */
 .lp-nav::before {
@@ -118,8 +116,8 @@
   transition: opacity 0.2s, transform 0.15s, box-shadow 0.2s;
   letter-spacing: 0;
 }
-.lp-cta-btn { will-change: transform; }
-.lp-cta-btn:hover { opacity: 0.91; transform: translateY(-1px); box-shadow: 0 5px 22px rgba(37,99,235,0.58); }
+.lp-cta-btn:hover { opacity: 0.91; transform: translateY(-1px); box-shadow: 0 5px 22px rgba(37,99,235,0.58); will-change: transform; }
+.lp-cta-btn:not(:hover) { will-change: auto; }
 .lp-cta-btn:active { transform: translateY(0); transition-duration: 0.08s; }
 
 /* ─────────────────────────────────────────────────────────────
@@ -158,6 +156,7 @@
   gap: 72px;
   padding: 116px 88px 56px;
   position: relative; overflow: hidden;
+  contain: layout style;
   background:
     radial-gradient(ellipse 110% 70% at -5% 55%, rgba(59,111,255,0.26) 0%, transparent 52%),
     radial-gradient(ellipse 80% 60% at 108% 35%, rgba(34,211,238,0.15) 0%, transparent 48%),
@@ -1003,9 +1002,8 @@ body.modal-open .lp-primary-btn::after { animation-play-state: paused !important
 [data-theme="dark"] .lp-cta-btn{background:linear-gradient(135deg,#22C55E,#16A34A) !important;box-shadow:0 0 16px rgba(34,197,94,0.28) !important;border:none !important;color:#fff !important;}
 [data-theme="dark"] .lp-cta-btn:hover{transform:translateY(-1px) !important;box-shadow:0 0 24px rgba(34,197,94,0.45) !important;}
 
-/* Hero card float */
-@keyframes lp-float{0%,100%{transform:translateZ(40px) translateY(0px) rotate(0.3deg)}33%{transform:translateZ(40px) translateY(-8px) rotate(-0.2deg)}66%{transform:translateZ(40px) translateY(-4px) rotate(0.4deg)}}
-[data-theme="dark"] .lp-hero-card{animation:lp-card 0.75s cubic-bezier(0.22,1,0.36,1) 0.28s both,lp-float 6s ease-in-out 1.5s infinite !important;will-change:transform;}
+/* Hero card — entrance only, no infinite float (float wastes GPU layer continuously) */
+[data-theme="dark"] .lp-hero-card{animation:lp-card 0.75s cubic-bezier(0.22,1,0.36,1) 0.28s both !important;will-change:auto;}
 
 /* Hero card mini-stats */
 [data-theme="dark"] .lp-cs{background:rgba(59,111,255,0.1) !important;border:1px solid rgba(59,111,255,0.2) !important;}

@@ -9,7 +9,7 @@
  */
 'use strict';
 
-const VERSION      = 'v11';
+const VERSION      = 'v12';
 const STATIC_CACHE = 'idu-static-' + VERSION;
 const IMG_CACHE    = 'idu-img-'    + VERSION;
 const SHELL_CACHE  = 'idu-shell-'  + VERSION;

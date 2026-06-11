@@ -42,45 +42,37 @@
 <!-- No external CDN for fonts — served locally, zero DNS roundtrip -->
 <link rel="dns-prefetch" href="https://idu-platform-production.up.railway.app">
 <!-- Critical CSS preload — local fonts first so no render-block waiting on Google -->
-<link rel="preload" href="css/fonts.css?v=20260611c" as="style">
-<link rel="preload" href="css/style.css?v=20260611c" as="style">
-<link rel="preload" href="css/landing.css?v=20260611c" as="style">
+<link rel="preload" href="css/fonts.css?v=20260611d" as="style">
+<link rel="preload" href="css/style.css?v=20260611d" as="style">
+<link rel="preload" href="css/landing.css?v=20260611d" as="style">
 <!-- Self-hosted fonts (Plus Jakarta Sans + Fira Code — latin+latin-ext only) -->
-<link rel="stylesheet" href="css/fonts.css?v=20260611c">
-<link rel="stylesheet" href="css/style.css?v=20260611c">
-<link rel="stylesheet" href="css/themes.css?v=20260611c">
-<link rel="stylesheet" href="css/responsive.css?v=20260611c">
-<link rel="stylesheet" href="css/landing.css?v=20260611c">
-<link rel="stylesheet" href="css/utilities.css?v=20260611c">
+<link rel="stylesheet" href="css/fonts.css?v=20260611d">
+<link rel="stylesheet" href="css/style.css?v=20260611d">
+<link rel="stylesheet" href="css/themes.css?v=20260611d">
+<link rel="stylesheet" href="css/responsive.css?v=20260611d">
+<link rel="stylesheet" href="css/landing.css?v=20260611d">
+<link rel="stylesheet" href="css/utilities.css?v=20260611d">
 <!-- KaTeX + DOMPurify loaded lazily after login — saves ~90KB on landing page -->
 <!-- socket.io loaded lazily in launchApp() after login — not needed on landing page -->
 <script>
-  // ── Service Worker registration + auto-refresh on new deploy ──────────
-  // Strategy: always fetch sw.js fresh (cache:'no-store'), call .update()
-  // on every page load, and when a new SW takes control, reload the page
-  // ONCE so the user immediately sees the new CSS/JS. No manual cache
-  // clearing required.
+  // ── Service Worker registration ────────────────────────────────────────
+  // updateViaCache:'none' means sw.js is always fetched fresh from network.
+  // We do NOT auto-reload on controllerchange — that caused the page to
+  // reload every time a new SW took over (felt like infinite reload to users).
+  // Instead, the new SW activates silently; users get fresh assets on next
+  // navigation or hard refresh.
   if ('serviceWorker' in navigator) {
     window.addEventListener('load', function() {
       navigator.serviceWorker.register('/sw.js', { updateViaCache: 'none' })
         .then(function(reg) {
-          // Force a check for an updated SW on every page open
           reg.update().catch(function(){});
-          // When a new SW activates and takes control, reload ONCE
-          var reloaded = false;
-          navigator.serviceWorker.addEventListener('controllerchange', function() {
-            if (reloaded) return;
-            reloaded = true;
-            window.location.reload();
-          });
         }).catch(function(){});
 
-      // Belt-and-suspenders: nuke any stale `idu-static-v5` / `v6` caches
-      // left by older Service Worker versions on this device.
+      // Nuke any stale caches left by older Service Worker versions.
       if (window.caches && caches.keys) {
         caches.keys().then(function(keys) {
           keys.forEach(function(k) {
-            if (/^idu-(static|img|shell)-v[1-7]$/.test(k)) caches.delete(k);
+            if (/^idu-(static|img|shell|api)-v([1-9]|10)$/.test(k)) caches.delete(k);
           });
         }).catch(function(){});
       }
@@ -114,7 +106,7 @@ html[data-autologin='1'] #idu-autologin-loader { display:flex; }
   border-top-color:#3b82f6;
   animation: idu-spin 0.8s linear infinite;
 }
-.idu-spin-label { color:#60a5fa; font-family:'Outfit',sans-serif; font-size:14px; font-weight:600; }
+.idu-spin-label { color:#60a5fa; font-family:'Plus Jakarta Sans',-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif; font-size:14px; font-weight:600; }
 </style>
 </head>
 
@@ -378,7 +370,7 @@ html[data-autologin='1'] #idu-autologin-loader { display:flex; }
     .lp-jadval-wrap{display:flex;flex-direction:column;gap:8px;padding:2px 0;}
     .lp-jadval-item{display:flex;align-items:center;gap:10px;padding:9px 12px;border-radius:10px;background:rgba(15,23,42,0.03);border:1px solid rgba(15,23,42,0.06);}
     .lp-jadval-today{background:rgba(37,99,235,0.08);border-color:rgba(37,99,235,0.25);}
-    .lp-jadval-time{font-family:'DM Mono',monospace;font-size:12px;color:#2563eb;min-width:38px;font-weight:600;}
+    .lp-jadval-time{font-family:'Fira Code','Cascadia Code',monospace;font-size:12px;color:#2563eb;min-width:38px;font-weight:600;}
     .lp-jadval-info{flex:1;}
     .lp-jadval-name{font-size:12px;font-weight:600;color:#0f172a;}
     .lp-jadval-room{font-size:11px;color:#64748b;margin-top:2px;}
@@ -387,7 +379,7 @@ html[data-autologin='1'] #idu-autologin-loader { display:flex; }
     .lp-rating-wrap{display:flex;flex-direction:column;gap:8px;padding:2px 0;}
     .lp-rating-row{display:flex;align-items:center;gap:10px;padding:8px 10px;border-radius:10px;background:rgba(15,23,42,0.03);border:1px solid rgba(15,23,42,0.06);}
     .lp-rating-me{background:rgba(37,99,235,0.08);border-color:rgba(37,99,235,0.25);}
-    .lp-rating-rank{font-family:'DM Mono',monospace;font-size:13px;font-weight:700;min-width:24px;text-align:center;color:#d97706;}
+    .lp-rating-rank{font-family:'Fira Code','Cascadia Code',monospace;font-size:13px;font-weight:700;min-width:24px;text-align:center;color:#d97706;}
     .lp-rank-gold{color:#d97706;}
     .lp-rank-silver{color:#64748b;}
     .lp-rating-avatar{width:28px;height:28px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:10px;font-weight:700;color:#fff;flex-shrink:0;}
@@ -730,7 +722,7 @@ html[data-autologin='1'] #idu-autologin-loader { display:flex; }
           <span style="padding:5px 12px;background:#FEE2E2;color:#DC2626;border-radius:8px;font-size:12px;font-weight:600">🔒 SMS 2FA</span>
         </div>
       </div>
-      <button onclick="closeAboutModal();openLoginModal()" id="about-modal-btn" style="width:100%;margin-top:18px;padding:12px;background:linear-gradient(135deg,#1B4FD8,#3B82F6);color:#fff;border:none;border-radius:10px;font-family:'Outfit',sans-serif;font-size:14.5px;font-weight:700;cursor:pointer"><span id="about-modal-btn-text">Tizimga kirish</span> →</button>
+      <button onclick="closeAboutModal();openLoginModal()" id="about-modal-btn" style="width:100%;margin-top:18px;padding:12px;background:linear-gradient(135deg,#1B4FD8,#3B82F6);color:#fff;border:none;border-radius:10px;font-family:'Plus Jakarta Sans',-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;font-size:14.5px;font-weight:700;cursor:pointer"><span id="about-modal-btn-text">Tizimga kirish</span> →</button>
     </div>
   </div>
 </div>
@@ -775,7 +767,7 @@ html[data-autologin='1'] #idu-autologin-loader { display:flex; }
           <div style="font-size:12.5px;color:#64748B;line-height:1.6" id="fm6-desc">Kurslarni tugatgandan so'ng hamkor kompaniyalar tan oladigan sertifikatlar</div>
         </div>
       </div>
-      <button onclick="closeFeatModal();openLoginModal()" style="width:100%;margin-top:18px;padding:12px;background:linear-gradient(135deg,#1B4FD8,#3B82F6);color:#fff;border:none;border-radius:10px;font-family:'Outfit',sans-serif;font-size:14.5px;font-weight:700;cursor:pointer"><span id="feat-modal-btn-text">Tizimga kirish</span> →</button>
+      <button onclick="closeFeatModal();openLoginModal()" style="width:100%;margin-top:18px;padding:12px;background:linear-gradient(135deg,#1B4FD8,#3B82F6);color:#fff;border:none;border-radius:10px;font-family:'Plus Jakarta Sans',-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;font-size:14.5px;font-weight:700;cursor:pointer"><span id="feat-modal-btn-text">Tizimga kirish</span> →</button>
     </div>
   </div>
 </div>
@@ -906,7 +898,7 @@ html[data-autologin='1'] #idu-autologin-loader { display:flex; }
           <input class="form-input" id="fpPhone" type="tel" placeholder="90 123 45 67" maxlength="9" style="flex:1" onkeydown="if(event.key==='Enter')sendForgotOTP()">
         </div>
       </div>
-      <button onclick="sendForgotOTP()" style="width:100%;padding:12px;background:linear-gradient(135deg,#1B4FD8,#3B82F6);color:white;border:none;border-radius:9px;font-family:'Outfit',sans-serif;font-size:14.5px;font-weight:700;cursor:pointer;margin-top:6px;box-shadow:0 4px 14px rgba(27,79,216,0.26)">SMS yuborish 📨</button>
+      <button onclick="sendForgotOTP()" style="width:100%;padding:12px;background:linear-gradient(135deg,#1B4FD8,#3B82F6);color:white;border:none;border-radius:9px;font-family:'Plus Jakarta Sans',-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;font-size:14.5px;font-weight:700;cursor:pointer;margin-top:6px;box-shadow:0 4px 14px rgba(27,79,216,0.26)">SMS yuborish 📨</button>
     </div>
 
     <!-- Step 2: OTP tasdiqlash -->
@@ -926,7 +918,7 @@ html[data-autologin='1'] #idu-autologin-loader { display:flex; }
         <label class="form-label">🔢 Tasdiqlash kodi (6 raqam)</label>
         <input class="form-input" id="fpOtpInput" type="text" placeholder="• • • • • •" maxlength="6" style="font-size:20px;font-weight:700;letter-spacing:8px;text-align:center" onkeydown="if(event.key==='Enter')verifyOTP()">
       </div>
-      <button onclick="verifyOTP()" style="width:100%;padding:12px;background:linear-gradient(135deg,#16A34A,#4ADE80);color:white;border:none;border-radius:9px;font-family:'Outfit',sans-serif;font-size:14.5px;font-weight:700;cursor:pointer;margin-top:6px">✅ Tasdiqlash</button>
+      <button onclick="verifyOTP()" style="width:100%;padding:12px;background:linear-gradient(135deg,#16A34A,#4ADE80);color:white;border:none;border-radius:9px;font-family:'Plus Jakarta Sans',-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;font-size:14.5px;font-weight:700;cursor:pointer;margin-top:6px">✅ Tasdiqlash</button>
       <div style="text-align:center;margin-top:12px;font-size:13px;color:#94A3B8"><a onclick="showFpStep1()" style="color:#1B4FD8;cursor:pointer;font-weight:600">← Orqaga</a></div>
     </div>
 
@@ -948,7 +940,7 @@ html[data-autologin='1'] #idu-autologin-loader { display:flex; }
         </div>
         <div style="font-size:11px;color:#64748B;margin-top:10px;border-top:1px solid #BFDBFE;padding-top:8px">⚠️ Xavfsizlik uchun tizimga kirgach parolni o'zgartiring.</div>
       </div>
-      <button onclick="closeForgotModal();openLoginModal()" style="padding:12px 32px;background:linear-gradient(135deg,#1B4FD8,#3B82F6);color:white;border:none;border-radius:9px;font-family:'Outfit',sans-serif;font-size:14.5px;font-weight:700;cursor:pointer;box-shadow:0 4px 14px rgba(27,79,216,0.26)">Tizimga kirish →</button>
+      <button onclick="closeForgotModal();openLoginModal()" style="padding:12px 32px;background:linear-gradient(135deg,#1B4FD8,#3B82F6);color:white;border:none;border-radius:9px;font-family:'Plus Jakarta Sans',-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;font-size:14.5px;font-weight:700;cursor:pointer;box-shadow:0 4px 14px rgba(27,79,216,0.26)">Tizimga kirish →</button>
     </div>
   </div>
 </div>
@@ -967,7 +959,7 @@ html[data-autologin='1'] #idu-autologin-loader { display:flex; }
       </div>
     </div>
     <div class="form-error" id="setupPhoneError" style="display:none;background:#FFF5F5;border:1px solid #FCA5A5;color:#DC2626;border-radius:8px;padding:9px 13px;font-size:13px;margin-bottom:10px">⚠️ Telefon raqamni to'g'ri kiriting</div>
-    <button onclick="savePhoneSetup()" style="width:100%;padding:12px;background:linear-gradient(135deg,#1B4FD8,#3B82F6);color:white;border:none;border-radius:9px;font-family:'Outfit',sans-serif;font-size:14.5px;font-weight:700;cursor:pointer;margin-top:6px;box-shadow:0 4px 14px rgba(27,79,216,0.26)">Saqlash va davom etish ✓</button>
+    <button onclick="savePhoneSetup()" style="width:100%;padding:12px;background:linear-gradient(135deg,#1B4FD8,#3B82F6);color:white;border:none;border-radius:9px;font-family:'Plus Jakarta Sans',-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;font-size:14.5px;font-weight:700;cursor:pointer;margin-top:6px;box-shadow:0 4px 14px rgba(27,79,216,0.26)">Saqlash va davom etish ✓</button>
     <div style="text-align:center;margin-top:10px"><a onclick="skipPhoneSetup()" style="font-size:12.5px;color:#94A3B8;cursor:pointer">Keyinroq kiriting</a></div>
   </div>
 </div>
@@ -3013,7 +3005,7 @@ html[data-autologin='1'] #idu-autologin-loader { display:flex; }
         </div>
         <div class="pomo-circle" id="pomoCircle" style="background:conic-gradient(var(--primary) 0deg, var(--bg2) 0deg)">
           <div>
-            <div id="pomoTime" style="font-size:40px;font-weight:900;font-family:'DM Mono',monospace;text-align:center">25:00</div>
+            <div id="pomoTime" style="font-size:40px;font-weight:900;font-family:'Fira Code','Cascadia Code',monospace;text-align:center">25:00</div>
           </div>
         </div>
         <div class="pomo-label" id="pomoLabel">DIQQAT VAQTI</div>
@@ -3098,15 +3090,15 @@ html[data-autologin='1'] #idu-autologin-loader { display:flex; }
     </div>
     <div class="stats-grid-3">
       <div style="text-align:center;padding:12px;background:var(--bg);border-radius:var(--r2)">
-        <div style="font-size:24px;font-weight:900;color:var(--purple);font-family:'DM Mono',monospace" id="totalXPStat">0</div>
+        <div style="font-size:24px;font-weight:900;color:var(--purple);font-family:'Fira Code','Cascadia Code',monospace" id="totalXPStat">0</div>
         <div style="font-size:11px;color:var(--text3)">Jami XP</div>
       </div>
       <div style="text-align:center;padding:12px;background:var(--bg);border-radius:var(--r2)">
-        <div style="font-size:24px;font-weight:900;color:var(--orange);font-family:'DM Mono',monospace" id="totalCoinsStat">0</div>
+        <div style="font-size:24px;font-weight:900;color:var(--orange);font-family:'Fira Code','Cascadia Code',monospace" id="totalCoinsStat">0</div>
         <div style="font-size:11px;color:var(--text3)">IDU Coin 🪙</div>
       </div>
       <div style="text-align:center;padding:12px;background:var(--bg);border-radius:var(--r2)">
-        <div style="font-size:24px;font-weight:900;color:var(--green);font-family:'DM Mono',monospace" id="gamesPlayedStat">0</div>
+        <div style="font-size:24px;font-weight:900;color:var(--green);font-family:'Fira Code','Cascadia Code',monospace" id="gamesPlayedStat">0</div>
         <div style="font-size:11px;color:var(--text3)">O'yin o'ynaldi</div>
       </div>
     </div>
@@ -3776,7 +3768,7 @@ html[data-autologin='1'] #idu-autologin-loader { display:flex; }
   <!-- PHASE 1b: CHAPTER PICKER (after subject selected) -->
   <div id="stest-chapters" style="display:none">
     <div style="display:flex;align-items:center;gap:12px;margin-bottom:20px">
-      <button onclick="backToSubjectGrid()" style="background:#F1F5F9;border:none;padding:8px 14px;border-radius:10px;font-family:'Outfit',sans-serif;font-size:13px;font-weight:700;color:#475569;cursor:pointer">← Ortga</button>
+      <button onclick="backToSubjectGrid()" style="background:#F1F5F9;border:none;padding:8px 14px;border-radius:10px;font-family:'Plus Jakarta Sans',-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;font-size:13px;font-weight:700;color:#475569;cursor:pointer">← Ortga</button>
       <div>
         <div style="font-size:18px;font-weight:800;color:#0F172A" id="chapterPickerSubjName">Fan</div>
         <div style="font-size:12px;color:#64748B" id="chapterPickerSubjMeta">Bobni tanlang</div>
@@ -3814,7 +3806,7 @@ html[data-autologin='1'] #idu-autologin-loader { display:flex; }
         </div>
         <div style="text-align:center">
           <div style="font-size:11px;color:#64748B;text-transform:uppercase;letter-spacing:0.5px;margin-bottom:2px">Vaqt</div>
-          <div style="font-size:22px;font-weight:900;color:#1B4FD8;font-family:'DM Mono',monospace" id="testTimerDisplay">30:00</div>
+          <div style="font-size:22px;font-weight:900;color:#1B4FD8;font-family:'Fira Code','Cascadia Code',monospace" id="testTimerDisplay">30:00</div>
         </div>
       </div>
     </div>
@@ -3827,7 +3819,7 @@ html[data-autologin='1'] #idu-autologin-loader { display:flex; }
     <!-- Submit button -->
     <div style="margin-top:24px;padding:20px;background:#F8FAFC;border-radius:14px;border:1.5px solid #E2E8F0;text-align:center">
       <div style="font-size:13px;color:#64748B;margin-bottom:12px" id="testAnsweredCount">0 ta savol javob berildi</div>
-      <button onclick="submitTestExam()" id="testSubmitBtn" style="padding:13px 40px;background:linear-gradient(135deg,#1B4FD8,#3B82F6);color:white;border:none;border-radius:10px;font-family:'Outfit',sans-serif;font-size:15px;font-weight:700;cursor:pointer;box-shadow:0 4px 14px rgba(27,79,216,0.26)">📤 Testni yakunlash</button>
+      <button onclick="submitTestExam()" id="testSubmitBtn" style="padding:13px 40px;background:linear-gradient(135deg,#1B4FD8,#3B82F6);color:white;border:none;border-radius:10px;font-family:'Plus Jakarta Sans',-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;font-size:15px;font-weight:700;cursor:pointer;box-shadow:0 4px 14px rgba(27,79,216,0.26)">📤 Testni yakunlash</button>
     </div>
   </div>
 
@@ -3835,8 +3827,8 @@ html[data-autologin='1'] #idu-autologin-loader { display:flex; }
   <div id="stest-results" style="display:none">
     <div id="testResultsContent"></div>
     <div style="margin-top:20px;display:flex;gap:12px">
-      <button onclick="showTestInstructions()" style="flex:1;padding:13px;background:white;border:2px solid #1B4FD8;color:#1B4FD8;border-radius:10px;font-family:'Outfit',sans-serif;font-size:14px;font-weight:700;cursor:pointer">🔄 Qaytadan sinash</button>
-      <button onclick="showPage('bosh-sahifa')" style="flex:1;padding:13px;background:linear-gradient(135deg,#1B4FD8,#3B82F6);color:white;border:none;border-radius:10px;font-family:'Outfit',sans-serif;font-size:14px;font-weight:700;cursor:pointer">🏠 Bosh sahifaga</button>
+      <button onclick="showTestInstructions()" style="flex:1;padding:13px;background:white;border:2px solid #1B4FD8;color:#1B4FD8;border-radius:10px;font-family:'Plus Jakarta Sans',-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;font-size:14px;font-weight:700;cursor:pointer">🔄 Qaytadan sinash</button>
+      <button onclick="showPage('bosh-sahifa')" style="flex:1;padding:13px;background:linear-gradient(135deg,#1B4FD8,#3B82F6);color:white;border:none;border-radius:10px;font-family:'Plus Jakarta Sans',-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;font-size:14px;font-weight:700;cursor:pointer">🏠 Bosh sahifaga</button>
     </div>
   </div>
 </div>
@@ -3948,7 +3940,7 @@ html[data-autologin='1'] #idu-autologin-loader { display:flex; }
         </div>
         <div style="text-align:center">
           <div style="font-size:11px;color:#64748B;text-transform:uppercase;letter-spacing:0.5px;margin-bottom:2px">Vaqt</div>
-          <div style="font-size:22px;font-weight:900;color:#DC2626;font-family:'DM Mono',monospace" id="realTimerDisplay">90:00</div>
+          <div style="font-size:22px;font-weight:900;color:#DC2626;font-family:'Fira Code','Cascadia Code',monospace" id="realTimerDisplay">90:00</div>
         </div>
       </div>
     </div>
@@ -3961,7 +3953,7 @@ html[data-autologin='1'] #idu-autologin-loader { display:flex; }
     <div id="realQuestionsContainer"></div>
     <div style="margin-top:24px;padding:20px;background:#FFF5F5;border-radius:14px;border:1.5px solid #FCA5A5;text-align:center">
       <div style="font-size:13px;color:#64748B;margin-bottom:12px" id="realAnsweredCount">0 ta savol javob berildi</div>
-      <button onclick="submitRealExam()" style="padding:13px 40px;background:linear-gradient(135deg,#DC2626,#EF4444);color:white;border:none;border-radius:10px;font-family:'Outfit',sans-serif;font-size:15px;font-weight:700;cursor:pointer;box-shadow:0 4px 14px rgba(220,38,38,0.26)">📤 Imtihonni yakunlash va topshirish</button>
+      <button onclick="submitRealExam()" style="padding:13px 40px;background:linear-gradient(135deg,#DC2626,#EF4444);color:white;border:none;border-radius:10px;font-family:'Plus Jakarta Sans',-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;font-size:15px;font-weight:700;cursor:pointer;box-shadow:0 4px 14px rgba(220,38,38,0.26)">📤 Imtihonni yakunlash va topshirish</button>
     </div>
   </div>
 
@@ -3969,7 +3961,7 @@ html[data-autologin='1'] #idu-autologin-loader { display:flex; }
   <div id="sreal-results" style="display:none">
     <div id="realResultsContent"></div>
     <div style="margin-top:20px;display:flex;gap:12px">
-      <button onclick="showPage('bosh-sahifa')" style="flex:1;padding:13px;background:linear-gradient(135deg,#DC2626,#EF4444);color:white;border:none;border-radius:10px;font-family:'Outfit',sans-serif;font-size:14px;font-weight:700;cursor:pointer">🏠 Bosh sahifaga</button>
+      <button onclick="showPage('bosh-sahifa')" style="flex:1;padding:13px;background:linear-gradient(135deg,#DC2626,#EF4444);color:white;border:none;border-radius:10px;font-family:'Plus Jakarta Sans',-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;font-size:14px;font-weight:700;cursor:pointer">🏠 Bosh sahifaga</button>
     </div>
   </div>
 </div>
@@ -4042,7 +4034,7 @@ html[data-autologin='1'] #idu-autologin-loader { display:flex; }
 <!-- ═══ MODAL: Savollar yuklash (professional redesign) ════════════════ -->
 <style>
   .upm-modal{display:none;position:fixed;inset:0;background:rgba(15,23,42,.55);z-index:3000;overflow:auto;backdrop-filter:blur(4px)}
-  .upm-card{background:#fff;border-radius:16px;width:100%;max-width:720px;margin:40px auto;box-shadow:0 24px 64px rgba(15,23,42,.18);overflow:hidden;font-family:'Outfit',sans-serif}
+  .upm-card{background:#fff;border-radius:16px;width:100%;max-width:720px;margin:40px auto;box-shadow:0 24px 64px rgba(15,23,42,.18);overflow:hidden;font-family:'Plus Jakarta Sans',-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif}
   .upm-head{display:flex;align-items:center;justify-content:space-between;padding:22px 28px;border-bottom:1px solid #EEF2F7;background:linear-gradient(180deg,#FAFBFD 0%,#FFFFFF 100%)}
   .upm-head h3{margin:0;font-size:17px;font-weight:700;color:#0F172A;letter-spacing:-.01em}
   .upm-head p{margin:3px 0 0;font-size:12.5px;color:#64748B;font-weight:500}
@@ -4050,14 +4042,14 @@ html[data-autologin='1'] #idu-autologin-loader { display:flex; }
   .upm-x:hover{background:#E2E8F0;color:#0F172A}
   .upm-body{padding:24px 28px;max-height:calc(100vh - 200px);overflow-y:auto}
   .upm-tabs{display:flex;gap:4px;margin-bottom:20px;padding:4px;background:#F1F5F9;border-radius:11px}
-  .upm-tab{flex:1;padding:9px 12px;border:none;background:transparent;border-radius:8px;font:600 12.5px 'Outfit',sans-serif;color:#64748B;cursor:pointer;transition:.15s;display:flex;align-items:center;justify-content:center;gap:6px}
+  .upm-tab{flex:1;padding:9px 12px;border:none;background:transparent;border-radius:8px;font:600 12.5px 'Plus Jakarta Sans',-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;color:#64748B;cursor:pointer;transition:.15s;display:flex;align-items:center;justify-content:center;gap:6px}
   .upm-tab.active{background:#fff;color:#0F172A;box-shadow:0 1px 3px rgba(15,23,42,.08)}
   .upm-tab:hover:not(.active){color:#0F172A}
   .upm-section{margin-bottom:18px}
   .upm-section:last-child{margin-bottom:0}
   .upm-label{display:flex;align-items:center;justify-content:space-between;font-size:12px;font-weight:600;color:#334155;margin-bottom:7px;letter-spacing:.01em}
   .upm-label .upm-hint{font-size:11px;font-weight:500;color:#94A3B8}
-  .upm-input,.upm-select{width:100%;padding:10px 13px;border:1.5px solid #E2E8F0;border-radius:9px;font:500 13px 'Outfit',sans-serif;color:#0F172A;background:#fff;outline:none;transition:.15s;box-sizing:border-box}
+  .upm-input,.upm-select{width:100%;padding:10px 13px;border:1.5px solid #E2E8F0;border-radius:9px;font:500 13px 'Plus Jakarta Sans',-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;color:#0F172A;background:#fff;outline:none;transition:.15s;box-sizing:border-box}
   .upm-input:focus,.upm-select:focus{border-color:#1B4FD8;box-shadow:0 0 0 3px rgba(27,79,216,.1)}
   .upm-input::placeholder{color:#94A3B8;font-weight:400}
   .upm-grid-2{display:grid;grid-template-columns:1fr 1fr;gap:12px}
@@ -4069,13 +4061,13 @@ html[data-autologin='1'] #idu-autologin-loader { display:flex; }
   .upm-dropzone{border:2px dashed #CBD5E1;border-radius:12px;padding:28px 20px;text-align:center;background:linear-gradient(180deg,#FAFBFD 0%,#fff 100%);transition:.15s}
   .upm-dropzone:hover{border-color:#93C5FD;background:linear-gradient(180deg,#F0F6FF 0%,#fff 100%)}
   .upm-dropzone.has-file{border-color:#10B981;border-style:solid;background:linear-gradient(180deg,#F0FDF4 0%,#fff 100%)}
-  .upm-file-btn{padding:9px 18px;background:#1B4FD8;border:none;border-radius:9px;color:#fff;font:600 13px 'Outfit',sans-serif;cursor:pointer;transition:.15s}
+  .upm-file-btn{padding:9px 18px;background:#1B4FD8;border:none;border-radius:9px;color:#fff;font:600 13px 'Plus Jakarta Sans',-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;cursor:pointer;transition:.15s}
   .upm-file-btn:hover{background:#1740B5}
   .upm-foot{display:flex;gap:10px;padding:18px 28px;border-top:1px solid #EEF2F7;background:#FAFBFD}
-  .upm-btn-primary{flex:1;padding:12px 18px;background:linear-gradient(135deg,#1B4FD8 0%,#3B82F6 100%);color:#fff;border:none;border-radius:10px;font:700 14px 'Outfit',sans-serif;cursor:pointer;transition:.15s;box-shadow:0 4px 12px rgba(27,79,216,.25)}
+  .upm-btn-primary{flex:1;padding:12px 18px;background:linear-gradient(135deg,#1B4FD8 0%,#3B82F6 100%);color:#fff;border:none;border-radius:10px;font:700 14px 'Plus Jakarta Sans',-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;cursor:pointer;transition:.15s;box-shadow:0 4px 12px rgba(27,79,216,.25)}
   .upm-btn-primary:hover{transform:translateY(-1px);box-shadow:0 6px 16px rgba(27,79,216,.3)}
   .upm-btn-primary:disabled{opacity:.6;cursor:not-allowed;transform:none}
-  .upm-btn-ghost{padding:12px 20px;background:#fff;border:1.5px solid #E2E8F0;border-radius:10px;color:#475569;font:600 14px 'Outfit',sans-serif;cursor:pointer;transition:.15s}
+  .upm-btn-ghost{padding:12px 20px;background:#fff;border:1.5px solid #E2E8F0;border-radius:10px;color:#475569;font:600 14px 'Plus Jakarta Sans',-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;cursor:pointer;transition:.15s}
   .upm-btn-ghost:hover{background:#F8FAFC;border-color:#CBD5E1}
   .upm-tabpanel{display:none}
   .upm-tabpanel.active{display:block;animation:upmFade .2s ease}
@@ -4274,13 +4266,13 @@ function upmTab(name) {
     <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:16px">
       <div>
         <div style="font-size:12px;font-weight:700;color:#64748B;text-transform:uppercase;letter-spacing:0.5px;margin-bottom:6px">Fan</div>
-        <select id="qModalSubject" style="width:100%;padding:10px 12px;border:1.5px solid #E2E8F0;border-radius:8px;font-family:'Outfit',sans-serif;font-size:13px;outline:none">
+        <select id="qModalSubject" style="width:100%;padding:10px 12px;border:1.5px solid #E2E8F0;border-radius:8px;font-family:'Plus Jakarta Sans',-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;font-size:13px;outline:none">
           <option value="">— Fan tanlang —</option>
         </select>
       </div>
       <div>
         <div style="font-size:12px;font-weight:700;color:#64748B;text-transform:uppercase;letter-spacing:0.5px;margin-bottom:6px">Tur</div>
-        <select id="qModalType" style="width:100%;padding:10px 12px;border:1.5px solid #E2E8F0;border-radius:8px;font-family:'Outfit',sans-serif;font-size:13px;outline:none">
+        <select id="qModalType" style="width:100%;padding:10px 12px;border:1.5px solid #E2E8F0;border-radius:8px;font-family:'Plus Jakarta Sans',-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;font-size:13px;outline:none">
           <option value="test">🧪 Test Rejim (mashq)</option>
           <option value="real">📋 Sesiya (rasmiy imtihon)</option>
           <option value="both">📝 Ikkala turda ham</option>
@@ -4290,25 +4282,25 @@ function upmTab(name) {
 
     <div style="margin-bottom:14px">
       <div style="font-size:12px;font-weight:700;color:#64748B;text-transform:uppercase;letter-spacing:0.5px;margin-bottom:6px">Savol matni</div>
-      <textarea id="qModalText" placeholder="Savol matnini yozing..." style="width:100%;padding:10px 12px;border:1.5px solid #E2E8F0;border-radius:8px;font-family:'Outfit',sans-serif;font-size:13px;resize:vertical;min-height:72px;outline:none;box-sizing:border-box"></textarea>
+      <textarea id="qModalText" placeholder="Savol matnini yozing..." style="width:100%;padding:10px 12px;border:1.5px solid #E2E8F0;border-radius:8px;font-family:'Plus Jakarta Sans',-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;font-size:13px;resize:vertical;min-height:72px;outline:none;box-sizing:border-box"></textarea>
     </div>
 
     <div style="font-size:12px;font-weight:700;color:#64748B;text-transform:uppercase;letter-spacing:0.5px;margin-bottom:8px">Javob variantlari (4 ta)</div>
     <div id="qModalOptions" style="display:flex;flex-direction:column;gap:8px;margin-bottom:16px">
-      <div style="display:flex;align-items:center;gap:8px"><input type="radio" name="qModalCorrect" value="0" style="accent-color:#16A34A;width:16px;height:16px"><label style="font-size:12px;color:#16A34A;font-weight:700;min-width:60px">A (to'g'ri)</label><input id="qOpt0" placeholder="1-variant..." style="flex:1;padding:9px 12px;border:1.5px solid #86EFAC;border-radius:8px;font-family:'Outfit',sans-serif;font-size:13px;outline:none"></div>
-      <div style="display:flex;align-items:center;gap:8px"><input type="radio" name="qModalCorrect" value="1" style="accent-color:#1B4FD8;width:16px;height:16px"><label style="font-size:12px;color:#64748B;font-weight:700;min-width:60px">B</label><input id="qOpt1" placeholder="2-variant..." style="flex:1;padding:9px 12px;border:1.5px solid #E2E8F0;border-radius:8px;font-family:'Outfit',sans-serif;font-size:13px;outline:none"></div>
-      <div style="display:flex;align-items:center;gap:8px"><input type="radio" name="qModalCorrect" value="2" style="accent-color:#1B4FD8;width:16px;height:16px"><label style="font-size:12px;color:#64748B;font-weight:700;min-width:60px">C</label><input id="qOpt2" placeholder="3-variant..." style="flex:1;padding:9px 12px;border:1.5px solid #E2E8F0;border-radius:8px;font-family:'Outfit',sans-serif;font-size:13px;outline:none"></div>
-      <div style="display:flex;align-items:center;gap:8px"><input type="radio" name="qModalCorrect" value="3" style="accent-color:#1B4FD8;width:16px;height:16px"><label style="font-size:12px;color:#64748B;font-weight:700;min-width:60px">D</label><input id="qOpt3" placeholder="4-variant..." style="flex:1;padding:9px 12px;border:1.5px solid #E2E8F0;border-radius:8px;font-family:'Outfit',sans-serif;font-size:13px;outline:none"></div>
+      <div style="display:flex;align-items:center;gap:8px"><input type="radio" name="qModalCorrect" value="0" style="accent-color:#16A34A;width:16px;height:16px"><label style="font-size:12px;color:#16A34A;font-weight:700;min-width:60px">A (to'g'ri)</label><input id="qOpt0" placeholder="1-variant..." style="flex:1;padding:9px 12px;border:1.5px solid #86EFAC;border-radius:8px;font-family:'Plus Jakarta Sans',-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;font-size:13px;outline:none"></div>
+      <div style="display:flex;align-items:center;gap:8px"><input type="radio" name="qModalCorrect" value="1" style="accent-color:#1B4FD8;width:16px;height:16px"><label style="font-size:12px;color:#64748B;font-weight:700;min-width:60px">B</label><input id="qOpt1" placeholder="2-variant..." style="flex:1;padding:9px 12px;border:1.5px solid #E2E8F0;border-radius:8px;font-family:'Plus Jakarta Sans',-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;font-size:13px;outline:none"></div>
+      <div style="display:flex;align-items:center;gap:8px"><input type="radio" name="qModalCorrect" value="2" style="accent-color:#1B4FD8;width:16px;height:16px"><label style="font-size:12px;color:#64748B;font-weight:700;min-width:60px">C</label><input id="qOpt2" placeholder="3-variant..." style="flex:1;padding:9px 12px;border:1.5px solid #E2E8F0;border-radius:8px;font-family:'Plus Jakarta Sans',-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;font-size:13px;outline:none"></div>
+      <div style="display:flex;align-items:center;gap:8px"><input type="radio" name="qModalCorrect" value="3" style="accent-color:#1B4FD8;width:16px;height:16px"><label style="font-size:12px;color:#64748B;font-weight:700;min-width:60px">D</label><input id="qOpt3" placeholder="4-variant..." style="flex:1;padding:9px 12px;border:1.5px solid #E2E8F0;border-radius:8px;font-family:'Plus Jakarta Sans',-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;font-size:13px;outline:none"></div>
     </div>
 
     <div style="margin-bottom:20px">
       <div style="font-size:12px;font-weight:700;color:#64748B;text-transform:uppercase;letter-spacing:0.5px;margin-bottom:6px">💡 Izoh (tushuntirish)</div>
-      <textarea id="qModalIzoh" placeholder="To'g'ri javob nima uchun to'g'ri ekanligini tushuntiring..." style="width:100%;padding:10px 12px;border:1.5px solid #E2E8F0;border-radius:8px;font-family:'Outfit',sans-serif;font-size:13px;resize:vertical;min-height:60px;outline:none;box-sizing:border-box"></textarea>
+      <textarea id="qModalIzoh" placeholder="To'g'ri javob nima uchun to'g'ri ekanligini tushuntiring..." style="width:100%;padding:10px 12px;border:1.5px solid #E2E8F0;border-radius:8px;font-family:'Plus Jakarta Sans',-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;font-size:13px;resize:vertical;min-height:60px;outline:none;box-sizing:border-box"></textarea>
     </div>
 
     <div style="display:flex;gap:10px">
-      <button onclick="saveQuestionModal()" style="flex:1;padding:12px;background:linear-gradient(135deg,#1B4FD8,#3B82F6);color:white;border:none;border-radius:10px;font-family:'Outfit',sans-serif;font-size:14px;font-weight:700;cursor:pointer">💾 Saqlash</button>
-      <button onclick="closeQuestionModal()" style="padding:12px 20px;background:white;border:2px solid #E2E8F0;border-radius:10px;font-family:'Outfit',sans-serif;font-size:14px;cursor:pointer">Bekor</button>
+      <button onclick="saveQuestionModal()" style="flex:1;padding:12px;background:linear-gradient(135deg,#1B4FD8,#3B82F6);color:white;border:none;border-radius:10px;font-family:'Plus Jakarta Sans',-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;font-size:14px;font-weight:700;cursor:pointer">💾 Saqlash</button>
+      <button onclick="closeQuestionModal()" style="padding:12px 20px;background:white;border:2px solid #E2E8F0;border-radius:10px;font-family:'Plus Jakarta Sans',-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;font-size:14px;cursor:pointer">Bekor</button>
     </div>
   </div>
 </div>
@@ -4342,11 +4334,11 @@ function upmTab(name) {
       </div>
       <div style="display:flex;gap:10px">
         <button id="btnUnlockTest" onclick="toggleExamSession('test', true)"
-          style="flex:1;padding:11px;background:linear-gradient(135deg,#16A34A,#22C55E);color:white;border:none;border-radius:9px;font-family:'Outfit',sans-serif;font-size:13.5px;font-weight:700;cursor:pointer;transition:all 0.2s">
+          style="flex:1;padding:11px;background:linear-gradient(135deg,#16A34A,#22C55E);color:white;border:none;border-radius:9px;font-family:'Plus Jakarta Sans',-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;font-size:13.5px;font-weight:700;cursor:pointer;transition:all 0.2s">
           ✅ Faollashtirish
         </button>
         <button id="btnLockTest" onclick="toggleExamSession('test', false)"
-          style="flex:1;padding:11px;background:linear-gradient(135deg,#DC2626,#EF4444);color:white;border:none;border-radius:9px;font-family:'Outfit',sans-serif;font-size:13.5px;font-weight:700;cursor:pointer;transition:all 0.2s;display:none">
+          style="flex:1;padding:11px;background:linear-gradient(135deg,#DC2626,#EF4444);color:white;border:none;border-radius:9px;font-family:'Plus Jakarta Sans',-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;font-size:13.5px;font-weight:700;cursor:pointer;transition:all 0.2s;display:none">
           🔒 Bloklash
         </button>
       </div>
@@ -4369,11 +4361,11 @@ function upmTab(name) {
       </div>
       <div style="display:flex;gap:10px">
         <button id="btnUnlockReal" onclick="toggleExamSession('sesiya', true)"
-          style="flex:1;padding:11px;background:linear-gradient(135deg,#DC2626,#EF4444);color:white;border:none;border-radius:9px;font-family:'Outfit',sans-serif;font-size:13.5px;font-weight:700;cursor:pointer;transition:all 0.2s">
+          style="flex:1;padding:11px;background:linear-gradient(135deg,#DC2626,#EF4444);color:white;border:none;border-radius:9px;font-family:'Plus Jakarta Sans',-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;font-size:13.5px;font-weight:700;cursor:pointer;transition:all 0.2s">
           🚀 Imtihonni boshlash
         </button>
         <button id="btnLockReal" onclick="toggleExamSession('sesiya', false)"
-          style="flex:1;padding:11px;background:linear-gradient(135deg,#475569,#64748B);color:white;border:none;border-radius:9px;font-family:'Outfit',sans-serif;font-size:13.5px;font-weight:700;cursor:pointer;transition:all 0.2s;display:none">
+          style="flex:1;padding:11px;background:linear-gradient(135deg,#475569,#64748B);color:white;border:none;border-radius:9px;font-family:'Plus Jakarta Sans',-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;font-size:13.5px;font-weight:700;cursor:pointer;transition:all 0.2s;display:none">
           🔒 Imtihonni yopish
         </button>
       </div>
@@ -4444,20 +4436,20 @@ function upmTab(name) {
 </div>
   <!-- ===== IDU Platform — Modular Architecture ===== -->
   <!-- Core: always loaded (login screen + SPA shell) -->
-  <script defer src="js/core/config.js?v=20260611c"></script>
-  <script defer src="js/core/tenant.js?v=20260611c"></script>
-  <script defer src="js/core/loader.js?v=20260611c"></script>
-  <script defer src="js/core/auth.js?v=20260611c"></script>
-  <script defer src="js/core/router.js?v=20260611c"></script>
-  <script defer src="js/core/ui-utils.js?v=20260611c"></script>
-  <script defer src="js/core/events.js?v=20260611c"></script>
-  <script defer src="js/ui/toast.js?v=20260611c"></script>
-  <script defer src="js/ui/modal.js?v=20260611c"></script>
-  <script defer src="js/ui/effects.js?v=20260611c"></script>
-  <script defer src="js/features/landing-fx.js?v=20260611c"></script>
+  <script defer src="js/core/config.js?v=20260611d"></script>
+  <script defer src="js/core/tenant.js?v=20260611d"></script>
+  <script defer src="js/core/loader.js?v=20260611d"></script>
+  <script defer src="js/core/auth.js?v=20260611d"></script>
+  <script defer src="js/core/router.js?v=20260611d"></script>
+  <script defer src="js/core/ui-utils.js?v=20260611d"></script>
+  <script defer src="js/core/events.js?v=20260611d"></script>
+  <script defer src="js/ui/toast.js?v=20260611d"></script>
+  <script defer src="js/ui/modal.js?v=20260611d"></script>
+  <script defer src="js/ui/effects.js?v=20260611d"></script>
+  <script defer src="js/features/landing-fx.js?v=20260611d"></script>
   <!-- main.js: SPA bootstrap + login handler (calls IDULoader.loadRole after login) -->
-  <script defer src="js/main.js?v=20260611c"></script>
-  <script defer src="js/enhancements.js?v=20260611c"></script>
+  <script defer src="js/main.js?v=20260611d"></script>
+  <script defer src="js/enhancements.js?v=20260611d"></script>
   <!-- Role-specific scripts are loaded lazily after login via js/core/loader.js -->
   <!-- QR loaded on demand only for teacher/dekanat -->
   <!-- jsQR loaded lazily in openQRScanner() — saves 43KB for all users -->
@@ -4924,7 +4916,7 @@ window.renderMathInPage=renderMathInPage;
 
 <!-- Chat widget panel -->
 <style>
-#chatWidget { font-family: 'Outfit', sans-serif; }
+#chatWidget { font-family: 'Plus Jakarta Sans',-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif; }
 .chat-room-item { display:flex;align-items:center;gap:11px;padding:10px 14px;cursor:pointer;transition:background 0.15s;border-bottom:1px solid #F8FAFC; }
 .chat-room-item:hover { background:#F1F5F9; }
 .chat-room-avatar { width:40px;height:40px;border-radius:12px;display:flex;align-items:center;justify-content:center;font-size:17px;font-weight:700;flex-shrink:0; }
@@ -4968,7 +4960,7 @@ window.renderMathInPage=renderMathInPage;
     <div style="padding:10px 12px;border-bottom:1px solid #F1F5F9;flex-shrink:0">
       <div style="position:relative">
         <span style="position:absolute;left:10px;top:50%;transform:translateY(-50%);color:#94A3B8;font-size:13px">🔍</span>
-        <input placeholder="Xona qidirish..." style="width:100%;padding:7px 10px 7px 30px;border:1.5px solid #E2E8F0;border-radius:10px;font-size:12.5px;font-family:'Outfit',sans-serif;outline:none;background:#F8FAFC;box-sizing:border-box" oninput="filterChatRooms(this.value)">
+        <input placeholder="Xona qidirish..." style="width:100%;padding:7px 10px 7px 30px;border:1.5px solid #E2E8F0;border-radius:10px;font-size:12.5px;font-family:'Plus Jakarta Sans',-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;outline:none;background:#F8FAFC;box-sizing:border-box" oninput="filterChatRooms(this.value)">
       </div>
     </div>
     <!-- Rooms -->
@@ -4980,7 +4972,7 @@ window.renderMathInPage=renderMathInPage;
     </div>
     <!-- Join public -->
     <div style="padding:10px 12px;border-top:1px solid #F1F5F9;flex-shrink:0">
-      <button onclick="joinPublicRooms()" style="width:100%;padding:9px;background:#F8FAFC;border:1.5px solid #E2E8F0;border-radius:10px;font-family:'Outfit',sans-serif;font-size:12.5px;font-weight:600;color:#475569;cursor:pointer;transition:all 0.15s" onmouseover="this.style.background='#EEF3FF';this.style.borderColor='#93C5FD';this.style.color='#1B4FD8'" onmouseout="this.style.background='#F8FAFC';this.style.borderColor='#E2E8F0';this.style.color='#475569'">🌐 Ommaviy xonalar</button>
+      <button onclick="joinPublicRooms()" style="width:100%;padding:9px;background:#F8FAFC;border:1.5px solid #E2E8F0;border-radius:10px;font-family:'Plus Jakarta Sans',-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;font-size:12.5px;font-weight:600;color:#475569;cursor:pointer;transition:all 0.15s" onmouseover="this.style.background='#EEF3FF';this.style.borderColor='#93C5FD';this.style.color='#1B4FD8'" onmouseout="this.style.background='#F8FAFC';this.style.borderColor='#E2E8F0';this.style.color='#475569'">🌐 Ommaviy xonalar</button>
     </div>
   </div>
 
@@ -4998,7 +4990,7 @@ window.renderMathInPage=renderMathInPage;
     <div id="chatMsgList" style="flex:1;overflow-y:auto;padding:14px 12px;background:#FAFBFF"></div>
     <!-- Input -->
     <div style="padding:10px 12px;border-top:1px solid #F1F5F9;display:flex;gap:8px;align-items:center;flex-shrink:0;background:#fff">
-      <input id="chatInput" placeholder="Xabar yozing..." style="flex:1;padding:9px 14px;border:1.5px solid #E2E8F0;border-radius:20px;font-family:'Outfit',sans-serif;font-size:13px;outline:none;transition:border-color 0.2s;background:#F8FAFC" onfocus="this.style.borderColor='#93C5FD';this.style.background='#fff'" onblur="this.style.borderColor='#E2E8F0';this.style.background='#F8FAFC'" onkeydown="chatInputKey(event)">
+      <input id="chatInput" placeholder="Xabar yozing..." style="flex:1;padding:9px 14px;border:1.5px solid #E2E8F0;border-radius:20px;font-family:'Plus Jakarta Sans',-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;font-size:13px;outline:none;transition:border-color 0.2s;background:#F8FAFC" onfocus="this.style.borderColor='#93C5FD';this.style.background='#fff'" onblur="this.style.borderColor='#E2E8F0';this.style.background='#F8FAFC'" onkeydown="chatInputKey(event)">
       <button onclick="sendChatMessage()" style="background:linear-gradient(135deg,#1B4FD8,#3B82F6);color:#fff;border:none;border-radius:50%;width:38px;height:38px;font-size:17px;cursor:pointer;flex-shrink:0;display:flex;align-items:center;justify-content:center;box-shadow:0 2px 8px rgba(27,79,216,0.3);transition:transform 0.1s" onmouseover="this.style.transform='scale(1.08)'" onmouseout="this.style.transform='scale(1)'">↑</button>
     </div>
   </div>
@@ -5016,18 +5008,18 @@ window.renderMathInPage=renderMathInPage;
     </div>
     <div style="margin-bottom:14px">
       <div style="font-size:12px;font-weight:700;color:#64748B;margin-bottom:6px;text-transform:uppercase;letter-spacing:0.5px">Xona nomi</div>
-      <input id="newRoomName" placeholder="Masalan: 1-guruh talabalar" style="width:100%;padding:11px 14px;border:1.5px solid #E2E8F0;border-radius:10px;font-family:'Outfit',sans-serif;font-size:13.5px;outline:none;box-sizing:border-box;transition:border-color 0.2s" onfocus="this.style.borderColor='#93C5FD'" onblur="this.style.borderColor='#E2E8F0'">
+      <input id="newRoomName" placeholder="Masalan: 1-guruh talabalar" style="width:100%;padding:11px 14px;border:1.5px solid #E2E8F0;border-radius:10px;font-family:'Plus Jakarta Sans',-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;font-size:13.5px;outline:none;box-sizing:border-box;transition:border-color 0.2s" onfocus="this.style.borderColor='#93C5FD'" onblur="this.style.borderColor='#E2E8F0'">
     </div>
     <div style="margin-bottom:22px">
       <div style="font-size:12px;font-weight:700;color:#64748B;margin-bottom:6px;text-transform:uppercase;letter-spacing:0.5px">Tur</div>
-      <select id="newRoomType" style="width:100%;padding:11px 14px;border:1.5px solid #E2E8F0;border-radius:10px;font-family:'Outfit',sans-serif;font-size:13.5px;outline:none;background:#fff;cursor:pointer">
+      <select id="newRoomType" style="width:100%;padding:11px 14px;border:1.5px solid #E2E8F0;border-radius:10px;font-family:'Plus Jakarta Sans',-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;font-size:13.5px;outline:none;background:#fff;cursor:pointer">
         <option value="group">👥 Guruh chat — barcha a'zolar yoza oladi</option>
         <option value="announce">📢 E'lonlar — faqat admin yozadi</option>
       </select>
     </div>
     <div style="display:flex;gap:10px">
-      <button onclick="createChatRoom()" style="flex:1;padding:12px;background:linear-gradient(135deg,#1B4FD8,#3B82F6);color:#fff;border:none;border-radius:11px;font-family:'Outfit',sans-serif;font-size:14px;font-weight:700;cursor:pointer;box-shadow:0 4px 12px rgba(27,79,216,0.25)">✓ Yaratish</button>
-      <button onclick="document.getElementById('createRoomModal').style.display='none'" style="padding:12px 18px;background:#F1F5F9;border:none;border-radius:11px;font-family:'Outfit',sans-serif;font-size:14px;font-weight:600;color:#475569;cursor:pointer">Bekor</button>
+      <button onclick="createChatRoom()" style="flex:1;padding:12px;background:linear-gradient(135deg,#1B4FD8,#3B82F6);color:#fff;border:none;border-radius:11px;font-family:'Plus Jakarta Sans',-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;font-size:14px;font-weight:700;cursor:pointer;box-shadow:0 4px 12px rgba(27,79,216,0.25)">✓ Yaratish</button>
+      <button onclick="document.getElementById('createRoomModal').style.display='none'" style="padding:12px 18px;background:#F1F5F9;border:none;border-radius:11px;font-family:'Plus Jakarta Sans',-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;font-size:14px;font-weight:600;color:#475569;cursor:pointer">Bekor</button>
     </div>
   </div>
 </div>

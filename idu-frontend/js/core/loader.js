@@ -13,7 +13,7 @@
  */
 
 // Version tag — update on each deploy to bust browser cache
-var LOADER_V = '20260611c';
+var LOADER_V = '20260611d';
 
 var COMMON_SCRIPTS = [
   'js/features/dark-mode.js',

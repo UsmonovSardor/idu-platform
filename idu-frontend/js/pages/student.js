@@ -261,15 +261,15 @@ function openStudentDetail(id){
     </div>
     <div class="stats-grid-3" style="margin-bottom:16px">
       <div style="text-align:center;padding:14px;background:var(--bg);border-radius:var(--r2)">
-        <div style="font-size:24px;font-weight:900;color:var(--primary);font-family:'DM Mono',monospace">${s.gpa}</div>
+        <div style="font-size:24px;font-weight:900;color:var(--primary);font-family:'Fira Code','Cascadia Code',monospace">${s.gpa}</div>
         <div style="font-size:12px;color:var(--text3)">GPA</div>
       </div>
       <div style="text-align:center;padding:14px;background:var(--bg);border-radius:var(--r2)">
-        <div style="font-size:24px;font-weight:900;color:var(--green);font-family:'DM Mono',monospace">${s.avg}</div>
+        <div style="font-size:24px;font-weight:900;color:var(--green);font-family:'Fira Code','Cascadia Code',monospace">${s.avg}</div>
         <div style="font-size:12px;color:var(--text3)">O'rt. ball</div>
       </div>
       <div style="text-align:center;padding:14px;background:var(--bg);border-radius:var(--r2)">
-        <div style="font-size:24px;font-weight:900;color:${s.att>=90?'var(--green)':'var(--orange)'};font-family:'DM Mono',monospace">${s.att}%</div>
+        <div style="font-size:24px;font-weight:900;color:${s.att>=90?'var(--green)':'var(--orange)'};font-family:'Fira Code','Cascadia Code',monospace">${s.att}%</div>
         <div style="font-size:12px;color:var(--text3)">Davomat</div>
       </div>
     </div>
@@ -332,7 +332,7 @@ function renderRiskStudents(){
         +'<div class="rsr-info">'+s.group+' · '+s.course+'-kurs · GPA: '+s.gpa+'</div>'
       +'</div>'
       +'<div style="text-align:right">'
-        +'<div style="font-size:18px;font-weight:900;font-family:\'DM Mono\',monospace;color:'+(type==='high'?'#DC2626':'#D97706')+'">'+s.avg+'</div>'
+        +'<div style="font-size:18px;font-weight:900;font-family:'Fira Code','Cascadia Code',monospace;color:'+(type==='high'?'#DC2626':'#D97706')+'">'+s.avg+'</div>'
         +'<span class="rsr-badge '+(type==='high'?'rsr-badge-red':'rsr-badge-yellow')+'">'+(type==='high'?'Kritik':'Diqqat')+'</span>'
       +'</div>'
     +'</div>';
@@ -348,7 +348,7 @@ function renderRiskStudents(){
       return '<tr>'
         +'<td><div style="display:flex;align-items:center;gap:8px"><div style="background:#94A3B8;width:26px;height:26px;min-width:26px;border-radius:50%;display:flex;align-items:center;justify-content:center;color:#fff;font-size:10px;font-weight:700">'+s.name.split(' ').map(function(x){return x[0];}).join('')+'</div>'+s.name+'</div></td>'
         +'<td>'+s.group+'</td>'
-        +'<td><span style="font-weight:800;color:'+color+';font-family:\'DM Mono\',monospace">'+s.att+'%</span></td>'
+        +'<td><span style="font-weight:800;color:'+color+';font-family:'Fira Code','Cascadia Code',monospace">'+s.att+'%</span></td>'
         +'<td style="color:#DC2626;font-weight:700">'+sabsiz+' dars</td>'
         +'<td><span class="status-tag '+(s.att<70?'st-warning':'st-neutral')+'">'+( s.att<70?'Ogohlantirildi':'Nazoratda')+'</span></td>'
       +'</tr>';
