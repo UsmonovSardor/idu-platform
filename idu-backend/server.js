@@ -13,7 +13,7 @@ const cookieParser = require('cookie-parser');
 const path         = require('path');
 const fs           = require('fs');
 
-const compression             = require('compression');
+const compress                = require('./middleware/compress');
 const hpp                     = require('hpp');
 const { logger, requestLogger } = require('./middleware/logger');
 const { generalLimiter }        = require('./middleware/rateLimiter');
@@ -54,15 +54,8 @@ const { setupSocket } = require('./socket');
 const app        = express();
 const httpServer = http.createServer(app);
 
-// ── Gzip compression (before everything else) ────────────────────────────────
-app.use(compression({
-  level: 6,           // good balance of speed vs ratio
-  threshold: 1024,    // don't compress responses < 1 KB
-  filter: (req, res) => {
-    if (req.headers['x-no-compression']) return false;
-    return compression.filter(req, res);
-  },
-}));
+// ── Brotli + Gzip compression (Brotli preferred, ~25% better than gzip) ──────
+app.use(compress({ threshold: 1024 }));
 
 // ── Security headers (Phase D: CSP enabled) ──────────────────────────────────
 const IS_PROD = process.env.NODE_ENV === 'production';

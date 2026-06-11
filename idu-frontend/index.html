@@ -39,21 +39,19 @@
 
 <!-- Favicon (browser tab icon) -->
 <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' rx='14' fill='%23071524'/%3E%3Ctext x='32' y='44' font-size='28' font-weight='900' text-anchor='middle' font-family='Arial' fill='url(%23g)'%3EI%3C/text%3E%3Cdefs%3E%3ClinearGradient id='g' x1='0' y1='0' x2='1' y2='1'%3E%3Cstop offset='0' stop-color='%23eff6ff'/%3E%3Cstop offset='1' stop-color='%233b82f6'/%3E%3C/linearGradient%3E%3C/defs%3E%3C/svg%3E">
-<!-- Performance hints — open connections to CDNs early in parallel with HTML parse -->
-<!-- Preconnect only to fonts (CDNs removed — DOMPurify/KaTeX loaded lazily after login) -->
-<link rel="preconnect" href="https://fonts.googleapis.com">
-<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<!-- No external CDN for fonts — served locally, zero DNS roundtrip -->
 <link rel="dns-prefetch" href="https://idu-platform-production.up.railway.app">
-<!-- Critical CSS preload -->
-<link rel="preload" href="css/style.css?v=20260611b" as="style">
-<link rel="preload" href="css/landing.css?v=20260611b" as="style">
-<!-- Google Fonts: swap prevents invisible text while loading -->
-<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:ital,wght@0,300;0,400;0,500;0,600;0,700;0,800;1,400&family=Fira+Code:wght@600;700&display=swap">
-<link rel="stylesheet" href="css/style.css?v=20260611b">
-<link rel="stylesheet" href="css/themes.css?v=20260611b">
-<link rel="stylesheet" href="css/responsive.css?v=20260611b">
-<link rel="stylesheet" href="css/landing.css?v=20260611b">
-<link rel="stylesheet" href="css/utilities.css?v=20260611b">
+<!-- Critical CSS preload — local fonts first so no render-block waiting on Google -->
+<link rel="preload" href="css/fonts.css?v=20260611c" as="style">
+<link rel="preload" href="css/style.css?v=20260611c" as="style">
+<link rel="preload" href="css/landing.css?v=20260611c" as="style">
+<!-- Self-hosted fonts (Plus Jakarta Sans + Fira Code — latin+latin-ext only) -->
+<link rel="stylesheet" href="css/fonts.css?v=20260611c">
+<link rel="stylesheet" href="css/style.css?v=20260611c">
+<link rel="stylesheet" href="css/themes.css?v=20260611c">
+<link rel="stylesheet" href="css/responsive.css?v=20260611c">
+<link rel="stylesheet" href="css/landing.css?v=20260611c">
+<link rel="stylesheet" href="css/utilities.css?v=20260611c">
 <!-- KaTeX + DOMPurify loaded lazily after login — saves ~90KB on landing page -->
 <!-- socket.io loaded lazily in launchApp() after login — not needed on landing page -->
 <script>
@@ -4446,20 +4444,20 @@ function upmTab(name) {
 </div>
   <!-- ===== IDU Platform — Modular Architecture ===== -->
   <!-- Core: always loaded (login screen + SPA shell) -->
-  <script defer src="js/core/config.js?v=20260611a"></script>
-  <script defer src="js/core/tenant.js?v=20260611a"></script>
-  <script defer src="js/core/loader.js?v=20260611a"></script>
-  <script defer src="js/core/auth.js?v=20260611a"></script>
-  <script defer src="js/core/router.js?v=20260611a"></script>
-  <script defer src="js/core/ui-utils.js?v=20260611a"></script>
-  <script defer src="js/core/events.js?v=20260611a"></script>
-  <script defer src="js/ui/toast.js?v=20260611a"></script>
-  <script defer src="js/ui/modal.js?v=20260611a"></script>
-  <script defer src="js/ui/effects.js?v=20260611a"></script>
-  <script defer src="js/features/landing-fx.js?v=20260611a"></script>
+  <script defer src="js/core/config.js?v=20260611c"></script>
+  <script defer src="js/core/tenant.js?v=20260611c"></script>
+  <script defer src="js/core/loader.js?v=20260611c"></script>
+  <script defer src="js/core/auth.js?v=20260611c"></script>
+  <script defer src="js/core/router.js?v=20260611c"></script>
+  <script defer src="js/core/ui-utils.js?v=20260611c"></script>
+  <script defer src="js/core/events.js?v=20260611c"></script>
+  <script defer src="js/ui/toast.js?v=20260611c"></script>
+  <script defer src="js/ui/modal.js?v=20260611c"></script>
+  <script defer src="js/ui/effects.js?v=20260611c"></script>
+  <script defer src="js/features/landing-fx.js?v=20260611c"></script>
   <!-- main.js: SPA bootstrap + login handler (calls IDULoader.loadRole after login) -->
-  <script defer src="js/main.js?v=20260611a"></script>
-  <script defer src="js/enhancements.js?v=20260611a"></script>
+  <script defer src="js/main.js?v=20260611c"></script>
+  <script defer src="js/enhancements.js?v=20260611c"></script>
   <!-- Role-specific scripts are loaded lazily after login via js/core/loader.js -->
   <!-- QR loaded on demand only for teacher/dekanat -->
   <!-- jsQR loaded lazily in openQRScanner() — saves 43KB for all users -->

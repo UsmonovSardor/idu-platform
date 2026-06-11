@@ -78,10 +78,21 @@ window.realAutoLogin = async function realAutoLogin() {
     const user = await loginWithBackend('auto', login, pass);
     const role = user.role || 'student';
 
-    // Load role-specific scripts before rendering anything
-    if (window.IDULoader) {
-      try { await window.IDULoader.loadRole(role); } catch(e) { console.warn('Loader:', e); }
-    }
+    // Kick off role scripts AND first API requests in parallel during login animation
+    // The login animation takes ~600ms — we use that time to pre-warm the network.
+    var _roleLoadPromise = window.IDULoader
+      ? window.IDULoader.loadRole(role).catch(function(e) { console.warn('Loader:', e); })
+      : Promise.resolve();
+
+    // Pre-fetch the most critical API endpoints so the dashboard has data ready
+    var _prefetchPromise = Promise.allSettled([
+      fetch('/api/v1/grades/my-stats', { credentials: 'include' }),
+      fetch('/api/v1/schedule',        { credentials: 'include' }),
+      fetch('/api/v1/grades/my',       { credentials: 'include' }),
+    ]);
+
+    // Wait for scripts (must be ready before render), data prefetch runs in background
+    await _roleLoadPromise;
 
     currentUser = { login: user.login || login, name: user.name || user.full_name || login, role: role, group: user.group || 'AI-2301', gpa: 0, phone: user.phone || '' };
     currentRole = role;
