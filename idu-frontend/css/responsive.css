@@ -724,3 +724,200 @@ h3 { font-size: clamp(15px, 3vw, 20px); }
   .sidebar-item { transition: none; }
   * { scroll-behavior: auto !important; }
 }
+
+
+/* ══════════════════════════════════════════════════════════════
+   QUALITY LAYER v10.0 — $100K responsive polish
+   Fills gaps: text inflation, focus rings, scrollbars,
+   safe-area bottom nav, pointer-coarse targeting,
+   selection colours, content-visibility, fluid spacing
+   ══════════════════════════════════════════════════════════════ */
+
+/* ── Prevent iOS text auto-zoom on orientation change ──────────── */
+html {
+  -webkit-text-size-adjust: 100%;
+  text-size-adjust: 100%;
+}
+
+/* ── Brand selection highlight ──────────────────────────────────── */
+::selection {
+  background: rgba(37, 99, 235, 0.28);
+  color: inherit;
+}
+
+/* ── Desktop: styled thin scrollbars (dark theme) ──────────────── */
+@media (min-width: 769px) {
+  :root {
+    scrollbar-width: thin;
+    scrollbar-color: var(--border2, #334155) var(--bg, #0F172A);
+  }
+  ::-webkit-scrollbar { width: 6px; height: 6px; }
+  ::-webkit-scrollbar-track { background: var(--bg, #0F172A); }
+  ::-webkit-scrollbar-thumb {
+    background: var(--border2, #334155);
+    border-radius: 3px;
+  }
+  ::-webkit-scrollbar-thumb:hover { background: var(--text3, #64748B); }
+  .main-content::-webkit-scrollbar { width: 4px; }
+}
+
+/* ── Modern focus-visible ring (dark theme) ─────────────────────── */
+:focus-visible {
+  outline: 2px solid #3B82F6;
+  outline-offset: 2px;
+  border-radius: 4px;
+}
+/* Remove focus ring on mouse/touch — only show for keyboard */
+:focus:not(:focus-visible) { outline: none; }
+
+/* High-contrast inputs already use border; keep ring subtle */
+.form-input:focus-visible,
+.form-select:focus-visible,
+.login-input-field:focus-visible {
+  outline: 2px solid #3B82F6;
+  outline-offset: 0;
+}
+
+/* ── Sidebar item: add missing cursor pointer ───────────────────── */
+.sidebar-item,
+.stat-card,
+.erp-tile,
+.forum-item,
+.notif-item,
+.week-cell,
+.lp-feat-card,
+.lp-stat-card,
+.demo-card,
+.game-card { cursor: pointer; }
+
+/* ── pointer:coarse — larger hit areas without changing layout ──── */
+/* Adds transparent padding extension using pseudo-element trick    */
+@media (pointer: coarse) {
+  .nav-icon-btn {
+    position: relative;
+  }
+  .nav-icon-btn::before {
+    content: '';
+    position: absolute;
+    inset: -6px;
+  }
+
+  /* Tab pills: bigger tap area */
+  .pill-tab { padding-top: 10px; padding-bottom: 10px; }
+
+  /* Sidebar items: taller on touch */
+  .sidebar-item { padding-top: 11px; padding-bottom: 11px; }
+
+  /* Ensure close buttons are always 44px */
+  .lm-close,
+  .modal-close,
+  [data-close],
+  button[aria-label="close"] {
+    min-width: 44px;
+    min-height: 44px;
+  }
+}
+
+/* ── Bottom nav: guaranteed safe-area + backdrop ───────────────── */
+@media (max-width: 768px) {
+  .mob-nav {
+    padding-bottom: max(8px, env(safe-area-inset-bottom));
+    /* Frosted glass on supported devices, solid fallback */
+    background: var(--white, #fff);
+    -webkit-backdrop-filter: blur(12px);
+    backdrop-filter: blur(12px);
+    border-top: 1px solid var(--border, #E8EDF5);
+  }
+
+  /* Active tab: stronger visual indicator */
+  .mob-nav-item.active .mob-nav-icon { color: var(--primary, #1B4FD8); }
+  .mob-nav-item.active .mob-nav-label { color: var(--primary, #1B4FD8); font-weight: 700; }
+
+  /* Tap feedback with scale */
+  .mob-nav-item:active { transform: scale(0.92); }
+
+  /* iPhone Dynamic Island / notch: extra top safe area on hero */
+  .topnav {
+    padding-top: max(0px, env(safe-area-inset-top));
+    height: calc(52px + env(safe-area-inset-top, 0px));
+  }
+}
+
+/* ── Fluid spacing custom properties ────────────────────────────── */
+:root {
+  --space-xs:  clamp(4px,  1vw,  8px);
+  --space-sm:  clamp(8px,  2vw,  12px);
+  --space-md:  clamp(12px, 2.5vw, 16px);
+  --space-lg:  clamp(16px, 3vw,  24px);
+  --space-xl:  clamp(24px, 4vw,  40px);
+  --space-2xl: clamp(40px, 6vw,  64px);
+}
+
+/* ── Fluid card padding ─────────────────────────────────────────── */
+.card  { padding: var(--space-lg); }
+.page  { padding: var(--space-lg) var(--space-lg); }
+
+@media (max-width: 768px) {
+  .card { padding: var(--space-md); }
+  .page { padding: var(--space-md); }
+}
+
+/* ── Content-visibility for off-screen dashboard sections ───────── */
+@media (min-width: 769px) {
+  .page:not(.active) {
+    content-visibility: auto;
+    contain-intrinsic-size: 0 600px;
+  }
+}
+
+/* ── Aspect-ratio for media placeholders (prevents CLS) ─────────── */
+.avatar,
+.uc-avatar,
+.user-avatar { aspect-ratio: 1 / 1; }
+
+.cover-img,
+.lp-screenshot { aspect-ratio: 16 / 10; object-fit: cover; }
+
+/* ── Table cell word-break on narrow mobile ─────────────────────── */
+@media (max-width: 480px) {
+  td, th { word-break: break-word; hyphens: auto; }
+}
+
+/* ── Interactive transition on all cards (uniform) ─────────────── */
+.stat-card,
+.card,
+.erp-tile,
+.forum-item {
+  transition: box-shadow 0.2s cubic-bezier(0.22,1,0.36,1),
+              transform  0.2s cubic-bezier(0.22,1,0.36,1);
+}
+@media (hover: hover) {
+  .stat-card:hover,
+  .erp-tile:hover { box-shadow: var(--shadow-md, 0 4px 20px rgba(0,0,0,.12)); }
+}
+
+/* ── Reduced-motion additions ───────────────────────────────────── */
+@media (prefers-reduced-motion: reduce) {
+  .stat-card, .card, .erp-tile, .forum-item { transition: none; }
+  .mob-nav-item:active { transform: none; }
+}
+
+/* ── High-resolution screens: sharper borders ──────────────────── */
+@media (-webkit-min-device-pixel-ratio: 2), (min-resolution: 192dpi) {
+  .topnav,
+  .sidebar,
+  .mob-nav,
+  .card { border-width: 0.5px; }
+}
+
+/* ── Tablet (769–1024px): two-column stat grid ─────────────────── */
+@media (min-width: 769px) and (max-width: 1024px) {
+  .stats-grid   { grid-template-columns: repeat(2, 1fr); }
+  .stats-grid-3 { grid-template-columns: repeat(3, 1fr); }
+  .page { padding: 18px 20px; }
+}
+
+/* ── Very wide desktops: constrain readable line length ─────────── */
+@media (min-width: 1440px) {
+  .page { max-width: 1400px; }
+}
