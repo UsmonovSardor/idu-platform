@@ -4451,47 +4451,23 @@ function upmTab(name) {
   </div>
 </div>
   <!-- ===== IDU Platform — Modular Architecture ===== -->
-  <script defer src="js/core/config.js?v=20260528e"></script>
-  <script defer src="js/core/auth.js?v=20260605d"></script>
-  <script defer src="js/core/router.js?v=20260530f"></script>
-  <script defer src="js/core/ui-utils.js?v=20260522a"></script>
-  <script defer src="js/core/events.js?v=20260525b"></script>
-  <script defer src="js/ui/toast.js?v=20260517d"></script>
-  <script defer src="js/ui/modal.js?v=20260530j"></script>
-  <script defer src="js/ui/effects.js?v=20260517d"></script>
-  <script defer src="js/features/landing-fx.js?v=20260530a"></script>
-  <script defer src="js/pages/student.js?v=20260531b"></script>
-  <script defer src="js/pages/teacher.js?v=20260517d"></script>
-  <script defer src="js/pages/dekanat.js?v=20260530a"></script>
-  <script defer src="js/pages/investor.js?v=20260517d"></script>
-  <script defer src="js/features/schedule.js?v=20260517d"></script>
-  <script defer src="js/features/assignments.js?v=20260517d"></script>
-  <script defer src="js/features/grades.js?v=20260605b"></script>
-  <script defer src="js/features/ai-chat.js?v=20260527a"></script>
-  <script defer src="js/features/exams.js?v=20260525a"></script>
-  <script defer src="js/features/games.js?v=20260517d"></script>
-  <script defer src="js/features/reports.js?v=20260517d"></script>
-  <script defer src="js/features/stats.js?v=20260521a"></script>
-  <script defer src="js/features/notifications.js?v=20260605b"></script>
-  <script defer src="js/features/attendance.js?v=20260605d"></script>
-  <script defer src="js/features/chat.js?v=20260530p"></script>
-  <script defer src="js/features/gamification.js?v=20260605d"></script>
-  <script defer src="js/features/engagement.js?v=20260605d"></script>
-  <script defer src="js/pages/rector.js?v=20260520f"></script>
-  <script defer src="js/features/teacher-exams.js?v=20260605b"></script>
-  <script defer src="js/features/dark-mode.js?v=20260531d"></script>
-  <script defer src="js/features/animations.js?v=20260601a"></script>
-  <script defer src="js/features/command-palette.js?v=20260528b"></script>
-  <script defer src="js/features/onboarding.js?v=20260526a"></script>
-  <script defer src="js/features/profile.js?v=20260530c"></script>
-  <script defer src="js/features/calendar.js?v=20260530k"></script>
-  <script defer src="js/features/competitions.js?v=20260530n"></script>
-  <script defer src="js/features/forum.js?v=20260528a"></script>
-  <script defer src="js/features/bulk-export.js?v=20260528a"></script>
-  <script defer src="js/main.js?v=20260605b"></script>
-  <script defer src="js/enhancements.js?v=20260605e"></script>
-  <!-- QR code generator (teacher) -->
-  <script defer src="https://cdn.jsdelivr.net/npm/qrcodejs@1.0.0/qrcode.min.js" crossorigin="anonymous"></script>
+  <!-- Core: always loaded (login screen + SPA shell) -->
+  <script defer src="js/core/config.js?v=20260611a"></script>
+  <script defer src="js/core/tenant.js?v=20260611a"></script>
+  <script defer src="js/core/loader.js?v=20260611a"></script>
+  <script defer src="js/core/auth.js?v=20260611a"></script>
+  <script defer src="js/core/router.js?v=20260611a"></script>
+  <script defer src="js/core/ui-utils.js?v=20260611a"></script>
+  <script defer src="js/core/events.js?v=20260611a"></script>
+  <script defer src="js/ui/toast.js?v=20260611a"></script>
+  <script defer src="js/ui/modal.js?v=20260611a"></script>
+  <script defer src="js/ui/effects.js?v=20260611a"></script>
+  <script defer src="js/features/landing-fx.js?v=20260611a"></script>
+  <!-- main.js: SPA bootstrap + login handler (calls IDULoader.loadRole after login) -->
+  <script defer src="js/main.js?v=20260611a"></script>
+  <script defer src="js/enhancements.js?v=20260611a"></script>
+  <!-- Role-specific scripts are loaded lazily after login via js/core/loader.js -->
+  <!-- QR loaded on demand only for teacher/dekanat -->
   <!-- jsQR loaded lazily in openQRScanner() — saves 43KB for all users -->
 
 <script>

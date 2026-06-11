@@ -77,6 +77,12 @@ window.realAutoLogin = async function realAutoLogin() {
   try {
     const user = await loginWithBackend('auto', login, pass);
     const role = user.role || 'student';
+
+    // Load role-specific scripts before rendering anything
+    if (window.IDULoader) {
+      try { await window.IDULoader.loadRole(role); } catch(e) { console.warn('Loader:', e); }
+    }
+
     currentUser = { login: user.login || login, name: user.name || user.full_name || login, role: role, group: user.group || 'AI-2301', gpa: 0, phone: user.phone || '' };
     currentRole = role;
     _ssSet('idu_active_role', ROLE_TOKENS[role]);

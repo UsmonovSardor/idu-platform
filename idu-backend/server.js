@@ -44,7 +44,9 @@ const forumRoutes       = require('./routes/forum');
 const eventsRoutes      = require('./routes/events');
 const competitionsRoutes= require('./routes/competitions');
 const publicRoutes      = require('./routes/public');
+const tenantsRoutes     = require('./routes/tenants');
 const { audit }         = require('./middleware/audit');
+const { resolveTenant } = require('./middleware/tenant');
 
 const http            = require('http');
 const { setupSocket } = require('./socket');
@@ -151,12 +153,16 @@ if (process.env.CORS_ORIGIN) {
   });
 }
 
+// ROOT_DOMAIN env var enables wildcard subdomains: *.idu.uz
+const ROOT_DOMAIN = process.env.ROOT_DOMAIN || ''; // e.g. "idu.uz"
+
 app.use(cors({
   origin: (origin, callback) => {
-    // Same-origin requests (no Origin header) are always ok
     if (!origin) return callback(null, true);
-    // Explicit allow-list + Railway subdomains
-    if (allowedOrigins.has(origin) || /\.railway\.app$/.test(origin)) {
+    if (allowedOrigins.has(origin)) return callback(null, true);
+    if (/\.railway\.app$/.test(origin)) return callback(null, true);
+    // Allow all subdomains of the configured root domain
+    if (ROOT_DOMAIN && (origin.endsWith('.' + ROOT_DOMAIN) || origin === 'https://' + ROOT_DOMAIN)) {
       return callback(null, true);
     }
     logger.warn(`CORS blocked: ${origin}`);
@@ -208,6 +214,8 @@ app.get('/health', (_req, res) => {
 // NOTE: mount the limiter ONCE on /api — it already covers /api/v1/* as a prefix.
 // Mounting on both double-counted every request (each cost 2 points).
 app.use('/api',    generalLimiter);
+// Resolve tenant from subdomain for every API request
+app.use('/api', resolveTenant);
 // Audit log middleware — fire-and-forget, after rate limiter
 app.use('/api', audit());
 
@@ -237,6 +245,7 @@ const routeMap = [
   ['/events',        eventsRoutes],
   ['/competitions',  competitionsRoutes],
   ['/public',        publicRoutes],
+  ['/tenants',       tenantsRoutes],
 ];
 
 routeMap.forEach(([path, router]) => {
@@ -336,14 +345,26 @@ runMigrations()
 
     httpServer.listen(PORT, '0.0.0.0', () => {
       logger.info('═══════════════════════════════════════');
-      logger.info('  IDU Platform v4.1');
+      logger.info('  IDU Platform v5.0 (multi-tenant)');
       logger.info(`  Port     : ${PORT}`);
       logger.info(`  API      : /api/v1/*`);
       logger.info(`  WebSocket: socket.io enabled`);
       logger.info(`  Redis    : ${process.env.REDIS_URL ? 'configured' : 'in-memory fallback'}`);
       logger.info(`  Email    : ${process.env.RESEND_API_KEY || process.env.SMTP_HOST ? 'configured' : 'dev-log only'}`);
       logger.info(`  Frontend : ${frontendDir || 'NOT FOUND'}`);
+      logger.info(`  RootDomain: ${ROOT_DOMAIN || 'not set'}`);
       logger.info('═══════════════════════════════════════');
+
+      // Keep-alive self-ping: Railway stops idle containers after ~10 min.
+      // Ping /health every 14 minutes so the process never goes cold.
+      if (IS_PROD && process.env.RAILWAY_PUBLIC_DOMAIN) {
+        const https = require('https');
+        const selfUrl = `https://${process.env.RAILWAY_PUBLIC_DOMAIN}/health`;
+        setInterval(() => {
+          https.get(selfUrl, (r) => r.resume()).on('error', () => {});
+        }, 14 * 60 * 1000);
+        logger.info(`  Keep-alive: pinging ${selfUrl} every 14 min`);
+      }
     });
   })
   .catch((err) => {

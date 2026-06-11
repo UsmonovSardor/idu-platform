@@ -25,15 +25,12 @@ router.get(
     const params = [];
 
     if (req.user.role === 'student') {
-      const { rows } = await db.query(
-        'SELECT faculty, year_of_study FROM students WHERE user_id = $1',
-        [req.user.id]
+      // Single query via JOIN — avoids N+1 (was 2 sequential queries before)
+      params.push(req.user.id);
+      conditions.push(
+        `EXISTS (SELECT 1 FROM students st WHERE st.user_id = $${params.length} ` +
+        `AND st.faculty = sc.faculty AND st.year_of_study = sc.year_of_study)`
       );
-      if (rows.length) {
-        params.push(rows[0].faculty, rows[0].year_of_study);
-        conditions.push(`sc.faculty = $${params.length - 1}`);
-        conditions.push(`sc.year_of_study = $${params.length}`);
-      }
     }
 
     if (req.query.weekday !== undefined) {
@@ -41,7 +38,7 @@ router.get(
       conditions.push(`sc.weekday = $${params.length}`);
     }
 
-    const where = conditions.length ? 'WHERE ' + conditions.join(' AND ') : '';
+    const where = 'WHERE ' + conditions.join(' AND ');
 
     const { rows } = await db.query(
       `SELECT sc.id,sc.weekday,sc.start_time,sc.end_time,

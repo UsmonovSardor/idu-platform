@@ -7,7 +7,7 @@ const { body } = require('express-validator');
 
 const db               = require('../config/database');
 const validate         = require('../middleware/validate');
-const { authenticate } = require('../middleware/auth');
+const { authenticate, invalidateUserCache } = require('../middleware/auth');
 const { authLimiter }  = require('../middleware/rateLimiter');
 const { logger }       = require('../middleware/logger');
 const { sendMail, passwordResetTemplate } = require('../services/email');
@@ -150,7 +150,9 @@ router.post(
 );
 
 // ── POST /api/v1/auth/logout ─────────────────────────────────────────────────
-router.post('/logout', (req, res) => {
+router.post('/logout', authenticate, async (req, res) => {
+  // Bust Redis user cache so a deactivated account can't re-use the token
+  if (req.user) await invalidateUserCache(req.user.id).catch(() => {});
   res.clearCookie('idu_token', { path: '/' });
   res.json({ message: 'Logged out' });
 });
