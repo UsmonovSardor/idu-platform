@@ -281,10 +281,14 @@ if (!frontendDir) {
     if (/\.(png|jpg|jpeg|gif|ico|svg|webp|woff2?|ttf|eot)$/.test(p)) {
       res.setHeader('Cache-Control', 'public, max-age=604800, immutable');
     } else if (/\.(css|js|mjs|map)$/.test(p)) {
-      // CSS / JS — always revalidate. With ?v=… the URL changes per deploy,
-      // so 304s are cheap but stale serves are catastrophic.
-      res.setHeader('Cache-Control', 'no-cache, must-revalidate');
-      res.setHeader('Pragma', 'no-cache');
+      // CSS / JS with ?v=… — URL is already cache-busted, serve forever immutable.
+      // Without version param — always revalidate (304 is cheap, stale serve is not).
+      if (req.query && req.query.v) {
+        res.setHeader('Cache-Control', 'public, max-age=31536000, immutable');
+      } else {
+        res.setHeader('Cache-Control', 'no-cache, must-revalidate');
+        res.setHeader('Pragma', 'no-cache');
+      }
     } else if (p === '/' || p.endsWith('.html') || p.endsWith('/sw.js') || p === '/sw.js') {
       // HTML / Service Worker — never cache anywhere
       res.setHeader('Cache-Control', 'no-store, no-cache, must-revalidate, max-age=0');

@@ -110,10 +110,34 @@ function loadScript(src) {
  * Load all scripts for the given role in parallel.
  * Returns a Promise that resolves when all scripts are ready.
  */
+function loadStylesheet(href) {
+  if (document.querySelector('link[data-lazy-css="' + href + '"]')) {
+    return Promise.resolve();
+  }
+  return new Promise(function(resolve) {
+    var link = document.createElement('link');
+    link.rel = 'stylesheet'; link.href = href;
+    link.dataset.lazyCss = href;
+    link.onload = resolve; link.onerror = resolve; // non-fatal
+    document.head.appendChild(link);
+  });
+}
+
 window.IDULoader = {
   loadRole: function(role) {
     var scripts = (COMMON_SCRIPTS).concat(ROLE_SCRIPTS[role] || []);
     return Promise.all(scripts.map(loadScript));
+  },
+  // KaTeX — only when math rendering is needed (exams, AI chat formulas)
+  loadKaTeX: function() {
+    var CDN = 'https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/';
+    return loadStylesheet(CDN + 'katex.min.css').then(function() {
+      return loadScript(CDN + 'katex.min.js');
+    });
+  },
+  // DOMPurify — only after login, when chat/forum HTML sanitization is needed
+  loadDOMPurify: function() {
+    return loadScript('https://cdn.jsdelivr.net/npm/dompurify@3.1.5/dist/purify.min.js');
   },
   // Preload QR lib only for teacher/dekanat
   loadQR: function() {

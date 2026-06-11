@@ -37,7 +37,7 @@
       canvas.height = Math.floor(H * dpr);
       ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
       // particle count scales with area, capped for perf
-      var count = Math.min(110, Math.max(36, Math.floor((W * H) / 16000)));
+      var count = Math.min(72, Math.max(28, Math.floor((W * H) / 22000)));
       parts = [];
       for (var i = 0; i < count; i++) {
         parts.push({
@@ -50,7 +50,7 @@
       }
     }
 
-    var LINK = 130; // px distance to draw a connecting line
+    var LINK = 110; // px distance to draw a connecting line
     function frame() {
       if (!running) return;
       ctx.clearRect(0, 0, W, H);
@@ -170,16 +170,25 @@
   function injectRevealStyles() {
     if (document.getElementById('lpFxStyles')) return;
     var css = ''
-      + '.lp-hero-content > *{opacity:0;transform:translateY(22px);animation:lpRise .9s cubic-bezier(.16,.84,.44,1) forwards}'
-      + '.lp-hero-content > *:nth-child(1){animation-delay:.05s}'
-      + '.lp-hero-content > *:nth-child(2){animation-delay:.18s}'
-      + '.lp-hero-content > *:nth-child(3){animation-delay:.31s}'
-      + '.lp-hero-content > *:nth-child(4){animation-delay:.44s}'
-      + '.lp-hero-content > *:nth-child(5){animation-delay:.57s}'
+      // Hero content: Apple spring easing (fast out, slight overshoot feel)
+      + '.lp-hero-content > *{opacity:0;transform:translateY(28px);animation:lpRise .75s cubic-bezier(.22,1,.36,1) forwards;will-change:transform,opacity}'
+      + '.lp-hero-content > *:nth-child(1){animation-delay:.04s}'
+      + '.lp-hero-content > *:nth-child(2){animation-delay:.14s}'
+      + '.lp-hero-content > *:nth-child(3){animation-delay:.24s}'
+      + '.lp-hero-content > *:nth-child(4){animation-delay:.34s}'
+      + '.lp-hero-content > *:nth-child(5){animation-delay:.44s}'
       + '@keyframes lpRise{to{opacity:1;transform:translateY(0)}}'
-      + '.lp-reveal{opacity:0;transform:translateY(34px);transition:opacity .8s ease,transform .8s cubic-bezier(.16,.84,.44,1)}'
-      + '.lp-reveal.in{opacity:1;transform:none}'
-      + '@media(prefers-reduced-motion:reduce){.lp-hero-content > *{opacity:1 !important;transform:none !important;animation:none !important}}';
+      // Scroll reveal — spring easing, compositor-friendly
+      + '.lp-reveal{opacity:0;transform:translateY(36px);transition:opacity .65s cubic-bezier(.22,1,.36,1),transform .65s cubic-bezier(.22,1,.36,1);will-change:transform,opacity}'
+      + '.lp-reveal.in{opacity:1;transform:none;will-change:auto}'
+      // Per-card stagger when parent section becomes visible
+      + '.lp-reveal.in .lp-feat-card:nth-child(1),.lp-reveal.in .lp-stat-card:nth-child(1){transition-delay:.04s}'
+      + '.lp-reveal.in .lp-feat-card:nth-child(2),.lp-reveal.in .lp-stat-card:nth-child(2){transition-delay:.10s}'
+      + '.lp-reveal.in .lp-feat-card:nth-child(3),.lp-reveal.in .lp-stat-card:nth-child(3){transition-delay:.16s}'
+      + '.lp-reveal.in .lp-feat-card:nth-child(4),.lp-reveal.in .lp-stat-card:nth-child(4){transition-delay:.22s}'
+      + '.lp-reveal.in .lp-feat-card:nth-child(5),.lp-reveal.in .lp-stat-card:nth-child(5){transition-delay:.28s}'
+      + '.lp-reveal.in .lp-feat-card:nth-child(6),.lp-reveal.in .lp-stat-card:nth-child(6){transition-delay:.34s}'
+      + '@media(prefers-reduced-motion:reduce){.lp-hero-content > *{opacity:1 !important;transform:none !important;animation:none !important}.lp-reveal{opacity:1 !important;transform:none !important;transition:none !important}}';
     var s = document.createElement('style');
     s.id = 'lpFxStyles'; s.textContent = css;
     document.head.appendChild(s);
