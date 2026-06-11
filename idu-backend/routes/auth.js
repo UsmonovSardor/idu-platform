@@ -15,24 +15,39 @@ const { createOtp, verifyOtp, createResetToken, consumeResetToken } = require('.
 
 const router = express.Router();
 
-const JWT_SECRET     = process.env.JWT_SECRET;
-const JWT_EXPIRES_IN = process.env.JWT_EXPIRES_IN || '8h';
-const IS_PROD        = process.env.NODE_ENV === 'production';
+const JWT_SECRET          = process.env.JWT_SECRET;
+const JWT_EXPIRES_IN      = process.env.JWT_EXPIRES_IN      || '15m';  // short-lived access token
+const REFRESH_EXPIRES_IN  = process.env.REFRESH_EXPIRES_IN  || '7d';   // long-lived refresh token
+const IS_PROD             = process.env.NODE_ENV === 'production';
 
-// Cookie max-age in ms (must match JWT expiry)
-const COOKIE_MAX_AGE = 8 * 60 * 60 * 1000; // 8h
+const ACCESS_COOKIE_AGE  = 15 * 60 * 1000;         // 15 min
+const REFRESH_COOKIE_AGE = 7 * 24 * 60 * 60 * 1000; // 7 days
 
 function createToken(user) {
   return jwt.sign({ sub: user.id, role: user.role }, JWT_SECRET, { expiresIn: JWT_EXPIRES_IN });
 }
 
+function createRefreshToken(user) {
+  return jwt.sign({ sub: user.id, type: 'refresh' }, JWT_SECRET, { expiresIn: REFRESH_EXPIRES_IN });
+}
+
 function setCookieToken(res, token) {
   res.cookie('idu_token', token, {
     httpOnly: true,
-    secure:   IS_PROD,                // HTTPS only in production
+    secure:   IS_PROD,
     sameSite: IS_PROD ? 'strict' : 'lax',
-    maxAge:   COOKIE_MAX_AGE,
+    maxAge:   ACCESS_COOKIE_AGE,
     path:     '/',
+  });
+}
+
+function setRefreshCookie(res, token) {
+  res.cookie('idu_refresh', token, {
+    httpOnly: true,
+    secure:   IS_PROD,
+    sameSite: IS_PROD ? 'strict' : 'lax',
+    maxAge:   REFRESH_COOKIE_AGE,
+    path:     '/api/v1/auth/refresh',
   });
 }
 
@@ -139,8 +154,10 @@ router.post(
 
     await db.query('UPDATE users SET last_login = NOW(), updated_at = NOW() WHERE id = $1', [user.id]);
 
-    const token = createToken(user);
+    const token        = createToken(user);
+    const refreshToken = createRefreshToken(user);
     setCookieToken(res, token);
+    setRefreshCookie(res, refreshToken);
 
     return res.json({
       token,
@@ -149,11 +166,37 @@ router.post(
   }
 );
 
+// ── POST /api/v1/auth/refresh ────────────────────────────────────────────────
+// Issues a new short-lived access token from the long-lived refresh cookie.
+// Called automatically by the frontend when a 401 is encountered.
+router.post('/refresh', async (req, res) => {
+  const refreshToken = req.cookies?.idu_refresh;
+  if (!refreshToken) return res.status(401).json({ error: 'No refresh token' });
+
+  try {
+    const payload = jwt.verify(refreshToken, JWT_SECRET);
+    if (payload.type !== 'refresh') return res.status(401).json({ error: 'Invalid token type' });
+
+    const { rows: [user] } = await db.query(
+      'SELECT id, full_name, login, role, is_active FROM users WHERE id=$1 LIMIT 1',
+      [payload.sub]
+    );
+    if (!user || !user.is_active) return res.status(401).json({ error: 'User inactive' });
+
+    const newToken = createToken(user);
+    setCookieToken(res, newToken);
+    return res.json({ token: newToken });
+  } catch (err) {
+    res.clearCookie('idu_refresh', { path: '/api/v1/auth/refresh' });
+    return res.status(401).json({ error: 'Refresh token expired' });
+  }
+});
+
 // ── POST /api/v1/auth/logout ─────────────────────────────────────────────────
 router.post('/logout', authenticate, async (req, res) => {
-  // Bust Redis user cache so a deactivated account can't re-use the token
   if (req.user) await invalidateUserCache(req.user.id).catch(() => {});
-  res.clearCookie('idu_token', { path: '/' });
+  res.clearCookie('idu_token',    { path: '/' });
+  res.clearCookie('idu_refresh',  { path: '/api/v1/auth/refresh' });
   res.json({ message: 'Logged out' });
 });
 

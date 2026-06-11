@@ -2,10 +2,36 @@
 
 const express = require('express');
 const PDFDocument = require('pdfkit');
+const crypto  = require('crypto');
+const QRCode  = require('qrcode');
+const jwt     = require('jsonwebtoken');
 const db      = require('../config/database');
 const { authenticate, authorize } = require('../middleware/auth');
 
 const router = express.Router();
+
+// ── GET /api/documents/verify — public endpoint, no auth needed ───────────────
+router.get('/verify', async (req, res) => {
+  const { token } = req.query;
+  if (!token) return res.status(400).json({ valid: false, error: 'Token required' });
+
+  try {
+    const payload = jwt.verify(token, process.env.JWT_SECRET);
+    if (payload.type !== 'doc') return res.status(400).json({ valid: false, error: 'Invalid token type' });
+
+    return res.json({
+      valid:      true,
+      doc_id:     payload.doc_id,
+      student:    payload.student,
+      doc_type:   payload.doc_type,
+      issued_at:  new Date(payload.iat * 1000).toISOString(),
+      verified_at: new Date().toISOString(),
+    });
+  } catch (err) {
+    return res.json({ valid: false, error: 'Hujjat tasdiqlanmadi yoki muddati o\'tgan' });
+  }
+});
+
 router.use(authenticate);
 
 // ── GET /api/documents/transcript/:studentId ─────────────────────────────────
@@ -142,13 +168,32 @@ router.get('/transcript/:studentId', async (req, res) => {
     doc.fillColor('#7C3AED').text(`IDU XP: ${xpRow.xp} · Level ${xpRow.level}`, 280, rowY + 8);
   }
 
-  // ── Footer ──
-  const footerY = doc.page.height - 80;
-  doc.rect(50, footerY, W, 50).fill('#F8FAFC').stroke('#E2E8F0');
-  doc.fillColor('#64748B').fontSize(8).font('Helvetica');
-  doc.text('Ushbu hujjat IDU platformasi tomonidan avtomatik yaratilgan.', 60, footerY + 8, { width: W - 20, align: 'center' });
-  doc.text('Rasmiy tasdiqlash uchun dekanat bilan bog\'laning: dekanat@idu.uz', 60, footerY + 20, { width: W - 20, align: 'center' });
-  doc.text(`Hujjat ID: IDU-${Date.now()}-${targetId}`, 60, footerY + 32, { width: W - 20, align: 'center' });
+  // ── Rasmiy hujjat: digital signature + QR ──
+  const docId    = `IDU-TR-${targetId}-${Date.now()}`;
+  const docToken = jwt.sign(
+    { type: 'doc', doc_id: docId, doc_type: 'transcript', student: student.full_name },
+    process.env.JWT_SECRET,
+    { expiresIn: '10y' }
+  );
+  const baseUrl   = process.env.APP_URL || 'https://captivating-growth-production-1d90.up.railway.app';
+  const verifyUrl = `${baseUrl}/api/documents/verify?token=${docToken}`;
+  const qrDataUrl = await QRCode.toDataURL(verifyUrl, { width: 100, margin: 1 });
+  const qrBuffer  = Buffer.from(qrDataUrl.split(',')[1], 'base64');
+
+  const footerY = doc.page.height - 100;
+  doc.rect(50, footerY, W, 70).fill('#F0F9FF').stroke('#BAE6FD');
+
+  // QR code
+  doc.image(qrBuffer, 60, footerY + 8, { width: 55, height: 55 });
+
+  // Footer text
+  doc.fillColor('#1E40AF').fontSize(9).font('Helvetica-Bold');
+  doc.text('Rasmiy hujjat', 125, footerY + 8);
+  doc.fillColor('#475569').fontSize(7.5).font('Helvetica');
+  doc.text(`Hujjat ID: ${docId}`, 125, footerY + 22);
+  doc.text(`Tekshirish: ${baseUrl}/verify`, 125, footerY + 34);
+  doc.text('QR kodni skaner qiling yoki yuqoridagi URL ga o\'ting', 125, footerY + 46);
+  doc.text(`Sana: ${new Date().toLocaleDateString('uz-UZ')}`, 125, footerY + 58);
 
   doc.end();
 });

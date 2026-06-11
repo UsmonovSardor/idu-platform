@@ -1056,7 +1056,7 @@ function _renderRecentGrades(grades) {
     var grade = total >= 86 ? {l:'A',c:'var(--green)'} : total >= 71 ? {l:'B',c:'var(--primary)'} :
                 total >= 56 ? {l:'C',c:'var(--orange)'} : {l:'F',c:'var(--red)'};
     return '<tr>' +
-      '<td style="font-weight:600;max-width:160px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">' + (g.course_name || '—') + '</td>' +
+      '<td style="font-weight:600;max-width:160px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">' + safeHTML(g.course_name || '—') + '</td>' +
       '<td style="text-align:center">' + (g.jn || 0) + '</td>' +
       '<td style="text-align:center">' + (g.on_score || 0) + '</td>' +
       '<td style="text-align:center">' + (g.yn || 0) + '</td>' +
@@ -1216,7 +1216,7 @@ function _renderActivityFeed() {
     var timeStr = diff < 1 ? 'hozir' : diff < 60 ? diff + ' daq oldin' : diff < 1440 ? Math.floor(diff/60) + ' soat' : Math.floor(diff/1440) + ' kun';
     return '<div class="activity-item">' +
       '<div class="activity-dot" style="background:' + (a.color || '#2563eb') + '"></div>' +
-      '<div class="activity-text">' + a.text + '</div>' +
+      '<div class="activity-text">' + safeHTML(a.text) + '</div>' +
       '<div class="activity-time">' + timeStr + '</div>' +
     '</div>';
   }).join('');
@@ -1481,8 +1481,8 @@ async function renderDashboardTasks() {
     return '<div style="padding:12px 0;border-bottom:1px solid #F1F5F9;display:flex;align-items:center;gap:10px">' +
       '<div style="width:8px;height:8px;border-radius:50%;background:' + (urgent ? '#DC2626' : '#D97706') + ';flex-shrink:0"></div>' +
       '<div style="flex:1;min-width:0">' +
-        '<div style="font-size:13px;font-weight:700;color:#1E293B;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">' + (t.title || t.name || 'Vazifa') + '</div>' +
-        '<div style="font-size:11px;color:#94A3B8">' + (t.subject || t.course_name || '') + (daysLeft ? ' · ' + daysLeft : '') + '</div>' +
+        '<div style="font-size:13px;font-weight:700;color:#1E293B;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">' + safeHTML(t.title || t.name || 'Vazifa') + '</div>' +
+        '<div style="font-size:11px;color:#94A3B8">' + safeHTML(t.subject || t.course_name || '') + (daysLeft ? ' · ' + daysLeft : '') + '</div>' +
       '</div>' +
     '</div>';
   }).join('');
@@ -1541,9 +1541,9 @@ async function renderDashboardSchedule(){
     if (m) startMin = parseInt(m[1],10)*60 + parseInt(m[2],10);
     var endMin = startMin + 90;
     var isNow = startMin >= 0 && nowMin >= startMin && nowMin < endMin;
-    var subj = l.subject || l.title || l.course_name || 'Dars';
-    var teacher = l.teacher_name || l.teacher || '';
-    var room = l.room || '';
+    var subj = safeHTML(l.subject || l.title || l.course_name || 'Dars');
+    var teacher = safeHTML(l.teacher_name || l.teacher || '');
+    var room = safeHTML(l.room || '');
     return '<div class="sched-item' + (isNow?' now':'') + '" style="margin-bottom:10px;padding:10px 12px;border-radius:10px;background:' + (isNow?'#EFF6FF':'#F8FAFC') + ';border-left:4px solid ' + (isNow?'#1B4FD8':'#94A3B8') + '">' +
       (isNow ? '<div class="sched-now-label" style="font-size:10px;font-weight:800;color:#1B4FD8;margin-bottom:4px">' + (currentLang==='ru'?'СЕЙЧАС':'HOZIR') + '</div>' : '') +
       '<div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:4px">' +
@@ -1697,13 +1697,13 @@ async function renderDekanatTeachers(){
       return;
     }
     el.innerHTML=teachers.map((t,i)=>{
-      const name = t.full_name || t.name || 'Noma\'lum';
-      const dept = t.department || t.dept || '—';
-      const subjects = Array.isArray(t.subjects) ? t.subjects : [];
-      const groups  = Array.isArray(t.groups)   ? t.groups  : [];
+      const name = safeHTML(t.full_name || t.name || 'Noma\'lum');
+      const dept = safeHTML(t.department || t.dept || '—');
+      const subjects = Array.isArray(t.subjects) ? t.subjects.map(s=>safeHTML(s)) : [];
+      const groups  = Array.isArray(t.groups)   ? t.groups.map(g=>safeHTML(g))   : [];
       const hours   = t.course_count ? t.course_count*4 : (t.hours || '—');
       const rating  = t.rating || 4.5;
-      const ini     = name.split(' ').filter(Boolean).map(x=>x[0]).join('').substring(0,2).toUpperCase();
+      const ini     = (t.full_name || t.name || '').split(' ').filter(Boolean).map(x=>x[0]).join('').substring(0,2).toUpperCase();
       return `<tr>
         <td>${i+1}</td>
         <td><div style="display:flex;align-items:center;gap:8px">
@@ -1711,7 +1711,7 @@ async function renderDekanatTeachers(){
           ${name}
         </div></td>
         <td>${dept}</td>
-        <td>${subjects.length ? subjects.join(', ') : (t.title||'—')}</td>
+        <td>${subjects.length ? subjects.join(', ') : safeHTML(t.title||'—')}</td>
         <td>${groups.length  ? groups.join(', ')   : '—'}</td>
         <td>${hours}</td>
         <td>⭐ ${rating}</td>

@@ -4,7 +4,6 @@ const express  = require('express');
 const { body, param, query } = require('express-validator');
 const multer   = require('multer');
 const path     = require('path');
-const fs       = require('fs');
 
 const db                    = require('../config/database');
 const validate              = require('../middleware/validate');
@@ -15,20 +14,11 @@ const { uploadLimiter }           = require('../middleware/rateLimiter');
 
 const router = express.Router();
 
-// Multer config for avatar uploads
-const storage = multer.diskStorage({
-  destination: (req, file, cb) => {
-    const dir = path.join(process.env.UPLOAD_DIR || './uploads', 'avatars');
-    fs.mkdirSync(dir, { recursive: true });
-    cb(null, dir);
-  },
-  filename: (req, file, cb) => {
-    const ext = path.extname(file.originalname).toLowerCase();
-    cb(null, `avatar_${req.user.id}_${Date.now()}${ext}`);
-  },
-});
+const { uploadFile, deleteFile, generateKey } = require('../services/storage');
+
+// Multer: memory storage → we pipe to S3/R2 (never touches local disk in prod)
 const upload = multer({
-  storage,
+  storage: multer.memoryStorage(),
   limits: { fileSize: (parseInt(process.env.MAX_FILE_SIZE_MB || '5', 10)) * 1024 * 1024 },
   fileFilter: (req, file, cb) => {
     const allowed = ['.jpg', '.jpeg', '.png', '.webp'];
@@ -308,7 +298,17 @@ router.post(
   async (req, res) => {
     if (!req.file) return res.status(400).json({ error: 'No file uploaded' });
 
-    const avatarUrl = `/uploads/avatars/${req.file.filename}`;
+    const ext = path.extname(req.file.originalname).toLowerCase() || '.jpg';
+    const key = generateKey('avatars', ext);
+    const avatarUrl = await uploadFile(req.file.buffer, key, req.file.mimetype);
+
+    // Delete old avatar from storage if it was also cloud-hosted
+    const { rows: [prev] } = await db.query('SELECT avatar_url FROM users WHERE id=$1', [req.params.id]);
+    if (prev?.avatar_url && prev.avatar_url.includes('/avatars/') && !prev.avatar_url.startsWith('/uploads/avatars/')) {
+      const oldKey = prev.avatar_url.replace(/^.*\/avatars\//, 'avatars/');
+      deleteFile(oldKey).catch(() => {});
+    }
+
     await db.query(
       'UPDATE users SET avatar_url = $1, updated_at = NOW() WHERE id = $2',
       [avatarUrl, req.params.id]

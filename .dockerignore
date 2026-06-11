@@ -1,0 +1,12 @@
+**/node_modules
+**/.env
+**/.env.*
+!**/.env.example
+**/__tests__
+**/coverage
+**/.git
+**/.github
+**/npm-debug.log
+**/yarn-error.log
+**/uploads
+**/logs

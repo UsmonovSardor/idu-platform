@@ -3,6 +3,17 @@
 require('dotenv').config();
 require('express-async-errors');
 
+// ── Sentry error tracking (init before anything else) ────────────────────────
+let Sentry = null;
+if (process.env.SENTRY_DSN) {
+  Sentry = require('@sentry/node');
+  Sentry.init({
+    dsn: process.env.SENTRY_DSN,
+    environment: process.env.NODE_ENV || 'development',
+    tracesSampleRate: 0.1, // 10% of requests traced — keeps quota low
+  });
+}
+
 const { validateEnv } = require('./config/env');
 validateEnv(); // fail fast if critical env vars missing
 
@@ -45,6 +56,7 @@ const eventsRoutes      = require('./routes/events');
 const competitionsRoutes= require('./routes/competitions');
 const publicRoutes      = require('./routes/public');
 const tenantsRoutes     = require('./routes/tenants');
+const paymentsRoutes    = require('./routes/payments');
 const { audit }         = require('./middleware/audit');
 const { resolveTenant } = require('./middleware/tenant');
 
@@ -59,6 +71,9 @@ app.use(compress({ threshold: 1024 }));
 
 // ── Security headers (Phase D: CSP enabled) ──────────────────────────────────
 const IS_PROD = process.env.NODE_ENV === 'production';
+
+// Sentry request handler — must be first middleware
+if (Sentry) app.use(Sentry.Handlers.requestHandler());
 
 app.use(helmet({
   // Content-Security-Policy
@@ -239,6 +254,7 @@ const routeMap = [
   ['/competitions',  competitionsRoutes],
   ['/public',        publicRoutes],
   ['/tenants',       tenantsRoutes],
+  ['/payments',      paymentsRoutes],
 ];
 
 routeMap.forEach(([path, router]) => {
@@ -326,6 +342,11 @@ app.get('*', (req, res) => {
   res.sendFile(path.join(frontendDir, 'index.html'));
 });
 
+// ── Sentry error handler (must come before our errorHandler) ─────────────────
+if (Sentry) {
+  app.use(Sentry.Handlers.errorHandler());
+}
+
 // ── Global error handler ──────────────────────────────────────────────────────
 app.use(errorHandler);
 
@@ -340,9 +361,13 @@ runMigrations()
     // Make io accessible in route handlers via app.get('io')
     app.set('io', io);
 
+    // Request timeout — prevents slow/hung requests from holding connections
+    httpServer.setTimeout(30000);        // 30s total request timeout
+    httpServer.headersTimeout = 35000;   // slightly longer than requestTimeout
+
     httpServer.listen(PORT, '0.0.0.0', () => {
       logger.info('═══════════════════════════════════════');
-      logger.info('  IDU Platform v5.0 (multi-tenant)');
+      logger.info('  IDU Platform v6.0');
       logger.info(`  Port     : ${PORT}`);
       logger.info(`  API      : /api/v1/*`);
       logger.info(`  WebSocket: socket.io enabled`);
