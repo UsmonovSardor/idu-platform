@@ -51,8 +51,15 @@
     }
 
     var LINK = 85; // px distance to draw a connecting line
-    function frame() {
+    var _lastFrame = 0;
+    var FPS_INTERVAL = 1000 / 30; // cap at 30fps — plenty for a background effect
+    function frame(now) {
       if (!running) return;
+      raf = requestAnimationFrame(frame);
+      var elapsed = now - _lastFrame;
+      if (elapsed < FPS_INTERVAL) return; // skip frame, not time yet
+      _lastFrame = now - (elapsed % FPS_INTERVAL);
+
       ctx.clearRect(0, 0, W, H);
 
       for (var i = 0; i < parts.length; i++) {
@@ -61,27 +68,26 @@
         if (p.x < 0 || p.x > W) p.vx *= -1;
         if (p.y < 0 || p.y > H) p.vy *= -1;
 
-        // gentle attraction toward mouse (parallax-ish life)
+        // gentle attraction toward mouse
         var mdx = mouse.x - p.x, mdy = mouse.y - p.y;
         var md2 = mdx * mdx + mdy * mdy;
         if (md2 < 14000) { p.x += mdx * 0.0008; p.y += mdy * 0.0008; }
 
-        // node
         ctx.beginPath();
         ctx.arc(p.x, p.y, p.r, 0, Math.PI * 2);
         ctx.fillStyle = 'rgba(37,99,235,0.55)';
         ctx.fill();
       }
 
-      // links
+      // links — O(n²) but n is now max 40
+      ctx.lineWidth = 1;
       for (var a = 0; a < parts.length; a++) {
         for (var b = a + 1; b < parts.length; b++) {
           var dx = parts[a].x - parts[b].x, dy = parts[a].y - parts[b].y;
-          var d = Math.sqrt(dx * dx + dy * dy);
-          if (d < LINK) {
-            var al = (1 - d / LINK) * 0.38;
+          var d2 = dx * dx + dy * dy;
+          if (d2 < LINK * LINK) {
+            var al = (1 - Math.sqrt(d2) / LINK) * 0.38;
             ctx.strokeStyle = 'rgba(59,130,246,' + al.toFixed(3) + ')';
-            ctx.lineWidth = 1;
             ctx.beginPath();
             ctx.moveTo(parts[a].x, parts[a].y);
             ctx.lineTo(parts[b].x, parts[b].y);
@@ -89,17 +95,16 @@
           }
         }
       }
-      raf = requestAnimationFrame(frame);
     }
 
-    function start() { if (!running) { running = true; raf = requestAnimationFrame(frame); } }
+    function start() { if (!running) { running = true; _lastFrame = 0; raf = requestAnimationFrame(frame); } }
     function stop() { running = false; if (raf) cancelAnimationFrame(raf); raf = null; }
 
     size();
     requestAnimationFrame(function () { canvas.style.opacity = '1'; });
 
     // Static single frame for reduced-motion users
-    if (REDUCED) { running = true; frame(); stop(); return; }
+    if (REDUCED) { running = true; frame(performance.now()); stop(); return; }
 
     start();
 
@@ -126,7 +131,7 @@
     window.addEventListener('scroll', function () {
       if (running) stop();
       clearTimeout(_scrollTimer);
-      _scrollTimer = setTimeout(function () { if (!REDUCED) start(); }, 180);
+      _scrollTimer = setTimeout(function () { if (!REDUCED) start(); }, 400);
     }, { passive: true });
   }
 

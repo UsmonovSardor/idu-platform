@@ -1,9 +1,13 @@
 *,*::before,*::after{margin:0;padding:0;box-sizing:border-box}
 
-html,body{
+html{
   width:100%;
   max-width:100%;
-  overflow-x:hidden;
+}
+body{
+  width:100%;
+  max-width:100%;
+  overflow-x:clip;
 }
 :root{
   /* Brand — Obsidian Glass */

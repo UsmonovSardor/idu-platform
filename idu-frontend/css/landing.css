@@ -866,7 +866,7 @@
    MOBILE
 ───────────────────────────────────────────────────────────── */
 @media (max-width: 768px) {
-  html, body { overflow-x: hidden !important; }
+  body { overflow-x: clip !important; }
   .lp-nav {
     height: calc(56px + env(safe-area-inset-top, 0px)) !important;
     padding: env(safe-area-inset-top, 0px) 16px 0 !important;
