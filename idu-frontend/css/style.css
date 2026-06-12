@@ -35,7 +35,9 @@ html,body{
   --font-mono:'Fira Code','Cascadia Code','JetBrains Mono',monospace;
 }
 html{font-size:15px;scroll-behavior:smooth}
-body{font-family:var(--font-body);background:var(--bg);color:var(--text);min-height:100vh;-webkit-font-smoothing:antialiased;-moz-osx-font-smoothing:grayscale;letter-spacing:-0.01em;overscroll-behavior-y:none}
+body{font-family:var(--font-body);background:var(--bg);color:var(--text);min-height:100vh;-webkit-font-smoothing:antialiased;-moz-osx-font-smoothing:grayscale;letter-spacing:-0.01em}
+/* Prevent overscroll bounce only inside the app (not on landing page) */
+#appScreen{overscroll-behavior-y:none}
 /* Momentum scrolling on iOS for scrollable containers */
 .main-content,.modal-body,.overflow-y-auto,[class*="scroll"]{-webkit-overflow-scrolling:touch}
 

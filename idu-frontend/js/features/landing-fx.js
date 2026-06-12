@@ -37,7 +37,7 @@
       canvas.height = Math.floor(H * dpr);
       ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
       // particle count scales with area, capped for perf
-      var count = Math.min(72, Math.max(28, Math.floor((W * H) / 22000)));
+      var count = Math.min(40, Math.max(14, Math.floor((W * H) / 42000)));
       parts = [];
       for (var i = 0; i < count; i++) {
         parts.push({
@@ -50,7 +50,7 @@
       }
     }
 
-    var LINK = 110; // px distance to draw a connecting line
+    var LINK = 85; // px distance to draw a connecting line
     function frame() {
       if (!running) return;
       ctx.clearRect(0, 0, W, H);
