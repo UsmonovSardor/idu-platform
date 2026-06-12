@@ -423,13 +423,16 @@ function logout(){
 
 function showForgotPassword(role) {
   _fpRole = role; _fpUser = null; _fpOtp = null;
-  document.getElementById('fpPhone').value = '';
-  document.getElementById('fpOtpInput').value = '';
-  document.getElementById('fpNewPass').value = '';
-  document.getElementById('fpNewPass2').value = '';
-  document.getElementById('fpError').style.display = 'none';
-  document.getElementById('fpOtpError').style.display = 'none';
-  document.getElementById('fpPassError').style.display = 'none';
+  const fpPhone = document.getElementById('fpPhone');
+  const fpOtp = document.getElementById('fpOtpInput');
+  const fpError = document.getElementById('fpError');
+  const fpOtpError = document.getElementById('fpOtpError');
+  const fpPassError = document.getElementById('fpPassError');
+  if (fpPhone) fpPhone.value = '';
+  if (fpOtp) fpOtp.value = '';
+  if (fpError) fpError.style.display = 'none';
+  if (fpOtpError) fpOtpError.style.display = 'none';
+  if (fpPassError) fpPassError.style.display = 'none';
   showFpStep1();
   document.getElementById('forgotModal').style.display = 'flex';
   document.getElementById('loginModalBg').classList.remove('open');
