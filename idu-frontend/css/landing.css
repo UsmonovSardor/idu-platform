@@ -826,7 +826,6 @@
    ULTRA-WIDE
 ───────────────────────────────────────────────────────────── */
 @media (min-width: 1600px) {
-  .lp-nav       { padding: 0 calc((100% - 1300px) / 2); }
   .lp-hero      { padding: 128px calc((100% - 1300px) / 2) 88px; }
   .lp-stats     { padding: 0 calc((100% - 1300px) / 2) 72px; }
   .lp-stats::before { left: calc((100% - 1300px) / 2); right: calc((100% - 1300px) / 2); }
