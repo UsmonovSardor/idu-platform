@@ -144,7 +144,14 @@ if (window.visualViewport) {
   var _ptrActive = false;
   var PTR_THRESHOLD = 72;
 
+  function isAppMode() {
+    // Only PTR when the app screen is visible (not on landing page)
+    var app = document.getElementById('appScreen');
+    return app && (app.classList.contains('visible') || app.style.display === 'flex');
+  }
+
   document.addEventListener('touchstart', function(e) {
+    if (!isAppMode()) return; // ← don't PTR on landing page
     var mc = document.querySelector('.main-content');
     if (!mc || mc.scrollTop > 0) return;
     _ptrStart = e.touches[0].clientY;
@@ -349,5 +356,44 @@ document.addEventListener('touchstart', function(e) {
   }, 500);
   icon.addEventListener('touchend', function() { clearTimeout(t); }, { once: true });
 }, { passive: true });
+
+// ── Sync mobile nav lang/theme with desktop counterparts ────────
+(function() {
+  // Mirror lang changes to mobile flag/text
+  function syncMobLang() {
+    var flag = document.getElementById('lcFlag');
+    var text = document.getElementById('lcText');
+    var mFlag = document.getElementById('mobLcFlag');
+    var mText = document.getElementById('mobLcText');
+    if (flag && mFlag) mFlag.textContent = flag.textContent;
+    if (text && mText) mText.textContent = text.textContent;
+  }
+  // Observe changes to lcFlag/lcText
+  var lcFlag = document.getElementById('lcFlag');
+  if (lcFlag && window.MutationObserver) {
+    new MutationObserver(syncMobLang).observe(lcFlag.parentElement || document.body, {
+      subtree: true, characterData: true, childList: true
+    });
+  }
+  syncMobLang();
+
+  // Mirror theme changes to mobile theme icon
+  function syncMobTheme() {
+    var icon = document.getElementById('mobThemeIcon');
+    if (!icon) return;
+    var isDark = document.documentElement.dataset.theme !== 'light';
+    // Sun icon for dark mode (click → go light), Moon for light mode (click → go dark)
+    icon.innerHTML = isDark
+      ? '<path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/>'  // moon
+      : '<circle cx="12" cy="12" r="5"/><path d="M12 1v2M12 21v2M4.22 4.22l1.42 1.42M18.36 18.36l1.42 1.42M1 12h2M21 12h2M4.22 19.78l1.42-1.42M18.36 5.64l1.42-1.42" stroke="currentColor" stroke-width="2" stroke-linecap="round" fill="none"/>'; // sun
+  }
+  // Watch data-theme attribute
+  if (window.MutationObserver) {
+    new MutationObserver(syncMobTheme).observe(document.documentElement, {
+      attributes: true, attributeFilter: ['data-theme']
+    });
+  }
+  syncMobTheme();
+})();
 
 console.log('[IDU Mobile] v1.0 loaded — IS_PWA:', IS_PWA, 'IS_IOS:', IS_IOS);

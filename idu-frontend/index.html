@@ -124,10 +124,13 @@ html[data-autologin='1'] #idu-autologin-loader { display:flex; }
 
   <!-- ── PREMIUM NAV ───────────────────────────────────────────── -->
   <nav class="lp-nav" id="hemis-nav">
+    <!-- LEFT: Logo -->
     <div class="lp-nav-logo">
       <div class="lp-logo-mark">IDU</div>
       <span class="lp-logo-text">IDU</span>
     </div>
+
+    <!-- CENTER: Desktop nav links -->
     <div class="lp-nav-links">
       <a class="lp-link" id="nav-about" data-action="openAboutModal">Tizim haqida</a>
       <a class="lp-link" id="nav-features" data-action="openFeatModal">Imkoniyatlar</a>
@@ -142,6 +145,8 @@ html[data-autologin='1'] #idu-autologin-loader { display:flex; }
       </div>
       <a class="lp-link" id="nav-faq" data-action="openFaqModal">FAQ</a>
     </div>
+
+    <!-- RIGHT: Desktop controls -->
     <div class="lp-nav-right">
       <div class="lang-drop" id="langDrop">
         <div class="lang-current lp-lang" onclick="toggleLangDrop()">
@@ -155,7 +160,6 @@ html[data-autologin='1'] #idu-autologin-loader { display:flex; }
           <div class="lang-option" id="lopt-en" onclick="setLang('en')"><span class="lo-flag">🇬🇧</span> English</div>
         </div>
       </div>
-      <!-- Theme switcher -->
       <div class="lp-theme-toggle" id="lpThemeToggle" aria-label="Tema tanlash">
         <button class="lp-theme-btn active" data-t="dark" onclick="setTheme('dark')" title="Qora rejim">
           <svg viewBox="0 0 24 24" fill="currentColor"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/></svg>
@@ -165,6 +169,21 @@ html[data-autologin='1'] #idu-autologin-loader { display:flex; }
         </button>
       </div>
       <button class="lp-cta-btn" data-action="openLoginModal" id="nav-kirish">Kirish →</button>
+    </div>
+
+    <!-- MOBILE ONLY: Clean right cluster (lang + kirish) -->
+    <div class="lp-mob-nav-right">
+      <!-- Compact lang button (flag + code only) -->
+      <button class="lp-mob-lang" onclick="toggleLangDrop()" aria-label="Til tanlash">
+        <span id="mobLcFlag">🇺🇿</span>
+        <span id="mobLcText">UZ</span>
+      </button>
+      <!-- Theme toggle compact -->
+      <button class="lp-mob-theme" id="lpMobTheme" onclick="setTheme(document.documentElement.dataset.theme==='dark'?'light':'dark')" aria-label="Tema">
+        <svg id="mobThemeIcon" viewBox="0 0 24 24" width="16" height="16" fill="currentColor"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/></svg>
+      </button>
+      <!-- Primary CTA -->
+      <button class="lp-mob-cta" data-action="openLoginModal">Kirish →</button>
     </div>
   </nav>
 
