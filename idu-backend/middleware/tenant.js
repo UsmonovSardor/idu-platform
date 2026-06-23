@@ -63,12 +63,24 @@ async function resolveTenant(req, res, next) {
 }
 
 // Bust tenant cache (call after updating tenant config)
+// Uses SCAN instead of KEYS to avoid blocking Redis on large keyspaces.
 async function invalidateTenantCache(slug) {
-  const keys = await redis.getClient().then(c => {
-    if (typeof c.keys === 'function') return c.keys(`tenant:${slug}:*`);
-    return [];
-  }).catch(() => []);
-  if (keys.length) await redis.del(...keys).catch(() => {});
+  try {
+    const client = await redis.getClient();
+    let keys = [];
+    if (typeof client.scan === 'function') {
+      let cursor = '0';
+      do {
+        const [next, batch] = await client.scan(cursor, 'MATCH', `tenant:${slug}:*`, 'COUNT', 100);
+        cursor = next;
+        keys.push(...batch);
+      } while (cursor !== '0');
+    } else if (typeof client.keys === 'function') {
+      // in-memory fallback — safe because it's not a real Redis instance
+      keys = await client.keys(`tenant:${slug}:*`);
+    }
+    if (keys.length) await redis.del(...keys).catch(() => {});
+  } catch (_) {}
 }
 
 module.exports = { resolveTenant, invalidateTenantCache };

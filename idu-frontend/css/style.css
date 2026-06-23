@@ -3653,3 +3653,236 @@ textarea, select {
 .pill-tab{padding:7px 16px;border-radius:9px;font-size:13px;font-weight:600;cursor:pointer;transition:all 0.15s;color:var(--text2);border:none;background:transparent}
 .pill-tab:hover{color:var(--text);background:rgba(59,111,255,0.08)}
 .pill-tab.active{background:var(--white);color:var(--text);box-shadow:var(--shadow-sm)}
+
+/* ════════════════════════════════════════════════════════════════
+   PROFESSIONAL DESIGN SYSTEM UPGRADES v10
+   Glassmorphism · Premium animations · Typography polish
+   ════════════════════════════════════════════════════════════════ */
+
+/* ── GLASSMORPHISM stat cards ─────────────────────────────────── */
+.stat-card{
+  background:linear-gradient(135deg,rgba(255,255,255,0.04) 0%,rgba(255,255,255,0.01) 100%);
+  border:1px solid rgba(99,140,255,0.13);
+  border-radius:18px;
+  transition:transform .22s cubic-bezier(.4,0,.2,1),box-shadow .22s cubic-bezier(.4,0,.2,1);
+  position:relative;overflow:hidden
+}
+.stat-card::after{
+  content:'';position:absolute;inset:0;
+  background:radial-gradient(circle at 80% 20%,rgba(59,111,255,0.07) 0%,transparent 60%);
+  pointer-events:none
+}
+.stat-card:hover{
+  transform:translateY(-4px);
+  box-shadow:0 24px 64px rgba(59,111,255,0.18),0 0 0 1px rgba(99,140,255,0.22)
+}
+
+/* ── GLASSMORPHISM page cards ─────────────────────────────────── */
+.ph-card,.card-glass{
+  background:linear-gradient(135deg,rgba(13,22,41,0.9) 0%,rgba(8,15,32,0.95) 100%);
+  border:1px solid rgba(99,140,255,0.11);
+  border-radius:18px;
+  box-shadow:0 4px 24px rgba(0,0,0,0.3),0 0 0 1px rgba(99,140,255,0.06);
+  transition:box-shadow .2s ease
+}
+.ph-card:hover,.card-glass:hover{
+  box-shadow:0 12px 40px rgba(0,0,0,0.35),0 0 0 1px rgba(99,140,255,0.14)
+}
+
+/* ── FORM INPUT polish ────────────────────────────────────────── */
+.form-input,.form-select,.ai-textarea,.comment-input{
+  background:rgba(255,255,255,0.03);
+  border:1.5px solid rgba(99,140,255,0.15);
+  color:var(--text);
+  transition:border-color .15s,box-shadow .15s,background .15s
+}
+.form-input:focus,.form-select:focus,.ai-textarea:focus,.comment-input:focus{
+  border-color:var(--primary);
+  background:rgba(59,111,255,0.05);
+  box-shadow:0 0 0 3px rgba(59,111,255,0.12),0 1px 4px rgba(0,0,0,0.2);
+  outline:none
+}
+.form-input::placeholder,.ai-textarea::placeholder,.comment-input::placeholder{
+  color:var(--text3)
+}
+
+/* ── MODAL polish ─────────────────────────────────────────────── */
+.modal-box,.modal-inner{
+  background:linear-gradient(180deg,rgba(13,22,41,0.98) 0%,rgba(8,15,32,0.99) 100%);
+  border:1px solid rgba(99,140,255,0.15);
+  box-shadow:0 40px 100px rgba(0,0,0,0.6),0 0 0 1px rgba(99,140,255,0.08)
+}
+.modal-title{
+  font-size:18px;font-weight:800;color:var(--text);
+  letter-spacing:-0.4px;line-height:1.3
+}
+.modal-header{
+  border-bottom:1px solid rgba(99,140,255,0.1);
+  padding-bottom:16px;margin-bottom:20px
+}
+
+/* ── SECTION HEADER ───────────────────────────────────────────── */
+.section-header{
+  display:flex;align-items:center;justify-content:space-between;
+  margin-bottom:16px
+}
+.section-title-row{
+  font-size:15px;font-weight:700;color:var(--text);letter-spacing:-0.3px;
+  display:flex;align-items:center;gap:8px
+}
+.section-title-row::before{
+  content:'';display:inline-block;
+  width:3px;height:16px;border-radius:2px;
+  background:var(--primary-gradient)
+}
+
+/* ── TABLE WRAP scrollbar ─────────────────────────────────────── */
+.table-wrap{
+  overflow-x:auto;border-radius:14px;
+  border:1px solid rgba(99,140,255,0.1)
+}
+.table-wrap::-webkit-scrollbar{height:4px}
+.table-wrap::-webkit-scrollbar-thumb{background:rgba(99,140,255,0.2);border-radius:2px}
+
+/* ── INPUT GROUP focus ring ───────────────────────────────────── */
+.input-group{position:relative}
+.input-group input:focus~.input-label,
+.input-group input:not(:placeholder-shown)~.input-label{
+  transform:translateY(-22px) scale(0.82);
+  color:var(--primary)
+}
+.input-label{
+  position:absolute;left:13px;top:50%;transform:translateY(-50%);
+  transition:all .2s cubic-bezier(.4,0,.2,1);pointer-events:none;
+  color:var(--text3);font-size:14px;transform-origin:left top
+}
+
+/* ── GRADE LETTER colors ──────────────────────────────────────── */
+.grade-a{color:#4ade80;font-weight:800}
+.grade-b{color:#60a5fa;font-weight:800}
+.grade-c{color:#fbbf24;font-weight:800}
+.grade-d{color:#fb923c;font-weight:800}
+.grade-f{color:#f87171;font-weight:800}
+
+/* ── AVATAR ───────────────────────────────────────────────────── */
+.avatar{
+  border-radius:50%;object-fit:cover;
+  border:2px solid rgba(99,140,255,0.2);
+  background:rgba(59,111,255,0.12)
+}
+.avatar-sm {width:32px;height:32px}
+.avatar-md {width:44px;height:44px}
+.avatar-lg {width:60px;height:60px}
+.avatar-xl {width:80px;height:80px}
+
+/* ── NOTIFICATION dot pulse ───────────────────────────────────── */
+.pulse-dot{
+  width:8px;height:8px;border-radius:50%;
+  background:var(--green);display:inline-block;
+  animation:dot-pulse 2s ease-in-out infinite
+}
+@keyframes dot-pulse{
+  0%,100%{transform:scale(1);opacity:1}
+  50%{transform:scale(0.7);opacity:0.5}
+}
+
+/* ── GPA RING ─────────────────────────────────────────────────── */
+.gpa-ring-wrap{display:flex;align-items:center;justify-content:center;position:relative}
+.gpa-ring-val{
+  position:absolute;font-size:22px;font-weight:900;
+  color:var(--text);letter-spacing:-1px
+}
+
+/* ── SKELETON in dark app ─────────────────────────────────────── */
+.skeleton{
+  background:linear-gradient(90deg,
+    rgba(99,140,255,0.06) 0%,
+    rgba(99,140,255,0.13) 40%,
+    rgba(99,140,255,0.06) 80%
+  );
+  background-size:600px 100%;
+  animation:iu-shimmer 1.6s ease-in-out infinite;
+  border-radius:8px
+}
+
+/* ── CHAT MESSAGE bubble ──────────────────────────────────────── */
+.chat-bubble-own{
+  background:linear-gradient(135deg,rgba(59,111,255,0.25),rgba(59,111,255,0.15));
+  border:1px solid rgba(59,111,255,0.25);
+  border-radius:16px 4px 16px 16px
+}
+.chat-bubble-other{
+  background:rgba(255,255,255,0.04);
+  border:1px solid rgba(99,140,255,0.1);
+  border-radius:4px 16px 16px 16px
+}
+
+/* ── ACHIEVEMENT / BADGE card ─────────────────────────────────── */
+.achievement-card{
+  background:linear-gradient(135deg,rgba(234,179,8,0.08),rgba(249,115,22,0.06));
+  border:1px solid rgba(234,179,8,0.2);
+  border-radius:14px;
+  transition:all .2s ease
+}
+.achievement-card:hover{
+  border-color:rgba(234,179,8,0.4);
+  box-shadow:0 8px 24px rgba(234,179,8,0.12)
+}
+
+/* ── QUICK ACTIONS grid ───────────────────────────────────────── */
+.quick-action{
+  display:flex;flex-direction:column;align-items:center;justify-content:center;
+  gap:8px;padding:16px 12px;border-radius:14px;cursor:pointer;
+  background:rgba(255,255,255,0.02);
+  border:1px solid rgba(99,140,255,0.1);
+  transition:all .18s cubic-bezier(.4,0,.2,1);
+  text-align:center
+}
+.quick-action:hover{
+  background:rgba(59,111,255,0.08);
+  border-color:rgba(59,111,255,0.25);
+  transform:translateY(-3px);
+  box-shadow:0 12px 32px rgba(59,111,255,0.15)
+}
+.quick-action-icon{font-size:26px;line-height:1}
+.quick-action-label{font-size:12px;font-weight:600;color:var(--text2)}
+
+/* ── SEARCH INPUT ─────────────────────────────────────────────── */
+.search-wrap{position:relative;display:inline-flex;align-items:center}
+.search-wrap .search-icon{
+  position:absolute;left:12px;color:var(--text3);font-size:15px;pointer-events:none
+}
+.search-input{
+  padding:9px 14px 9px 36px;
+  background:rgba(255,255,255,0.04);
+  border:1.5px solid rgba(99,140,255,0.14);
+  border-radius:10px;color:var(--text);font-size:13.5px;
+  font-family:var(--font-body);
+  transition:border-color .15s,background .15s;outline:none;width:100%
+}
+.search-input:focus{
+  border-color:var(--primary);
+  background:rgba(59,111,255,0.05);
+  box-shadow:0 0 0 3px rgba(59,111,255,0.1)
+}
+.search-input::placeholder{color:var(--text3)}
+
+/* ── TOPBAR iridescent glow on scroll ─────────────────────────── */
+.topnav.scrolled{
+  box-shadow:0 4px 32px rgba(59,111,255,0.15),0 1px 0 rgba(59,111,255,0.2)
+}
+
+/* ── DRAG OVER highlight ──────────────────────────────────────── */
+.drag-over{
+  border-color:var(--primary) !important;
+  background:rgba(59,111,255,0.07) !important;
+  box-shadow:0 0 0 3px rgba(59,111,255,0.2) !important
+}
+
+/* ── PRINT styles ─────────────────────────────────────────────── */
+@media print{
+  .sidebar,.topnav,.mob-nav,.chatFab{display:none!important}
+  .main-content{padding:0!important;margin:0!important}
+  body{background:#fff!important;color:#000!important}
+  .ph-card,.stat-card{border:1px solid #ddd!important;box-shadow:none!important}
+}

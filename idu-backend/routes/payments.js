@@ -9,7 +9,6 @@
  *   CLICK_SERVICE_ID    — Click service ID
  *   CLICK_SECRET_KEY    — Click secret key
  */
-'use strict';
 
 const express  = require('express');
 const crypto   = require('crypto');
@@ -19,14 +18,12 @@ const { authenticate, authorize } = require('../middleware/auth');
 const router = express.Router();
 
 // ── PAYME JSONRPC ─────────────────────────────────────────────────────────────
-// Payme calls our endpoint via HTTPS POST with Basic Auth
-// Docs: https://developer.payme.uz/
-
 const PAYME_ID  = process.env.PAYME_MERCHANT_ID  || '';
 const PAYME_KEY = process.env.PAYME_SECRET_KEY   || '';
 
 function verifyPaymeAuth(req) {
-  const auth = req.headers['authorization'] || '';
+  if (!PAYME_KEY) return false; // unconfigured → reject all
+  const auth    = req.headers['authorization'] || '';
   const encoded = auth.replace('Basic ', '');
   const decoded = Buffer.from(encoded, 'base64').toString('utf8');
   const [, key] = decoded.split(':');
@@ -67,7 +64,7 @@ async function paymeCheckPerform(params, id) {
   if (!invoiceId) return { error: { code: -31050, message: { uz: 'Invoice ID yo\'q', ru: 'Invoice ID не указан' } }, id };
 
   const { rows: [invoice] } = await db.query(
-    'SELECT * FROM invoices WHERE id=$1 AND status=\'pending\'',
+    "SELECT * FROM invoices WHERE id=$1 AND status='pending'",
     [invoiceId]
   );
   if (!invoice) return { error: { code: -31050, message: { uz: 'To\'lov topilmadi', ru: 'Счёт не найден' } }, id };
@@ -89,7 +86,7 @@ async function paymeCreate(params, id) {
   }
 
   const { rows: [invoice] } = await db.query(
-    'SELECT * FROM invoices WHERE id=$1 AND status=\'pending\'', [invoiceId]
+    "SELECT * FROM invoices WHERE id=$1 AND status='pending'", [invoiceId]
   );
   if (!invoice) return { error: { code: -31050, message: { uz: 'Invoice topilmadi' } }, id };
   if (params.amount !== invoice.amount_sum) return { error: { code: -31001, message: 'Wrong amount' }, id };
@@ -101,7 +98,7 @@ async function paymeCreate(params, id) {
     [txnId, invoiceId, params.amount, now, JSON.stringify(params)]
   );
   await db.query(
-    'UPDATE invoices SET provider=\'payme\', provider_txn=$1 WHERE id=$2',
+    "UPDATE invoices SET provider='payme', provider_txn=$1 WHERE id=$2",
     [txnId, invoiceId]
   );
 
@@ -124,7 +121,7 @@ async function paymePerform(params, id) {
     [now, txnId]
   );
   await db.query(
-    'UPDATE invoices SET status=\'paid\', paid_at=NOW() WHERE id=$1',
+    "UPDATE invoices SET status='paid', paid_at=NOW() WHERE id=$1",
     [txn.invoice_id]
   );
 
@@ -147,7 +144,7 @@ async function paymeCancel(params, id) {
     [now, params?.reason, txnId]
   );
   await db.query(
-    'UPDATE invoices SET status=\'cancelled\' WHERE id=$1',
+    "UPDATE invoices SET status='cancelled' WHERE id=$1",
     [txn.invoice_id]
   );
 
@@ -201,14 +198,12 @@ async function paymeStatement(params, id) {
 }
 
 // ── CLICK UZ ─────────────────────────────────────────────────────────────────
-// Click calls our endpoint for Prepare (action=0) and Complete (action=1)
-// Docs: https://docs.click.uz/
-
 const CLICK_MERCHANT = process.env.CLICK_MERCHANT_ID || '';
 const CLICK_SERVICE  = process.env.CLICK_SERVICE_ID  || '';
 const CLICK_SECRET   = process.env.CLICK_SECRET_KEY  || '';
 
 function verifyClickSign(body, action) {
+  if (!CLICK_SECRET) return false; // unconfigured → reject all
   const signString = body.click_trans_id + body.service_id + CLICK_SECRET +
     body.merchant_trans_id + (action === 1 ? body.merchant_prepare_id : '') +
     body.amount + body.action + body.sign_time;
@@ -216,7 +211,7 @@ function verifyClickSign(body, action) {
 }
 
 router.post('/click', async (req, res) => {
-  const body = req.body;
+  const body   = req.body;
   const action = parseInt(body?.action, 10);
 
   if (!verifyClickSign(body, action)) {
@@ -233,7 +228,6 @@ router.post('/click', async (req, res) => {
     return res.json({ error: -2, error_note: 'Incorrect parameter amount' });
   }
 
-  // action=0: Prepare
   if (action === 0) {
     if (invoice.status !== 'pending') return res.json({ error: -4, error_note: 'Already paid or cancelled' });
 
@@ -245,53 +239,55 @@ router.post('/click', async (req, res) => {
     );
 
     return res.json({
-      click_trans_id:   body.click_trans_id,
-      merchant_trans_id: invoiceId,
+      click_trans_id:      body.click_trans_id,
+      merchant_trans_id:   invoiceId,
       merchant_prepare_id: txn.rows[0].id,
-      error: 0,
-      error_note: 'Success',
+      error:               0,
+      error_note:          'Success',
     });
   }
 
-  // action=1: Complete
   if (action === 1) {
     if (body.error < 0) {
-      await db.query('UPDATE invoices SET status=\'cancelled\' WHERE id=$1', [invoice.id]);
+      await db.query("UPDATE invoices SET status='cancelled' WHERE id=$1", [invoice.id]);
       return res.json({ click_trans_id: body.click_trans_id, merchant_trans_id: invoiceId, error: 0, error_note: 'Cancelled' });
     }
 
-    await db.query('UPDATE invoices SET status=\'paid\', paid_at=NOW(), provider=\'click\', provider_txn=$1 WHERE id=$2',
+    await db.query(
+      "UPDATE invoices SET status='paid', paid_at=NOW(), provider='click', provider_txn=$1 WHERE id=$2",
       [body.click_trans_id, invoice.id]
     );
     await db.query(
-      `UPDATE click_transactions SET action=1, error=0 WHERE click_trans_id=$1`,
+      'UPDATE click_transactions SET action=1, error=0 WHERE click_trans_id=$1',
       [body.click_trans_id]
     );
 
     return res.json({
-      click_trans_id:   body.click_trans_id,
-      merchant_trans_id: invoiceId,
+      click_trans_id:      body.click_trans_id,
+      merchant_trans_id:   invoiceId,
       merchant_confirm_id: invoice.id,
-      error: 0,
-      error_note: 'Success',
+      error:               0,
+      error_note:          'Success',
     });
   }
 
   res.json({ error: -8, error_note: 'Bad action' });
 });
 
-// ── INVOICE CRUD (for app) ────────────────────────────────────────────────────
+// ── INVOICE CRUD (authenticated routes below) ─────────────────────────────────
 router.use(authenticate);
 
 // POST /api/payments/invoices — create invoice (dekanat/admin)
 router.post('/invoices', authorize('dekanat', 'admin'), async (req, res) => {
-  const { student_id, amount_sum, purpose, expires_days = 3 } = req.body;
+  const { student_id, amount_sum, purpose } = req.body;
+  const expires_days = Math.max(1, Math.min(365, parseInt(req.body.expires_days ?? 3, 10)));
+
   if (!student_id || !amount_sum || !purpose) {
     return res.status(400).json({ error: 'student_id, amount_sum, purpose required' });
   }
   const { rows: [inv] } = await db.query(
     `INSERT INTO invoices (student_id, amount_sum, purpose, expires_at, tenant_id)
-     VALUES ($1,$2,$3,NOW()+($4||' days')::interval,$5) RETURNING *`,
+     VALUES ($1,$2,$3, NOW() + ($4 * INTERVAL '1 day'), $5) RETURNING *`,
     [student_id, amount_sum, purpose, expires_days, req.user.tenant_id || null]
   );
   res.json(inv);
@@ -316,15 +312,19 @@ router.get('/invoices', authorize('dekanat', 'admin'), async (req, res) => {
   res.json(rows);
 });
 
-// GET /api/payments/payme-link/:invoiceId — generate checkout URL
+// GET /api/payments/payme-link/:invoiceId — generate Payme checkout URL
 router.get('/payme-link/:invoiceId', async (req, res) => {
   const { rows: [inv] } = await db.query('SELECT * FROM invoices WHERE id=$1', [req.params.invoiceId]);
   if (!inv) return res.status(404).json({ error: 'Invoice not found' });
 
-  // Payme checkout URL: encode merchant ID + params as base64
-  const params = `m=${PAYME_ID};ac.invoice_id=${inv.id};a=${inv.amount_sum}`;
+  // Students may only fetch links for their own invoices
+  if (req.user.role === 'student' && inv.student_id !== req.user.id) {
+    return res.status(403).json({ error: 'Access denied' });
+  }
+
+  const params  = `m=${PAYME_ID};ac.invoice_id=${inv.id};a=${inv.amount_sum}`;
   const encoded = Buffer.from(params).toString('base64');
-  const url = `https://checkout.paycom.uz/${encoded}`;
+  const url     = `https://checkout.paycom.uz/${encoded}`;
   res.json({ url, invoice: inv });
 });
 

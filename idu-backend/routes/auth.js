@@ -158,6 +158,15 @@ router.post(
     const refreshToken = createRefreshToken(user);
     setCookieToken(res, token);
     setRefreshCookie(res, refreshToken);
+    // Non-sensitive presence hint so the frontend can optimistically show the
+    // app spinner without touching httpOnly cookies (which JS can't read).
+    res.cookie('idu_hint', '1', {
+      httpOnly: false,
+      secure:   IS_PROD,
+      sameSite: IS_PROD ? 'strict' : 'lax',
+      maxAge:   REFRESH_COOKIE_AGE,
+      path:     '/',
+    });
 
     return res.json({
       token,
@@ -195,8 +204,9 @@ router.post('/refresh', async (req, res) => {
 // ── POST /api/v1/auth/logout ─────────────────────────────────────────────────
 router.post('/logout', authenticate, async (req, res) => {
   if (req.user) await invalidateUserCache(req.user.id).catch(() => {});
-  res.clearCookie('idu_token',    { path: '/' });
-  res.clearCookie('idu_refresh',  { path: '/api/v1/auth/refresh' });
+  res.clearCookie('idu_token',   { path: '/' });
+  res.clearCookie('idu_refresh', { path: '/api/v1/auth/refresh' });
+  res.clearCookie('idu_hint',    { path: '/' });
   res.json({ message: 'Logged out' });
 });
 
@@ -356,26 +366,28 @@ router.patch(
   }
 );
 
-// ── PATCH /api/v1/auth/password — change own password ────────────────────────
-router.patch(
-  '/password',
-  authenticate,
-  [
-    body('currentPassword').isString().isLength({ min: 4, max: 100 }),
-    body('newPassword').isString().isLength({ min: 6, max: 100 }),
-  ],
-  validate,
-  async (req, res) => {
-    const { rows } = await db.query('SELECT password_hash FROM users WHERE id = $1', [req.user.id]);
-    if (!rows.length) return res.status(404).json({ error: 'User topilmadi' });
-    const bcrypt = require('bcryptjs');
-    const ok = await bcrypt.compare(req.body.currentPassword, rows[0].password_hash);
-    if (!ok) return res.status(400).json({ error: 'Joriy parol noto\'g\'ri' });
-    const newHash = await bcrypt.hash(req.body.newPassword, 12);
-    await db.query('UPDATE users SET password_hash = $1, updated_at = NOW() WHERE id = $2', [newHash, req.user.id]);
-    res.json({ ok: true });
-  }
-);
+// PATCH /auth/password — alias for /change-password (same strong validation)
+router.patch('/password', authenticate, [
+  body('currentPassword').isLength({ min: 1, max: 128 }).withMessage('Current password required'),
+  body('newPassword')
+    .isLength({ min: 8, max: 128 }).withMessage('At least 8 characters')
+    .matches(/[A-Z]/).withMessage('Must contain uppercase')
+    .matches(/[a-z]/).withMessage('Must contain lowercase')
+    .matches(/[0-9]/).withMessage('Must contain number'),
+], validate, async (req, res) => {
+  const { currentPassword, newPassword } = req.body;
+  const { rows } = await db.query('SELECT password_hash FROM users WHERE id=$1 LIMIT 1', [req.user.id]);
+  if (!rows.length) return res.status(404).json({ error: 'User topilmadi' });
+  const { password_hash } = rows[0];
+  if (!password_hash?.startsWith('$2')) return res.status(401).json({ error: 'Wrong password' });
+  const isCorrect = await bcrypt.compare(currentPassword, password_hash);
+  if (!isCorrect) return res.status(401).json({ error: 'Joriy parol noto\'g\'ri' });
+  const isSame = await bcrypt.compare(newPassword, password_hash);
+  if (isSame) return res.status(400).json({ error: 'New password must differ from current' });
+  const hash = await bcrypt.hash(newPassword, 12);
+  await db.query('UPDATE users SET password_hash=$1, updated_at=NOW() WHERE id=$2', [hash, req.user.id]);
+  res.json({ ok: true });
+});
 
 // ── POST /api/v1/auth/forgot/send ────────────────────────────────────────────
 // Step 1 — Request OTP via email/login.  Rate-limited to 3/hour per login.
@@ -406,7 +418,7 @@ router.post(
       logger.warn('[auth/forgot] email error: %s', e.message)
     );
 
-    res.json({ message: "Email yuborildi. Iltimos pochtangizni tekshiring.", userId: user.id });
+    res.json({ message: "Email yuborildi. Iltimos pochtangizni tekshiring." });
   }
 );
 

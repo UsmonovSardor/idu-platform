@@ -28,7 +28,12 @@ const poolConfig = process.env.DATABASE_URL
 
 const pool = new Pool(poolConfig);
 pool.on('connect', () => { if (process.env.NODE_ENV !== 'test') console.log('[DB] connected'); });
-pool.on('error', (err) => { console.error('[DB] error:', err.message); process.exit(1); });
+pool.on('error', (err) => {
+  // Log but don't exit — Railway will restart the container if needed.
+  // Calling process.exit(1) here kills the server for every transient
+  // network hiccup, causing unnecessary downtime.
+  console.error('[DB] idle client error:', err.message);
+});
 async function query(text, params) { return pool.query(text, params); }
 async function getClient() { return pool.connect(); }
 module.exports = { query, getClient, pool };

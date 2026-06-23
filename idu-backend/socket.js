@@ -20,12 +20,22 @@ const { registerBattle } = require('./services/battle');
 
 const JWT_SECRET  = process.env.JWT_SECRET;
 const IS_PROD     = process.env.NODE_ENV === 'production';
+const ROOT_DOMAIN = process.env.ROOT_DOMAIN || '';
 
 // Per-user per-room message rate limit: max 10 messages per 10 seconds
 const _msgRateMap = new Map(); // `${userId}:${roomId}` → { count, resetAt }
-function checkMsgRate(userId, roomId) {
-  const key = `${userId}:${roomId}`;
+
+// Purge stale rate-limit buckets every hour to prevent memory leak on long-running servers
+setInterval(() => {
   const now = Date.now();
+  for (const [key, bucket] of _msgRateMap) {
+    if (now > bucket.resetAt + 3_600_000) _msgRateMap.delete(key);
+  }
+}, 3_600_000);
+
+function checkMsgRate(userId, roomId) {
+  const key    = `${userId}:${roomId}`;
+  const now    = Date.now();
   const bucket = _msgRateMap.get(key);
   if (!bucket || now > bucket.resetAt) {
     _msgRateMap.set(key, { count: 1, resetAt: now + 10000 });
@@ -80,6 +90,9 @@ async function setupSocket(httpServer) {
           'http://127.0.0.1:5500',
         ]);
         if (allowed.has(origin) || /\.railway\.app$/.test(origin)) return cb(null, true);
+        if (ROOT_DOMAIN && (origin.endsWith('.' + ROOT_DOMAIN) || origin === 'https://' + ROOT_DOMAIN)) {
+          return cb(null, true);
+        }
         cb(new Error('Not allowed by CORS'));
       },
       credentials: true,

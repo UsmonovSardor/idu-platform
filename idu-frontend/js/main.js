@@ -1,48 +1,50 @@
 // ══════════════════════════════════════════════════════════════════
-//  v18 — API CLIENT + SECURITY LAYER
+//  v19 — API CLIENT + SECURITY LAYER
 // ══════════════════════════════════════════════════════════════════
 
 // API_BASE is set by core/config.js from <meta name="api-base"> — preserve it.
-// This is a safety fallback only if config.js somehow didn't run first.
 if (typeof API_BASE === 'undefined') var API_BASE = window.location.origin + '/api/v1';
 
-// JWT token storage (memory-first, localStorage fallback for "remember me")
+// JWT is kept in memory only — NOT in localStorage.
+// The server issues an httpOnly cookie on login, so localStorage isn't needed
+// for persistence. Storing tokens in localStorage exposes them to XSS.
 var _apiToken = null;
 
-// Load saved JWT on page load
-// Load saved JWT on page load
+// Clean up any token previously stored in localStorage by older versions
 (function() {
-  try {
-    var saved = localStorage.getItem('idu_jwt');
-
-    if (saved) {
-      _apiToken = saved;
-    }
-  } catch(e) {}
+  try { localStorage.removeItem('idu_jwt'); } catch(_) {}
 })();
 
-// 🔥 TOKEN SAVE (REAL LOGIN)
+// TOKEN SAVE — memory only; api.js setToken keeps its own copy in sync
 function saveAuthToken(token) {
   if (!token) return;
-
   _apiToken = token;
-
-  localStorage.setItem('idu_jwt', token);
-  
-
-  if (typeof setToken === 'function') {
-    setToken(token);
-  }
+  if (typeof setToken === 'function') setToken(token);
 }
 
-// 🔥 REAL BACKEND LOGIN
+// Force re-login when the refresh token expires
+window.addEventListener('idu:session-expired', function() {
+  _apiToken = null;
+  currentUser = null;
+  currentRole = null;
+  try { sessionStorage.clear(); } catch(_) {}
+  var app  = document.getElementById('appScreen');
+  var auth = document.getElementById('authScreen');
+  if (app)  { app.style.display  = 'none'; app.classList.remove('visible'); }
+  if (auth) { auth.style.display = ''; }
+  var errMsg = document.getElementById('mainLoginErrorMsg');
+  var errEl  = document.getElementById('mainLoginError');
+  if (errMsg) errMsg.textContent = 'Sessiya muddati tugadi. Qayta kiring.';
+  if (errEl)  errEl.classList.add('show');
+});
+
+// REAL BACKEND LOGIN
 async function loginWithBackend(role, login, password) {
   const res = await fetch(API_BASE + '/auth/login', {
-    method: 'POST',
-    headers: {
-      'Content-Type': 'application/json'
-    },
-  body: JSON.stringify({ login: login, password: password })
+    method:      'POST',
+    headers:     { 'Content-Type': 'application/json' },
+    credentials: 'include',
+    body:        JSON.stringify({ login: login, password: password }),
   });
 
   const data = await res.json().catch(() => ({}));
@@ -243,6 +245,118 @@ function recordFailedAttempt(key) {
     _lsSet('idu_lockout_' + key, JSON.stringify(data));
   } catch(e) {}
 }
+
+// ════════════════════════════════════
+//  TOAST NOTIFICATION SYSTEM
+// ════════════════════════════════════
+(function() {
+  var container = document.getElementById('idu-toast-container');
+  if (!container) {
+    container = document.createElement('div');
+    container.id = 'idu-toast-container';
+    document.body.appendChild(container);
+  }
+
+  var ICONS = { success: '✓', error: '✕', info: 'ℹ', warn: '⚠' };
+
+  window.showToast = function(msg, type, title, duration) {
+    type     = type     || 'info';
+    duration = duration || 4000;
+
+    var toast = document.createElement('div');
+    toast.className = 'idu-toast idu-toast-' + type;
+    toast.innerHTML =
+      '<span class="idu-toast-icon">' + (ICONS[type] || 'ℹ') + '</span>' +
+      '<div class="idu-toast-body">' +
+        (title ? '<div class="idu-toast-title">' + title + '</div>' : '') +
+        '<div class="idu-toast-msg">' + msg + '</div>' +
+      '</div>' +
+      '<button class="idu-toast-close" aria-label="Yopish">×</button>';
+
+    container.appendChild(toast);
+
+    function close() {
+      toast.classList.add('closing');
+      setTimeout(function() { if (toast.parentNode) toast.parentNode.removeChild(toast); }, 280);
+    }
+    toast.querySelector('.idu-toast-close').addEventListener('click', close);
+    setTimeout(close, duration);
+  };
+
+  window.showSuccess = function(msg, title) { showToast(msg, 'success', title || 'Muvaffaqiyatli'); };
+  window.showError   = function(msg, title) { showToast(msg, 'error',   title || 'Xatolik', 6000); };
+  window.showInfo    = function(msg, title) { showToast(msg, 'info',    title); };
+  window.showWarn    = function(msg, title) { showToast(msg, 'warn',    title || 'Diqqat', 5000); };
+})();
+
+// ════════════════════════════════════
+//  ANIMATED COUNTER
+// ════════════════════════════════════
+function animateCounter(el, target, duration) {
+  if (!el) return;
+  duration = duration || 1000;
+  var start   = Date.now();
+  var startVal = parseInt(el.textContent, 10) || 0;
+  function tick() {
+    var elapsed  = Date.now() - start;
+    var progress = Math.min(elapsed / duration, 1);
+    var ease     = 1 - Math.pow(1 - progress, 3); // easeOutCubic
+    el.textContent = Math.round(startVal + ease * (target - startVal));
+    if (progress < 1) requestAnimationFrame(tick);
+  }
+  requestAnimationFrame(tick);
+}
+
+// Auto-animate all [data-counter] elements when they enter viewport
+(function() {
+  if (!('IntersectionObserver' in window)) return;
+  var obs = new IntersectionObserver(function(entries) {
+    entries.forEach(function(e) {
+      if (e.isIntersecting) {
+        var el = e.target;
+        var target = parseInt(el.getAttribute('data-counter'), 10);
+        if (!isNaN(target)) animateCounter(el, target);
+        obs.unobserve(el);
+      }
+    });
+  }, { threshold: 0.3 });
+  function initCounters() {
+    document.querySelectorAll('[data-counter]').forEach(function(el) { obs.observe(el); });
+  }
+  if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', initCounters);
+  } else {
+    initCounters();
+  }
+})();
+
+// ════════════════════════════════════
+//  LAZY IMAGE LOADER
+// ════════════════════════════════════
+(function() {
+  if (!('IntersectionObserver' in window)) return;
+  var imgObs = new IntersectionObserver(function(entries) {
+    entries.forEach(function(e) {
+      if (e.isIntersecting) {
+        var img = e.target;
+        img.src = img.getAttribute('data-src');
+        img.addEventListener('load',  function() { img.classList.add('loaded'); });
+        img.addEventListener('error', function() { img.classList.add('loaded'); });
+        imgObs.unobserve(img);
+      }
+    });
+  }, { rootMargin: '100px' });
+  function initLazyImages() {
+    document.querySelectorAll('img[data-src]').forEach(function(img) { imgObs.observe(img); });
+  }
+  if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', initLazyImages);
+  } else {
+    initLazyImages();
+  }
+  // Re-scan after dynamic content loads
+  window.initLazyImages = initLazyImages;
+})();
 
 // ════════════════════════════════════
 //  OTP TIZIMI (ikki bosqichli tasdiqlash)

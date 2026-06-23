@@ -12,20 +12,15 @@ const { cache } = require('../middleware/cache');
 
 router.use(authenticate);
 
-// ── AI grading via Anthropic claude-haiku (Phase D: prompt injection hardened) ──
+// ── AI grading via Anthropic claude-haiku ─────────────────────────────────────
 async function gradeWithAI(title, description, answer) {
   const key = process.env.ANTHROPIC_API_KEY;
   if (!key) return { ball: 0, xatolar: 'AI kalit topilmadi', ijobiy: '', tavsiyalar: '' };
 
-  // Sanitize ALL user-controlled text before embedding in prompt.
-  // title + description come from the DB (teacher-entered), but could have been
-  // injected at creation time, so sanitize them too.
   const safeTitle  = promptSanitize(title,       200);
   const safeDesc   = promptSanitize(description, 500);
   const safeAnswer = promptSanitize(answer,      3000);
 
-  // Use a structured prompt with XML-style delimiters so the model can
-  // clearly distinguish data from instructions (reduces injection risk).
   const prompt =
     `Sen IDU universitetining professional o'qituvchisisiz. ` +
     `Quyidagi vazifaga berilgan talaba javobini baholang.\n\n` +
@@ -57,18 +52,16 @@ async function gradeWithAI(title, description, answer) {
 
     const data   = await resp.json();
     const text   = data.content?.[0]?.text || '{}';
-    // Extract only the JSON object — reject anything outside braces
     const match  = text.match(/\{[\s\S]*\}/);
     const parsed = match ? JSON.parse(match[0]) : {};
     return {
       ball:        Math.min(100, Math.max(0, Number(parsed.ball) || 0)),
-      xatolar:     String(parsed.xatolar   || '').slice(0, 500),
-      ijobiy:      String(parsed.ijobiy    || '').slice(0, 500),
-      tavsiyalar:  String(parsed.tavsiyalar|| '').slice(0, 500),
+      xatolar:     String(parsed.xatolar    || '').slice(0, 500),
+      ijobiy:      String(parsed.ijobiy     || '').slice(0, 500),
+      tavsiyalar:  String(parsed.tavsiyalar || '').slice(0, 500),
     };
   } catch (e) {
     logger.error('gradeWithAI error:', e.message);
-    // Never expose internal error detail to client
     return { ball: 0, xatolar: 'AI baholash vaqtincha mavjud emas', ijobiy: '', tavsiyalar: '' };
   }
 }
@@ -85,38 +78,26 @@ router.post(
   ],
   validate,
   async (req, res) => {
-  const { assignment_id, content } = req.body;
-  if (!assignment_id || !content) return res.status(400).json({ error: 'assignment_id va content majburiy' });
+    const { assignment_id, content } = req.body;
 
-  const asgn = await db.query('SELECT * FROM assignments WHERE id=$1', [assignment_id]);
-  if (!asgn.rows[0]) return res.status(404).json({ error: 'Vazifa topilmadi' });
+    const asgn = await db.query('SELECT * FROM assignments WHERE id=$1', [assignment_id]);
+    if (!asgn.rows[0]) return res.status(404).json({ error: 'Vazifa topilmadi' });
 
-  const ai = await gradeWithAI(asgn.rows[0].title, asgn.rows[0].description, content);
+    const ai = await gradeWithAI(asgn.rows[0].title, asgn.rows[0].description, content);
 
-  const exists = await db.query(
-    'SELECT id FROM submissions WHERE assignment_id=$1 AND student_id=$2',
-    [assignment_id, req.user.id]
-  );
-
-  let row;
-  if (exists.rows[0]) {
-    const r = await db.query(
-      `UPDATE submissions SET content=$1, ai_ball=$2, ai_xatolar=$3, ai_ijobiy=$4,
-       ai_tavsiyalar=$5, updated_at=NOW(), teacher_score=NULL, teacher_comment=NULL
-       WHERE assignment_id=$6 AND student_id=$7 RETURNING *`,
-      [content, ai.ball, ai.xatolar, ai.ijobiy, ai.tavsiyalar, assignment_id, req.user.id]
-    );
-    row = r.rows[0];
-  } else {
-    const r = await db.query(
+    // ON CONFLICT eliminates the SELECT→INSERT race condition that allowed
+    // duplicate submissions when two requests arrived in parallel.
+    const { rows: [row] } = await db.query(
       `INSERT INTO submissions (assignment_id, student_id, content, ai_ball, ai_xatolar, ai_ijobiy, ai_tavsiyalar)
-       VALUES ($1,$2,$3,$4,$5,$6,$7) RETURNING *`,
+       VALUES ($1,$2,$3,$4,$5,$6,$7)
+       ON CONFLICT (assignment_id, student_id) DO UPDATE
+         SET content=$3, ai_ball=$4, ai_xatolar=$5, ai_ijobiy=$6, ai_tavsiyalar=$7,
+             updated_at=NOW(), teacher_score=NULL, teacher_comment=NULL
+       RETURNING *`,
       [assignment_id, req.user.id, content, ai.ball, ai.xatolar, ai.ijobiy, ai.tavsiyalar]
     );
-    row = r.rows[0];
-  }
 
-  res.status(201).json({ submission: row, ai_feedback: ai });
+    res.status(201).json({ submission: row, ai_feedback: ai });
   }
 );
 
@@ -135,7 +116,7 @@ router.get('/my', cache(60), async (req, res) => {
 });
 
 // GET /api/submissions/assignment/:id — ustoz barcha javoblarni ko'radi
-router.get('/assignment/:id', authorize('teacher','dekanat','admin'), async (req, res) => {
+router.get('/assignment/:id', authorize('teacher', 'dekanat', 'admin'), async (req, res) => {
   const { rows } = await db.query(
     `SELECT s.*, u.full_name AS student_name, st.group_name
      FROM submissions s
@@ -149,22 +130,33 @@ router.get('/assignment/:id', authorize('teacher','dekanat','admin'), async (req
 });
 
 // PATCH /api/submissions/:id/approve — ustoz yakuniy baho qo'yadi
-router.patch('/:id/approve', authorize('teacher','dekanat','admin'), async (req, res) => {
+// Teachers may only grade submissions belonging to their own assignments.
+router.patch('/:id/approve', authorize('teacher', 'dekanat', 'admin'), async (req, res) => {
   const { teacher_score, teacher_comment } = req.body;
   if (teacher_score === undefined || teacher_score === null) {
     return res.status(400).json({ error: 'teacher_score majburiy' });
   }
   const score = Math.min(100, Math.max(0, Number(teacher_score)));
-  const { rows, rowCount } = await db.query(
-    `UPDATE submissions
-     SET teacher_score=$1, teacher_comment=$2, updated_at=NOW()
-     WHERE id=$3
-     RETURNING *`,
-    [score, teacher_comment || null, req.params.id]
-  );
-  if (!rowCount) return res.status(404).json({ error: 'Topilmadi' });
 
-  // Fire-and-forget email notification to student
+  // For teachers: verify the submission belongs to one of their assignments
+  let ownershipClause = '';
+  const params = [score, teacher_comment || null, req.params.id];
+  if (req.user.role === 'teacher') {
+    ownershipClause = `AND EXISTS (
+      SELECT 1 FROM assignments a WHERE a.id = s.assignment_id AND a.teacher_id = $4
+    )`;
+    params.push(req.user.id);
+  }
+
+  const { rows, rowCount } = await db.query(
+    `UPDATE submissions s
+     SET teacher_score=$1, teacher_comment=$2, updated_at=NOW()
+     WHERE s.id=$3 ${ownershipClause}
+     RETURNING *`,
+    params
+  );
+  if (!rowCount) return res.status(404).json({ error: 'Topilmadi yoki ruxsat yo\'q' });
+
   const sub = rows[0];
   db.query(
     `SELECT u.full_name, u.email, a.title AS assignment_title
