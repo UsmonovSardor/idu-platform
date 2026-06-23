@@ -921,3 +921,214 @@ html {
 @media (min-width: 1440px) {
   .page { max-width: 1400px; }
 }
+
+/* ════════════════════════════════════════════════════════════════
+   MOBILE NATIVE EXPERIENCE — v1.0
+   ════════════════════════════════════════════════════════════════ */
+
+/* ── Touch active state (faster than :hover) ─────────────────── */
+@media (hover: none) {
+  .btn:active, ._tap.btn             { transform: scale(0.96) !important; transition-duration: 0.06s !important; }
+  .stat-card:active, ._tap.stat-card { transform: scale(0.98) !important; box-shadow: none !important; }
+  .erp-tile:active, ._tap.erp-tile   { transform: scale(0.96) !important; }
+  .quick-action:active               { transform: scale(0.95) !important; }
+  .mob-nav-item:active               { opacity: 0.7; }
+  .sidebar-item:active               { opacity: 0.75; }
+}
+
+/* ── Bottom nav — native app polish ──────────────────────────── */
+@media (max-width: 768px) {
+  .mob-nav {
+    position: fixed; bottom: 0; left: 0; right: 0;
+    height: calc(var(--mob-nav-h, 60px) + var(--safe-bottom, 0px));
+    padding-bottom: var(--safe-bottom, 0px);
+    display: flex;
+    z-index: 300;
+    backdrop-filter: blur(28px) saturate(180%);
+    -webkit-backdrop-filter: blur(28px) saturate(180%);
+    background: rgba(3, 8, 22, 0.94);
+    border-top: 1px solid rgba(99,140,255,0.12);
+  }
+  .mob-nav-item {
+    flex: 1; display: flex; flex-direction: column; align-items: center;
+    justify-content: center; gap: 3px; cursor: pointer;
+    transition: opacity 0.15s; padding: 6px 4px 4px;
+    position: relative; min-height: 44px;
+    -webkit-tap-highlight-color: transparent;
+  }
+  .mob-nav-icon {
+    width: 42px; height: 36px;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 21px; border-radius: 12px;
+    transition: all 0.22s cubic-bezier(0.34,1.56,0.64,1);
+  }
+  .mob-nav-label {
+    font-size: 10px; font-weight: 600; line-height: 1;
+    color: var(--text3, #3D587A);
+    transition: color 0.15s;
+  }
+  .mob-nav-item.active .mob-nav-icon {
+    background: rgba(59,111,255,0.15);
+    color: var(--primary, #3B6FFF);
+    transform: translateY(-3px);
+  }
+  .mob-nav-item.active .mob-nav-label { color: var(--primary, #3B6FFF); }
+  .mob-nav-badge {
+    position: absolute; top: 2px; right: calc(50% - 24px);
+    background: var(--red, #EF4444); color: white;
+    font-size: 9px; font-weight: 800;
+    min-width: 16px; height: 16px; border-radius: 8px;
+    padding: 0 4px; display: flex; align-items: center; justify-content: center;
+    border: 2px solid var(--bg, #020714);
+  }
+}
+
+/* ── Modal bottom sheet — native feel ───────────────────────────── */
+@media (max-width: 768px) {
+  .modal-bg { align-items: flex-end; }
+  .modal-box {
+    border-radius: 24px 24px 0 0;
+    padding-bottom: calc(24px + var(--safe-bottom, 0px));
+  }
+  @keyframes mIn {
+    from { opacity: 0; transform: translateY(100%); }
+    to   { opacity: 1; transform: translateY(0); }
+  }
+  .modal-drag-handle {
+    width: 40px; height: 4px; border-radius: 2px;
+    background: rgba(99,140,255,0.2);
+    margin: -8px auto 18px; display: block;
+  }
+}
+
+/* ── Pull-to-Refresh indicator ───────────────────────────────── */
+#idu-ptr {
+  position: fixed;
+  top: 0; left: 50%; transform: translateX(-50%) translateY(-56px);
+  z-index: 9000;
+  background: var(--white, #0d1629);
+  border: 1px solid rgba(99,140,255,0.2);
+  border-radius: 100px;
+  padding: 8px 16px;
+  display: flex; align-items: center; gap: 10px;
+  opacity: 0; transition: opacity 0.2s;
+  box-shadow: 0 8px 32px rgba(0,0,0,0.35);
+  pointer-events: none;
+}
+#idu-ptr .ptr-spinner {
+  width: 18px; height: 18px;
+  border: 2px solid rgba(99,140,255,0.2);
+  border-top-color: var(--primary, #3B6FFF);
+  border-radius: 50%;
+}
+#idu-ptr.ptr-loading .ptr-spinner { animation: iu-spin 0.7s linear infinite; }
+#idu-ptr .ptr-text { font-size: 12px; font-weight: 600; color: var(--text2, #6B8BB5); white-space: nowrap; }
+#idu-ptr.ptr-ready .ptr-text { color: var(--primary, #3B6FFF); }
+
+/* ── PWA Install banner ──────────────────────────────────────── */
+#idu-install-banner {
+  position: fixed;
+  bottom: calc(var(--mob-nav-h, 60px) + var(--safe-bottom, 0px) + 12px);
+  left: 12px; right: 12px;
+  z-index: 8000;
+  background: linear-gradient(135deg, rgba(13,22,41,0.98), rgba(8,15,32,0.99));
+  border: 1px solid rgba(99,140,255,0.25);
+  border-radius: 18px;
+  padding: 14px 16px;
+  display: flex; align-items: center; gap: 12px;
+  box-shadow: 0 24px 64px rgba(0,0,0,0.5);
+  backdrop-filter: blur(24px);
+  transform: translateY(24px);
+  opacity: 0;
+  transition: transform 0.35s cubic-bezier(0.16,1,0.3,1), opacity 0.25s ease;
+}
+#idu-install-banner.visible { transform: translateY(0); opacity: 1; }
+#idu-install-banner .install-icon { font-size: 32px; flex-shrink: 0; }
+#idu-install-banner .install-body { flex: 1; }
+#idu-install-banner .install-title { font-size: 13.5px; font-weight: 700; color: var(--text, #EDF2FF); }
+#idu-install-banner .install-sub   { font-size: 11.5px; color: var(--text2, #6B8BB5); margin-top: 2px; }
+#idu-install-banner .install-btn-yes {
+  background: var(--primary-gradient, linear-gradient(135deg,#3B6FFF,#22D3EE));
+  color: white; border: none; border-radius: 10px;
+  font-size: 12.5px; font-weight: 700; padding: 8px 14px; cursor: pointer;
+  white-space: nowrap; flex-shrink: 0;
+}
+#idu-install-banner .install-btn-no {
+  background: none; border: none; color: var(--text3, #3D587A);
+  font-size: 18px; cursor: pointer; padding: 4px; flex-shrink: 0;
+}
+
+/* ── Swipe feedback — sidebar pull handle ────────────────────── */
+@media (max-width: 768px) {
+  .sidebar::after {
+    content: '';
+    position: absolute; right: -12px; top: 50%; transform: translateY(-50%);
+    width: 4px; height: 48px; border-radius: 2px;
+    background: rgba(99,140,255,0.2);
+  }
+}
+
+/* ── App-like topbar on mobile ───────────────────────────────── */
+@media (max-width: 768px) {
+  .topnav-logo-text { display: none; }
+  .topnav-logo { margin-right: 6px; }
+  /* Page title centered in topnav */
+  .topnav-page-title {
+    position: absolute; left: 50%; transform: translateX(-50%);
+    font-size: 15px; font-weight: 700; color: var(--text, #EDF2FF);
+    white-space: nowrap; pointer-events: none; max-width: 180px;
+    overflow: hidden; text-overflow: ellipsis;
+  }
+}
+
+/* ── Selection prevention on UI elements ─────────────────────── */
+.btn, .mob-nav-item, .sidebar-item, .erp-tile, .stat-card,
+.card, .quick-action, .topnav {
+  -webkit-user-select: none;
+  user-select: none;
+}
+
+/* ── Smooth momentum for scrollable areas ────────────────────── */
+.main-content, .modal-box, .sidebar, .ai-chat-wrap, .table-wrap {
+  -webkit-overflow-scrolling: touch;
+  scroll-behavior: smooth;
+}
+
+/* ── Touch callout prevention on images ──────────────────────── */
+img { -webkit-touch-callout: none; }
+
+/* ── iOS safe area spacer for bottom nav ─────────────────────── */
+.mob-nav-spacer { height: var(--safe-bottom, 0px); display: none; }
+@media (max-width: 768px) { .mob-nav-spacer { display: block; } }
+
+/* ── Keyboard open adjustments ──────────────────────────────── */
+body.keyboard-open .mob-nav { display: none; }
+body.keyboard-open .main-content {
+  padding-bottom: 16px !important;
+}
+
+/* ── Extra small screens (iPhone SE, small Android) ─────────── */
+@media (max-width: 375px) {
+  .stats-grid, .stats-grid-3 { grid-template-columns: 1fr 1fr !important; gap: 8px !important; }
+  .stat-card-val { font-size: 20px !important; }
+  .page { padding: 10px !important; }
+  .mob-nav-label { display: none; }
+  .mob-nav-icon  { width: 44px; height: 44px; font-size: 22px; }
+}
+
+/* ── Landscape mobile ────────────────────────────────────────── */
+@media (max-width: 896px) and (orientation: landscape) and (max-height: 430px) {
+  .mob-nav { display: none !important; }
+  .topnav  { display: none !important; }
+  .main-content { padding-bottom: 8px !important; padding-top: 8px !important; }
+  .sidebar {
+    width: 220px; padding-bottom: 0;
+    transform: translateX(-100%);
+  }
+  .sidebar.mobile-open { transform: translateX(0); }
+}
+
+/* ── Long-press context menu prevention ──────────────────────── */
+@media (hover: none) {
+  a, button, [role="button"] { -webkit-touch-callout: none; }
+}
