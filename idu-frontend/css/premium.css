@@ -1022,9 +1022,11 @@ h1,h2,h3,h4,h5,.ph-title,.stat-card-val,.page-title,.modal-title {
    FOOTER — Professional multi-column layout
 ───────────────────────────────────────────────────────────── */
 .lp-footer {
+  display: block !important;
   background: #0A1020 !important;
   border-top: 1px solid rgba(255,255,255,0.06) !important;
   padding: 0 !important;
+  overflow: hidden !important;
 }
 .lp-footer-inner {
   display: flex;
