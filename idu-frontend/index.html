@@ -52,7 +52,7 @@
 <link rel="stylesheet" href="css/responsive.css?v=20260623a">
 <link rel="stylesheet" href="css/landing.css?v=20260612b">
 <link rel="stylesheet" href="css/utilities.css?v=20260623a">
-<link rel="stylesheet" href="css/premium.css?v=20260629b">
+<link rel="stylesheet" href="css/premium.css?v=20260629c">
 <!-- KaTeX + DOMPurify loaded lazily after login — saves ~90KB on landing page -->
 <!-- socket.io loaded lazily in launchApp() after login — not needed on landing page -->
 <script>
@@ -662,28 +662,65 @@ html[data-autologin='1'] #idu-autologin-loader { display:flex; }
     </div>
   </div>
 
-  <!-- ── CTA SECTION ────────────────────────────────────────────── -->
+  <!-- ── CTA SECTION — minimal strip ─────────────────────────── -->
   <div class="lp-cta-section">
-    <div class="lp-cta-orb"></div>
     <div class="lp-cta-content">
-      <h2 class="lp-cta-title" id="cta-title">Bugun boshlang</h2>
+      <p class="lp-cta-kicker" id="cta-kicker">Hoziroq boshlang</p>
+      <h2 class="lp-cta-title" id="cta-title">Tizimga ulaning</h2>
       <p class="lp-cta-sub" id="cta-sub">Login va parol universitet administratsiyasi tomonidan beriladi.</p>
-      <button class="lp-primary-btn lp-cta-main-btn" data-action="openLoginModal">
-        <span id="cta-btn-text">Tizimga kirish</span>
-        <svg width="18" height="18" viewBox="0 0 24 24" fill="none"><path d="M5 12h14M12 5l7 7-7 7" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
-      </button>
+      <div class="lp-cta-actions">
+        <button class="lp-primary-btn lp-cta-main-btn" data-action="openLoginModal">
+          <span id="cta-btn-text">Kirish</span>
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none"><path d="M5 12h14M12 5l7 7-7 7" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
+        </button>
+        <div class="lp-cta-trust">
+          <span>🔒 Xavfsiz</span>
+          <span>·</span>
+          <span>24/7 ishlaydi</span>
+          <span>·</span>
+          <span>4 200+ talaba</span>
+        </div>
+      </div>
     </div>
   </div>
 
   <!-- ── FOOTER ─────────────────────────────────────────────────── -->
   <footer class="lp-footer">
-    <div class="lp-footer-logo"><div class="lp-logo-mark" style="width:28px;height:28px;font-size:11px">IDU</div><span style="font-weight:700;color:#0F172A">IDU Platform</span></div>
-    <div class="lp-footer-links">
-      <a id="ft-about" data-action="openAboutModal">Tizim haqida</a>
-      <a id="ft-feat" data-action="openFeatModal">Imkoniyatlar</a>
-      <a id="ft-faq" data-action="openFaqModal">FAQ</a>
+    <div class="lp-footer-inner">
+
+      <!-- Brand -->
+      <div class="lp-footer-brand">
+        <div class="lp-footer-logo-row">
+          <div class="lp-logo-mark lp-footer-mark">IDU</div>
+          <span class="lp-footer-name">IDU Platform</span>
+        </div>
+        <p class="lp-footer-tagline" id="ft-tagline">Zamonaviy universitetlar uchun raqamli ta'lim platformasi</p>
+        <p class="lp-footer-copy" id="ft-copy">© 2026 IDU. Barcha huquqlar himoyalangan.</p>
+      </div>
+
+      <!-- Links columns -->
+      <div class="lp-footer-cols">
+        <div class="lp-footer-col">
+          <div class="lp-footer-col-title" id="ft-col1-title">Platforma</div>
+          <a class="lp-footer-link" id="ft-about" data-action="openAboutModal">Tizim haqida</a>
+          <a class="lp-footer-link" id="ft-feat" data-action="openFeatModal">Imkoniyatlar</a>
+          <a class="lp-footer-link" id="ft-faq" data-action="openFaqModal">FAQ</a>
+        </div>
+        <div class="lp-footer-col">
+          <div class="lp-footer-col-title" id="ft-col2-title">Yo'riqnomalar</div>
+          <a class="lp-footer-link" onclick="openGuideModal('student')">Talabalar</a>
+          <a class="lp-footer-link" onclick="openGuideModal('teacher')">O'qituvchilar</a>
+          <a class="lp-footer-link" onclick="openGuideModal('dekanat')">Dekanat</a>
+        </div>
+        <div class="lp-footer-col">
+          <div class="lp-footer-col-title" id="ft-col3-title">Texnologiyalar</div>
+          <span class="lp-footer-tech"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="2" y="3" width="20" height="14" rx="2"/><path d="M8 21h8M12 17v4"/></svg>PWA</span>
+          <span class="lp-footer-tech"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>SSL</span>
+          <span class="lp-footer-tech"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="3"/><path d="M12 1v4M12 19v4M4.22 4.22l2.83 2.83M16.95 16.95l2.83 2.83M1 12h4M19 12h4M4.22 19.78l2.83-2.83M16.95 7.05l2.83-2.83"/></svg>AI Tutor</span>
+        </div>
+      </div>
+
     </div>
-    <div class="lp-footer-copy" id="ft-copy">© 2026 IDU. Barcha huquqlar himoyalangan.</div>
   </footer>
 
 </div>
