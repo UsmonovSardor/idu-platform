@@ -52,7 +52,7 @@
 <link rel="stylesheet" href="css/responsive.css?v=20260623a">
 <link rel="stylesheet" href="css/landing.css?v=20260612b">
 <link rel="stylesheet" href="css/utilities.css?v=20260623a">
-<link rel="stylesheet" href="css/premium.css?v=20260629e">
+<link rel="stylesheet" href="css/premium.css?v=20260629f">
 <!-- KaTeX + DOMPurify loaded lazily after login — saves ~90KB on landing page -->
 <!-- socket.io loaded lazily in launchApp() after login — not needed on landing page -->
 <script>
@@ -646,18 +646,84 @@ html[data-autologin='1'] #idu-autologin-loader { display:flex; }
       <div class="lp-feat-tag">Fikrlar</div>
       <h2 class="lp-feat-title">Foydalanuvchilar <span class="lp-feat-title-accent">nima deydi</span></h2>
     </div>
-    <div class="lp-test-grid">
-      <div class="lp-test-card">
-        <p class="lp-test-quote">"AI Tutor tunda ham savollarimga javob beradi — o'qish ancha oson bo'ldi."</p>
-        <div class="lp-test-author"><div class="lp-test-avatar" style="background:linear-gradient(135deg,#1e40af,#2563eb)">AN</div><div><div class="lp-test-name">Aliyev Nodir</div><div class="lp-test-role">Talaba, 3-kurs</div></div></div>
-      </div>
-      <div class="lp-test-card">
-        <p class="lp-test-quote">"Baho va davomatni real-vaqtda kiritaman, hisobotlar avtomatik tayyorlanadi."</p>
-        <div class="lp-test-author"><div class="lp-test-avatar" style="background:linear-gradient(135deg,#065f46,#34d399)">MK</div><div><div class="lp-test-name">Mavlonova Kamola</div><div class="lp-test-role">O'qituvchi</div></div></div>
-      </div>
-      <div class="lp-test-card">
-        <p class="lp-test-quote">"Dekanat ishini to'liq raqamlashtirdik — qog'ozbozlik yo'qoldi."</p>
-        <div class="lp-test-author"><div class="lp-test-avatar" style="background:linear-gradient(135deg,#1e3a8a,#3b82f6)">RS</div><div><div class="lp-test-name">Rahimov Sardor</div><div class="lp-test-role">Dekan o'rinbosari</div></div></div>
+    <!-- Infinite marquee — hover to pause -->
+    <div class="lp-marquee-wrap">
+      <div class="lp-marquee-track">
+
+        <!-- ── Set A ── -->
+        <div class="lp-test-card">
+          <div class="lp-tc-stars">★★★★★</div>
+          <p class="lp-test-quote">"AI Tutor tunda ham savollarimga javob beradi — o'qish ancha oson bo'ldi."</p>
+          <div class="lp-test-author"><div class="lp-test-avatar" style="background:linear-gradient(135deg,#1e40af,#2563eb)">AN</div><div><div class="lp-test-name">Aliyev Nodir</div><div class="lp-test-role">Talaba, 3-kurs</div></div></div>
+        </div>
+        <div class="lp-test-card">
+          <div class="lp-tc-stars">★★★★★</div>
+          <p class="lp-test-quote">"Baho va davomatni real-vaqtda kiritaman, hisobotlar avtomatik tayyorlanadi."</p>
+          <div class="lp-test-author"><div class="lp-test-avatar" style="background:linear-gradient(135deg,#065f46,#34d399)">MK</div><div><div class="lp-test-name">Mavlonova Kamola</div><div class="lp-test-role">O'qituvchi</div></div></div>
+        </div>
+        <div class="lp-test-card">
+          <div class="lp-tc-stars">★★★★★</div>
+          <p class="lp-test-quote">"Dekanat ishini to'liq raqamlashtirdik — qog'ozbozlik yo'qoldi."</p>
+          <div class="lp-test-author"><div class="lp-test-avatar" style="background:linear-gradient(135deg,#1e3a8a,#3b82f6)">RS</div><div><div class="lp-test-name">Rahimov Sardor</div><div class="lp-test-role">Dekan o'rinbosari</div></div></div>
+        </div>
+        <div class="lp-test-card">
+          <div class="lp-tc-stars">★★★★★</div>
+          <p class="lp-test-quote">"Investor sifatida moliyaviy hisobotlarni real vaqtda ko'rish — judayam qulay."</p>
+          <div class="lp-test-author"><div class="lp-test-avatar" style="background:linear-gradient(135deg,#7c3aed,#a78bfa)">TM</div><div><div class="lp-test-name">Toshmatov Mansur</div><div class="lp-test-role">Investor</div></div></div>
+        </div>
+        <div class="lp-test-card">
+          <div class="lp-tc-stars">★★★★★</div>
+          <p class="lp-test-quote">"Dars jadvalim har doim qo'limda. Imtihon sanalarini unutmayman endi."</p>
+          <div class="lp-test-author"><div class="lp-test-avatar" style="background:linear-gradient(135deg,#0f766e,#2dd4bf)">ZK</div><div><div class="lp-test-name">Zokirova Kamola</div><div class="lp-test-role">Talaba, 2-kurs</div></div></div>
+        </div>
+        <div class="lp-test-card">
+          <div class="lp-tc-stars">★★★★★</div>
+          <p class="lp-test-quote">"Guruh davomati bir klik — qog'ozsiz ishlash orzum edi, mana amalga oshdi."</p>
+          <div class="lp-test-author"><div class="lp-test-avatar" style="background:linear-gradient(135deg,#c2410c,#fb923c)">BJ</div><div><div class="lp-test-name">Baxtiyorov Jasur</div><div class="lp-test-role">O'qituvchi</div></div></div>
+        </div>
+        <div class="lp-test-card">
+          <div class="lp-tc-stars">★★★★★</div>
+          <p class="lp-test-quote">"Dekan o'rinbosari sifatida barcha ma'lumotlarga tezda kirishim mumkin."</p>
+          <div class="lp-test-avatar-row"><div class="lp-test-author"><div class="lp-test-avatar" style="background:linear-gradient(135deg,#1d4ed8,#60a5fa)">FN</div><div><div class="lp-test-name">Fayzullayev Nodir</div><div class="lp-test-role">Dekan o'rinbosari</div></div></div></div>
+        </div>
+
+        <!-- ── Set B (duplicate for seamless loop) ── -->
+        <div class="lp-test-card">
+          <div class="lp-tc-stars">★★★★★</div>
+          <p class="lp-test-quote">"AI Tutor tunda ham savollarimga javob beradi — o'qish ancha oson bo'ldi."</p>
+          <div class="lp-test-author"><div class="lp-test-avatar" style="background:linear-gradient(135deg,#1e40af,#2563eb)">AN</div><div><div class="lp-test-name">Aliyev Nodir</div><div class="lp-test-role">Talaba, 3-kurs</div></div></div>
+        </div>
+        <div class="lp-test-card">
+          <div class="lp-tc-stars">★★★★★</div>
+          <p class="lp-test-quote">"Baho va davomatni real-vaqtda kiritaman, hisobotlar avtomatik tayyorlanadi."</p>
+          <div class="lp-test-author"><div class="lp-test-avatar" style="background:linear-gradient(135deg,#065f46,#34d399)">MK</div><div><div class="lp-test-name">Mavlonova Kamola</div><div class="lp-test-role">O'qituvchi</div></div></div>
+        </div>
+        <div class="lp-test-card">
+          <div class="lp-tc-stars">★★★★★</div>
+          <p class="lp-test-quote">"Dekanat ishini to'liq raqamlashtirdik — qog'ozbozlik yo'qoldi."</p>
+          <div class="lp-test-author"><div class="lp-test-avatar" style="background:linear-gradient(135deg,#1e3a8a,#3b82f6)">RS</div><div><div class="lp-test-name">Rahimov Sardor</div><div class="lp-test-role">Dekan o'rinbosari</div></div></div>
+        </div>
+        <div class="lp-test-card">
+          <div class="lp-tc-stars">★★★★★</div>
+          <p class="lp-test-quote">"Investor sifatida moliyaviy hisobotlarni real vaqtda ko'rish — judayam qulay."</p>
+          <div class="lp-test-author"><div class="lp-test-avatar" style="background:linear-gradient(135deg,#7c3aed,#a78bfa)">TM</div><div><div class="lp-test-name">Toshmatov Mansur</div><div class="lp-test-role">Investor</div></div></div>
+        </div>
+        <div class="lp-test-card">
+          <div class="lp-tc-stars">★★★★★</div>
+          <p class="lp-test-quote">"Dars jadvalim har doim qo'limda. Imtihon sanalarini unutmayman endi."</p>
+          <div class="lp-test-author"><div class="lp-test-avatar" style="background:linear-gradient(135deg,#0f766e,#2dd4bf)">ZK</div><div><div class="lp-test-name">Zokirova Kamola</div><div class="lp-test-role">Talaba, 2-kurs</div></div></div>
+        </div>
+        <div class="lp-test-card">
+          <div class="lp-tc-stars">★★★★★</div>
+          <p class="lp-test-quote">"Guruh davomati bir klik — qog'ozsiz ishlash orzum edi, mana amalga oshdi."</p>
+          <div class="lp-test-author"><div class="lp-test-avatar" style="background:linear-gradient(135deg,#c2410c,#fb923c)">BJ</div><div><div class="lp-test-name">Baxtiyorov Jasur</div><div class="lp-test-role">O'qituvchi</div></div></div>
+        </div>
+        <div class="lp-test-card">
+          <div class="lp-tc-stars">★★★★★</div>
+          <p class="lp-test-quote">"Dekan o'rinbosari sifatida barcha ma'lumotlarga tezda kirishim mumkin."</p>
+          <div class="lp-test-author"><div class="lp-test-avatar" style="background:linear-gradient(135deg,#1d4ed8,#60a5fa)">FN</div><div><div class="lp-test-name">Fayzullayev Nodir</div><div class="lp-test-role">Dekan o'rinbosari</div></div></div>
+        </div>
+
       </div>
     </div>
   </div>

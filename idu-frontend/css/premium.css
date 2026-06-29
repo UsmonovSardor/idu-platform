@@ -1128,6 +1128,128 @@ h1,h2,h3,h4,h5,.ph-title,.stat-card-val,.page-title,.modal-title {
 }
 
 /* ─────────────────────────────────────────────────────────────
+   TESTIMONIALS — Infinite horizontal marquee
+───────────────────────────────────────────────────────────── */
+
+/* Hide old grid layout */
+.lp-test-grid { display: none !important; }
+
+/* Marquee wrapper — masks overflow with fade edges */
+.lp-marquee-wrap {
+  position: relative;
+  width: 100%;
+  overflow: hidden;
+  margin-top: 40px;
+  padding: 8px 0 16px;
+}
+.lp-marquee-wrap::before,
+.lp-marquee-wrap::after {
+  content: '';
+  position: absolute;
+  top: 0; bottom: 0;
+  width: 120px;
+  z-index: 2;
+  pointer-events: none;
+}
+.lp-marquee-wrap::before {
+  left: 0;
+  background: linear-gradient(to right, var(--bg, #fff) 0%, transparent 100%);
+}
+.lp-marquee-wrap::after {
+  right: 0;
+  background: linear-gradient(to left, var(--bg, #fff) 0%, transparent 100%);
+}
+
+/* Scrolling track */
+.lp-marquee-track {
+  display: flex;
+  gap: 20px;
+  width: max-content;
+  animation: lp-marquee-scroll 38s linear infinite;
+  will-change: transform;
+}
+.lp-marquee-wrap:hover .lp-marquee-track {
+  animation-play-state: paused;
+}
+@keyframes lp-marquee-scroll {
+  from { transform: translateX(0); }
+  to   { transform: translateX(-50%); }
+}
+
+/* Individual card */
+.lp-marquee-wrap .lp-test-card {
+  flex-shrink: 0 !important;
+  width: 300px !important;
+  padding: 24px 24px 20px !important;
+  background: #fff !important;
+  border: 1px solid rgba(0,0,0,0.07) !important;
+  border-radius: 16px !important;
+  box-shadow: 0 2px 12px rgba(0,0,0,0.06) !important;
+  display: flex !important;
+  flex-direction: column !important;
+  gap: 14px !important;
+  transition: box-shadow 0.2s, transform 0.2s !important;
+  cursor: default;
+}
+.lp-marquee-wrap .lp-test-card:hover {
+  box-shadow: 0 8px 28px rgba(0,0,0,0.10) !important;
+  transform: translateY(-3px) !important;
+}
+
+/* Stars */
+.lp-tc-stars {
+  font-size: 14px;
+  color: #f59e0b;
+  letter-spacing: 1px;
+  line-height: 1;
+}
+
+/* Quote text */
+.lp-marquee-wrap .lp-test-quote {
+  font-size: 13.5px !important;
+  line-height: 1.65 !important;
+  color: #374151 !important;
+  margin: 0 !important;
+  flex: 1;
+  font-style: normal !important;
+}
+
+/* Author row */
+.lp-marquee-wrap .lp-test-author {
+  display: flex !important;
+  align-items: center !important;
+  gap: 10px !important;
+}
+.lp-marquee-wrap .lp-test-avatar {
+  width: 36px !important;
+  height: 36px !important;
+  border-radius: 50% !important;
+  display: flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  font-size: 12px !important;
+  font-weight: 700 !important;
+  color: #fff !important;
+  flex-shrink: 0 !important;
+}
+.lp-marquee-wrap .lp-test-name {
+  font-size: 13px !important;
+  font-weight: 700 !important;
+  color: #111827 !important;
+}
+.lp-marquee-wrap .lp-test-role {
+  font-size: 11.5px !important;
+  color: #9ca3af !important;
+  font-weight: 500 !important;
+}
+
+/* Reduced motion — stop animation */
+@media (prefers-reduced-motion: reduce) {
+  .lp-marquee-track { animation: none !important; }
+  .lp-marquee-wrap { overflow-x: auto; }
+}
+
+/* ─────────────────────────────────────────────────────────────
    REDUCED MOTION — Respect user preference
 ───────────────────────────────────────────────────────────── */
 @media (prefers-reduced-motion: reduce) {
