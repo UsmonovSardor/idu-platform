@@ -937,8 +937,9 @@ h1,h2,h3,h4,h5,.ph-title,.stat-card-val,.page-title,.modal-title {
 }
 
 /* ─────────────────────────────────────────────────────────────
-   CTA SECTION — Minimal, clean strip
+   CTA SECTION — Hidden (removed from design)
 ───────────────────────────────────────────────────────────── */
+.lp-cta-section { display: none !important; }
 .lp-cta-section {
   margin: 0 0 0 !important;
   border-radius: 0 !important;
