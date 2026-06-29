@@ -1364,8 +1364,9 @@ h1,h2,h3,h4,h5,.ph-title,.stat-card-val,.page-title,.modal-title {
     display: flex !important;
     flex-direction: column;
     align-items: stretch;
-    min-height: calc(100svh - 56px);
-    padding: 28px 24px calc(32px + env(safe-area-inset-bottom, 0px));
+    min-height: 100svh;
+    /* Push content below fixed navbar */
+    padding: calc(56px + env(safe-area-inset-top,0px) + 28px) 24px calc(32px + env(safe-area-inset-bottom,0px));
     box-sizing: border-box;
   }
   [data-theme="dark"]  .lp-mob-login-screen { background: #060D1A; }
@@ -1388,28 +1389,32 @@ h1,h2,h3,h4,h5,.ph-title,.stat-card-val,.page-title,.modal-title {
   }
   .lp-mls-name {
     font-size: 15px; font-weight: 800; letter-spacing: -0.02em;
+    color: #0f1e38;
   }
-  [data-theme="dark"]  .lp-mls-name { color: #ECF2FF; }
-  [data-theme="light"] .lp-mls-name { color: #0f1e38; }
+  [data-theme="dark"]  .lp-mls-name { color: #ECF2FF !important; }
+  [data-theme="light"] .lp-mls-name { color: #0f1e38 !important; }
   .lp-mls-uni {
     font-size: 11px; font-weight: 500; letter-spacing: 0.01em;
+    color: rgba(71,85,105,0.55);
   }
-  [data-theme="dark"]  .lp-mls-uni { color: rgba(148,163,184,0.5); }
-  [data-theme="light"] .lp-mls-uni { color: rgba(71,85,105,0.55); }
+  [data-theme="dark"]  .lp-mls-uni { color: rgba(148,163,184,0.5) !important; }
+  [data-theme="light"] .lp-mls-uni { color: rgba(71,85,105,0.55) !important; }
 
   /* Title */
   .lp-mls-title {
     font-size: 28px; font-weight: 800; letter-spacing: -0.04em;
     line-height: 1.1; margin: 0 0 8px;
+    color: #0f1e38; /* light default */
   }
-  [data-theme="dark"]  .lp-mls-title { color: #ECF2FF; }
-  [data-theme="light"] .lp-mls-title { color: #0f1e38; }
+  [data-theme="dark"]  .lp-mls-title { color: #ECF2FF !important; }
+  [data-theme="light"] .lp-mls-title { color: #0f1e38 !important; }
 
   .lp-mls-hint {
     font-size: 13.5px; margin: 0 0 28px; line-height: 1.5;
+    color: rgba(71,85,105,0.65); /* light default */
   }
-  [data-theme="dark"]  .lp-mls-hint { color: rgba(148,163,184,0.6); }
-  [data-theme="light"] .lp-mls-hint { color: rgba(71,85,105,0.65); }
+  [data-theme="dark"]  .lp-mls-hint { color: rgba(148,163,184,0.6) !important; }
+  [data-theme="light"] .lp-mls-hint { color: rgba(71,85,105,0.65) !important; }
 
   /* Error */
   .lp-mls-error {
@@ -1434,9 +1439,10 @@ h1,h2,h3,h4,h5,.ph-title,.stat-card-val,.page-title,.modal-title {
   }
   .lp-mls-label {
     font-size: 12.5px; font-weight: 600; letter-spacing: 0.01em;
+    color: rgba(30,50,86,0.7); /* light default */
   }
-  [data-theme="dark"]  .lp-mls-label { color: rgba(148,163,184,0.75); }
-  [data-theme="light"] .lp-mls-label { color: rgba(30,50,86,0.7); }
+  [data-theme="dark"]  .lp-mls-label { color: rgba(148,163,184,0.75) !important; }
+  [data-theme="light"] .lp-mls-label { color: rgba(30,50,86,0.7) !important; }
 
   .lp-mls-input {
     width: 100%; box-sizing: border-box;

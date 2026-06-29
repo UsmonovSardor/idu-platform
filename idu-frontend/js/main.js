@@ -4010,6 +4010,8 @@ function setLang(lang){
   document.removeEventListener('click',closeLangOnOutside);
   var flag=document.getElementById('lcFlag'); if(flag) flag.innerHTML=LANG_FLAGS_SVG[lang]||'';
   var txt=document.getElementById('lcText'); if(txt) txt.textContent=L.code;
+  var mobFlag=document.getElementById('mobLcFlag'); if(mobFlag) mobFlag.innerHTML=LANG_FLAGS_SVG[lang]||'';
+  var mobTxt=document.getElementById('mobLcText'); if(mobTxt) mobTxt.textContent=L.code;
   var optUz=document.getElementById('lopt-uz'); if(optUz) optUz.classList.toggle('active',lang==='uz');
   var optRu=document.getElementById('lopt-ru'); if(optRu) optRu.classList.toggle('active',lang==='ru');
   var optEn=document.getElementById('lopt-en'); if(optEn) optEn.classList.toggle('active',lang==='en');
@@ -4521,6 +4523,8 @@ function setLang(lang){
   document.removeEventListener('click',closeLangOut);
   var flag=document.getElementById('lcFlag');if(flag)flag.innerHTML=LANG_FLAGS_SVG[lang]||'';
   var txt=document.getElementById('lcText');if(txt)txt.textContent=L.code;
+  var mobFlag2=document.getElementById('mobLcFlag');if(mobFlag2)mobFlag2.innerHTML=LANG_FLAGS_SVG[lang]||'';
+  var mobTxt2=document.getElementById('mobLcText');if(mobTxt2)mobTxt2.textContent=L.code;
   var ou=document.getElementById('lopt-uz');if(ou)ou.classList.toggle('active',lang==='uz');
   var or2=document.getElementById('lopt-ru');if(or2)or2.classList.toggle('active',lang==='ru');
   var oen=document.getElementById('lopt-en');if(oen)oen.classList.toggle('active',lang==='en');
