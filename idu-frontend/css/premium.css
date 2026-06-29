@@ -1,0 +1,713 @@
+/* ═══════════════════════════════════════════════════════════════
+   IDU Premium — Minimal & Refined Design System v1.0
+   Overrides: removes excessive glow, tames animations, adds
+   breathing room — every element skromni va premium
+═══════════════════════════════════════════════════════════════ */
+
+/* ─── REFINED DESIGN TOKENS ─────────────────────────────────── */
+:root {
+  /* Primary — slightly cooler, more desaturated blue */
+  --primary: #4F7AFF;
+  --primary-light: rgba(79,122,255,0.09);
+  --primary-mid: rgba(79,122,255,0.16);
+  --primary-hover: #3B66F5;
+  --accent: #2DD4E8;
+  --accent-light: rgba(45,212,232,0.08);
+  --primary-gradient: linear-gradient(135deg, #4F7AFF, #2DD4E8);
+
+  /* Surface — deeper, cooler, more refined */
+  --bg: #030810;
+  --bg2: #070F1C;
+  --white: #0A1526;
+  --nav-bg: #060D1A;
+  --sidebar-bg: #050C18;
+  --sidebar-border: rgba(79,122,255,0.07);
+
+  /* Borders — more subtle */
+  --border: rgba(79,122,255,0.10);
+  --border2: rgba(79,122,255,0.20);
+
+  /* Text — slightly warmer white */
+  --text: #ECF2FF;
+  --text2: #6785A8;
+  --text3: #374E6A;
+  --text4: #1B3250;
+
+  /* Shadows — no glow, pure depth */
+  --shadow-sm: 0 1px 3px rgba(0,0,0,0.55), 0 0 0 1px rgba(255,255,255,0.035);
+  --shadow:    0 3px 14px rgba(0,0,0,0.55), 0 0 0 1px rgba(255,255,255,0.04);
+  --shadow-md: 0 8px 30px rgba(0,0,0,0.60), 0 0 0 1px rgba(255,255,255,0.045);
+  --shadow-lg: 0 20px 56px rgba(0,0,0,0.68), 0 0 0 1px rgba(255,255,255,0.05);
+  --shadow-blue: 0 3px 14px rgba(0,0,0,0.55), 0 0 0 1px rgba(79,122,255,0.12);
+  --shadow-accent: 0 3px 12px rgba(0,0,0,0.45);
+
+  /* Border radius — unified */
+  --r:  10px;
+  --r2: 13px;
+  --r3: 18px;
+}
+
+/* ─── BODY ───────────────────────────────────────────────────── */
+body { letter-spacing: -0.012em; }
+h1,h2,h3,h4,h5,.ph-title,.stat-card-val,.page-title,.modal-title {
+  letter-spacing: -0.03em;
+}
+
+/* ─────────────────────────────────────────────────────────────
+   TOP NAV — Remove rainbow gradient, add refined subtle border
+───────────────────────────────────────────────────────────── */
+.topnav {
+  height: 56px;
+  background: var(--nav-bg);
+  border-bottom: 1px solid rgba(79,122,255,0.09);
+  box-shadow: 0 1px 0 rgba(255,255,255,0.03), 0 2px 16px rgba(0,0,0,0.35);
+}
+/* Remove iridescent rainbow bar */
+.topnav::after { display: none; }
+
+.topnav-logo-icon {
+  background: linear-gradient(145deg, #3B66F5, #1a9fc4);
+  box-shadow: 0 2px 8px rgba(59,102,245,0.3), inset 0 1px 0 rgba(255,255,255,0.15);
+}
+.topnav-logo-text { font-size: 16px; letter-spacing: -0.025em; color: #EAF2FF; }
+
+.nav-icon-btn {
+  border-color: rgba(255,255,255,0.07);
+  background: rgba(255,255,255,0.04);
+  color: rgba(240,246,255,0.5);
+  transition: background 0.18s, color 0.18s;
+}
+.nav-icon-btn:hover {
+  background: rgba(255,255,255,0.09);
+  border-color: rgba(255,255,255,0.13);
+  color: rgba(240,246,255,0.88);
+  transform: none;
+}
+
+.user-chip {
+  border-color: rgba(255,255,255,0.07);
+  background: rgba(255,255,255,0.04);
+  transition: all 0.18s;
+}
+.user-chip:hover {
+  border-color: rgba(79,122,255,0.35);
+  background: rgba(79,122,255,0.10);
+}
+
+/* ─────────────────────────────────────────────────────────────
+   SIDEBAR — Cleaner, more refined
+───────────────────────────────────────────────────────────── */
+.sidebar {
+  background: var(--sidebar-bg);
+  border-right: 1px solid rgba(79,122,255,0.07);
+  box-shadow: none;
+  padding: 16px 10px;
+}
+.sidebar-label {
+  font-size: 10px;
+  letter-spacing: 1px;
+  opacity: 0.55;
+  padding: 14px 10px 4px;
+}
+.sidebar-item {
+  border-radius: 9px;
+  font-size: 13px;
+  padding: 8px 10px;
+  color: var(--text2);
+  transition: background 0.16s, color 0.16s;
+}
+.sidebar-item:hover {
+  background: rgba(79,122,255,0.07);
+  color: var(--text);
+  transform: none; /* Remove translateX shake */
+}
+.sidebar-item:active { transform: scale(0.98); }
+/* Clean active state — no rainbow gradient */
+.sidebar-item.active {
+  background: rgba(79,122,255,0.12);
+  color: #A8C5FF;
+  font-weight: 600;
+  border: 1px solid rgba(79,122,255,0.15);
+  box-shadow: none;
+}
+/* Replace left-border box-shadow with a clean left accent line */
+.sidebar-item.active::before {
+  content: '';
+  position: absolute;
+  left: 0; top: 20%; bottom: 20%;
+  width: 2px;
+  border-radius: 2px;
+  background: var(--primary);
+  opacity: 0.85;
+}
+.sidebar-divider { background: rgba(79,122,255,0.07); }
+
+/* ─────────────────────────────────────────────────────────────
+   CARDS — More subtle hover, remove gradient line
+───────────────────────────────────────────────────────────── */
+.card {
+  background: var(--white);
+  border: 1px solid var(--border);
+  border-radius: var(--r2);
+  box-shadow: var(--shadow-sm);
+  padding: 20px 22px;
+}
+/* Remove the hover gradient shimmer line */
+.card::before { display: none; }
+.card:hover {
+  box-shadow: var(--shadow);
+  border-color: rgba(79,122,255,0.18);
+}
+
+/* ─────────────────────────────────────────────────────────────
+   STAT CARDS — Less aggressive animation
+───────────────────────────────────────────────────────────── */
+.stat-card {
+  background: var(--white);
+  border: 1px solid var(--border);
+  border-radius: var(--r2);
+  box-shadow: var(--shadow-sm);
+  transition: transform 0.22s cubic-bezier(0.22,1,0.36,1),
+              box-shadow 0.22s ease,
+              border-color 0.22s ease;
+}
+.stat-card::before { display: none; } /* Remove gradient line */
+.stat-card:hover {
+  transform: translateY(-3px); /* Was -6px — too aggressive */
+  box-shadow: var(--shadow);
+  border-color: rgba(79,122,255,0.18);
+}
+.stat-card-val { font-size: 24px; font-weight: 800; letter-spacing: -0.04em; }
+
+/* Stat card bottom bars — more subtle */
+.scb-blue   { background: linear-gradient(90deg, #4F7AFF, #2DD4E8); opacity: 0.75; }
+.scb-green  { background: linear-gradient(90deg, #22C55E, #4ADE80); opacity: 0.75; }
+.scb-orange { background: linear-gradient(90deg, #F97316, #FCD34D); opacity: 0.75; }
+.scb-red    { background: linear-gradient(90deg, #EF4444, #FB923C); opacity: 0.75; }
+.scb-purple { background: linear-gradient(90deg, #8B5CF6, #A78BFA); opacity: 0.75; }
+
+/* ─────────────────────────────────────────────────────────────
+   BUTTONS — Remove glow, more refined
+───────────────────────────────────────────────────────────── */
+.btn {
+  font-size: 13px;
+  font-weight: 600;
+  padding: 8px 16px;
+  border-radius: 9px;
+  transition: transform 0.16s, opacity 0.16s, box-shadow 0.16s;
+  letter-spacing: -0.01em;
+}
+.btn:active { transform: scale(0.97) !important; }
+
+.btn-primary {
+  background: linear-gradient(135deg, #1ea851, #158040);
+  color: white;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.45), inset 0 1px 0 rgba(255,255,255,0.12);
+}
+.btn-primary:hover {
+  transform: translateY(-1px);
+  box-shadow: 0 5px 16px rgba(0,0,0,0.45), inset 0 1px 0 rgba(255,255,255,0.12);
+  opacity: 0.95;
+}
+
+.btn-secondary {
+  background: rgba(79,122,255,0.08);
+  color: #93B4FF;
+  border: 1px solid rgba(79,122,255,0.22);
+}
+.btn-secondary:hover {
+  background: rgba(79,122,255,0.14);
+  border-color: rgba(79,122,255,0.38);
+  color: #b8d0ff;
+  transform: translateY(-1px);
+}
+
+/* ─────────────────────────────────────────────────────────────
+   PAGE HEADER
+───────────────────────────────────────────────────────────── */
+.page { padding: 28px 26px; }
+.page-header-left .ph-title {
+  font-size: 20px;
+  font-weight: 800;
+  letter-spacing: -0.035em;
+}
+.page-header-left .ph-sub {
+  font-size: 12.5px;
+  margin-top: 2px;
+  color: var(--text2);
+}
+
+/* ─────────────────────────────────────────────────────────────
+   GRADE TABLE — More refined rows
+───────────────────────────────────────────────────────────── */
+.grade-table th {
+  font-size: 10.5px;
+  letter-spacing: 0.9px;
+  color: var(--text3);
+  padding-bottom: 8px;
+}
+.grade-table td {
+  font-size: 13px;
+  padding: 11px 12px;
+  border-bottom-color: rgba(79,122,255,0.05);
+}
+.grade-table tr:hover td { background: rgba(79,122,255,0.05); }
+
+/* ─────────────────────────────────────────────────────────────
+   TASK ITEMS
+───────────────────────────────────────────────────────────── */
+.task-item:hover {
+  border-color: rgba(79,122,255,0.25);
+  box-shadow: var(--shadow-sm);
+}
+
+/* ─────────────────────────────────────────────────────────────
+   IDEA CARDS
+───────────────────────────────────────────────────────────── */
+.idea-card:hover {
+  transform: translateY(-2px);
+  box-shadow: var(--shadow);
+  border-color: rgba(79,122,255,0.22);
+}
+
+/* ─────────────────────────────────────────────────────────────
+   MODALS — More refined
+───────────────────────────────────────────────────────────── */
+.modal-overlay {
+  background: rgba(3,8,16,0.72);
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
+}
+.modal {
+  border-radius: 18px;
+  border: 1px solid rgba(79,122,255,0.14);
+  box-shadow: 0 24px 72px rgba(0,0,0,0.7), 0 0 0 1px rgba(255,255,255,0.04);
+}
+
+/* ─────────────────────────────────────────────────────────────
+   SCHEDULE ITEMS
+───────────────────────────────────────────────────────────── */
+.sched-item:hover {
+  border-color: rgba(79,122,255,0.22);
+  box-shadow: var(--shadow-sm);
+}
+.sched-item.now {
+  border-color: rgba(79,122,255,0.35);
+  background: rgba(79,122,255,0.08);
+}
+
+/* ─────────────────────────────────────────────────────────────
+   AUTH SCREEN — More minimal login UI
+───────────────────────────────────────────────────────────── */
+.hemis-nav {
+  height: 64px;
+  border-bottom-color: #EEF2F9;
+}
+.hn-dot {
+  background: linear-gradient(145deg, #3B66F5, #1a9fc4);
+  box-shadow: 0 2px 8px rgba(59,102,245,0.25);
+}
+.hn-kirish {
+  box-shadow: 0 2px 8px rgba(30,64,175,0.22);
+}
+.hn-kirish:hover {
+  transform: translateY(-1px);
+  box-shadow: 0 4px 14px rgba(30,64,175,0.28);
+}
+
+.login-modal {
+  border-radius: 18px;
+  box-shadow: 0 24px 80px rgba(0,0,0,0.14), 0 0 0 1px rgba(0,0,0,0.04);
+}
+.login-left {
+  background: linear-gradient(160deg, #1E3A8A 0%, #1a3070 50%, #0c6678 100%);
+  border-radius: 14px 0 0 14px;
+}
+.login-submit {
+  box-shadow: 0 2px 10px rgba(30,64,175,0.22);
+  border-radius: 10px;
+}
+.login-submit:hover {
+  transform: translateY(-1px);
+  box-shadow: 0 4px 16px rgba(30,64,175,0.3);
+}
+.login-input-field:focus {
+  border-color: #3B66F5 !important;
+  box-shadow: 0 0 0 3px rgba(59,102,245,0.09);
+}
+
+/* Demo cards — more subtle */
+.demo-card {
+  border-color: #F0F4FE;
+  border-radius: 9px;
+}
+.demo-card:hover {
+  border-color: #A5B4FC;
+  background: #F5F8FF;
+  transform: translateY(-1px);
+  box-shadow: 0 2px 8px rgba(59,102,245,0.10);
+}
+
+/* ─────────────────────────────────────────────────────────────
+   LANDING PAGE — Premium nav, hero, buttons
+───────────────────────────────────────────────────────────── */
+
+/* Nav — Remove rainbow gradient, cleaner */
+#authScreen .lp-nav,
+.lp-nav {
+  height: 60px;
+  background: rgba(3,8,16,0.96);
+  border-bottom: 1px solid rgba(79,122,255,0.09);
+}
+/* Remove iridescent rainbow bar */
+.lp-nav::before { display: none; }
+.lp-nav.scrolled {
+  background: rgba(3,8,16,0.98);
+  box-shadow: 0 1px 0 rgba(79,122,255,0.12), 0 4px 24px rgba(0,0,0,0.55);
+}
+
+.lp-logo-mark {
+  background: linear-gradient(145deg, #3B66F5, #1a9fc4);
+  box-shadow: 0 2px 10px rgba(59,102,245,0.3), inset 0 1px 0 rgba(255,255,255,0.18);
+}
+.lp-logo-text { font-size: 15px; font-weight: 600; letter-spacing: -0.3px; }
+
+.lp-link {
+  font-size: 13px;
+  color: rgba(180,200,235,0.7);
+  border-radius: 8px;
+  transition: color 0.16s, background 0.16s;
+}
+.lp-link:hover {
+  color: #93c5fd;
+  background: rgba(79,122,255,0.08);
+}
+
+.lp-cta-btn {
+  background: linear-gradient(135deg, #2563eb 0%, #1a45d4 100%);
+  box-shadow: 0 2px 10px rgba(37,99,235,0.3);
+  padding: 8px 20px;
+  font-size: 13px;
+  font-weight: 600;
+  border-radius: 9px;
+}
+.lp-cta-btn:hover {
+  opacity: 0.93;
+  transform: translateY(-1px);
+  box-shadow: 0 4px 16px rgba(37,99,235,0.38);
+}
+
+/* ─── Hero section — less busy background ─── */
+.lp-hero {
+  background:
+    radial-gradient(ellipse 90% 60% at -5% 55%, rgba(59,111,255,0.16) 0%, transparent 50%),
+    radial-gradient(ellipse 60% 50% at 108% 35%, rgba(34,211,238,0.09) 0%, transparent 45%),
+    radial-gradient(ellipse 45% 40% at 50% -10%, rgba(59,111,255,0.12) 0%, transparent 45%),
+    var(--bg);
+  padding: 112px 88px 52px;
+  gap: 68px;
+}
+
+/* Ambient orbs — more subtle */
+.lp-orb-blue {
+  opacity: 0.7;
+  filter: blur(72px);
+}
+.lp-orb-cyan {
+  opacity: 0.65;
+  filter: blur(88px);
+}
+
+/* Hero title — more refined */
+.lp-hero-title {
+  font-size: clamp(56px, 7vw, 96px);
+  font-weight: 700;
+  letter-spacing: -0.045em;
+  line-height: 0.96;
+}
+
+/* Brand gradient — more subtle, elegant */
+.lp-brand-gradient {
+  background: linear-gradient(135deg, #ffffff 0%, #b8d0ff 30%, #4F7AFF 55%, #2DD4E8 75%, #93c5fd 100%);
+  background-size: 250% 100%;
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+  color: transparent;
+  animation: lp-iridescent 7s ease-in-out 2s infinite alternate;
+  filter: drop-shadow(0 0 20px rgba(59,111,255,0.3));
+}
+
+.lp-hero-sub-title {
+  font-size: clamp(16px, 2.2vw, 28px);
+  color: rgba(220,235,255,0.35);
+}
+
+.lp-hero-desc {
+  font-size: 15.5px;
+  line-height: 1.75;
+  color: var(--text2);
+  max-width: 500px;
+}
+
+/* ─── Landing CTA buttons — Remove glow, clean ─── */
+.lp-primary-btn {
+  background: linear-gradient(135deg, #1ea851 0%, #158040 100%);
+  border-radius: 11px;
+  padding: 13px 28px;
+  font-size: 14.5px;
+  font-weight: 600;
+  letter-spacing: -0.01em;
+  box-shadow: 0 2px 12px rgba(0,0,0,0.45), inset 0 1px 0 rgba(255,255,255,0.14);
+  transition: transform 0.18s, box-shadow 0.18s, opacity 0.18s;
+}
+/* Remove shimmer animation */
+.lp-primary-btn::after { display: none; }
+.lp-primary-btn:hover {
+  transform: translateY(-1px);
+  box-shadow: 0 6px 20px rgba(0,0,0,0.45), inset 0 1px 0 rgba(255,255,255,0.14);
+  opacity: 0.95;
+}
+
+.lp-secondary-btn {
+  background: rgba(79,122,255,0.08);
+  color: #93B4FF;
+  border: 1px solid rgba(79,122,255,0.24);
+  border-radius: 11px;
+  padding: 13px 26px;
+  font-size: 14.5px;
+  font-weight: 500;
+  backdrop-filter: none;
+  transition: all 0.18s;
+}
+.lp-secondary-btn:hover {
+  background: rgba(79,122,255,0.14);
+  border-color: rgba(79,122,255,0.42);
+  color: #b8d0ff;
+  transform: translateY(-1px);
+  box-shadow: 0 4px 14px rgba(0,0,0,0.3);
+}
+
+/* Pills — cleaner */
+.lp-pill {
+  background: rgba(79,122,255,0.06);
+  border-color: rgba(79,122,255,0.18);
+  color: #8fb8f0;
+  backdrop-filter: none;
+  font-size: 12.5px;
+}
+.lp-pill:hover {
+  background: rgba(79,122,255,0.12);
+  border-color: rgba(79,122,255,0.36);
+  color: #b8d0ff;
+  transform: none;
+  box-shadow: none;
+}
+
+/* ─── Hero card — more refined glass ─── */
+.lp-hero-card {
+  background: linear-gradient(160deg, rgba(10,21,38,0.92), rgba(6,13,26,0.96));
+  border: 1px solid rgba(79,122,255,0.16);
+  border-radius: 20px;
+  box-shadow:
+    0 0 0 1px rgba(255,255,255,0.04),
+    0 28px 56px rgba(0,0,0,0.60),
+    0 6px 20px rgba(0,0,0,0.35);
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+}
+/* Remove iridescent top line */
+.lp-hero-card::before { display: none; }
+
+/* ─── Landing stat cards — Less aggressive hover ─── */
+.lp-stat-card {
+  background: linear-gradient(145deg, rgba(14,26,52,0.92), rgba(9,20,40,0.96));
+  border: 1px solid rgba(79,122,255,0.16);
+  border-radius: 18px;
+  box-shadow:
+    0 0 0 1px rgba(255,255,255,0.03),
+    0 16px 40px rgba(0,0,0,0.40);
+  transition: transform 0.26s cubic-bezier(0.22,1,0.36,1),
+              box-shadow 0.26s ease,
+              border-color 0.26s ease;
+}
+/* Remove iridescent gradient lines */
+.lp-stat-card::before { display: none; }
+.lp-stat-card::after  { display: none; }
+.lp-stat-card:hover {
+  transform: translateY(-4px); /* Was -8px */
+  border-color: rgba(79,122,255,0.26);
+  box-shadow:
+    0 0 0 1px rgba(255,255,255,0.05),
+    0 22px 48px rgba(0,0,0,0.50),
+    0 4px 12px rgba(0,0,0,0.30);
+}
+
+.lp-stat-num {
+  font-size: 28px;
+  background: linear-gradient(135deg, #EDF2FF 0%, #93B4FF 60%, #2DD4E8 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+.lp-stat-label { font-size: 10px; letter-spacing: 0.8px; }
+
+/* ─── Feature cards ─── */
+.lp-feat-card {
+  transition: transform 0.22s cubic-bezier(0.22,1,0.36,1),
+              box-shadow 0.22s ease,
+              border-color 0.22s ease;
+}
+.lp-feat-card:hover {
+  transform: translateY(-3px);
+}
+
+/* ─── Stats separator line ─── */
+.lp-stats::before {
+  background: linear-gradient(90deg,
+    transparent,
+    rgba(79,122,255,0.28),
+    rgba(45,212,232,0.20),
+    transparent
+  );
+}
+
+/* ─── Landing dropdown ─── */
+.lp-drop-menu {
+  background: rgba(6,13,26,0.97);
+  border: 1px solid rgba(79,122,255,0.18);
+  box-shadow: 0 20px 48px rgba(0,0,0,0.70);
+}
+.lp-drop-item:hover { background: rgba(79,122,255,0.10); }
+.lp-drop-icon {
+  background: rgba(79,122,255,0.10);
+}
+
+/* ─── Section badge ─── */
+.lp-badge {
+  background: rgba(79,122,255,0.10);
+  border-color: rgba(79,122,255,0.26);
+  color: #93c5fd;
+  font-size: 11px;
+  letter-spacing: 0.03em;
+}
+
+/* ─────────────────────────────────────────────────────────────
+   SCROLLBAR — More refined
+───────────────────────────────────────────────────────────── */
+.sidebar::-webkit-scrollbar-thumb {
+  background: rgba(79,122,255,0.12);
+}
+.main-content::-webkit-scrollbar-thumb {
+  background: rgba(79,122,255,0.15);
+}
+
+/* ─────────────────────────────────────────────────────────────
+   TOAST NOTIFICATIONS — More refined
+───────────────────────────────────────────────────────────── */
+.toast {
+  border-radius: 12px;
+  box-shadow: 0 8px 28px rgba(0,0,0,0.55);
+  border: 1px solid rgba(255,255,255,0.07);
+}
+
+/* ─────────────────────────────────────────────────────────────
+   SEARCH INPUT / FORM INPUTS — App
+───────────────────────────────────────────────────────────── */
+.search-input, .form-field, input[type="text"], input[type="search"] {
+  background: var(--bg2);
+  border-color: var(--border);
+}
+.search-input:focus, .form-field:focus {
+  border-color: var(--primary);
+  box-shadow: 0 0 0 3px rgba(79,122,255,0.09);
+}
+.comment-input:focus { border-color: var(--primary); }
+
+/* ─────────────────────────────────────────────────────────────
+   PROGRESS BARS — More refined
+───────────────────────────────────────────────────────────── */
+.progress-fill {
+  transition: width 0.9s cubic-bezier(0.22,1,0.36,1);
+}
+.lp-progress-fill {
+  background: linear-gradient(90deg, #3B66F5, #2DD4E8);
+  box-shadow: none;
+}
+
+/* ─────────────────────────────────────────────────────────────
+   MOBILE BOTTOM NAV
+───────────────────────────────────────────────────────────── */
+.mob-nav {
+  border-top: 1px solid rgba(79,122,255,0.08);
+  background: rgba(6,13,26,0.97);
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+}
+
+/* ─────────────────────────────────────────────────────────────
+   TIMETABLE CELLS — More refined colors
+───────────────────────────────────────────────────────────── */
+.tt-cell:hover {
+  transform: none;
+  box-shadow: var(--shadow-sm);
+  border-color: rgba(79,122,255,0.25) !important;
+}
+
+/* ─────────────────────────────────────────────────────────────
+   STATUS TAGS — More refined
+───────────────────────────────────────────────────────────── */
+.status-tag { font-size: 11px; letter-spacing: 0.1px; }
+
+/* ─────────────────────────────────────────────────────────────
+   LOGOUT BUTTON
+───────────────────────────────────────────────────────────── */
+.logout-btn {
+  font-size: 12.5px;
+  padding: 6px 13px;
+  border-radius: 8px;
+}
+
+/* ─────────────────────────────────────────────────────────────
+   FOOTER — Refined IDU footer
+───────────────────────────────────────────────────────────── */
+.idu-footer {
+  background: #060D1A;
+  border-top: 1px solid rgba(79,122,255,0.08);
+}
+.idu-footer-bottom {
+  border-top-color: rgba(255,255,255,0.06);
+}
+.idu-f-dot {
+  background: linear-gradient(135deg, #3B66F5, #2DD4E8);
+  box-shadow: none;
+}
+
+/* ─────────────────────────────────────────────────────────────
+   GRADE CHIPS — In light context (timetable)
+───────────────────────────────────────────────────────────── */
+.gc-a { background: #DCFCE7; color: #15803D; }
+.gc-b { background: #DBEAFE; color: #1D4ED8; }
+.gc-c { background: #FEF9C3; color: #854D0E; }
+.gc-d { background: #FFEDD5; color: #9A3412; }
+.gc-f { background: #FEE2E2; color: #991B1B; }
+
+/* ─────────────────────────────────────────────────────────────
+   SKIP lp-grid-3d on mobile — performance
+───────────────────────────────────────────────────────────── */
+@media (max-width: 768px) {
+  .lp-grid-3d   { display: none; }
+  .lp-orb-blue  { width: 320px; height: 320px; }
+  .lp-orb-cyan  { width: 260px; height: 260px; }
+  .lp-hero { padding: 88px 24px 40px; gap: 36px; }
+}
+
+/* ─────────────────────────────────────────────────────────────
+   REDUCED MOTION — Respect user preference
+───────────────────────────────────────────────────────────── */
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after {
+    animation-duration: 0.01ms !important;
+    transition-duration: 0.01ms !important;
+  }
+}
