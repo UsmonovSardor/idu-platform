@@ -204,9 +204,10 @@ if (window.visualViewport) {
   }
 })();
 
-// ── PWA Install prompt ───────────────────────────────────────────
+// ── PWA Install prompt (mobile only) ─────────────────────────────
 (function() {
   if (IS_PWA) return; // already installed
+  if (window.innerWidth >= 768) return; // desktop — don't show
 
   var _deferredPrompt = null;
   var _dismissed = false;
