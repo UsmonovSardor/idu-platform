@@ -56,6 +56,53 @@ async function loginWithBackend(role, login, password) {
   saveAuthToken(data.token);
   return data.user || data;
 }
+/* ── Mobile login screen helpers ─────────────────────────── */
+window.toggleMlsEye = function() {
+  var inp = document.getElementById('mlsPass');
+  var eye = document.getElementById('mlsEye');
+  if (!inp) return;
+  var isPass = inp.type === 'password';
+  inp.type = isPass ? 'text' : 'password';
+  if (eye) eye.style.opacity = isPass ? '1' : '0.45';
+};
+
+window.mobLogin = async function() {
+  var loginEl = document.getElementById('mlsLogin');
+  var passEl  = document.getElementById('mlsPass');
+  var errEl   = document.getElementById('mlsError');
+  var errMsg  = document.getElementById('mlsErrorMsg');
+  var btn     = document.getElementById('mlsBtn');
+  var btnText = document.getElementById('mlsBtnText');
+
+  var login = loginEl ? loginEl.value.trim() : '';
+  var pass  = passEl  ? passEl.value.trim()  : '';
+
+  function showErr(msg, el) {
+    if (errMsg) errMsg.textContent = msg;
+    if (errEl)  { errEl.style.display = 'flex'; }
+    if (el)     { el.style.borderColor = '#ef4444'; }
+    if (btn)    { btn.disabled = false; if(btnText) btnText.textContent = 'Kirish'; }
+  }
+
+  if (!login) return showErr('Login kiriting', loginEl);
+  if (!pass)  return showErr('Parol kiriting', passEl);
+
+  if (btn)    { btn.disabled = true; if(btnText) btnText.textContent = 'Kirish...'; }
+  if (errEl)  errEl.style.display = 'none';
+
+  try {
+    /* Sync to main form so realAutoLogin() works */
+    var ml = document.getElementById('mainLogin');
+    var mp = document.getElementById('mainPass');
+    if (ml) ml.value = login;
+    if (mp) mp.value = pass;
+    await window.realAutoLogin();
+  } catch(e) {
+    showErr('Login yoki parol noto\'g\'ri', loginEl);
+  }
+};
+/* ── end mobile login helpers ─────────────────────────────── */
+
 window.realAutoLogin = async function realAutoLogin() {
   const login = document.getElementById('mainLogin').value.trim();
   const pass = document.getElementById('mainPass').value.trim();

@@ -1327,6 +1327,9 @@ h1,h2,h3,h4,h5,.ph-title,.stat-card-val,.page-title,.modal-title {
   }
 }
 
+/* ── Mobile login screen — hidden on desktop ───────────────── */
+.lp-mob-login-screen { display: none; }
+
 /* ── Hero stat chips — desktop: hidden ─────────────────────── */
 .lp-hero-stat-chips { display: none; }
 
@@ -1342,16 +1345,182 @@ h1,h2,h3,h4,h5,.ph-title,.stat-card-val,.page-title,.modal-title {
   html, body { max-width: 100vw !important; overflow-x: hidden !important; }
 
   /* ═══════════════════════════════════════════════════════════
-     HIDE — sections removed on mobile (5-section strategy)
+     HIDE — all landing sections (mobile shows login screen only)
   ═══════════════════════════════════════════════════════════ */
-  .lp-stats   { display: none !important; }  /* stats → hero chips */
-  .lp-compare { display: none !important; }  /* compare table */
-  .lp-how     { display: none !important; }  /* how-to steps */
-  .lp-sec     { display: none !important; }  /* security/integration */
-  .lp-trust   { display: none !important; }  /* trust + testimonials */
+  .lp-hero        { display: none !important; }
+  .lp-stats       { display: none !important; }
+  .lp-features    { display: none !important; }
+  .lp-compare     { display: none !important; }
+  .lp-how         { display: none !important; }
+  .lp-sec         { display: none !important; }
+  .lp-trust       { display: none !important; }
+  .lp-mob-cta-strip { display: none !important; }
+  .lp-footer      { display: none !important; }
 
-  /* Features: show only first 4 cards */
-  .lp-feat-grid .lp-feat-card:nth-child(n+5) { display: none !important; }
+  /* ═══════════════════════════════════════════════════════════
+     MOBILE LOGIN SCREEN
+  ═══════════════════════════════════════════════════════════ */
+  .lp-mob-login-screen {
+    display: flex !important;
+    flex-direction: column;
+    align-items: stretch;
+    min-height: calc(100svh - 56px);
+    padding: 28px 24px calc(32px + env(safe-area-inset-bottom, 0px));
+    box-sizing: border-box;
+  }
+  [data-theme="dark"]  .lp-mob-login-screen { background: #060D1A; }
+  [data-theme="light"] .lp-mob-login-screen { background: #F4F7FF; }
+
+  /* Logo row */
+  .lp-mls-logo {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    margin-bottom: 36px;
+  }
+  .lp-mls-mark {
+    width: 44px !important; height: 44px !important;
+    border-radius: 12px !important; font-size: 13px !important;
+    flex-shrink: 0;
+  }
+  .lp-mls-logo-info {
+    display: flex; flex-direction: column; gap: 2px;
+  }
+  .lp-mls-name {
+    font-size: 15px; font-weight: 800; letter-spacing: -0.02em;
+  }
+  [data-theme="dark"]  .lp-mls-name { color: #ECF2FF; }
+  [data-theme="light"] .lp-mls-name { color: #0f1e38; }
+  .lp-mls-uni {
+    font-size: 11px; font-weight: 500; letter-spacing: 0.01em;
+  }
+  [data-theme="dark"]  .lp-mls-uni { color: rgba(148,163,184,0.5); }
+  [data-theme="light"] .lp-mls-uni { color: rgba(71,85,105,0.55); }
+
+  /* Title */
+  .lp-mls-title {
+    font-size: 28px; font-weight: 800; letter-spacing: -0.04em;
+    line-height: 1.1; margin: 0 0 8px;
+  }
+  [data-theme="dark"]  .lp-mls-title { color: #ECF2FF; }
+  [data-theme="light"] .lp-mls-title { color: #0f1e38; }
+
+  .lp-mls-hint {
+    font-size: 13.5px; margin: 0 0 28px; line-height: 1.5;
+  }
+  [data-theme="dark"]  .lp-mls-hint { color: rgba(148,163,184,0.6); }
+  [data-theme="light"] .lp-mls-hint { color: rgba(71,85,105,0.65); }
+
+  /* Error */
+  .lp-mls-error {
+    display: none;
+    align-items: center;
+    gap: 8px;
+    padding: 11px 14px;
+    border-radius: 11px;
+    margin-bottom: 16px;
+    font-size: 13px; font-weight: 500;
+    background: rgba(239,68,68,0.1);
+    border: 1px solid rgba(239,68,68,0.25);
+    color: #f87171;
+  }
+
+  /* Form */
+  .lp-mls-form {
+    display: flex; flex-direction: column; gap: 14px;
+  }
+  .lp-mls-field {
+    display: flex; flex-direction: column; gap: 6px;
+  }
+  .lp-mls-label {
+    font-size: 12.5px; font-weight: 600; letter-spacing: 0.01em;
+  }
+  [data-theme="dark"]  .lp-mls-label { color: rgba(148,163,184,0.75); }
+  [data-theme="light"] .lp-mls-label { color: rgba(30,50,86,0.7); }
+
+  .lp-mls-input {
+    width: 100%; box-sizing: border-box;
+    padding: 14px 16px;
+    border-radius: 13px;
+    font-size: 15px; font-family: inherit;
+    outline: none;
+    transition: border-color 0.15s, box-shadow 0.15s;
+    -webkit-appearance: none;
+  }
+  [data-theme="dark"] .lp-mls-input {
+    background: rgba(255,255,255,0.05);
+    border: 1.5px solid rgba(255,255,255,0.1);
+    color: #ECF2FF;
+  }
+  [data-theme="dark"] .lp-mls-input::placeholder { color: rgba(148,163,184,0.35); }
+  [data-theme="dark"] .lp-mls-input:focus {
+    border-color: #4F7AFF;
+    box-shadow: 0 0 0 3px rgba(79,122,255,0.15);
+  }
+  [data-theme="light"] .lp-mls-input {
+    background: #fff;
+    border: 1.5px solid rgba(0,0,0,0.1);
+    color: #0f1e38;
+  }
+  [data-theme="light"] .lp-mls-input::placeholder { color: rgba(71,85,105,0.4); }
+  [data-theme="light"] .lp-mls-input:focus {
+    border-color: #4F7AFF;
+    box-shadow: 0 0 0 3px rgba(79,122,255,0.1);
+  }
+
+  /* Password row */
+  .lp-mls-pass-row {
+    position: relative; display: flex; align-items: center;
+  }
+  .lp-mls-pass-row .lp-mls-input { padding-right: 48px; }
+  .lp-mls-eye {
+    all: unset;
+    position: absolute; right: 14px;
+    display: flex; align-items: center; justify-content: center;
+    width: 28px; height: 28px; cursor: pointer; opacity: 0.45;
+    transition: opacity 0.15s;
+    -webkit-tap-highlight-color: transparent;
+  }
+  [data-theme="dark"]  .lp-mls-eye { color: rgba(148,163,184,0.8); }
+  [data-theme="light"] .lp-mls-eye { color: rgba(71,85,105,0.8); }
+  .lp-mls-eye:active { opacity: 0.8; }
+
+  /* Login button */
+  .lp-mls-btn {
+    all: unset; box-sizing: border-box;
+    display: flex; align-items: center; justify-content: center; gap: 8px;
+    width: 100%; padding: 16px 20px;
+    border-radius: 14px;
+    font-size: 15.5px; font-weight: 700; font-family: inherit;
+    letter-spacing: -0.01em;
+    background: linear-gradient(135deg, #4F7AFF 0%, #2563EB 100%);
+    color: #fff;
+    box-shadow: 0 4px 20px rgba(79,122,255,0.35);
+    cursor: pointer; margin-top: 4px;
+    -webkit-tap-highlight-color: transparent;
+    transition: opacity 0.15s, transform 0.15s;
+  }
+  .lp-mls-btn:active { opacity: 0.8; transform: scale(0.98); }
+  .lp-mls-btn:disabled { opacity: 0.6; }
+
+  /* Forgot password */
+  .lp-mls-forgot {
+    all: unset; cursor: pointer;
+    font-size: 13px; font-family: inherit;
+    text-align: center; padding: 8px;
+    -webkit-tap-highlight-color: transparent;
+    text-decoration: underline; text-underline-offset: 2px;
+  }
+  [data-theme="dark"]  .lp-mls-forgot { color: rgba(148,163,184,0.5); }
+  [data-theme="light"] .lp-mls-forgot { color: rgba(71,85,105,0.55); }
+
+  /* Footer note */
+  .lp-mls-note {
+    font-size: 11.5px; text-align: center; line-height: 1.6;
+    margin: auto 0 0; padding-top: 28px;
+  }
+  [data-theme="dark"]  .lp-mls-note { color: rgba(148,163,184,0.35); }
+  [data-theme="light"] .lp-mls-note { color: rgba(71,85,105,0.4); }
 
   /* ═══════════════════════════════════════════════════════════
      NAVBAR

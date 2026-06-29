@@ -54,7 +54,7 @@
 <link rel="stylesheet" href="css/responsive.css?v=20260623a">
 <link rel="stylesheet" href="css/landing.css?v=20260612b">
 <link rel="stylesheet" href="css/utilities.css?v=20260623a">
-<link rel="stylesheet" href="css/premium.css?v=20260629p">
+<link rel="stylesheet" href="css/premium.css?v=20260629q">
 <!-- KaTeX + DOMPurify loaded lazily after login — saves ~90KB on landing page -->
 <!-- socket.io loaded lazily in launchApp() after login — not needed on landing page -->
 <script>
@@ -200,6 +200,56 @@ html[data-autologin='1'] #idu-autologin-loader { display:flex; }
       <button class="lp-mob-cta" data-action="openLoginModal">Kirish →</button>
     </div>
   </nav>
+
+  <!-- ══ MOBILE LOGIN SCREEN (hidden on desktop) ══════════════ -->
+  <div id="lpMobLoginScreen" class="lp-mob-login-screen">
+    <!-- Logo -->
+    <div class="lp-mls-logo">
+      <div class="lp-logo-mark lp-mls-mark">IDU</div>
+      <div class="lp-mls-logo-info">
+        <span class="lp-mls-name">IDU Platform</span>
+        <span class="lp-mls-uni">International Digital University</span>
+      </div>
+    </div>
+
+    <!-- Title -->
+    <h1 class="lp-mls-title" id="mls-title">Tizimga kirish</h1>
+    <p class="lp-mls-hint" id="mls-hint">Login va parol universitetdan beriladi</p>
+
+    <!-- Error box -->
+    <div class="lp-mls-error" id="mlsError" style="display:none">
+      <span id="mlsErrorMsg">Login yoki parol noto'g'ri</span>
+    </div>
+
+    <!-- Form -->
+    <div class="lp-mls-form">
+      <div class="lp-mls-field">
+        <label class="lp-mls-label" id="mls-label-id">Talaba ID</label>
+        <input class="lp-mls-input" id="mlsLogin" type="text"
+          placeholder="Loginni kiriting" autocomplete="off"
+          onkeydown="if(event.key==='Enter')document.getElementById('mlsPass').focus()">
+      </div>
+      <div class="lp-mls-field">
+        <label class="lp-mls-label" id="mls-label-pass">Parol</label>
+        <div class="lp-mls-pass-row">
+          <input class="lp-mls-input" id="mlsPass" type="password"
+            placeholder="Parolni kiriting"
+            onkeydown="if(event.key==='Enter')mobLogin()">
+          <button class="lp-mls-eye" id="mlsEye" onclick="toggleMlsEye()" type="button">
+            <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>
+          </button>
+        </div>
+      </div>
+      <button class="lp-mls-btn" id="mlsBtn" onclick="mobLogin()">
+        <span id="mlsBtnText">Kirish</span>
+        <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M5 12h14M12 5l7 7-7 7" stroke-linecap="round" stroke-linejoin="round"/></svg>
+      </button>
+      <button class="lp-mls-forgot" onclick="showForgotPassword()" type="button" id="mls-forgot">Parolni unutdingizmi?</button>
+    </div>
+
+    <!-- Footer note -->
+    <p class="lp-mls-note" id="mls-note">Login va parol universitetdan beriladi. Muammo bo'lsa dekanat bilan bog'laning.</p>
+  </div>
 
   <!-- ── HERO ──────────────────────────────────────────────────── -->
   <div class="lp-hero">
