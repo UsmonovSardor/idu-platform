@@ -349,52 +349,208 @@ h1,h2,h3,h4,h5,.ph-title,.stat-card-val,.page-title,.modal-title {
 }
 
 /* ─────────────────────────────────────────────────────────────
-   LANDING PAGE — Premium nav, hero, buttons
+   LANDING PAGE NAV — Professional, full-width, no duplicate
 ───────────────────────────────────────────────────────────── */
 
-/* Nav — Remove rainbow gradient, cleaner */
+/* ── CRITICAL: hide mobile nav cluster on desktop ── */
+.lp-mob-nav-right { display: none !important; }
+
+/* Nav — full-width, clean, professional */
 #authScreen .lp-nav,
 .lp-nav {
-  height: 60px;
-  background: rgba(3,8,16,0.96);
-  border-bottom: 1px solid rgba(79,122,255,0.09);
+  position: fixed;
+  top: 0; left: 0; right: 0;
+  width: 100%;
+  height: 64px;
+  display: flex;
+  align-items: center;
+  padding: 0 48px;
+  gap: 0;
+  background: rgba(4,9,20,0.97);
+  border-bottom: 1px solid rgba(255,255,255,0.06);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  z-index: 1000;
+  box-sizing: border-box;
+  transition: background 0.25s, box-shadow 0.25s;
 }
-/* Remove iridescent rainbow bar */
+/* Remove rainbow gradient bar */
 .lp-nav::before { display: none; }
+
 .lp-nav.scrolled {
-  background: rgba(3,8,16,0.98);
-  box-shadow: 0 1px 0 rgba(79,122,255,0.12), 0 4px 24px rgba(0,0,0,0.55);
+  background: rgba(4,9,20,0.99);
+  box-shadow: 0 1px 0 rgba(255,255,255,0.05), 0 8px 32px rgba(0,0,0,0.6);
 }
 
+/* Logo — left */
+.lp-nav-logo {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  flex-shrink: 0;
+  margin-right: 40px;
+  cursor: pointer;
+  text-decoration: none;
+}
 .lp-logo-mark {
-  background: linear-gradient(145deg, #3B66F5, #1a9fc4);
-  box-shadow: 0 2px 10px rgba(59,102,245,0.3), inset 0 1px 0 rgba(255,255,255,0.18);
-}
-.lp-logo-text { font-size: 15px; font-weight: 600; letter-spacing: -0.3px; }
-
-.lp-link {
-  font-size: 13px;
-  color: rgba(180,200,235,0.7);
+  width: 32px; height: 32px;
   border-radius: 8px;
-  transition: color 0.16s, background 0.16s;
+  background: linear-gradient(145deg, #3B66F5 0%, #1e9bc7 100%);
+  display: flex; align-items: center; justify-content: center;
+  font-size: 11px; font-weight: 800; color: #fff;
+  font-family: var(--font-display);
+  box-shadow: 0 2px 8px rgba(59,102,245,0.35), inset 0 1px 0 rgba(255,255,255,0.2);
+  letter-spacing: 0;
+  flex-shrink: 0;
+}
+.lp-logo-text {
+  font-family: var(--font-display);
+  font-size: 15px; font-weight: 700;
+  letter-spacing: -0.02em; color: #EAF2FF;
+}
+
+/* Nav links — center group */
+.lp-nav-links {
+  display: flex;
+  align-items: center;
+  gap: 2px;
+  flex: 1;
+}
+.lp-link {
+  padding: 6px 12px;
+  font-size: 13px;
+  font-weight: 500;
+  color: rgba(170,195,235,0.72);
+  border-radius: 8px;
+  cursor: pointer;
+  transition: color 0.15s, background 0.15s;
+  display: flex; align-items: center; gap: 5px;
+  font-family: var(--font-body);
+  white-space: nowrap;
+  text-decoration: none;
+  border: none; background: none;
 }
 .lp-link:hover {
-  color: #93c5fd;
-  background: rgba(79,122,255,0.08);
+  color: #c5daff;
+  background: rgba(255,255,255,0.06);
+}
+.lp-link svg { opacity: 0.7; }
+
+/* Right actions */
+.lp-nav-right {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-left: auto;
+  flex-shrink: 0;
 }
 
+/* Language selector — more refined */
+.lang-current.lp-lang {
+  background: rgba(255,255,255,0.05) !important;
+  border: 1px solid rgba(255,255,255,0.10) !important;
+  border-radius: 8px !important;
+  padding: 6px 11px !important;
+  font-size: 12.5px !important;
+  font-weight: 600 !important;
+  color: rgba(180,205,240,0.8) !important;
+  transition: all 0.15s !important;
+  cursor: pointer;
+}
+.lang-current.lp-lang:hover {
+  background: rgba(255,255,255,0.09) !important;
+  border-color: rgba(255,255,255,0.18) !important;
+  color: #c5daff !important;
+}
+
+/* Theme toggle — refined */
+.lp-theme-toggle {
+  display: flex;
+  align-items: center;
+  background: rgba(255,255,255,0.05);
+  border: 1px solid rgba(255,255,255,0.09);
+  border-radius: 9px;
+  padding: 3px;
+  gap: 2px;
+}
+.lp-theme-btn {
+  width: 28px; height: 28px;
+  border-radius: 6px;
+  display: flex; align-items: center; justify-content: center;
+  cursor: pointer;
+  border: none;
+  background: transparent;
+  color: rgba(170,195,235,0.55);
+  transition: all 0.15s;
+  padding: 0;
+}
+.lp-theme-btn svg { width: 13px; height: 13px; }
+.lp-theme-btn.active {
+  background: rgba(79,122,255,0.25);
+  color: #93c5fd;
+}
+.lp-theme-btn:not(.active):hover {
+  background: rgba(255,255,255,0.07);
+  color: rgba(170,195,235,0.85);
+}
+
+/* CTA button — clean, professional */
 .lp-cta-btn {
+  height: 34px;
+  padding: 0 18px;
   background: linear-gradient(135deg, #2563eb 0%, #1a45d4 100%);
-  box-shadow: 0 2px 10px rgba(37,99,235,0.3);
-  padding: 8px 20px;
+  color: #fff;
+  border: none;
+  border-radius: 8px;
   font-size: 13px;
   font-weight: 600;
-  border-radius: 9px;
+  cursor: pointer;
+  font-family: var(--font-body);
+  letter-spacing: -0.01em;
+  box-shadow: 0 2px 8px rgba(37,99,235,0.30);
+  transition: opacity 0.15s, transform 0.15s, box-shadow 0.15s;
+  white-space: nowrap;
+  display: flex; align-items: center;
 }
 .lp-cta-btn:hover {
-  opacity: 0.93;
+  opacity: 0.92;
   transform: translateY(-1px);
-  box-shadow: 0 4px 16px rgba(37,99,235,0.38);
+  box-shadow: 0 4px 14px rgba(37,99,235,0.40);
+}
+.lp-cta-btn:active { transform: scale(0.97); }
+
+/* Dropdown — aligned to new nav height */
+.lp-drop-menu {
+  top: calc(100% + 8px);
+  background: rgba(6,11,24,0.98);
+  border: 1px solid rgba(255,255,255,0.09);
+  border-radius: 14px;
+  box-shadow: 0 16px 48px rgba(0,0,0,0.75);
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+}
+.lp-drop-item:hover { background: rgba(255,255,255,0.06); }
+.lp-drop-label { font-size: 13px; font-weight: 600; color: #d4e4ff; }
+.lp-drop-sub   { font-size: 11px; color: rgba(140,170,210,0.7); }
+.lp-drop-icon  { background: rgba(79,122,255,0.12); border-radius: 9px; }
+
+/* ── Mobile: restore mobile nav properly ── */
+@media (max-width: 768px) {
+  .lp-mob-nav-right {
+    display: flex !important;
+    align-items: center;
+    gap: 8px;
+    flex-shrink: 0;
+  }
+  .lp-nav-links { display: none !important; }
+  .lp-nav-right  { display: none !important; }
+  .lp-nav {
+    padding: 0 16px !important;
+    height: 56px !important;
+    backdrop-filter: blur(12px) !important;
+    -webkit-backdrop-filter: blur(12px) !important;
+  }
+  .lp-nav-logo { margin-right: 0 !important; flex: 1 !important; }
 }
 
 /* ─── Hero section — less busy background ─── */
