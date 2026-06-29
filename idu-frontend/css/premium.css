@@ -5,8 +5,8 @@
 ═══════════════════════════════════════════════════════════════ */
 
 /* ─── REFINED DESIGN TOKENS ─────────────────────────────────── */
+/* Theme-neutral: primary palette, shadows, radii — safe for both themes */
 :root {
-  /* Primary — slightly cooler, more desaturated blue */
   --primary: #4F7AFF;
   --primary-light: rgba(79,122,255,0.09);
   --primary-mid: rgba(79,122,255,0.16);
@@ -15,25 +15,6 @@
   --accent-light: rgba(45,212,232,0.08);
   --primary-gradient: linear-gradient(135deg, #4F7AFF, #2DD4E8);
 
-  /* Surface — deeper, cooler, more refined */
-  --bg: #030810;
-  --bg2: #070F1C;
-  --white: #0A1526;
-  --nav-bg: #060D1A;
-  --sidebar-bg: #050C18;
-  --sidebar-border: rgba(79,122,255,0.07);
-
-  /* Borders — more subtle */
-  --border: rgba(79,122,255,0.10);
-  --border2: rgba(79,122,255,0.20);
-
-  /* Text — slightly warmer white */
-  --text: #ECF2FF;
-  --text2: #6785A8;
-  --text3: #374E6A;
-  --text4: #1B3250;
-
-  /* Shadows — no glow, pure depth */
   --shadow-sm: 0 1px 3px rgba(0,0,0,0.55), 0 0 0 1px rgba(255,255,255,0.035);
   --shadow:    0 3px 14px rgba(0,0,0,0.55), 0 0 0 1px rgba(255,255,255,0.04);
   --shadow-md: 0 8px 30px rgba(0,0,0,0.60), 0 0 0 1px rgba(255,255,255,0.045);
@@ -41,10 +22,25 @@
   --shadow-blue: 0 3px 14px rgba(0,0,0,0.55), 0 0 0 1px rgba(79,122,255,0.12);
   --shadow-accent: 0 3px 12px rgba(0,0,0,0.45);
 
-  /* Border radius — unified */
   --r:  10px;
   --r2: 13px;
   --r3: 18px;
+}
+
+/* Dark theme surface tokens — only apply when dark, won't break light mode */
+[data-theme="dark"] {
+  --bg: #030810;
+  --bg2: #070F1C;
+  --white: #0A1526;
+  --nav-bg: #060D1A;
+  --sidebar-bg: #050C18;
+  --sidebar-border: rgba(79,122,255,0.07);
+  --border: rgba(79,122,255,0.10);
+  --border2: rgba(79,122,255,0.20);
+  --text: #ECF2FF;
+  --text2: #6785A8;
+  --text3: #374E6A;
+  --text4: #1B3250;
 }
 
 /* ─── BODY ───────────────────────────────────────────────────── */
