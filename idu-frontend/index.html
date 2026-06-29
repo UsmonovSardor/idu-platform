@@ -54,7 +54,7 @@
 <link rel="stylesheet" href="css/responsive.css?v=20260623a">
 <link rel="stylesheet" href="css/landing.css?v=20260612b">
 <link rel="stylesheet" href="css/utilities.css?v=20260623a">
-<link rel="stylesheet" href="css/premium.css?v=20260629r">
+<link rel="stylesheet" href="css/premium.css?v=20260629s">
 <!-- KaTeX + DOMPurify loaded lazily after login — saves ~90KB on landing page -->
 <!-- socket.io loaded lazily in launchApp() after login — not needed on landing page -->
 <script>
@@ -159,20 +159,6 @@ html[data-autologin='1'] #idu-autologin-loader { display:flex; }
           <span id="lcText">UZ</span>
           <svg class="lc-arrow-svg" viewBox="0 0 12 8" width="10" height="10" fill="none"><path d="M1 1.5l5 5 5-5" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
         </div>
-        <div class="lang-options" id="langOptions">
-          <div class="lang-option active" id="lopt-uz" onclick="setLang('uz')">
-            <svg class="lang-flag-svg" viewBox="0 0 20 14" width="20" height="14"><rect width="20" height="14" rx="2" fill="#1A47B8"/><rect y="4.67" width="20" height="4.67" fill="#fff"/><rect y="9.33" width="20" height="4.67" fill="#06962C"/></svg>
-            <span class="lo-name">O'zbek</span><span class="lo-code">UZ</span>
-          </div>
-          <div class="lang-option" id="lopt-ru" onclick="setLang('ru')">
-            <svg class="lang-flag-svg" viewBox="0 0 20 14" width="20" height="14"><rect width="20" height="14" rx="2" fill="#fff"/><rect y="4.67" width="20" height="4.67" fill="#1A47B8"/><rect y="9.33" width="20" height="4.67" fill="#E4172A"/></svg>
-            <span class="lo-name">Русский</span><span class="lo-code">RU</span>
-          </div>
-          <div class="lang-option" id="lopt-en" onclick="setLang('en')">
-            <svg class="lang-flag-svg" viewBox="0 0 20 14" width="20" height="14"><rect width="20" height="14" rx="2" fill="#012169"/><path d="M0 0l20 14M20 0L0 14" stroke="#fff" stroke-width="2.5"/><path d="M0 0l20 14M20 0L0 14" stroke="#C8102E" stroke-width="1.5"/><path d="M10 0v14M0 7h20" stroke="#fff" stroke-width="3.5"/><path d="M10 0v14M0 7h20" stroke="#C8102E" stroke-width="2"/></svg>
-            <span class="lo-name">English</span><span class="lo-code">EN</span>
-          </div>
-        </div>
       </div>
       <div class="lp-theme-toggle" id="lpThemeToggle" aria-label="Tema tanlash">
         <button class="lp-theme-btn active" data-t="dark" onclick="setTheme('dark')" title="Qora rejim">
@@ -199,19 +185,26 @@ html[data-autologin='1'] #idu-autologin-loader { display:flex; }
       <!-- Primary CTA -->
       <button class="lp-mob-cta" data-action="openLoginModal">Kirish →</button>
     </div>
+
+    <!-- Lang options dropdown — outside hidden parents so it works on mobile too -->
+    <div class="lang-options" id="langOptions">
+      <div class="lang-option active" id="lopt-uz" onclick="setLang('uz')">
+        <svg class="lang-flag-svg" viewBox="0 0 20 14" width="20" height="14"><rect width="20" height="14" rx="2" fill="#1A47B8"/><rect y="4.67" width="20" height="4.67" fill="#fff"/><rect y="9.33" width="20" height="4.67" fill="#06962C"/></svg>
+        <span class="lo-name">O'zbek</span><span class="lo-code">UZ</span>
+      </div>
+      <div class="lang-option" id="lopt-ru" onclick="setLang('ru')">
+        <svg class="lang-flag-svg" viewBox="0 0 20 14" width="20" height="14"><rect width="20" height="14" rx="2" fill="#fff"/><rect y="4.67" width="20" height="4.67" fill="#1A47B8"/><rect y="9.33" width="20" height="4.67" fill="#E4172A"/></svg>
+        <span class="lo-name">Русский</span><span class="lo-code">RU</span>
+      </div>
+      <div class="lang-option" id="lopt-en" onclick="setLang('en')">
+        <svg class="lang-flag-svg" viewBox="0 0 20 14" width="20" height="14"><rect width="20" height="14" rx="2" fill="#012169"/><path d="M0 0l20 14M20 0L0 14" stroke="#fff" stroke-width="2.5"/><path d="M0 0l20 14M20 0L0 14" stroke="#C8102E" stroke-width="1.5"/><path d="M10 0v14M0 7h20" stroke="#fff" stroke-width="3.5"/><path d="M10 0v14M0 7h20" stroke="#C8102E" stroke-width="2"/></svg>
+        <span class="lo-name">English</span><span class="lo-code">EN</span>
+      </div>
+    </div>
   </nav>
 
   <!-- ══ MOBILE LOGIN SCREEN (hidden on desktop) ══════════════ -->
   <div id="lpMobLoginScreen" class="lp-mob-login-screen">
-    <!-- Logo -->
-    <div class="lp-mls-logo">
-      <div class="lp-logo-mark lp-mls-mark">IDU</div>
-      <div class="lp-mls-logo-info">
-        <span class="lp-mls-name">IDU Platform</span>
-        <span class="lp-mls-uni">International Digital University</span>
-      </div>
-    </div>
-
     <!-- Title -->
     <h1 class="lp-mls-title" id="mls-title">Tizimga kirish</h1>
     <p class="lp-mls-hint" id="mls-hint">Login va parol universitetdan beriladi</p>
@@ -786,12 +779,6 @@ html[data-autologin='1'] #idu-autologin-loader { display:flex; }
     </div>
   </div>
 
-  <!-- Mobile-only CTA strip (hidden on desktop) -->
-  <div class="lp-mob-cta-strip">
-    <p class="lp-mob-cta-strip-title" id="mob-cta-title">Hoziroq boshlang</p>
-    <p class="lp-mob-cta-strip-sub" id="mob-cta-sub">Bepul kirish · Sozlash kerak emas</p>
-    <button class="lp-mob-cta-strip-btn" data-action="openLoginModal" id="mob-cta-btn">Tizimga kirish →</button>
-  </div>
 
   <!-- ── FOOTER ─────────────────────────────────────────────────── -->
   <footer class="lp-footer">

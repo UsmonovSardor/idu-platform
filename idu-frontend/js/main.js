@@ -3951,7 +3951,9 @@ function showVideoToast(){
 var currentLang='uz';
 function toggleLangDrop(){
   var d=document.getElementById('langDrop');
+  var opts=document.getElementById('langOptions');
   d.classList.toggle('open');
+  if(opts) opts.classList.toggle('open', d.classList.contains('open'));
   document.removeEventListener('click',closeLangOnOutside);
   if(d.classList.contains('open')){
     setTimeout(function(){document.addEventListener('click',closeLangOnOutside);},10);
@@ -4008,6 +4010,7 @@ function setLang(lang){
   var d=document.getElementById('langDrop');
   if(d) d.classList.remove('open');
   document.removeEventListener('click',closeLangOnOutside);
+  var _opts=document.getElementById('langOptions');if(_opts)_opts.classList.remove('open');
   var flag=document.getElementById('lcFlag'); if(flag) flag.innerHTML=LANG_FLAGS_SVG[lang]||'';
   var txt=document.getElementById('lcText'); if(txt) txt.textContent=L.code;
   var mobFlag=document.getElementById('mobLcFlag'); if(mobFlag) mobFlag.innerHTML=LANG_FLAGS_SVG[lang]||'';
@@ -4058,7 +4061,9 @@ function goTo(id){
 var currentLang='uz';
 function toggleLangDrop(){
   var d=document.getElementById('langDrop');
+  var opts=document.getElementById('langOptions');
   d.classList.toggle('open');
+  if(opts) opts.classList.toggle('open', d.classList.contains('open'));
   document.removeEventListener('click',closeLangOut);
   if(d.classList.contains('open')){
     setTimeout(function(){document.addEventListener('click',closeLangOut);},10);
@@ -4520,6 +4525,7 @@ function setLang(lang){
   currentLang=lang;
   var L=LD[lang];
   var d=document.getElementById('langDrop');if(d)d.classList.remove('open');
+  var _opts2=document.getElementById('langOptions');if(_opts2)_opts2.classList.remove('open');
   document.removeEventListener('click',closeLangOut);
   var flag=document.getElementById('lcFlag');if(flag)flag.innerHTML=LANG_FLAGS_SVG[lang]||'';
   var txt=document.getElementById('lcText');if(txt)txt.textContent=L.code;

@@ -498,18 +498,23 @@ h1,h2,h3,h4,h5,.ph-title,.stat-card-val,.page-title,.modal-title {
   box-shadow: 0 0 0 1px rgba(0,0,0,0.15);
 }
 
-/* Dropdown panel */
+/* Dropdown panel — now direct child of nav (position: fixed) */
 .lang-options {
-  position: absolute !important;
-  top: calc(100% + 8px) !important;
-  right: 0 !important;
+  display: none;
+  position: fixed !important;
+  top: 68px !important;   /* desktop nav height 64px + 4px gap */
+  right: 48px !important;
   left: auto !important;
   border-radius: 12px !important;
   padding: 5px !important;
-  min-width: 120px !important;
-  z-index: 9999 !important;
+  min-width: 130px !important;
+  z-index: 99999 !important;
   overflow: hidden !important;
 }
+/* Show when open */
+.lang-options.open,
+.lang-drop.open ~ .lang-options { display: block !important; animation: ldrop 0.18s ease; }
+@keyframes ldrop { from { opacity:0; transform:translateY(-6px); } to { opacity:1; transform:translateY(0); } }
 [data-theme="dark"] .lang-options {
   background: rgba(8,15,32,0.97) !important;
   border: 1px solid rgba(255,255,255,0.1) !important;
@@ -1571,10 +1576,10 @@ h1,h2,h3,h4,h5,.ph-title,.stat-card-val,.page-title,.modal-title {
     color: #fff; box-shadow: 0 2px 10px rgba(21,122,60,0.4);
   }
 
+  /* Lang dropdown — mobile position */
   .lang-options {
-    position: fixed !important;
-    top: 54px !important; right: 12px !important; left: auto !important;
-    min-width: 130px !important; border-radius: 12px !important; z-index: 9999 !important;
+    top: 58px !important;
+    right: 12px !important;
   }
 
   /* ═══════════════════════════════════════════════════════════
