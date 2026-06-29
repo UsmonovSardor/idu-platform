@@ -127,12 +127,6 @@ window.realAutoLogin = async function realAutoLogin() {
     const user = await loginWithBackend('auto', login, pass);
     const role = user.role || 'student';
 
-    // URL route tekshiruvi — noto'g'ri rol bilan kira olmasin
-    const _routeCfg = window._iduUrlRouteCfg;
-    if (_routeCfg && _routeCfg.allowedRoles && _routeCfg.allowedRoles.indexOf(role) === -1) {
-      return showErr('Bu panel uchun ruxsatingiz yo\'q');
-    }
-
     // Kick off role scripts AND first API requests in parallel during login animation
     // The login animation takes ~600ms — we use that time to pre-warm the network.
     var _roleLoadPromise = window.IDULoader
