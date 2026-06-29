@@ -412,13 +412,19 @@ function logout(){
   _ssDel('idu_active_role');
   _ssDel('idu_active_login');
   _lsDel('idu_session');
-  // Clear httpOnly cookie on server + in-memory token
+  try { localStorage.removeItem('idu_jwt'); } catch(e) {}
   if (typeof apiLogout === 'function') apiLogout();
   document.getElementById('appScreen').classList.remove('visible');
   document.getElementById('appScreen').style.display='none';
-  document.getElementById('authScreen').style.display='flex';
   selectedRole=null;
-  openLoginModal();
+  // URL ga qarab to'g'ri sahifaga qaytish
+  if (window._iduUrlRoute && window._iduUrlRoute !== 'student') {
+    window.location.reload(); // Rol sahifalari: reload → login forma qayta ko'rinadi
+  } else {
+    document.getElementById('authScreen').style.display='flex';
+    if (typeof activateStudentDirectLogin === 'function') activateStudentDirectLogin();
+    else openLoginModal();
+  }
 }
 
 function showForgotPassword(role) {
