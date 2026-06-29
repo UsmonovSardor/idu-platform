@@ -1328,176 +1328,322 @@ h1,h2,h3,h4,h5,.ph-title,.stat-card-val,.page-title,.modal-title {
 }
 
 /* ═══════════════════════════════════════════════════════════════
-   MOBILE PREMIUM — Senior-level mobile experience
-   All rules scoped to ≤768px so desktop is unaffected
+   MOBILE PREMIUM — App-like minimal experience (≤768px only)
 ═══════════════════════════════════════════════════════════════ */
 @media (max-width: 768px) {
 
-  /* ── Nav light mode fix ─────────────────────────────────────── */
+  /* ── Overflow guard ─────────────────────────────────────────── */
+  html, body { max-width: 100vw !important; overflow-x: hidden !important; }
+
+  /* ─────────────────────────────────────────────────────────────
+     NAVBAR
+  ───────────────────────────────────────────────────────────── */
   [data-theme="light"] .lp-nav {
-    background: rgba(255,255,255,0.96) !important;
+    background: rgba(255,255,255,0.97) !important;
     border-bottom: 1px solid rgba(0,0,0,0.07) !important;
   }
-  [data-theme="light"] .lp-nav.scrolled {
-    background: rgba(255,255,255,0.99) !important;
-    box-shadow: 0 1px 0 rgba(0,0,0,0.06), 0 4px 16px rgba(0,0,0,0.06) !important;
-  }
 
-  /* ── Mobile nav buttons (previously unstyled) ───────────────── */
-  .lp-mob-lang,
-  .lp-mob-theme,
-  .lp-mob-cta {
+  /* Mobile nav buttons — reset browser defaults */
+  .lp-mob-lang, .lp-mob-theme, .lp-mob-cta {
     all: unset;
-    display: flex;
+    box-sizing: border-box;
+    display: inline-flex;
     align-items: center;
     justify-content: center;
     cursor: pointer;
     -webkit-tap-highlight-color: transparent;
-    transition: opacity 0.15s, transform 0.15s;
+    transition: opacity 0.14s, transform 0.14s;
     flex-shrink: 0;
+    font-family: inherit;
   }
   .lp-mob-lang:active,
   .lp-mob-theme:active,
-  .lp-mob-cta:active { opacity: 0.7; transform: scale(0.95); }
+  .lp-mob-cta:active { opacity: 0.65; transform: scale(0.93); }
 
-  /* Lang button — flag + code */
+  /* Lang: "UZ" pill */
   .lp-mob-lang {
-    gap: 5px;
-    padding: 6px 10px;
+    gap: 4px;
+    padding: 0 11px;
+    height: 34px;
     border-radius: 9px;
     font-size: 12px;
     font-weight: 700;
-    letter-spacing: 0.04em;
-    min-height: 34px;
-    min-width: 52px;
+    letter-spacing: 0.05em;
   }
-  [data-theme="dark"] .lp-mob-lang {
-    background: rgba(255,255,255,0.08);
-    border: 1px solid rgba(255,255,255,0.1);
-    color: rgba(210,225,255,0.9);
-  }
-  [data-theme="light"] .lp-mob-lang {
-    background: rgba(0,0,0,0.05);
-    border: 1px solid rgba(0,0,0,0.1);
-    color: #1a2a4a;
-  }
+  [data-theme="dark"]  .lp-mob-lang { background: rgba(255,255,255,0.09); border: 1px solid rgba(255,255,255,0.12); color: rgba(210,225,255,0.9); }
+  [data-theme="light"] .lp-mob-lang { background: rgba(0,0,0,0.05);       border: 1px solid rgba(0,0,0,0.1);         color: #1e3256; }
 
-  /* Theme toggle — icon-only circle */
+  /* Theme: icon circle */
   .lp-mob-theme {
     width: 34px; height: 34px;
     border-radius: 50%;
   }
-  [data-theme="dark"] .lp-mob-theme {
-    background: rgba(255,255,255,0.07);
-    border: 1px solid rgba(255,255,255,0.1);
-    color: rgba(210,225,255,0.75);
-  }
-  [data-theme="light"] .lp-mob-theme {
-    background: rgba(0,0,0,0.05);
-    border: 1px solid rgba(0,0,0,0.1);
-    color: #374e6a;
-  }
+  [data-theme="dark"]  .lp-mob-theme { background: rgba(255,255,255,0.07); border: 1px solid rgba(255,255,255,0.1);  color: rgba(180,210,255,0.8); }
+  [data-theme="light"] .lp-mob-theme { background: rgba(0,0,0,0.05);       border: 1px solid rgba(0,0,0,0.1);        color: #4a6080; }
 
-  /* Kirish CTA button */
+  /* Kirish CTA */
   .lp-mob-cta {
-    padding: 8px 16px;
+    padding: 0 16px;
+    height: 34px;
     border-radius: 10px;
     font-size: 13px;
     font-weight: 700;
-    letter-spacing: -0.01em;
-    min-height: 34px;
-    background: linear-gradient(135deg, #1ea851 0%, #158040 100%);
+    background: linear-gradient(135deg,#1ea851,#157a3c);
     color: #fff;
-    box-shadow: 0 2px 8px rgba(21,128,64,0.35);
+    letter-spacing: -0.01em;
+    box-shadow: 0 2px 10px rgba(21,122,60,0.4);
   }
 
-  /* ── Mobile lang dropdown fix ───────────────────────────────── */
-  .lang-drop { position: relative !important; }
+  /* Lang dropdown position */
   .lang-options {
     position: fixed !important;
-    top: 56px !important;
-    right: 12px !important;
-    left: auto !important;
+    top: 54px !important; right: 12px !important; left: auto !important;
     min-width: 130px !important;
     border-radius: 12px !important;
-    z-index: 2000 !important;
+    z-index: 9999 !important;
   }
 
-  /* ── Stats section — 2×3 grid ───────────────────────────────── */
-  .lp-stats {
-    grid-template-columns: repeat(3, 1fr) !important;
-    padding: 20px 16px 40px !important;
+  /* ─────────────────────────────────────────────────────────────
+     HERO — App-like, no giant IDU text
+  ───────────────────────────────────────────────────────────── */
+
+  /* Hide the oversized "IDU" gradient title */
+  .lp-brand-gradient { display: none !important; }
+
+  /* "International Digital University" becomes the headline */
+  .lp-hero-sub-title {
+    font-size: 28px !important;
+    font-weight: 800 !important;
+    letter-spacing: -0.04em !important;
+    line-height: 1.15 !important;
+    color: var(--text) !important;
+    -webkit-text-fill-color: unset !important;
+    background: none !important;
+    display: block !important;
+    margin-bottom: 12px !important;
+    padding: 0 !important;
+  }
+  [data-theme="light"] .lp-hero-sub-title { color: #0f1e38 !important; }
+
+  /* Hero layout — compact */
+  .lp-hero {
+    padding: calc(64px + env(safe-area-inset-top,0px)) 20px 36px !important;
+    min-height: unset !important;
+    gap: 0 !important;
+  }
+  .lp-hero-content {
+    width: 100% !important;
+    max-width: 100% !important;
+    text-align: center !important;
+  }
+
+  /* Badge */
+  .lp-badge {
+    font-size: 11px !important;
+    padding: 5px 12px !important;
+    margin-bottom: 20px !important;
+    display: inline-flex !important;
+  }
+
+  /* Description */
+  .lp-hero-desc {
+    font-size: 14.5px !important;
+    line-height: 1.65 !important;
+    margin: 0 0 24px !important;
+    color: var(--text2) !important;
+    padding: 0 4px !important;
+  }
+  .lp-hero-desc br { display: none !important; }
+
+  /* CTA buttons — full width */
+  .lp-hero-actions {
+    flex-direction: column !important;
     gap: 10px !important;
+    width: 100% !important;
+    margin: 0 0 22px !important;
+  }
+  .lp-primary-btn {
+    width: 100% !important; justify-content: center !important;
+    padding: 15px 20px !important; font-size: 15px !important;
+    border-radius: 13px !important; min-height: 50px !important;
+    box-sizing: border-box !important;
+  }
+  .lp-secondary-btn {
+    width: 100% !important; justify-content: center !important;
+    padding: 13px 20px !important; font-size: 14.5px !important;
+    border-radius: 13px !important; min-height: 48px !important;
+    box-sizing: border-box !important;
   }
 
-  /* ── Compare table — horizontal scroll ─────────────────────── */
+  /* Pills — 2×2 */
+  .lp-pills {
+    display: grid !important;
+    grid-template-columns: 1fr 1fr !important;
+    gap: 8px !important;
+    width: 100% !important;
+    margin: 0 auto !important;
+  }
+  .lp-pill {
+    font-size: 12px !important;
+    padding: 10px 10px !important;
+    justify-content: center !important;
+    border-radius: 12px !important;
+    min-height: 42px !important;
+    gap: 6px !important;
+  }
+
+  /* Hero card — hide on mobile (replaced by mob-preview below) */
+  .lp-hero-card { display: none !important; }
+  .lp-mob-preview {
+    display: block !important;
+    margin: 24px auto 0 !important;
+    max-width: 300px !important;
+    width: 100% !important;
+  }
+
+  /* ─────────────────────────────────────────────────────────────
+     STATS ROW — compact 3-col
+  ───────────────────────────────────────────────────────────── */
+  .lp-stats {
+    grid-template-columns: repeat(3,1fr) !important;
+    padding: 16px 16px 36px !important;
+    gap: 8px !important;
+  }
+  .lp-stat-card {
+    padding: 16px 8px !important;
+    border-radius: 16px !important;
+  }
+  .lp-stat-icon  { font-size: 18px !important; margin-bottom: 6px !important; }
+  .lp-stat-num   { font-size: 20px !important; margin-bottom: 4px !important; }
+  .lp-stat-label { font-size: 9px !important; letter-spacing: 0.02em !important; }
+
+  /* ─────────────────────────────────────────────────────────────
+     FEATURES — horizontal app-style cards
+  ───────────────────────────────────────────────────────────── */
+  .lp-features { padding: 36px 16px !important; }
+  .lp-feat-header { margin-bottom: 20px !important; text-align: center !important; }
+  .lp-feat-title  { font-size: 22px !important; letter-spacing: -0.04em !important; }
+  .lp-feat-desc   { font-size: 13.5px !important; }
+  .lp-feat-grid   { grid-template-columns: 1fr !important; gap: 10px !important; }
+  .lp-feat-lg     { grid-column: span 1 !important; }
+  .lp-feat-card {
+    padding: 16px !important;
+    border-radius: 18px !important;
+    display: grid !important;
+    grid-template-columns: 48px 1fr !important;
+    column-gap: 14px !important;
+    row-gap: 0 !important;
+    align-items: start !important;
+  }
+  .lp-feat-glow { display: none !important; }
+  .lp-feat-icon-wrap {
+    width: 48px !important; height: 48px !important;
+    border-radius: 13px !important; font-size: 20px !important;
+    grid-column: 1 !important; grid-row: 1 / 4 !important;
+    align-self: start !important; margin-top: 2px !important;
+  }
+  .lp-feat-card h3 { grid-column: 2 !important; grid-row: 1 !important; font-size: 14.5px !important; font-weight: 700 !important; margin: 0 0 3px !important; }
+  .lp-feat-card p  { grid-column: 2 !important; grid-row: 2 !important; font-size: 12.5px !important; margin: 0 0 5px !important; color: var(--text2) !important; }
+  .lp-feat-chip    { grid-column: 2 !important; grid-row: 3 !important; font-size: 10px !important; margin: 0 !important; display: inline-flex !important; width: fit-content !important; }
+
+  /* ─────────────────────────────────────────────────────────────
+     COMPARE TABLE — horizontal scroll
+  ───────────────────────────────────────────────────────────── */
+  .lp-compare { padding: 36px 16px !important; }
   .lp-compare-wrap {
     overflow-x: auto !important;
     -webkit-overflow-scrolling: touch !important;
     border-radius: 16px !important;
-    margin: 0 -4px !important;
+    scrollbar-width: none !important;
   }
-  .lp-compare-table {
-    min-width: 460px !important;
-  }
+  .lp-compare-wrap::-webkit-scrollbar { display: none !important; }
+  .lp-compare-table { min-width: 420px !important; font-size: 12.5px !important; }
   .lp-compare-table th,
-  .lp-compare-table td {
-    white-space: nowrap;
-  }
+  .lp-compare-table td { padding: 11px 10px !important; white-space: nowrap !important; }
 
-  /* ── Trust / Testimonials section ──────────────────────────── */
-  .lp-trust { padding: 36px 16px 40px !important; }
+  /* ─────────────────────────────────────────────────────────────
+     HOW — vertical timeline
+  ───────────────────────────────────────────────────────────── */
+  .lp-how { padding: 28px 16px 36px !important; }
+  .lp-how-grid { grid-template-columns: 1fr !important; gap: 0 !important; }
+  .lp-how-line { display: none !important; }
+  .lp-how-step {
+    display: flex !important; flex-direction: row !important;
+    align-items: flex-start !important; gap: 14px !important;
+    padding: 14px 0 !important;
+    border-bottom: 1px solid rgba(99,140,255,0.07) !important;
+    text-align: left !important; overflow: hidden !important;
+  }
+  .lp-how-step:last-child { border-bottom: none !important; }
+  .lp-how-num {
+    width: 40px !important; height: 40px !important;
+    border-radius: 12px !important; font-size: 16px !important;
+    font-weight: 800 !important; flex-shrink: 0 !important;
+    margin-bottom: 0 !important;
+  }
+  .lp-how-title { font-size: 14.5px !important; font-weight: 700 !important; margin-bottom: 3px !important; }
+  .lp-how-desc  { font-size: 12.5px !important; line-height: 1.55 !important; color: var(--text2) !important; }
+
+  /* ─────────────────────────────────────────────────────────────
+     TRUST / TESTIMONIALS
+  ───────────────────────────────────────────────────────────── */
+  .lp-trust { padding: 32px 16px 36px !important; }
   .lp-trust-stats {
-    grid-template-columns: repeat(2, 1fr) !important;
-    gap: 10px !important;
-    margin-bottom: 36px !important;
+    grid-template-columns: repeat(2,1fr) !important;
+    gap: 8px !important; margin-bottom: 32px !important;
   }
   .lp-trust-stat {
-    padding: 18px 14px !important;
-    border-radius: 16px !important;
-    text-align: center !important;
+    padding: 16px 12px !important; border-radius: 15px !important; text-align: center !important;
   }
-  .lp-trust-num { font-size: 26px !important; }
-  .lp-trust-label { font-size: 12px !important; }
+  .lp-trust-num   { font-size: 24px !important; }
+  .lp-trust-label { font-size: 11.5px !important; }
 
-  /* ── Footer — proper mobile stack ──────────────────────────── */
+  /* Marquee — mobile width */
+  .lp-marquee-wrap {
+    width: calc(100% + 32px) !important;
+    margin-left: -16px !important;
+  }
+  .lp-test-card { min-width: 260px !important; padding: 16px !important; border-radius: 16px !important; }
+  .lp-test-quote { font-size: 13px !important; line-height: 1.6 !important; }
+
+  /* Section headings */
+  .lp-sec-badge { font-size: 10px !important; padding: 4px 10px !important; }
+  .lp-sec-title { font-size: 22px !important; letter-spacing: -0.04em !important; line-height: 1.2 !important; }
+  .lp-sec-sub   { font-size: 13.5px !important; line-height: 1.6 !important; margin-top: 8px !important; }
+
+  /* ─────────────────────────────────────────────────────────────
+     FOOTER
+  ───────────────────────────────────────────────────────────── */
   .lp-footer-inner {
     flex-direction: column !important;
-    padding: 40px 20px 28px !important;
-    gap: 36px !important;
+    padding: 36px 20px 24px !important;
+    gap: 32px !important;
   }
   .lp-footer-brand { max-width: 100% !important; }
-  .lp-footer-tagline { font-size: 13px !important; line-height: 1.6 !important; max-width: 300px !important; }
+  .lp-footer-tagline { font-size: 13px !important; line-height: 1.6 !important; max-width: 100% !important; }
+  .lp-footer-copy  { font-size: 12px !important; margin-top: 12px !important; }
   .lp-footer-cols {
     display: grid !important;
     grid-template-columns: 1fr 1fr !important;
-    gap: 28px 20px !important;
+    gap: 24px 16px !important;
   }
-  .lp-footer-col { gap: 10px !important; }
-  .lp-footer-link { font-size: 13px !important; min-height: 36px !important; display: flex !important; align-items: center !important; }
+  .lp-footer-col  { gap: 8px !important; }
+  .lp-footer-link {
+    font-size: 13px !important;
+    padding: 6px 0 !important;
+    min-height: 36px !important;
+    display: flex !important;
+    align-items: center !important;
+  }
   .lp-footer-bottom {
-    padding: 16px 20px calc(16px + env(safe-area-inset-bottom, 0px)) !important;
-    flex-direction: column !important;
-    gap: 8px !important;
-    text-align: center !important;
+    padding: 14px 20px calc(14px + env(safe-area-inset-bottom,0px)) !important;
   }
-
-  /* ── Section headers — tighter on mobile ───────────────────── */
-  .lp-sec-badge { font-size: 10px !important; padding: 5px 12px !important; }
-  .lp-sec-title { font-size: 26px !important; letter-spacing: -0.04em !important; line-height: 1.15 !important; }
-  .lp-sec-sub   { font-size: 14px !important; line-height: 1.6 !important; }
-  .lp-feat-desc  { font-size: 14px !important; }
-
-  /* ── How section ────────────────────────────────────────────── */
-  .lp-how-content { max-width: 100% !important; }
-  .lp-how-step { overflow: hidden !important; }
-
-  /* ── Body horizontal overflow guard ────────────────────────── */
-  html, body { max-width: 100vw !important; overflow-x: hidden !important; }
 }
 
-/* Extra small phones */
+/* ── 390px and below ────────────────────────────────────────── */
 @media (max-width: 390px) {
-  .lp-mob-cta { font-size: 12px !important; padding: 7px 12px !important; }
+  .lp-mob-cta { font-size: 12px !important; padding: 0 12px !important; }
+  .lp-hero-sub-title { font-size: 24px !important; }
   .lp-footer-cols { grid-template-columns: 1fr !important; }
+  .lp-stats { grid-template-columns: repeat(2,1fr) !important; }
 }
