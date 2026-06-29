@@ -3911,6 +3911,12 @@ function toggleLangDrop(){
   }
 }
 
+var LANG_FLAGS_SVG = {
+  uz: '<svg class="lang-flag-svg" viewBox="0 0 20 14" width="20" height="14"><rect width="20" height="14" rx="2" fill="#1A47B8"/><rect y="4.67" width="20" height="4.67" fill="#fff"/><rect y="9.33" width="20" height="4.67" fill="#06962C"/></svg>',
+  ru: '<svg class="lang-flag-svg" viewBox="0 0 20 14" width="20" height="14"><rect width="20" height="14" rx="2" fill="#fff"/><rect y="4.67" width="20" height="4.67" fill="#1A47B8"/><rect y="9.33" width="20" height="4.67" fill="#E4172A"/></svg>',
+  en: '<svg class="lang-flag-svg" viewBox="0 0 20 14" width="20" height="14"><rect width="20" height="14" rx="2" fill="#012169"/><path d="M0 0l20 14M20 0L0 14" stroke="#fff" stroke-width="2.5"/><path d="M0 0l20 14M20 0L0 14" stroke="#C8102E" stroke-width="1.5"/><path d="M10 0v14M0 7h20" stroke="#fff" stroke-width="3.5"/><path d="M10 0v14M0 7h20" stroke="#C8102E" stroke-width="2"/></svg>'
+};
+
 var LANG_DATA = {
   uz:{
     flag:'🇺🇿', code:'UZ', name:"O'zbek",
@@ -3955,10 +3961,11 @@ function setLang(lang){
   var d=document.getElementById('langDrop');
   if(d) d.classList.remove('open');
   document.removeEventListener('click',closeLangOnOutside);
-  var flag=document.getElementById('lcFlag'); if(flag) flag.textContent=L.flag;
+  var flag=document.getElementById('lcFlag'); if(flag) flag.innerHTML=LANG_FLAGS_SVG[lang]||'';
   var txt=document.getElementById('lcText'); if(txt) txt.textContent=L.code;
   var optUz=document.getElementById('lopt-uz'); if(optUz) optUz.classList.toggle('active',lang==='uz');
   var optRu=document.getElementById('lopt-ru'); if(optRu) optRu.classList.toggle('active',lang==='ru');
+  var optEn=document.getElementById('lopt-en'); if(optEn) optEn.classList.toggle('active',lang==='en');
 
   function s(id,v){var el=document.getElementById(id);if(el)el.textContent=v;}
   // Navbar
@@ -4465,7 +4472,7 @@ function setLang(lang){
   var L=LD[lang];
   var d=document.getElementById('langDrop');if(d)d.classList.remove('open');
   document.removeEventListener('click',closeLangOut);
-  var flag=document.getElementById('lcFlag');if(flag)flag.textContent=L.flag;
+  var flag=document.getElementById('lcFlag');if(flag)flag.innerHTML=LANG_FLAGS_SVG[lang]||'';
   var txt=document.getElementById('lcText');if(txt)txt.textContent=L.code;
   var ou=document.getElementById('lopt-uz');if(ou)ou.classList.toggle('active',lang==='uz');
   var or2=document.getElementById('lopt-ru');if(or2)or2.classList.toggle('active',lang==='ru');
